@@ -32,7 +32,9 @@ final class FeatureFlagService: ObservableObject {
 enum ClubShellMode: Hashable { case clubAI, training, records }
 private enum ClubShellPage: Hashable { case clubAI, training, records(String) }
 enum ClubSidebarRoute: String, Identifiable {
-    case records, aiMemory, settings
+    // 拍板 #5：`aiMemory`（记忆页浏览入口）随对话下线，收敛为偏好数据所在的
+    // 「AI 记录与授权」；记忆页仅保留该页内一处行权入口。
+    case records, preferences, settings
     var id: String { rawValue }
 }
 
@@ -388,7 +390,7 @@ struct ClubAIShellView: View {
                         onRecordMeal: { date, mode in showLegacyOnboarding135 = false; mealEntryRoute = ClubComposerMealRoute(date: date, mode: mode) },
                         onRecordTraining: { date in showLegacyOnboarding135 = false; selectedDate = date; trainingRoute = ClubTrainingRoute(date: date) },
                         onOpenMembership: { showLegacyOnboarding135 = false; showMembership = true },
-                        onOpenKnowledge: { showLegacyOnboarding135 = false; sidebarRoute = .aiMemory })
+                        onOpenKnowledge: { showLegacyOnboarding135 = false; sidebarRoute = .preferences })
                         .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showLegacyOnboarding135 = false } } }
                 }
             }
@@ -561,8 +563,8 @@ struct ClubAIShellView: View {
         case .records:
             NavigationStack { ClubRecordsHub(category: $recordsCategory)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
-        case .aiMemory:
-            NavigationStack { ClubAIMemoryView().toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
+        case .preferences:
+            NavigationStack { ClubActionPreferencesView().toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
         case .settings:
             NavigationStack { V2SettingsMenuView()
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }

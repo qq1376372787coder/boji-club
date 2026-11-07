@@ -528,6 +528,7 @@ struct NutritionStrategyCard: View {
     @State private var reviewingTarget = false
     let date: Date
     @EnvironmentObject private var store: AppStore
+    @EnvironmentObject private var account: AccountService
     var body: some View {
         if let target = store.log(for: date).nutritionTarget ?? store.state.nutritionTarget {
             ClubCard {
@@ -546,7 +547,12 @@ struct NutritionStrategyCard: View {
                     NutritionTrendSummary(through: date)
                 }
                 Button("更新资料与饮食参考") { reviewingTarget = true }.buttonStyle(SecondaryButton())
-            }.sheet(isPresented: $reviewingTarget) { NavigationStack { ClubAIMemoryView() } }
+            // 拍板 #5：原入口指向记忆页（ClubAIMemoryView），与按钮文案「更新资料」不符，
+            // 且记忆页浏览入口已下线。改为直开资料表单——饮食参考由
+            // 身体资料 + 活动量 + 营养背景三项决定，正是 nutrition_goal 任务字段。
+            }.sheet(isPresented: $reviewingTarget) {
+                ProfileFactsForm133(title: "更新资料与饮食参考", fields: ProfileFields133.task(.nutritionGoal))
+            }
         }
     }
 }

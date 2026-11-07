@@ -272,11 +272,24 @@ final class BojiClubUITests: XCTestCase {
     }
 
     func testUnifiedProfileShowsFactsWithoutCloudMemory() {
+        // 拍板 #5：偏好数据并入「AI 记录与授权」展示，记忆页浏览入口下线。
+        // 原路径 openSidebar("aimemory") 指向的 v2-sidebar-aimemory 早已不存在
+        // （侧栏只有 today/plans/exercises/reports/records/settings 六项），本次一并修正。
         let app = launch()
-        openSidebar("aimemory", in: app)
-        XCTAssertTrue(app.navigationBars["AI 对我的了解"].waitForExistence(timeout: 8))
-        XCTAssertTrue(app.staticTexts["预览账号没有云端记忆"].waitForExistence(timeout: 8),
+        openSidebar("settings", in: app)
+        let privacy = app.buttons["AI 与隐私"].firstMatch
+        XCTAssertTrue(privacy.waitForExistence(timeout: 8), "Settings must expose AI 与隐私")
+        privacy.tap()
+        let records = app.buttons["AI 记录与授权"].firstMatch
+        XCTAssertTrue(records.waitForExistence(timeout: 8), "AI records and consent entry must exist")
+        records.tap()
+        XCTAssertTrue(app.staticTexts["我的偏好数据 v1"].waitForExistence(timeout: 8),
+                      "Preference block must render with display version v1")
+        XCTAssertTrue(app.staticTexts["预览账号没有云端偏好数据。"].waitForExistence(timeout: 8),
                       "Preview account must not show server memory as fact")
+        let manage = app.buttons["管理 AI 记忆（纠正 / 撤回）"].firstMatch
+        for _ in 0..<4 where !manage.isHittable { app.swipeUp() }
+        XCTAssertTrue(manage.exists, "PIPL correction/withdrawal entry must stay reachable")
         attachScreenshot("build126-profile-initial", app: app)
     }
 
@@ -621,12 +634,22 @@ final class BojiClubUITests: XCTestCase {
     }
 
     func testV2MemoryPageOpensForPreviewAccount() {
-        // Phase 4 §5.2：记忆页（预览账号 = 占位说明）。
+        // 拍板 #5：记忆页只保留「AI 记录与授权」内一处行权入口（纠正 / 撤回）。
         let app = launchV2()
-        openSidebar("aimemory", in: app)
+        openSidebar("settings", in: app)
+        let privacy = app.buttons["AI 与隐私"].firstMatch
+        XCTAssertTrue(privacy.waitForExistence(timeout: 8))
+        privacy.tap()
+        let records = app.buttons["AI 记录与授权"].firstMatch
+        XCTAssertTrue(records.waitForExistence(timeout: 8))
+        records.tap()
+        let manage = app.buttons["管理 AI 记忆（纠正 / 撤回）"].firstMatch
+        for _ in 0..<4 where !manage.isHittable { app.swipeUp() }
+        XCTAssertTrue(manage.waitForExistence(timeout: 8), "memory entry should exist")
+        manage.tap()
         let memoryPage = app.descendants(matching: .any)["ai-memory-page"]
         XCTAssertTrue(memoryPage.waitForExistence(timeout: 10), "memory page should open")
-        let memoryNotice = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "预览账号没有云端记忆")).firstMatch
+        let memoryNotice = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "预览环境暂无云端记忆")).firstMatch
         XCTAssertTrue(memoryNotice.waitForExistence(timeout: 10), "preview notice should render")
     }
 

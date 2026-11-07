@@ -52,13 +52,16 @@ struct ClubMemoryPage: Decodable, Equatable {
         case confirmed, habits, inferred
     }
 
-    var isEmpty: Bool { confirmed.isEmpty && habits.isEmpty && inferred.isEmpty }
+    var isEmpty: Bool { allItems.isEmpty }
+    /// 拍板 #5-B：**行为习惯栏随对话下线**，`habit` 类记忆不再展示。
+    /// 这是纯展示层过滤——服务端数据、`GET /me/ai/memory` 契约、纠正/撤回接口、
+    /// 数据导出与 prompt 上下文注入**全部保持不变**，回滚只需还原这一行。
+    /// `preference`（成员明确填写的偏好）不属于"AI 归纳的习惯"，仍展示。
     var allItems: [ClubMemoryItem] {
         var list = [ClubMemoryItem]()
         list.append(contentsOf: confirmed)
-        list.append(contentsOf: habits)
         list.append(contentsOf: inferred)
-        return list
+        return list.filter { $0.kind != "habit" }
     }
 }
 
@@ -364,7 +367,7 @@ struct ClubAIMemoryView: View {
                             Text("暂无专属记忆便签")
                                 .bojiType(.secondary)
                                 .foregroundStyle(BojiColor.textSecondary)
-                            Text("在日常跟 AI 聊天（如提到身体限制或喜恶）或点击右上角添加，便签会自动沉淀在此。")
+                            Text("点击右上角可手动添加；从你的记录中确认的事实与推断会沉淀在此，随时可以纠正或撤回。")
                                 .bojiType(.caption)
                                 .foregroundStyle(BojiColor.textTertiary)
                                 .multilineTextAlignment(.center)

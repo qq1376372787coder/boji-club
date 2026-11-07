@@ -109,7 +109,9 @@ struct ProfileView: View {
                 }.buttonStyle(.plain).accessibilityLabel("编辑头像与昵称")
             }
             Section {
-                NavigationLink { ClubAIMemoryView().clubPushDestination132() } label: { Label("AI 对我的了解", systemImage: "person.text.rectangle") }
+                // 拍板 #5：原「AI 对我的了解」（记忆页浏览入口）下线，
+                // 偏好数据改在「AI 记录与授权」内展示，此处收敛到该页。
+                NavigationLink { ClubActionPreferencesView().clubPushDestination132() } label: { Label("AI 记录与授权", systemImage: "hand.raised.square") }
                 NavigationLink { ManagedPlanList(focusDate: Date(), initialCycleStart: nil).clubPushDestination132() } label: { Label("我的计划", systemImage: "calendar") }
                 NavigationLink { MembershipView().clubPushDestination132() } label: { Label("会员与订阅", systemImage: "crown") }
                 NavigationLink { SettingsHub130().clubPushDestination132() } label: { Label("设置", systemImage: "gearshape") }
@@ -1068,12 +1070,36 @@ enum ProfileAuditFactory {
 #endif
 
 
+/// 拍板 #5：偏好数据（目标 / 训练限制 / 装备排除 / 每周天数 / 明确偏好）并入
+/// 「AI 记录与授权」展示。这里**直读 `user_profile_documents`（profileFacts）**，
+/// 不经过 `user_memory_items`——记忆表里的资料条目只是派生投影，走同一条链路会留下
+/// 第二份可变副本（见《AI记忆迁移方案-v1》§2）。
+/// `memory_display_version` 是**展示层**独立版本号，不动 `PROFILE_FACTS_SCHEMA_VERSION`
+/// （=1），避免连带影响资料契约与后端校验。
+private enum MemoryDisplayPreference {
+    static let version = 1
+    struct Row: Identifiable {
+        let field: OnboardingFieldSpec
+        let label: String
+        var id: String { field.apiKey }
+    }
+    /// 只列拍板 #5 点名的偏好类事实；行为习惯（habit）随对话下线，不在此展示。
+    static let rows: [Row] = [
+        Row(field: .goal, label: "主要目标"),
+        Row(field: .limitations, label: "训练限制"),
+        Row(field: .equipmentExclusions, label: "装备排除"),
+        Row(field: .daysPerWeek, label: "每周训练天数"),
+        Row(field: .personalPreferences, label: "我明确填写的偏好"),
+    ]
+}
+
 struct ClubActionPreferencesView: View {
     var pendingOnly132 = false
     @EnvironmentObject private var account: AccountService
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var health: HealthDataService
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var facts = ProfileFactsEditor()
     @State private var fast = false
     @State private var unit = "kg"
     @State private var zone = TimeZone.current.identifier
@@ -1105,6 +1131,34 @@ struct ClubActionPreferencesView: View {
                     Toggle("手动称重后写入 Apple 健康", isOn: Binding(get: { health.writeWeightsEnabled }, set: { value in Task { await health.setWeightWritingEnabled(value) } }))
                     Text("此选项单独申请系统写入权限。读取到的健康样本仍需在健康确认页明确分享后才保存到云端。").bojiType(.label).foregroundStyle(.secondary)
                 }
+                Section {
+                    if facts.facts == nil {
+                        Text(account.isPreviewAccount ? "预览账号没有云端偏好数据。" : "偏好数据暂未取得，稍后会自动重试。")
+                            .bojiType(.label).foregroundStyle(.secondary)
+                    } else {
+                        ForEach(MemoryDisplayPreference.rows) { row in
+                            let summary = facts.facts?.facts[row.field.apiKey]
+                            HStack(alignment: .firstTextBaseline) {
+                                Text(row.label).bojiType(.body)
+                                Spacer(minLength: BojiLayout.inline)
+                                Text(summary?.value.displayText ?? "未填写")
+                                    .bojiType(.body)
+                                    .foregroundStyle(summary == nil ? Color.secondary : Color.primary)
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                    }
+                    // 行权入口恒在，不随偏好数据是否加载而消失：
+                    // 记忆页保留这唯一一处用于纠正 / 撤回 / 暂停（PIPL 更正权、撤回权），
+                    // 其余浏览型入口已按拍板 #5 全部下线。
+                    NavigationLink { ClubAIMemoryView().clubPushDestination132() } label: {
+                        Label("管理 AI 记忆（纠正 / 撤回）", systemImage: "list.clipboard")
+                    }
+                } header: {
+                    Text("我的偏好数据 v\(MemoryDisplayPreference.version)")
+                } footer: {
+                    Text("以上直接读取你的个人资料，与资料页同源，修改资料后此处立即变化；AI 从记录中归纳的习惯与推断不再在此展示。")
+                }
                 }
                 if pendingOnly132 {
                 Section("未上传的修改") {
@@ -1131,6 +1185,8 @@ struct ClubActionPreferencesView: View {
         }
     }
     private func load() async {
+        // 偏好数据区块与授权设置同源加载；preview 账号由编辑器自行置空。
+        await facts.load(account: account)
         guard let owner = account.user?.id, !account.isPreviewAccount else { error = "真实账号登录后可以管理行动授权。"; return }
         do {
             let response = try await account.proposalRequest(path: "/me/ai/action-preferences", method: "GET", body: nil, expectedUserID: owner)
