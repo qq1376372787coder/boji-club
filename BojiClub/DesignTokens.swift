@@ -405,7 +405,7 @@ enum BojiHaptics {
 // MARK: - 流体弹簧物理规范
 
 extension Animation {
-    /// 微交互弹簧：按钮按下回弹、打勾框选中、卡片轻点反馈 (0.24s / 0.72)
+    /// 微交互弹簧：按钮按下回弹、打勾框选中、卡片轻点反馈（转发 BojiMotion2.micro，160ms/0.78）
     static var bojiSnappy: Animation {
         BojiMotion2.micro
     }
@@ -413,11 +413,11 @@ extension Animation {
     static var bojiSpring: Animation {
         BojiMotion2.transition
     }
-    /// 页面展开流体弹簧：动作卡片展开、日历周/月切换、Sheet 弹性吸附 (0.36s / 0.82)
+    /// 页面展开流体弹簧：动作卡片展开、日历周/月切换、Sheet 弹性吸附（转发 BojiMotion2.transition）
     static var bojiFluid: Animation {
         BojiMotion2.transition
     }
-    /// 重物下坠阻尼：大重量确认、训练完成总结卡片掉落 (0.45s / 0.68)
+    /// 重物下坠阻尼：大重量确认、训练完成总结卡片掉落（转发 BojiMotion2.celebrate，发力感档）
     static var bojiHeavy: Animation {
         BojiMotion2.celebrate
     }
@@ -866,7 +866,7 @@ struct RollingNumericCounter: View {
             if reduceMotion {
                 displayValue = targetValue
             } else {
-                withAnimation(.bojiFluid) {
+                withAnimation(BojiMotion2.counter) {
                     displayValue = targetValue
                 }
             }
@@ -875,7 +875,7 @@ struct RollingNumericCounter: View {
             if reduceMotion {
                 displayValue = newValue
             } else {
-                withAnimation(.bojiSnappy) {
+                withAnimation(BojiMotion2.counter) {
                     displayValue = newValue
                 }
             }
