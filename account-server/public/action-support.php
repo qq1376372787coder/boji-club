@@ -48,9 +48,9 @@ function actionISO(?string $value): ?string {
     return (new DateTimeImmutable($value, new DateTimeZone('UTC')))->format('Y-m-d\TH:i:s\Z');
 }
 function actionPreferences(PDO $db, int $uid): array {
-    $q=$db->prepare('SELECT fast_records,time_zone,weight_unit,proactive_learning FROM user_action_preferences WHERE user_id=?');$q->execute([$uid]);
+    $q=$db->prepare('SELECT fast_records,time_zone,weight_unit,proactive_learning,personalization_enabled FROM user_action_preferences WHERE user_id=?');$q->execute([$uid]);
     $row=$q->fetch(PDO::FETCH_ASSOC);
-    return $row ?: ['fast_records'=>false,'time_zone'=>'Asia/Shanghai','weight_unit'=>'kg','proactive_learning'=>true];
+    return $row ?: ['fast_records'=>false,'time_zone'=>'Asia/Shanghai','weight_unit'=>'kg','proactive_learning'=>true,'personalization_enabled'=>true];
 }
 function actionToday(PDO $db,int $uid): string {
     $zone=actionPreferences($db,$uid)['time_zone'];
