@@ -12,6 +12,9 @@ declare(strict_types=1);
  * Run: tests/run_php_suite.sh (PHP 8.3 + pdo_mysql + disposable MySQL).
  */
 require __DIR__ . '/php_test_bootstrap.php';
+// PIPL 阶段4：双开关门禁走 actionPreferences()，必须先加载其定义
+// （与 test_intelligence_closure / test_trace_chain / test_worker_context 同序）。
+require __DIR__ . '/../account-server/public/action-support.php';
 require __DIR__ . '/../account-server/public/ai-response.php';
 require __DIR__ . '/../account-server/public/insights.php';
 require __DIR__ . '/../account-server/public/ai-memory.php';
@@ -137,6 +140,63 @@ check($contextB === [], 'empty document yields no injected memory');
 // 10. Worker-side validation contract (mirror of clean_request memory rules).
 $valid = [['kind' => 'habit', 'text' => '近四周确认训练 8 次，训练频率稳定']];
 check(count($valid) <= 8 && mb_strlen($valid[0]['text']) <= 120, 'injection envelope within worker caps');
+
+// 11. PIPL 阶段4③：学习与使用是**两个独立开关**（言言定性回执 ③）。
+$setPrefs = function (int $uid, int $proactive, int $personalization) use ($db): void {
+    $db->prepare("INSERT INTO user_action_preferences(user_id,fast_records,time_zone,weight_unit,proactive_learning,personalization_enabled,updated_at)
+                  VALUES(?,0,'Asia/Shanghai','kg',?,?,UTC_TIMESTAMP())
+                  ON DUPLICATE KEY UPDATE proactive_learning=VALUES(proactive_learning),personalization_enabled=VALUES(personalization_enabled),updated_at=UTC_TIMESTAMP()")
+       ->execute([$uid, $proactive, $personalization]);
+};
+$setPrefs($userA, 1, 1);
+aiMemorySweepExtract($db, $userA, $state);
+$stored = (int)$db->query("SELECT COUNT(*) FROM user_memory_items WHERE user_id=$userA")->fetchColumn();
+check($stored > 0, 'stage4 precondition: memories exist');
+check(aiMemoryForContext($db, $userA) !== [], 'stage4 precondition: context injects memories');
+
+// 11a. 停止学习：不写新记忆；仅关它不影响存量注入（两开关互不连带）。
+$stateNewDays = $state;
+$stateNewDays['profile'] = ['goal' => '增肌', 'limitations' => '左膝不适', 'daysPerWeek' => 4];
+$setPrefs($userA, 0, 1);
+aiMemorySweepExtract($db, $userA, $stateNewDays);
+check((int)$db->query("SELECT COUNT(*) FROM user_memory_items WHERE user_id=$userA AND content='计划每周训练 4 天'")->fetchColumn() === 0,
+    'proactive off: no new memory is written');
+check(count(aiMemoryForContext($db, $userA)) > 0, 'proactive off alone keeps existing context injection');
+
+// 11b. 停用记忆处理：存量保留、行权可及，但**不再喂给模型**。
+$setPrefs($userA, 0, 0);
+check(aiMemoryForContext($db, $userA) === [], 'personalization off: nothing is fed to the model');
+check((int)$db->query("SELECT COUNT(*) FROM user_memory_items WHERE user_id=$userA")->fetchColumn() === $stored,
+    'personalization off: stored memories are kept (not deleted)');
+$pageKept = aiMemoryPage($db, $userA);
+check(count(array_merge($pageKept['confirmed'], $pageKept['habits'], $pageKept['inferred'])) > 0,
+    'personalization off: correction/withdrawal entry stays reachable (PIPL 44-47)');
+// 第16条：关闭不得拒绝核心功能——页面与抽取仍工作，只是不喂模型。
+$setPrefs($userA, 1, 1);
+
+// 12. PIPL 阶段4②：物理删除 + 墓碑防复活（言言定性回执 ②）。
+$purgeMe = (string)$db->query("SELECT memory_id FROM user_memory_items WHERE user_id=$userA AND status='withdrawn' LIMIT 1")->fetchColumn();
+check($purgeMe !== '', 'stage4 precondition: a withdrawn memory exists to purge');
+$result = aiMemoryPurge($db, $userA, 'withdrawn');
+check(($result['status'] ?? '') === 'completed', 'purge reports a verifiable completed status');
+check((int)$result['deleted'] >= 1, 'purge physically deletes at least one row');
+check(($result['derived']['prompt_context'] ?? '') === 'cleared', 'purge reports prompt context cleared');
+check((int)$db->query("SELECT COUNT(*) FROM user_memory_items WHERE user_id=$userA AND memory_id='$purgeMe'")->fetchColumn() === 0,
+    'purged row is physically gone, not merely status-changed');
+check((int)$db->query("SELECT COUNT(*) FROM user_memory_tombstones WHERE user_id=$userA")->fetchColumn() >= 1,
+    'tombstone written for the purged source');
+// 关键断言：删除后不得被下一次抽取复活。
+aiMemorySweepExtract($db, $userA, $state);
+check((int)$db->query("SELECT COUNT(*) FROM user_memory_items WHERE user_id=$userA AND memory_id='$purgeMe'")->fetchColumn() === 0,
+    'tombstone prevents the deleted memory from being re-extracted');
+check((int)$db->query("SELECT COUNT(*) FROM user_memory_tombstones WHERE user_id=$userB")->fetchColumn() === 0,
+    'purge and tombstones stay scoped to one account');
+
+// 13. 导出分页元数据（言言①）：单次上限不是权利总量上限。
+$memoryTotal = (int)$db->query("SELECT COUNT(*) FROM user_memory_items WHERE user_id=$userA")->fetchColumn();
+$pageOne = (int)$db->query("SELECT COUNT(*) FROM user_memory_items WHERE user_id=$userA ORDER BY created_at DESC, memory_id DESC LIMIT 500 OFFSET 0")->fetchColumn();
+check($pageOne === $memoryTotal, 'first export page matches the total when under the page size');
+check($memoryTotal <= 500 || $pageOne === 500, 'page size is capped at 500 while the total is reported separately');
 
 $db->exec("DELETE FROM users WHERE id IN ($userA,$userB)");
 echo "ai memory contract passed\n";

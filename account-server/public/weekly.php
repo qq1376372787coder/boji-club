@@ -553,3 +553,15 @@ if ($method === 'POST' && preg_match('#^/me/ai/memory/([0-9a-f-]{36})/(correct|s
         $action === 'suspend' ? 'suspended' : ($action === 'resume' ? 'active' : 'withdrawn'));
     respond(200, ['changed' => $changed]);
 }
+
+
+// PIPL 阶段4（言言②）：物理删除 + 墓碑防复活。实现与可测逻辑在 aiMemoryPurge()，
+// 这里只做 HTTP 适配（鉴权 / 入参 / 响应），便于单测直接覆盖业务函数。
+if ($method === 'POST' && $path === '/me/ai/memory/purge') {
+    $user = authenticated($db);
+    $input = body(4096);
+    $scope = (string)($input['scope'] ?? 'withdrawn');
+    // 事务由 aiMemoryPurge 自己管理（墓碑与删除必须原子），这里不再套一层，
+    // 否则 PDO 会因嵌套 beginTransaction 抛错。
+    respond(200, aiMemoryPurge($db, (int)$user['id'], $scope));
+}

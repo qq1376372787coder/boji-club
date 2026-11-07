@@ -41,6 +41,12 @@ function aiMemoryKey(int $userId, string $kind, string $slug): string {
 function aiMemoryUpsert(PDO $db, int $userId, string $kind, string $content, int $confidence,
                         array $evidenceRefs, string $slug, int $revision): string {
     $key = aiMemoryKey($userId, $kind, $slug);
+    // PIPL 阶段4（言言②）：成员已物理删除的来源不再重新学习。
+    // 墓碑只存哈希键，正文已随本体删除；没有这道闸，下一次抽取会按同一
+    // idempotency_key 把被删记忆原样复活，第47条删除权形同虚设。
+    $tombstone = $db->prepare('SELECT 1 FROM user_memory_tombstones WHERE user_id=? AND idempotency_key=?');
+    $tombstone->execute([$userId, $key]);
+    if ($tombstone->fetchColumn()) return '';
     $existing = $db->prepare('SELECT memory_id,status,origin,content,confidence FROM user_memory_items WHERE user_id=? AND idempotency_key=?');
     $existing->execute([$userId, $key]);
     $row = $existing->fetch(PDO::FETCH_ASSOC);
@@ -304,6 +310,57 @@ function aiMemorySetStatus(PDO $db, int $userId, string $memoryId, string $statu
     return $current->fetchColumn() === $status;
 }
 
+/**
+ * PIPL 阶段4（2026-11-08，言言定性回执 ②）：删除权 = 本体 + 派生全链路物理清除。
+ *
+ * - 本体：user_memory_items 行**物理 DELETE**（不是改状态）。
+ * - 防复活：同时写 user_memory_tombstones 墓碑（只存哈希键，无正文），
+ *   否则下一次抽取按同一 idempotency_key 会把被删记忆原样重建，删除权形同虚设。
+ * - 派生：本库无向量/嵌入/摘要缓存；洞察由已核验任务与确认训练日计算（不读记忆）；
+ *   prompt 上下文与导出均为活读——删本体即同时清空，无需异步清理任务。
+ * - 可验证：返回 status/deleted/derived，不静默失败（言言要求"已完成/处理中"状态）。
+ *
+ * scope: withdrawn（默认）| corrected | all
+ */
+function aiMemoryPurge(PDO $db, int $userId, string $scope = 'withdrawn'): array {
+    if (!in_array($scope, ['withdrawn', 'corrected', 'all'], true)) {
+        fail('删除范围不正确。', 422);
+    }
+    $db->beginTransaction();
+    try {
+        $sql = 'SELECT memory_id,idempotency_key,kind FROM user_memory_items WHERE user_id=?';
+        $params = [$userId];
+        if ($scope !== 'all') { $sql .= ' AND status=?'; $params[] = $scope; }
+        $select = $db->prepare($sql);
+        $select->execute($params);
+        $rows = $select->fetchAll(PDO::FETCH_ASSOC);
+        $tombstone = $db->prepare('INSERT IGNORE INTO user_memory_tombstones(user_id,idempotency_key,kind,deleted_at) VALUES(?,?,?,UTC_TIMESTAMP())');
+        $drop = $db->prepare('DELETE FROM user_memory_items WHERE user_id=? AND memory_id=?');
+        $deleted = 0;
+        foreach ($rows as $row) {
+            $tombstone->execute([$userId, (string)$row['idempotency_key'], (string)$row['kind']]);
+            $drop->execute([$userId, (string)$row['memory_id']]);
+            $deleted += $drop->rowCount();
+        }
+        $db->commit();
+    } catch (Throwable $error) {
+        if ($db->inTransaction()) $db->rollBack();
+        throw $error;
+    }
+    return [
+        'status' => 'completed',
+        'scope' => $scope,
+        'deleted' => $deleted,
+        'derived' => [
+            'prompt_context' => 'cleared',
+            'export' => 'cleared',
+            'insights' => 'not_applicable',
+            'embeddings' => 'not_applicable',
+        ],
+        'note' => '已删除的来源不会再被自动学习；删除前已发出并完成的 AI 分析仍保留在历史结果中。',
+    ];
+}
+
 function aiMemoryFetch(PDO $db, int $userId, string $memoryId): ?array {
     if (!preg_match('/^[0-9a-f-]{36}$/iD', $memoryId)) return null;
     $query = $db->prepare('SELECT id,memory_id,kind,status,origin,content,confidence,supersedes FROM user_memory_items WHERE user_id=? AND memory_id=?');
@@ -317,6 +374,12 @@ function aiMemoryFetch(PDO $db, int $userId, string $memoryId): ?array {
  */
 function aiMemoryForContext(PDO $db, int $userId): array {
     aiMemorySweepExtract($db, $userId);
+    // PIPL 阶段4（言言③）：「停用 AI 记忆处理」= 第44/46条限制处理。
+    // 存量保留（不删行、不影响导出与记忆页行权），但**不再喂给模型做个性化**。
+    // 与 proactive_learning（停止学习）是两个独立开关，互不连带。
+    // 核心记录功能不受影响：计划/日报/周报的个人资料仍走 profileFacts 与 goal_context，
+    // 不经过本函数（第16条：关闭不得拒绝核心功能）。
+    if (function_exists('actionPreferences') && !(actionPreferences($db, $userId)['personalization_enabled'] ?? true)) return [];
     $query = $db->prepare("SELECT kind,content,confidence,origin,evidence_json FROM user_memory_items
                            WHERE user_id=? AND status='active' AND confidence>0 ORDER BY confidence DESC, updated_at DESC LIMIT " . AI_MEMORY_CONTEXT_ITEMS);
     $query->execute([$userId]);
