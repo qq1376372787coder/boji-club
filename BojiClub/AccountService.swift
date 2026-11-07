@@ -180,6 +180,8 @@ struct ClubRemoteConfig: Codable, Equatable {
         var aiStreamingV2: Bool?
         var onboardingV2Enabled: Bool?
         var contextualTipsEnabled: Bool?
+        /// coach 后端休眠开关（拍板 #7）：false=对话链路休眠不发请求；可远程拉起回退。
+        var coachBackendEnabled: Bool?
         enum CodingKeys: String, CodingKey {
             case aiEnabled = "ai_enabled", clubEnabled = "club_enabled", aiNativeHome = "ai_native_home"
             case actionSystemEnabled = "action_system_enabled"
@@ -191,6 +193,7 @@ struct ClubRemoteConfig: Codable, Equatable {
             case aiStreamingV2 = "ai_streaming_v2"
             case onboardingV2Enabled = "onboarding_v2_enabled"
             case contextualTipsEnabled = "contextual_tips_enabled"
+            case coachBackendEnabled = "coach_backend_enabled"
         }
     }
     var version: Int

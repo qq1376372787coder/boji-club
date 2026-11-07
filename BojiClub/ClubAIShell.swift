@@ -16,6 +16,8 @@ final class FeatureFlagService: ObservableObject {
     /// Phase 2 SSE. Enabled by default for instant streaming replies.
     @Published private(set) var streamingV2 = true
     @Published private(set) var referencesEnabled = false
+    /// coach 后端休眠开关（拍板 #7）：默认休眠；远程可拉起回退（coach_backend_enabled）。
+    @Published private(set) var coachBackendEnabled = false
     func apply(remote: ClubRemoteConfig?) {
         referencesEnabled = remote?.config.aiContextReferencesV1 ?? false
         aiEnabled = remote?.config.aiEnabled ?? true
@@ -26,6 +28,7 @@ final class FeatureFlagService: ObservableObject {
         aiFastIntentV1 = remote?.config.aiFastIntentV1 ?? true
         aiRouterV3 = remote?.config.aiRouterV3 ?? true
         streamingV2 = remote?.config.aiStreamingV2 ?? true
+        coachBackendEnabled = remote?.config.coachBackendEnabled ?? false
     }
 }
 
