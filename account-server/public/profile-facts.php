@@ -364,14 +364,38 @@ function profileFactsForPrompt(array $document, string $taskKind): array {
     return $out;
 }
 
+/**
+ * 急性风险词表（唯一来源）。
+ *
+ * 同一份有序选择同时构造「否定剥离」和「命中匹配」两侧。2026-11 P0 回归的根因正是
+ * 两份列表分叉：匹配侧早已包含 晕厥/晕倒/骨折/高烧/发热/剧痛/眼前发黑/心悸/心慌，
+ * 而否定表只覆盖 8 个短语，于是「没有骨折」什么都没被剥掉、随后被当成阳性拦截。
+ * 此后新增任何风险词都只会改动这一处，两侧不会再不同步。
+ *
+ * 前缀否定只处理紧邻情形，语义对齐 backend/fitness_intelligence.py::_signal_negated；
+ * 子句级分析（否定范围、双重否定、既往史）以该 Python 实现为准，不要在此分叉。
+ */
+function profileFactAcutePattern(): string {
+    return '胸部疼痛|胸前区疼痛|(?:喘|呼吸).{0,8}(?:厉害|困难|急促)|(?:说不出|无法说|不能说).{0,4}(?:整句|完整)|不能呼吸|胸痛|胸闷|喘不上气|呼吸困难|晕厥|晕倒|骨折|高烧|发热|剧痛|眼前发黑|心悸|心慌|怀孕|孕期|哺乳';
+}
+
+/** 剥离成员在同一段文字里明确否认掉的急性词，例如「没有骨折」「无晕厥」。 */
+function profileFactStripDeniedAcute(string $limitations): string {
+    // 否定词按长度优先（不再有 先于 不），避免被拆成半个否定。
+    $denials = '没有|不再有|没|无|否认|未见|不';
+    $stripped = preg_replace('/(?:' . $denials . ')(?:' . profileFactAcutePattern() . ')/u', '', $limitations);
+    // 正则失败（例如非法 UTF-8）时保留原文：宁可照常拦截，也不静默放行。
+    return is_string($stripped) ? $stripped : $limitations;
+}
+
 function profileFactSafety(array $document, array $draft): array {
     // New unconfirmed risk must never be hidden by an older confirmed "none".
     $limitationValues = [$document['facts']['limitations']['value'] ?? '', $draft['fields']['limitations']['value'] ?? ''];
     $nutritionValues = [$document['facts']['nutrition_context']['value'] ?? '', $draft['fields']['nutrition_context']['value'] ?? ''];
     $acute = false;
     foreach ($limitationValues as $limitations) {
-        $screened = preg_replace('/(?:没有|无|否认|不再有)(?:胸部疼痛|胸痛|胸闷|呼吸困难|喘不上气|怀孕|孕期|哺乳)/u','',(string)$limitations);
-        if (preg_match('/胸部疼痛|胸前区疼痛|(?:喘|呼吸).{0,8}(?:厉害|困难|急促)|(?:说不出|无法说|不能说).{0,4}(?:整句|完整)|不能呼吸|胸痛|胸闷|喘不上气|呼吸困难|晕厥|晕倒|骨折|高烧|发热|剧痛|眼前发黑|心悸|心慌|怀孕|孕期|哺乳/u', $screened) === 1) $acute = true;
+        $screened = profileFactStripDeniedAcute((string)$limitations);
+        if (preg_match('/' . profileFactAcutePattern() . '/u', $screened) === 1) $acute = true;
     }
     $special = (bool)array_intersect($nutritionValues, ['孕期或哺乳期', '需按医生建议饮食']);
     $blocked = $acute || $special;
