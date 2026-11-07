@@ -3,8 +3,9 @@
 # 托管：GitHub（2026-11-07 用户确认）。push 到 main/develop、PR、手动触发（workflow_dispatch）均运行。
 #
 # 任务矩阵：
-# · checks               — 统一入口 scripts/run-all-checks.sh（Python 离线回归 + Swift 规则链 +
-#                          模拟器编译 + 单元测试 + UI 测试含无障碍审计与启动性能采样），macOS
+# · python-offline       — Python 离线回归（原 checks 第 1 步拆出，独立车道独立红绿）
+# · ios-suite            — Swift 规则链 + 模拟器编译 + 单元测试 + UI 测试
+#                          （含无障碍审计与启动性能采样），macOS
 # · action-backend       — AI Action 关键 PHP 回归（5 套件 + capability unittest），MySQL 8.4
 # · admin-runtime-integration — 审计 SQL/并发/后台 HTTP 集成，MySQL 8.4
 # · php-suite            — PHP 全量套件 tests/run_php_suite.sh（此前只在本地跑，R-02 遗留项）
@@ -15,7 +16,8 @@
 #                          无解析；先非阻塞以暴露状态，阻断项清零后移除 continue-on-error）
 #
 # 说明：
-# · 需要 Xcode 26+ 与 iPhone 17 模拟器运行时（首次由 -destination 自动解析可用机型）。
+# · Xcode 选择：自动取 runner 上版本号最大的 /Applications/Xcode*.app（不硬编码路径）；
+#   模拟器目标：iPhone 17 优先，不可用时回退第一台可用 iPhone（scripts/run-all-checks.sh）。
 # · 本 workflow 不使用任何 secrets：GitHub PAT 只用于人工 git push，绝不进 workflow/仓库。
 # · 本地与 CI 同源：scripts/run-all-checks.sh 与 tests/run_php_suite.sh。
 
@@ -27,15 +29,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  checks:
+  python-offline:
+    # 从原 checks 拆出：Python 存量失败不应掩盖 iOS 车道的执行（首跑时
+    # run_offline 第一步即退出，Xcode/模拟器问题根本没跑到）。
+    # 平台与妙妙的基线一致（macOS），便于失败归因对齐。
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python offline regression
+        run: python3 -I tests/run_offline.py
+
+  ios-suite:
+    # 原 checks 的 2-5 步：Swift 规则链 + 模拟器编译 + 单元 + UI。
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.app/Contents/Developer || true
-      - name: Run all checks
-        run: bash scripts/run-all-checks.sh
+      - name: Select Xcode (latest installed on runner)
+        # 硬编码 /Applications/Xcode_26.app 在 runner 上不存在（首跑失败原因）。
+        # 自动选择镜像里版本号最大的 Xcode，并打印版本作为日志证据。
+        run: |
+          latest=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$latest" ]; then
+            echo "Selecting $latest"
+            sudo xcode-select -s "$latest/Contents/Developer" || true
+          else
+            echo "No /Applications/Xcode*.app found; using preconfigured developer dir"
+          fi
+          xcodebuild -version
+          xcrun simctl list runtimes | head -5 || true
+      - name: Run checks (steps 2-5, offline lane split out)
+        run: BOJI_SKIP_OFFLINE=1 bash scripts/run-all-checks.sh
       - name: Upload test artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -163,6 +188,7 @@ jobs:
           $pdo = new PDO(getenv("BOJI_TEST_DSN_BASE"), getenv("BOJI_TEST_DB_USER") ?: "root", getenv("BOJI_TEST_DB_PASSWORD") ?: "", [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
           foreach (["bojiclub_automation_test", "bojiclub_media_test"] as $db) {
               $pdo->exec("DROP DATABASE IF EXISTS `$db`");
+              $pdo->exec("CREATE DATABASE `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
               bojiTestSchema(bojiTestDatabase($db), "account-server");
           }'
       - name: Run tests/php subdirectory tests (R-39)
