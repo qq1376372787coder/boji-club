@@ -93,4 +93,9 @@ for file in "$ROOT"/tests/test_*.php; do
   if [ $status -eq 0 ]; then echo -e "$name\tPASS" >>"$OUT/results.tsv"; else echo -e "$name\tFAIL:$status" >>"$OUT/results.tsv"; fail=$((fail+1)); fi
 done
 echo "PHP suites: $(grep -c PASS "$OUT/results.tsv") passed, $fail failed. Logs: $OUT"
+if [ "$fail" -gt 0 ]; then
+  # CI 回收 runner 后日志丢失——失败套件名必须直接进 job 输出。
+  echo "--- failed suites ---"
+  grep -F "FAIL" "$OUT/results.tsv" || true
+fi
 exit $([ $fail -eq 0 ] && echo 0 || echo 1)

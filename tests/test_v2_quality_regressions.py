@@ -225,7 +225,9 @@ class V2CommercialAuditTests(unittest.TestCase):
     def test_admin_config_saves_and_renders_all_12_feature_flags(self):
         app_cfg = (ROOT / "account-server" / "public" / "app-config.php").read_text(encoding="utf-8")
         bootstrap = (ROOT / "account-server" / "admin" / "bootstrap.php").read_text(encoding="utf-8")
-        index_php = (ROOT / "account-server" / "admin" / "index.php").read_text(encoding="utf-8")
+        # A-04 后台重构：配置表单从 index.php 迁到 config-view.php，且改为
+        # 动态数组渲染（name="<?=$key?>"），静态 name="<flag>" 字符串不复存在。
+        config_view = (ROOT / "account-server" / "admin" / "config-view.php").read_text(encoding="utf-8")
         expected_flags = [
             "ai_enabled", "action_system_enabled", "ai_context_references_v1",
             "ai_fast_intent_v1", "ai_router_v3", "ai_streaming_v2",
@@ -235,9 +237,12 @@ class V2CommercialAuditTests(unittest.TestCase):
         for flag in expected_flags:
             self.assertIn(f"'{flag}'", app_cfg)
             self.assertIn(flag, bootstrap)
-            self.assertIn(f'name="{flag}"', index_php)
+            self.assertIn(f"'{flag}'", config_view)
+        self.assertTrue(
+            'name="<?=h($key)?>"' in config_view or 'name="<?=$key?>"' in config_view,
+            "config-view 必须动态渲染开关 name")
         self.assertIn("advanced_ai_flags_present", bootstrap)
-        self.assertIn("advanced_ai_flags_present", index_php)
+        self.assertIn("advanced-settings", config_view)
         self.assertNotIn("static $cache = [];", app_cfg)
 
     def test_admin_redirect_and_transaction_safety_fixes(self):
@@ -260,8 +265,11 @@ class V2CommercialAuditTests(unittest.TestCase):
         self.assertIn(".effect-guide", css)
         self.assertIn("data-tab-group", app_js)
         self.assertIn("typeof document.querySelectorAll !== 'function'", app_js)
-        for group_label in ["工作台与用户", "俱乐部与激励", "Club AI 与触达", "系统与安全配置"]:
-            self.assertIn(group_label, index_php)
+        # A-04 重构后分组从 index.php 移入 config-view.php，旧四个分组标签已废弃；
+        # 断言现行配置分区标题（结构等价物）。
+        config_view = (ROOT / "account-server" / "admin" / "config-view.php").read_text(encoding="utf-8")
+        for section in ["App 功能", "新用户体验", "发布记录"]:
+            self.assertIn(section, config_view)
 
     def test_ios_feature_flags_and_crash_safety_guards(self):
         account_swift = (ROOT / "BojiClub" / "AccountService.swift").read_text(encoding="utf-8")
