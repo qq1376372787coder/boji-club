@@ -48,11 +48,11 @@ struct WeeklyReviewCenter: View {
                             HStack {
                                 Image(systemName: "crown.fill")
                                     .foregroundStyle(BojiColor.aiGold)
-                                Text("本周战报 · 全自动盘点")
+                                Text("本周总结")
                                     .bojiFont(.cardTitle)
                                     .foregroundStyle(BojiColor.textPrimary)
                             }
-                            Text("无需填问卷、无需上传拍照。AI 依据真实出勤、训练容量与饮食数据全自动复盘。")
+                            Text("无需填问卷、无需上传拍照。依据真实出勤、训练容量与饮食数据全自动生成。")
                                 .bojiType(.secondary)
                                 .foregroundStyle(BojiColor.textSecondary)
 
@@ -60,7 +60,7 @@ struct WeeklyReviewCenter: View {
                                 NavigationLink {
                                     ClubAutomaticReportReader(jobID: validID)
                                 } label: {
-                                    Label("查收本周战报", systemImage: "sparkles")
+                                    Label("查看本周总结", systemImage: "sparkles")
                                 }
                                 .buttonStyle(PrimaryButton())
                             } else if isRunning, let validID = jobID {
@@ -69,7 +69,7 @@ struct WeeklyReviewCenter: View {
                                 Button {
                                     requestQuickWeeklyReport(jobID: jobID)
                                 } label: {
-                                    Label("生成本周记录战报", systemImage: "sparkles")
+                                    Label("生成本周总结", systemImage: "sparkles")
                                 }
                                 .buttonStyle(PrimaryButton())
                             }
@@ -149,14 +149,14 @@ struct WeeklyReviewCenter: View {
             NavigationLink {
                 ClubAutomaticReportReader(jobID: jobID)
             } label: {
-                Label("查看本周免问卷 AI 记录报告", systemImage: "doc.text.magnifyingglass")
+                Label("查看本周免问卷记录报告", systemImage: "doc.text.magnifyingglass")
             }
             .buttonStyle(SecondaryButton())
         } else if readiness.trainingDays >= 1 || readiness.foodDays >= 1 {
             Button {
                 requestQuickWeeklyReport(jobID: jobID)
             } label: {
-                Label("免填问卷 · 直接生成本周记录报告", systemImage: "sparkles")
+                Label("无需填问卷 · 直接生成", systemImage: "sparkles")
             }
             .buttonStyle(SecondaryButton())
             if let quickReportError {
@@ -246,7 +246,7 @@ struct WeeklyReviewHistoryDetail: View {
                     .padding(.top, BojiLayout.Rhythm.pageTop)
             }
         }.background(Color(.systemBackground))
-            .navigationTitle("每周复盘").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("每周回顾").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
@@ -324,7 +324,7 @@ struct WeeklyReviewHistoryDetail: View {
         guard let owner = ownerID, owner == store.editingAccountID else { return }
         let sections = ReportShareContent.sections(summary: result.summary, training: result.training,
             nutrition: result.nutrition, recovery: result.recovery, planReason: result.reason)
-        let card = ShareCardView(title: current.date + " 每周复盘", headline: result.summary,
+        let card = ShareCardView(title: current.date + " 每周回顾", headline: result.summary,
             stats: [], tagline: "把进步交给时间。", sections: sections)
         shareDraft = ShareDraft(card: card, ownerID: owner)
     }
@@ -771,7 +771,7 @@ struct WeeklyCoverageCard: View {
         ClubCard {
             Text("回看这周，决定下周怎么练").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
             Text(cycle.label).bojiType(.secondary).foregroundStyle(.secondary)
-            Text("AI 会分析实际训练、饮食和身体反馈，给出继续或调整计划的建议。查看进度不消耗 AI 次数。").bojiType(.secondary).foregroundStyle(.secondary)
+            Text("分析实际训练、饮食和身体反馈，给出继续或调整计划的建议。查看进度不消耗次数。").bojiType(.secondary).foregroundStyle(.secondary)
             requirement(
                 coverage.ended ? "这一周已结束" : coverage.allPlannedCompleted ? "本周计划训练已全部完成（可提前复盘）" : coverage.isCycleEndDay ? "已到本周最后一天（可开始复盘）" : "完成全部计划训练或等待周期结束",
                 done: coverage.cycleReady

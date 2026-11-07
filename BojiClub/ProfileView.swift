@@ -392,8 +392,8 @@ struct ProfileEditor: View {
                     Section("接下来一周的训练") {
                         Picker("更新安排", selection: $planChoice) {
                             Text("保留现有计划").tag("保留")
-                            Text("我想用 AI 从明天重新安排").tag("明天")
-                            Text("我想用 AI 从下周一重新安排").tag("下周")
+                            Text("我想从明天重新安排").tag("明天")
+                            Text("我想从下周一重新安排").tag("下周")
                         }
                         Text("保存资料后预览新方案，确认后才更新所选 7 天。已开始或已确认的训练日完整保留；其余日期按新训练日安排，旧的休息日安排也会一并清理。")
                             .bojiType(.caption).foregroundStyle(.secondary)
@@ -693,7 +693,7 @@ struct RecordArchiveView: View {
             List {
                 Section {
                     DisclosureGroup("了解备份内容") {
-                    Text("导出包含所选月份的训练、饮食、健康摘要、已完成 AI 结果和已下载的饮食照片。本机身体照片与健康来源缓存不包含在内。文件含个人信息，请保存在你信任的位置。")
+                    Text("导出包含所选月份的训练、饮食、健康摘要、已完成的结果和已下载的饮食照片。本机身体照片与健康来源缓存不包含在内。文件含个人信息，请保存在你信任的位置。")
                     Text("导出不会删除本机或云端记录。恢复只补回缺失的日期，不覆盖已有日期或手动删除的内容。旧版文件没有账号标记，请只导入你自己的备份。暂不提供删除式归档。")
                     }
                     Text("备份文件包含个人记录，请妥善保管。").bojiType(.label).foregroundStyle(.secondary)
@@ -1078,7 +1078,7 @@ struct ClubActionPreferencesView: View {
                     Toggle("允许从我的记录中学习偏好并生成主动建议", isOn: $proactive)
                     Text("关闭后不再提取新的长期记忆或生成首页主动洞察；已确认的记忆仍可用于回答，训练与记录功能不受影响。").bojiType(.label).foregroundStyle(.secondary)
                 }
-                Section("AI 记录授权") {
+                Section("数据授权") {
                     Toggle("明确的体重和饮食记录可快速保存", isOn: $fast)
                     Text("默认先预览。开启后，仅明确的低风险记录可以直存，并保留撤销入口；改期和换计划仍须确认。").bojiType(.label).foregroundStyle(.secondary)
                     Picker("未说明单位时使用", selection: $unit) { Text("公斤 kg").tag("kg"); Text("磅 lb").tag("lb") }
@@ -1109,7 +1109,7 @@ struct ClubActionPreferencesView: View {
                 }
                 }
                 if let error { Section { Text(error).foregroundStyle(.secondary) } }
-            }.clubManagementList132().navigationTitle(pendingOnly132 ? "待同步项目" : "AI 记录与授权")
+            }.clubManagementList132().navigationTitle(pendingOnly132 ? "待同步项目" : "数据与授权")
                 .toolbar { ToolbarItem(placement: .confirmationAction) { DismissButton() } }
                 .task { if !pendingOnly132 { await load() } }
                 .confirmationDialog("改用该日云端记录？", isPresented: Binding(get: { cloudChoice != nil }, set: { if !$0 { cloudChoice = nil } }), titleVisibility: .visible) {

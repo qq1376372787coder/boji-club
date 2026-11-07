@@ -164,11 +164,11 @@ struct ClubPlanHub: View {
         ClubCard {
             Text(hasCurrentPlan ? "创建新计划" : "开始第一份计划")
                 .bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
-            Text("让 AI 制定计划，或自己安排每周训练。保存前可查看。")
+            Text("制定计划，或自己安排每周训练。保存前可查看。")
                 .bojiType(.secondary).foregroundStyle(.secondary)
             BojiAdaptiveGroup {
                 Button { showGenerator = true } label: {
-                    Label("AI 制定", systemImage: "sparkles")
+                    Label("制定", systemImage: "sparkles")
                         .frame(maxWidth: .infinity, minHeight: BojiSize.primaryButtonHeight)
                 }
                 .buttonStyle(BojiButtonStyle(kind: .primary))
@@ -236,7 +236,7 @@ struct ClubPlanVersionsView: View {
                     Text("每次确认，都留下依据").bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
                     Text("查看以前的计划和对应训练记录。")
                         .bojiType(.secondary).foregroundStyle(.secondary)
-                    if versions.isEmpty { EmptyNote(title: "还没有方案版本", detail: "采用新的 AI 或自由计划后，将保存当时的安排、目标与生效范围。") }
+                    if versions.isEmpty { EmptyNote(title: "还没有方案版本", detail: "采用新的自动生成或自由计划后，将保存当时的安排、目标与生效范围。") }
                     ForEach(versions) { version in versionRow(version) }
                 }.padding(ClubUI.pageInset)
             }.background { ClubBackground() }
@@ -277,8 +277,8 @@ private struct ClubPlanVersionDetail: View {
     @State private var restoredDraft: ManualPlanDraft?
     @State private var restoreError: String?
     private var source: String {
-        if version.id.hasPrefix("coach-plan-") { return "Club AI 建议 · 由你确认" }
-        switch version.source { case "manual": return "自由创建"; case "weekly_review": return "周复盘调整"; case "continuation": return "沿用已有计划"; default: return "AI 制定" }
+        if version.id.hasPrefix("coach-plan-") { return "建议 · 待确认" }
+        switch version.source { case "manual": return "自由创建"; case "weekly_review": return "周复盘调整"; case "continuation": return "沿用已有计划"; default: return "制定" }
     }
     var body: some View {
         ScrollView {
@@ -956,7 +956,7 @@ struct ClubRecordsHub: View {
         .toolbar {
             if !embeddedInShell {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("AI 解读档案", systemImage: "ellipsis") { showReports = true }
+                    Button("解读记录", systemImage: "ellipsis") { showReports = true }
                 }
             }
         }

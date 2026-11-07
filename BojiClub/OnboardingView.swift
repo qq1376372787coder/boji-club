@@ -120,7 +120,7 @@ struct AccountEntryView: View {
                 DisclosureGroup("开发工具") {
                 NavigationLink("开发预览：会员价格页面") { MembershipView(screenshotPreview: true) }
                     .buttonStyle(SecondaryButton())
-                Button("服务器测试登录 · 真实 AI 和动作库") { showServerTestLogin = true }
+                Button("服务器测试登录 · 真实数据与动作库") { showServerTestLogin = true }
                     .buttonStyle(SecondaryButton()).disabled(busy || !legalAccepted)
                 Button("开发预览：体验完整新手流程") {
                     error = nil
@@ -912,7 +912,7 @@ struct OnboardingView: View {
                     .bojiType(.secondary).foregroundStyle(FlowPalette.secondaryInk)
             }
             if !planApplied {
-                FlowChoice(title: "自己安排训练", detail: "选择动作与组次，不需要生成 AI 计划", symbol: "slider.horizontal.3", selected: manualPlan && !skipPlan) { manualPlan = true; skipPlan = false }
+                FlowChoice(title: "自己安排训练", detail: "选择动作与组次，不需要生成计划", symbol: "slider.horizontal.3", selected: manualPlan && !skipPlan) { manualPlan = true; skipPlan = false }
                 FlowChoice(title: "先不制定计划", detail: "完成引导后选择会员方案，加入后再开始记录和添加动作", symbol: "arrow.right.circle", selected: skipPlan) { manualPlan = false; skipPlan = true }
             }
     }

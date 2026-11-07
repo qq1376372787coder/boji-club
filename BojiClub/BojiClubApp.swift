@@ -425,7 +425,7 @@ struct FirstLaunchPermissionsView: View {
                             Image(systemName: "bell.badge").bojiType(.section).foregroundStyle(ClubBrand.accent)
                             VStack(alignment: .leading, spacing: BojiLayout.tight) {
                                 Text("训练与餐次提醒").bojiType(.bodyStrong)
-                                Text("完成后提醒你训练、同步每周复盘。").bojiType(.caption).foregroundStyle(.secondary)
+                                Text("完成后提醒你训练、同步每周回顾。").bojiType(.caption).foregroundStyle(.secondary)
                             }
                         }
                         Button(notificationsAuthorized ? "已开启" : "打开通知") {

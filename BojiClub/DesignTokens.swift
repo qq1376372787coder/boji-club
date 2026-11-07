@@ -1063,7 +1063,7 @@ struct ClubAIAmbientPill: View {
             triggerPulse(ProactivePulseBanner(
                 id: "pulse-weight-\(newVal)",
                 title: "实测体重 \(newVal.formatted(.number.precision(.fractionLength(1)))) kg 已记录",
-                subtitle: "Club AI 已更新近 14 天体态趋势对照",
+                subtitle: "已更新近 14 天体态趋势对照",
                 buttonTitle: "看趋势",
                 section: "动态",
                 accent: BojiColor.aiViolet
@@ -1075,7 +1075,7 @@ struct ClubAIAmbientPill: View {
             triggerPulse(ProactivePulseBanner(
                 id: "pulse-workout-\(newVal.timeIntervalSince1970)",
                 title: "本场 \(todayLog.completedSets) 组训练已确认入账！",
-                subtitle: "可立即查看 AI 锐评或一键生成今日日报",
+                subtitle: "可查看分析或生成今日日报",
                 buttonTitle: "生成日报",
                 section: "报告",
                 accent: BojiColor.emeraldAccent

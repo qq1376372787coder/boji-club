@@ -95,7 +95,7 @@ struct ReportLibraryView: View {
             }.padding(ClubUI.pageInset).frame(maxWidth: ClubUI.contentWidth)
                 .frame(maxWidth: .infinity)
         }.background { ClubBackground() }.tint(ClubBrand.accent)
-            .navigationTitle("AI 解读档案").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("解读记录").navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showDailySheet) {
                 NavigationStack {
                     DailyReportView()
@@ -371,7 +371,7 @@ struct PhaseReportView: View {
     /// 失败或关闭云端分析时不会覆盖、删除或改写本地报告。
     @ViewBuilder private var phaseAIReview: some View {
         ClubCard {
-            Text("可选的 AI 解读").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
+            Text("可选的解读").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
             Text("本地阶段报告按真实覆盖计算，是这份回顾的准据。下面的解读会额外发送阶段摘要与截至阶段结束的近 14 天记录；不会自动触发，也不会改写记录或计划。")
                 .bojiType(.label).foregroundStyle(.secondary)
             if !ai.routingConsentGranted {
@@ -382,22 +382,22 @@ struct PhaseReportView: View {
                 switch job.status {
                 case "succeeded":
                     if let answer = job.result?.coach?.answer {
-                        Text("AI 增强解读").bojiType(.secondary)
+                        Text("增强解读").bojiType(.secondary)
                         BojiBrandMark(size:22,style:.monochrome)
                         Text(answer).bojiType(.body).lineSpacing(4)
                             .fixedSize(horizontal: false, vertical: true)
-                        Text("以上为 AI 对近 14 天记录与阶段摘要的解读，不替代本地报告；依据缺失时本地结论优先。")
+                        Text("以上为对近 14 天记录与阶段摘要的解读，不替代本地报告；依据缺失时本地结论优先。")
                             .bojiType(.caption).foregroundStyle(BojiColor.textTertiary)
                     }
                 case "failed", "rejected", "expired":
-                    Text("这次 AI 解读未能完成，本地阶段报告仍完整保留。可以稍后重试，或继续只看本地结论。")
+                    Text("这次解读未能完成，本地阶段报告仍完整保留。可以稍后重试，或继续只看本地结论。")
                         .bojiType(.label).foregroundStyle(BojiColor.textSecondary)
                 default:
                     HStack(spacing: BojiLayout.inline) { ClubActivityMark(size: 16); Text("正在整理可选解读，本地报告仍可阅读。").bojiType(.label) }
                 }
             }
             if let reviewError { Text(reviewError).bojiType(.label).foregroundStyle(.red) }
-            Button(reviewJobID == nil ? "用 Club AI 解读这份阶段回顾" : "重新请求一次解读") { requestPhaseAIReview() }
+            Button(reviewJobID == nil ? "生成解读" : "重新请求一次解读") { requestPhaseAIReview() }
                 .buttonStyle(SecondaryButton())
                 .disabled(!ai.routingConsentGranted)
         }

@@ -91,13 +91,13 @@ struct AIJobStatusView: View {
                 } else if job.status == "discarded" {
                     Text(job.error ?? "这次分析不再使用，原记录仍保留。")
                 } else if job.status == "succeeded" {
-                    Label(job.consumed ? "结果已确认保存" : job.request.kind == "coach" ? "Club AI 回复已保存" : job.request.kind == "report" ? "复盘已完成，可以阅读全文" : "已准备好，请核对后保存", systemImage: "checkmark.circle")
+                    Label(job.consumed ? "结果已确认保存" : job.request.kind == "coach" ? "回复已保存" : job.request.kind == "report" ? "复盘已完成，可以阅读全文" : "已准备好，请核对后保存", systemImage: "checkmark.circle")
                 } else if ["failed", "waiting_connection", "waiting_service", "deleted", "expired", "rejected"].contains(job.status) {
                     Text(job.error ?? "输入已保存，可稍后重试。")
                     if job.isWaiting { AIWaitProgress(status: job.status) }
                     Button(["deleted", "expired", "rejected"].contains(job.status) ? "重新生成" : job.isWaiting ? "继续查看处理结果" : "重新尝试分析") { ai.retry(job.id) }.buttonStyle(SecondaryButton())
                 } else {
-                    AILoadingCard(title: job.request.kind == "food" ? "正在识别食物…" : job.request.kind == "coach" ? "Club AI 正在核对记录…" : job.request.kind == "report" ? "正在分析你的记录…" : "正在准备训练计划…",
+                    AILoadingCard(title: job.request.kind == "food" ? "正在识别食物…" : job.request.kind == "coach" ? "正在核对记录…" : job.request.kind == "report" ? "正在分析你的记录…" : "正在准备训练计划…",
                                   detail: "输入已保留，可以稍后回来查看。", status: job.status, compact: !animated)
                 }
             }.bojiType(.caption).foregroundStyle(.secondary)

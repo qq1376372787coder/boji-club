@@ -263,7 +263,7 @@ struct OnboardingDraftField: Codable, Equatable {
     var evidenceQuote: String?
     var updatedAt: String?
     enum CodingKeys: String, CodingKey { case value, unit, origin; case evidenceQuote = "evidence_quote"; case updatedAt = "updated_at" }
-    var originLabel: String { origin == "model_candidate" ? "AI 建议，待核对" : "你填写的草稿" }
+    var originLabel: String { origin == "model_candidate" ? "建议，待核对" : "你填写的草稿" }
 }
 
 struct OnboardingV2Draft: Codable, Equatable {
@@ -1091,7 +1091,7 @@ struct OnboardingWorkspaceView: View {
             Text("这份引导来自更新版本").bojiType(.bodyStrong)
             Text("当前 App 只安全展示可读摘要，不执行未知操作。你仍可使用原生资料表单或训练/饮食记录；原草稿不会丢失。")
                 .bojiType(.label).foregroundStyle(.secondary)
-            Button("AI 对我的了解") { onOpenKnowledge() }.buttonStyle(PrimaryButton())
+            Button("个人资料") { onOpenKnowledge() }.buttonStyle(PrimaryButton())
             Button("稍后继续") { Task { await model.deferSession(account: account) } }.buttonStyle(SecondaryButton())
         }
     }
@@ -1131,7 +1131,7 @@ struct OnboardingWorkspaceView: View {
                 Text("引导暂时无法继续。你仍可手动记录，资料和草稿已保留。")
                     .bojiType(.label).foregroundStyle(.secondary)
             }
-            Button("AI 对我的了解") { onOpenKnowledge() }.buttonStyle(.plain).bojiType(.label)
+            Button("个人资料") { onOpenKnowledge() }.buttonStyle(.plain).bojiType(.label)
         }
     }
 
@@ -1196,7 +1196,7 @@ struct OnboardingWorkspaceView: View {
 
     private var fieldTask: some View {
         VStack(alignment:.leading,spacing: BojiLayout.rowGap) {
-            Text("与“AI 对我的了解”使用同一份资料，已填内容会直接带入。")
+            Text("与“个人资料”使用同一份资料，已填内容会直接带入。")
                 .bojiType(.label).foregroundStyle(.secondary)
             let fields=ProfileFields133.task(taskKind).filter { field in
                 if field == .ageGroup,(model.facts?.facts["age_years"] ?? model.state?.confirmedFacts["age_years"]) != nil { return false }
@@ -1209,7 +1209,7 @@ struct OnboardingWorkspaceView: View {
             }
             if taskKind == .explore {
                 Text("可以先浏览与记录，资料随时可以补充。补充资料不会自动生成计划。") .bojiType(.secondary).foregroundStyle(.secondary)
-                Button("AI 对我的了解",action:onOpenKnowledge).buttonStyle(SecondaryButton())
+                Button("个人资料",action:onOpenKnowledge).buttonStyle(SecondaryButton())
             } else {
                 Button(model.planReady ? "修改训练条件":"填写或修改资料") { editing=true }.buttonStyle(SecondaryButton())
             }
@@ -1273,7 +1273,7 @@ struct OnboardingWorkspaceView: View {
     private var mealTask: some View {
         ClubCard {
             Text("先记一餐，不需要完整训练资料").bojiType(.bodyStrong)
-            Text("打开原生饮食编辑并保留草稿；保存与同步结果分开显示。AI 不可用时仍可手动填写。")
+            Text("打开原生饮食编辑并保留草稿；保存与同步结果分开显示。服务不可用时仍可手动填写。")
                 .bojiType(.label).foregroundStyle(.secondary)
             Button("去记录这一餐") { onRecordMeal(Date(), "手动") }.buttonStyle(PrimaryButton())
             if model.state?.capabilities.membershipActive != true {
@@ -1357,7 +1357,7 @@ struct OnboardingWorkspaceView: View {
     private var actionRow: some View {
         VStack(spacing: BojiLayout.inline) {
             if model.state?.draft.fields.contains(where: { key,value in OnboardingFieldSpec.from(apiKey:key) != nil && value.value != model.facts?.facts[key]?.value }) == true {
-                Button(reviewing ? "正在核对…" : "核对 AI 建议的资料") {
+                Button(reviewing ? "正在核对…" : "核对建议资料") {
                     Task { if await model.previewProfile(account: account) { reviewing = true } }
                 }.buttonStyle(PrimaryButton()).disabled(model.saving || model.isDeferred)
             }
@@ -1459,7 +1459,7 @@ struct OnboardingCompletionView: View {
                     Text("完成后可继续其他待办，也可稍后从侧栏返回。")
                         .bojiType(.label)
                 }
-                Section { Text("首项设置已完成。资料已保存在“AI 对我的了解”，之后仍可修改。") }
+                Section { Text("首项设置已完成。资料已保存在“个人资料”，之后仍可修改。") }
                 if let error { Text(error).foregroundStyle(.red) }
             }
             .navigationTitle("完成这次引导")

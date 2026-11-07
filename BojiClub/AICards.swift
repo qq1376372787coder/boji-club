@@ -766,7 +766,7 @@ struct AIMemoryDraftCard: View {
                 Image(systemName: "sparkles")
                     .bojiType(.secondary)
                     .foregroundStyle(BojiColor.aiGold)
-                Text("AI 记忆提议").bojiType(.secondary).foregroundStyle(BojiColor.textPrimary)
+                Text("记忆提议").bojiType(.secondary).foregroundStyle(BojiColor.textPrimary)
             }
             Text("“\(content)”")
                 .bojiType(.body)

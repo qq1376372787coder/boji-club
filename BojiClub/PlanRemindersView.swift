@@ -39,7 +39,7 @@ struct PlanRemindersView: View {
                     AILoadingCard(title: "正在整理训练提醒…", detail: "只整理文字，可以离开后回来查看。", status: job?.status)
                 } else if !busy {
                     Button(job == nil ? "整理为中文" : "重试中文整理") { translate() }.buttonStyle(SecondaryButton())
-                    Text("需要联网，使用一次 AI 文字处理；只发送这些提醒，不重新生成训练安排。")
+                    Text("需要联网，使用一次文字处理；只发送这些提醒，不重新生成训练安排。")
                         .bojiType(.label).foregroundStyle(.secondary)
                 }
             }

@@ -517,7 +517,7 @@ struct WorkoutView: View {
                     if let target = day.plannedMoveDestination {
                         EmptyNote(title: "这次训练已提前", detail: "已移到 \(target)，这一天留给恢复；可在我的计划查看。")
                     } else if isPlannedRestDay {
-                        EmptyNote(title: "这一天是计划休息日", detail: "恢复已经包含在本周期计划中，不需要再次让 AI 制定计划。身体状态允许时，也可以临时加练。")
+                        EmptyNote(title: "这一天是计划休息日", detail: "恢复已经包含在本周期计划中，不需要再次生成计划。身体状态允许时，也可以临时加练。")
                         if ClubDates.calendar.isDateInToday(selectedDate) {
                             Button("提前练下一次训练") { showAdvance = true }.buttonStyle(PrimaryButton())
                         }
@@ -528,7 +528,7 @@ struct WorkoutView: View {
                     } else {
                         EmptyNote(title: "这一天还没有训练计划", detail: "先选择动作。记录自重动作时，外加重量可以保留为 0。")
                         Button("从动作库添加") { showLibrary = true }.buttonStyle(PrimaryButton())
-                        Button("安排重复计划或使用 AI") { showPlan = true }.buttonStyle(SecondaryButton())
+                        Button("安排重复计划或自动生成") { showPlan = true }.buttonStyle(SecondaryButton())
                     }
                 }
             }
@@ -1085,7 +1085,7 @@ struct WorkoutCompletionView: View {
                 VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
                     completionHeading
                     if let saved = completedSnapshot {
-                        Button("AI 复盘本次训练", systemImage: "bubble.left.and.text.bubble.right") {
+                        Button("训练总结", systemImage: "bubble.left.and.text.bubble.right") {
                             ClubAIEntryContext.open(owner: snapshot.ownerID, date: snapshot.date, sessionID: saved.sessionID)
                         }.buttonStyle(.bordered).buttonBorderShape(.capsule).controlSize(.regular)
                             .tint(ClubBrand.accent).frame(maxWidth: .infinity).frame(minHeight: 44)

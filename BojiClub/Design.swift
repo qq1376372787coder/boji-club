@@ -540,7 +540,7 @@ struct ClubWaitBar: View {
 struct AIWaitProgress: View {
     let status: String?
     private var phase: AIWaitPhase { AIWaitPhase(status: status) }
-    private let titles = ["提交", "排队", "AI 处理", "完成"]
+    private let titles = ["提交", "排队", "处理", "完成"]
     var body: some View {
         VStack(alignment: .leading, spacing: BojiLayout.inline) {
             if phase.showsStages {

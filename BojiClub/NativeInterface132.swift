@@ -148,7 +148,7 @@ struct ManagedPlanList: View {
                         ForEach(drafts) { job in
                             NavigationLink {
                                 PlanView(date: ClubDates.date(fromKey: job.request.date) ?? focusDate, initialMode: job.request.kind, initialJobID: job.id).clubPushDestination132()
-                            } label: { VStack(alignment: .leading, spacing: BojiLayout.tight) { Text(job.request.kind == "parse_plan" ? "导入的计划" : "AI 制定的计划"); Text(job.request.date).bojiType(.secondary).foregroundStyle(.secondary) } }
+                            } label: { VStack(alignment: .leading, spacing: BojiLayout.tight) { Text(job.request.kind == "parse_plan" ? "导入的计划" : "制定的计划"); Text(job.request.date).bojiType(.secondary).foregroundStyle(.secondary) } }
                         }
                     }
                 }

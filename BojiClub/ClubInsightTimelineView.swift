@@ -568,7 +568,7 @@ struct ClubAISettingsView: View {
 
         }.clubManagementList132()
             .background { ClubBackground() }
-            .navigationTitle("AI 自动跟进")
+            .navigationTitle("自动跟进")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { DismissButton() } }
             .onAppear { ownerID = store.editingAccountID }

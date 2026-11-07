@@ -127,7 +127,7 @@ struct SavedPlanExplanationCard: View {
         if let job, let explanation = job.result?.explanation, explanation.version == 1 {
             PlanExplanationCard(explanation: explanation, notice: notice).id(job.id + "/" + cycle.start)
         } else {
-            Text("这份安排没有保存 AI 制定说明。新生成的专属计划会同时保存安排依据。")
+            Text("这份安排没有保存制定说明。新生成的专属计划会同时保存安排依据。")
                 .bojiType(.label).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
         }
     }

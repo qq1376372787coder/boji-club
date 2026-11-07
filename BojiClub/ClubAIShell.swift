@@ -309,7 +309,7 @@ struct ClubAIShellView: View {
             if mode == .clubAI {
                 Menu {
                     Button("挑选经典方案", systemImage: "rectangle.stack.badge.play") { showTrainingPlans = true }
-                    Button("AI 定制训练计划", systemImage: "wand.and.stars") { showPlanWizard = true }
+                    Button("定制训练计划", systemImage: "wand.and.stars") { showPlanWizard = true }
                     Button("身体档案与报告", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
                 } label: { Image(systemName: "ellipsis") }
                 .accessibilityLabel("更多操作").accessibilityIdentifier("v2-context-action")
@@ -320,7 +320,7 @@ struct ClubAIShellView: View {
                 Menu {
                     Button("记录饮食") { openMeal("手动") }
                     Button("记录身体数据") { bodyEntryRoute = ClubDateRoute(date: Date()) }
-                    Button("AI 解读档案", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
+                    Button("解读记录", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
                 } label: { Image(systemName: "ellipsis") }.accessibilityLabel("记录更多操作").accessibilityIdentifier("v2-context-action")
             }
         }
@@ -1423,7 +1423,7 @@ struct ClubAIWorkspaceIdleView: View {
                 HStack(spacing: BojiLayout.rowGap) {
                     Button("挑选经典方案") { showPresetPlans = true }
                         .buttonStyle(BojiButtonStyle(kind: .secondary))
-                    Button("AI 制定计划", action: onArrangePlan131)
+                    Button("制定计划", action: onArrangePlan131)
                         .buttonStyle(BojiButtonStyle(kind: .primary))
                 }
             }
@@ -1581,7 +1581,7 @@ struct ClubAIWorkspaceIdleView: View {
     private var intelligenceHubSection: some View {
         VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
             HStack {
-                Label("智能分析", systemImage: "sparkles")
+                Label("分析", systemImage: "sparkles")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textPrimary)
                 Spacer()
@@ -1594,7 +1594,7 @@ struct ClubAIWorkspaceIdleView: View {
                 // 1. AI 训练计划
                 Button(action: onArrangePlan131) {
                     intelligenceFeatureRow(
-                        title: "AI 训练计划",
+                        title: "训练计划",
                         roleTag: "规划未来",
                         detail: "个性化周期定制 · 动作库与器械校验",
                         symbol: "calendar.badge.clock",
@@ -1609,7 +1609,7 @@ struct ClubAIWorkspaceIdleView: View {
                 Button(action: onOpenDailyReport) {
                     let hasConfirmed = today.trainingLog.hasConfirmedTraining
                     intelligenceFeatureRow(
-                        title: "AI 每日日报",
+                        title: "日报",
                         roleTag: "总结当下",
                         detail: hasConfirmed ? "今日训练已确认 · 查看客观数据与建议" : "今日出勤核算、餐食营养与明日恢复",
                         symbol: "sun.max",
@@ -1623,7 +1623,7 @@ struct ClubAIWorkspaceIdleView: View {
                 // 3. AI 每周周报
                 Button(action: onOpenWeeklyReport) {
                     intelligenceFeatureRow(
-                        title: "AI 每周周报",
+                        title: "周报",
                         roleTag: "长期进步",
                         detail: "7天出勤、总容量变化对比与体型趋势复盘",
                         symbol: "chart.xyaxis.line",

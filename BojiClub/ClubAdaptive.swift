@@ -26,7 +26,7 @@ struct ClubAutomaticReportList: View {
                 Text("记录之后，持续跟进").bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
                 Text("训练解读与周度记录报告保留各自日期依据；主观感受和参数修改仍由你确认。记录变化后，旧报告是当时的观察。")
                     .bojiType(.secondary).foregroundStyle(.secondary)
-                if jobs.isEmpty { EmptyNote(title: "还没有自动跟进报告", detail: "在 Club AI 设置中开启。训练确认后可生成解读；完整记录周满足条件后生成周度报告。") }
+                if jobs.isEmpty { EmptyNote(title: "还没有自动跟进报告", detail: "在设置中开启。训练确认后可生成解读；完整记录周满足条件后生成周度报告。") }
                 ForEach(jobs) { job in
                     NavigationLink { ClubAutomaticReportReader(jobID: job.id) } label: {
                         ClubCard {
@@ -80,7 +80,7 @@ struct ClubAutomaticReportReader: View {
                     Button("重新同步报告") { Task { await recoverReport() } }.buttonStyle(SecondaryButton())
                 }
             }.padding(ClubUI.pageInset)
-        }.background { ClubBackground() }.navigationTitle("Club AI 跟进").navigationBarTitleDisplayMode(.inline)
+        }.background { ClubBackground() }.navigationTitle("跟进").navigationBarTitleDisplayMode(.inline)
             .onAppear { ownerID = store.editingAccountID; refreshProposal() }
             .task(id: jobID) { if ai.job(jobID) == nil { await recoverReport() } }
             .onReceive(store.$state) { _ in Task { @MainActor in await Task.yield(); refreshProposal() } }
@@ -166,7 +166,7 @@ enum ClubAdjustmentRules {
                 sessions[day].exercises[change.exercise].sets[group] = target
             }
         }
-        let result = AIResult(kind: "plan", notes: [], title: "Club AI 参数调整", sessions: sessions, plan_days: 7)
+        let result = AIResult(kind: "plan", notes: [], title: "参数调整", sessions: sessions, plan_days: 7)
         var draft = try ManualPlanDraft.importing(result, originalStart: ClubDates.key(start), start: start)
         draft.proposalJobID = job.id
         draft.suggestedForProfile = state.profile.aiProfile
