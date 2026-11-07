@@ -27,8 +27,11 @@ def resolve_generated_movement(exercise, legacy=None):
   return by_id
  return by_query
 
-def candidate_prompt(allowed_ids=None):
- rows=[x for x in ROWS if (x['id'] in allowed_ids if allowed_ids is not None else x['selection_tier_zh']=='基础常用' and x['training_type_zh'] in ('力量／稳定性','有氧'))]
+def candidate_prompt(allowed_ids=None, exclude_ids=None):
+ # P0 动作禁忌拦截改动1：自动制定候选池只收 difficulty_zh=='常规'（10 个进阶项出池）；
+ # exclude_ids 用于按用户身体情况再剔除 avoid 动作（exercise_risk.excluded_for）。
+ excluded=set(exclude_ids or ())
+ rows=[x for x in ROWS if (x['id'] in allowed_ids if allowed_ids is not None else x['selection_tier_zh']=='基础常用' and x['training_type_zh'] in ('力量／稳定性','有氧') and x['difficulty_zh']=='常规') and x['id'] not in excluded]
  compact=[]
  for row in rows:
   item={k:row[k] for k in ('id','name','name_zh','category_zh')}
