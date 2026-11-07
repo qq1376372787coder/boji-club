@@ -862,6 +862,20 @@ final class AIService: ObservableObject {
 
     private func recordFailure(_ error: Error, id: String) {
         guard let index = jobs.firstIndex(where: { $0.id == id }), !jobs[index].consumed, jobs[index].status != "succeeded" else { return }
+        // coach 后端休眠（拍板 #7 / 绵绵口径）：flag off 时服务端返回 503
+        // `coach_disabled`，客户端静默终止该任务，不弹错、不做错误 UI。
+        if let clientError = error as? AIClientError {
+            switch clientError {
+            case .http(_, let code, _), .deferred(_, let code, _, _) where code == "coach_disabled":
+                jobs[index].status = "cancelled"
+                jobs[index].errorCode = code
+                jobs[index].error = nil
+                do { try persist() } catch { notice = "任务状态保存失败，输入仍在本次运行中保留。" }
+                return
+            default:
+                break
+            }
+        }
         let decision = AIRetryPolicy.decision(error, previousFailures: jobs[index].connectionFailures)
         jobs[index].connectionFailures = decision.failures
         jobs[index].status = decision.status
