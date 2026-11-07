@@ -379,6 +379,45 @@ def assess_readiness(facts: dict[str, Any], question: str = "") -> dict[str, Any
             "evidence_refs": facts.get("source_record_ids", []),
             "data_freshness_days": freshness}
 
+PROGRESSION_POLICY_VERSION = "progression.policy.v1"
+
+
+def max_load_increase(current_kg, *, ratio: float = 0.05, cap: float = 2.5,
+                      ceiling_ratio: float = 0.10, step: float = 0.5) -> float:
+    """单次可加重上限（kg）——**渐进策略的唯一真源**，两个入口共用。
+
+    统一前的分歧（评估报告 P1-4）：
+    - ``adaptive_core.supported_increase`` 用 ``max(2.5, 5%)``，小重量按固定值放行：
+      5kg 允许加到 7.5kg（**+50%**）、20kg 允许到 22.5kg（+12.5%）；
+    - ``progression_advisory`` 用 ``min(2.5, 5%)`` 且硬钳 ≤10%，小重量被压到 0 档：
+      5kg 直接 HOLD。
+    同一用户在两个入口得到**方向相反**的结论。
+
+    统一口径（保守侧优先，取两者更严者）：
+      1. ``raw = min(cap, current * ratio)`` —— 2.5kg 与 5% **取小**（原分歧点即把
+         max 改成 min）；
+      2. ``raw = min(raw, current * ceiling_ratio)`` —— 10% 硬顶作冗余保险；
+      3. 向下取整到器械粒度 ``step``（0.5kg，与原 progression_advisory 的
+         ``floor(x*2)/2`` 一致），保证两入口给出**同一个可执行重量**；
+      4. 上限 ≤0 时返回 0，表示"当前重量下不应加重"——此时两个入口都必须回答
+         "不加"，小重量场景（<10kg）走**次数进阶**（adaptive_core 既有的
+         reps +20% 规则），而不是硬塞一个超比例的重量增量。
+
+    结果恒满足 ``0 ≤ Δ ≤ min(2.5, 5%) 且 Δ/当前 ≤ 10%``。
+    """
+    try:
+        current = float(current_kg)
+    except (TypeError, ValueError):
+        return 0.0
+    if not math.isfinite(current) or current <= 0:
+        return 0.0
+    raw = min(cap, current * ratio)
+    raw = min(raw, current * ceiling_ratio)
+    if raw <= 0:
+        return 0.0
+    return round(max(0.0, math.floor(raw / step) * step), 2)
+
+
 def progression_advisory(variant: ExerciseVariant | None, sets: list[dict[str, Any]],
                          target_reps: int = 8, effort_acceptable: bool | None = None,
                          pain_reported: bool = False, increment_ratio: float = 0.05,
@@ -432,7 +471,9 @@ def progression_advisory(variant: ExerciseVariant | None, sets: list[dict[str, A
         if abs(peak - current) >= .01 or not work or any((_number(s.get('reps'), 0, 1000) or 0) < target_reps + 1 for s in work):
             return {'decision': 'HOLD_CURRENT_LOAD', 'rule_version': PROGRESSION_RULE_VERSION,
                     'auto_apply': False, 'reason': '最近两场尚未在相同工作负重下稳定超过目标次数，先保持并核对。'}
-    increment = math.floor(min(increment_cap, current * min(increment_ratio, .10)) * 2) / 2
+    # 统一渐进策略（progression.policy.v1）：上限由 max_load_increase 给出，
+    # 与 adaptive_core.supported_increase 共用同一函数，两入口结论必然一致。
+    increment = max_load_increase(current, ratio=increment_ratio, cap=increment_cap)
     if increment <= 0 or increment / current > .10:
         return {'decision': 'HOLD_CURRENT_LOAD', 'rule_version': PROGRESSION_RULE_VERSION,
                 'auto_apply': False, 'reason': '现有记录无法支持合理的最小增量，请核对器械刻度并保持当前负荷。'}

@@ -76,7 +76,10 @@ class ReportArchiveTests(unittest.TestCase):
 
 class ProposalBaselineTests(unittest.TestCase):
     def request(self):return fixtures.AdaptiveTests().supported()
-    def clean(self,r):return adaptive.clean_proposal(r,{'changes':[fixtures.AdaptiveTests().change(field='weight',value=22.5)]},(text,sequence,iso_date))
+    # progression.policy.v1：20kg 上限 = min(2.5kg, 5%) = 1.0kg → 21.0。
+    # 用上限内的值，下面 5 个"证据不足"用例才测得到证据校验本身，
+    # 不会被加重上限先行拒绝（统一前用 22.5，是旧的 max(2.5,5%) 口径）。
+    def clean(self,r):return adaptive.clean_proposal(r,{'changes':[fixtures.AdaptiveTests().change(field='weight',value=21.0)]},(text,sequence,iso_date))
     def test_actual_below_original_targets_cannot_support_load_increase(self):
         r=self.request()
         for day in r['payload']['days']:day['payload']['workout_sessions'][0]['executionBaseline']['sets'][0]['targetReps']=12
@@ -96,7 +99,7 @@ class ProposalBaselineTests(unittest.TestCase):
         r=self.request();r['payload']['upcoming'][0]['exercises'][0]['sets'][0]['reps']=15
         with self.assertRaises(ValueError):self.clean(r)
     def test_original_targets_met_on_two_dates_support_conservative_increase(self):
-        self.assertEqual(self.clean(self.request())['changes'][0]['value'],22.5)
+        self.assertEqual(self.clean(self.request())['changes'][0]['value'],21.0)
 
 class GoalContextTests(unittest.TestCase):
     def goal(self,when,identifier=None):return {'version':1,'id':identifier or str(uuid.uuid4()),'recordedAt':when-auto.APPLE_EPOCH,'profile':{'age':30,'height':175,'weight':70,'goal':'增肌'}}
