@@ -140,13 +140,25 @@ struct ProfileView: View {
 
 struct MembershipGateView: View {
     @State private var showingAccount = false
+    /// 付费墙退出确认文案（果果/知知定稿 4 句，缺一不可；不承诺一键重登）。
+    private static let exitMessage = [
+        "记录保留在本机，重新登录同一 Apple 账号后继续同步",
+        "请用同一 Apple 账号登录，更换账号无法查看原记录",
+        "退出不影响你的会员与购买",
+        "本机记录换设备或删 App 会丢失，建议先同步再退出"
+    ].joined(separator: "\n")
     var body: some View {
         MembershipView(isMandatory: true)
             .safeAreaInset(edge: .bottom) {
                 HStack(spacing: BojiLayout.rowGap) {
                     Button("账号管理") { showingAccount = true }
                         .buttonStyle(SecondaryButton()).accessibilityIdentifier("membership-account-settings")
-                    ClubLogoutButton()
+                    ClubLogoutButton(
+                        title: "先退出，稍后再来",
+                        message: Self.exitMessage,
+                        cancelTitle: "留在本页",
+                        accessibilityLabel: "先退出，稍后再来，返回登录页"
+                    )
                 }
                 .frame(maxWidth: .infinity).padding(ClubUI.pageInset).background(.regularMaterial)
             }
