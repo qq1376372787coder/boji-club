@@ -2,17 +2,44 @@
 # 本地与 CI 共用的全量回归入口（docs/v2/04 号报告 §7 固定回归命令集）。
 # 任何代码合入 main 前应全部通过；约耗时 10–15 分钟。
 # 用法：bash scripts/run-all-checks.sh
+# 环境变量：
+#   BOJI_DESTINATION  覆盖 xcodebuild 目标（默认 iPhone 17 模拟器，
+#                     runner 上没有该机型时自动回退到第一台可用 iPhone 模拟器）
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-DESTINATION='platform=iOS Simulator,name=iPhone 17'
+# --- 目标模拟器解析（CI runner 镜像机型不固定，硬编码会直接失败）---
+if [ -n "${BOJI_DESTINATION:-}" ]; then
+  DESTINATION="$BOJI_DESTINATION"
+elif xcrun simctl list devices available 2>/dev/null | grep -qE '^ *iPhone 17 \('; then
+  # 精确匹配 "iPhone 17 ("，避免误匹配 "iPhone 17 Pro"（xcodebuild 要求机型名精确）。
+  DESTINATION='platform=iOS Simulator,name=iPhone 17'
+else
+  fallback=$(xcrun simctl list devices available 2>/dev/null \
+    | sed -n 's/^ *\(iPhone [^(]*\) (.*/\1/p' | sed 's/ *$//' | head -1 || true)
+  if [ -n "${fallback:-}" ]; then
+    echo "NOTE: iPhone 17 模拟器不可用，回退到可用机型: $fallback"
+    DESTINATION="platform=iOS Simulator,name=$fallback"
+  else
+    echo "ERROR: 无可用 iPhone 模拟器（xcodebuild 无法定位目标）。" >&2
+    xcrun simctl list devices available >&2 || true
+    exit 1
+  fi
+fi
+echo "DESTINATION=$DESTINATION"
+
 OUT="${TMPDIR:-/tmp}/boji-checks-$$"
 mkdir -p "$OUT"
 
-echo "== [1/5] Python 离线回归（640 项） =="
-python3 -I tests/run_offline.py
+if [ "${BOJI_SKIP_OFFLINE:-0}" = "1" ]; then
+  # CI 把 Python 离线回归拆成独立任务（python-offline），iOS 车道只跑 2-5 步。
+  echo "== [1/5] Python 离线回归（由 python-offline 任务执行，此处跳过） =="
+else
+  echo "== [1/5] Python 离线回归 =="
+  python3 -I tests/run_offline.py
+fi
 
-echo "== [2/5] Swift 规则回归链（52 个 harness） =="
+echo "== [2/5] Swift 规则回归链 =="
 python3 tests/run_swift_regressions.py --output "$OUT/rules" --jobs 3
 
 echo "== [3/5] 主应用编译检查（模拟器 Debug） =="
