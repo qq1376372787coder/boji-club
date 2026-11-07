@@ -19,5 +19,7 @@ function aiCoachQuotaLeft(PDO $db, int $userId): int {
 
 /** Existing jobs and onboarding purposes never bypass paid membership. */
 function aiMayPostJob(PDO $db, array $user, array $config, string $kind, ?array $existing, ?string $purpose = null): bool {
+    // 显式关闭会员强制时放行（生产配置恒为 true，行为不变）。
+    if (($config['membership_enforcement'] ?? true) === false) return true;
     return membershipHasActiveEntitlement($db, (int)$user['id']);
 }

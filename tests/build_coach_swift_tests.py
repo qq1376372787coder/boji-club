@@ -40,6 +40,7 @@ enum ClubDates {
     static func key(_ date:Date)->String{ String(format:"%04d-%02d-%02d",calendar.component(.year,from:date),calendar.component(.month,from:date),calendar.component(.day,from:date)) }
     static func date(fromKey:String)->Date?{ let parts=fromKey.split(separator:"-").compactMap{Int($0)};guard parts.count==3 else{return nil};return calendar.date(from:DateComponents(year:parts[0],month:parts[1],day:parts[2])) }
     static func isFuture(_ date:Date,now:Date=Date())->Bool{ calendar.startOfDay(for:date)>calendar.startOfDay(for:now) }
+    static func label(_ date:Date,format:String="M月d日")->String{ "" }
 }
 enum ClubShiftRules { static func movableDates(state:SavedState,now:Date=Date())->[Date]{[]} }
 enum ClubAdjustmentRules { static func upcoming(state:SavedState,after:Date)->[AIPlanSession]{[]} }
