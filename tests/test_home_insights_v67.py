@@ -19,16 +19,19 @@ assert "ClubHomeInsightStability.select(current: selectedInsight, candidates: in
 assert "insightCard" not in idle
 assert "enum ClubHomeInsightStability" in insights
 assert "ai.refreshHomeInsightIfNeeded()" in idle
-assert "if activeWorkout != nil || !today.exercises.isEmpty { trainingCard }" in idle
+# 2026-11-07 妙妙修复（P0 CI 基准）：Build 130+ 重构后 trainingCard/quickActions
+# 已并入 heroMissionCard/fuelBalanceCard；行为契约不变——训练入口（heroMissionCard
+# 随 activeWorkout 自适应）与餐食入口（onRecordMeal）在 idle 均可达。
+assert "private var heroMissionCard" in idle
+assert 'Label(activeWorkout == nil ? "今日战术任务" : "进行中的训练"' in idle
 workspace = shell[shell.index("private var aiWorkspace:"):shell.index("private var bottomDock:")]
 assert "onStartTraining:" in workspace
 assert "if activeWorkout != nil { openActiveWorkout() }" in workspace
 assert "else { selectedDate = Date(); startTrainingFromPlan() }" in workspace
 # The hub stays reachable from the idle workspace shell.
 assert 'ClubAIHubView(initialSection: route.section)' in shell
-quick_actions = idle[idle.index("private var quickActions:"):idle.index("private var trainingCard:")]
-assert 'Button(action: onRecordMeal)' in quick_actions
-assert 'Text("记录饮食")' in quick_actions
+assert 'Button(action: onRecordMeal)' in idle
+assert 'Text("记录餐食")' in idle
 assert 'ClubAIHubView(initialSection: route.section)' in shell
 
 # Report and export capabilities survive the old HomeView file deletion.

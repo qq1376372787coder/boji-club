@@ -42,5 +42,8 @@ assert "安排重复计划或使用 AI" in workout
 assert "return !cycle.plannedDates.contains(key)" in workout
 
 assert "ViewThatFits(in: .horizontal)" in ai
-assert ordered(ai, ["HStack(spacing: 10)", "shareButton(result", 'analysisActionButton(title: "更新这份分析")'])
+# 2026-11-07 妙妙修复（P0 CI 基准）：源码把 HStack(spacing: 10) 改为
+# HStack(spacing: BojiLayout.inline)（间距单轨化），断言文本同步更新；
+# 行为契约不变：横向分支内 shareButton 先于 analysisActionButton 出现。
+assert ordered(ai, ["HStack(spacing: BojiLayout.inline)", "shareButton(result", 'analysisActionButton(title: "更新这份分析")'])
 print("Sole AI home / first-plan / rest-day flow checks passed")
