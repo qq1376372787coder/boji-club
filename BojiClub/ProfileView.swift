@@ -1109,7 +1109,7 @@ struct ClubActionPreferencesView: View {
                 }
                 }
                 if let error { Section { Text(error).foregroundStyle(.secondary) } }
-            }.clubManagementList132().navigationTitle(pendingOnly132 ? "待同步项目" : "数据与授权")
+            }.clubManagementList132().navigationTitle(pendingOnly132 ? "待同步项目" : "个人资料与授权")
                 .toolbar { ToolbarItem(placement: .confirmationAction) { DismissButton() } }
                 .task { if !pendingOnly132 { await load() } }
                 .confirmationDialog("改用该日云端记录？", isPresented: Binding(get: { cloudChoice != nil }, set: { if !$0 { cloudChoice = nil } }), titleVisibility: .visible) {
