@@ -1,0 +1,250 @@
+{
+  "version": 1,
+  "regions": {
+    "lumbar": {
+      "label": "腰部",
+      "pattern": "腰|腰椎|腰肌|椎间盘|下背|下腰部|lower\\s*back|lumbar"
+    },
+    "shoulder": {
+      "label": "肩部",
+      "pattern": "肩|肩袖|肩峰|肩周|肩关节|shoulder|rotator"
+    },
+    "knee": {
+      "label": "膝部",
+      "pattern": "膝|髌|半月板|膝盖|knee|patell"
+    }
+  },
+  "tags": [
+    {
+      "id": "0282",
+      "name_zh": "下斜仰卧起坐",
+      "regions": ["lumbar"],
+      "level": "avoid",
+      "reason": "下斜体位增加髋屈肌牵拉与腰椎屈曲应力，腰部问题人群避免。"
+    },
+    {
+      "id": "0857",
+      "name_zh": "跪姿健腹轮",
+      "regions": ["lumbar"],
+      "level": "avoid",
+      "reason": "滚轮类对核心控制要求高，失控时腰椎过伸；腰部问题人群避免。该动作难度为进阶，已由候选池难度过滤移出，标签用于输出校验兜底与手动添加路径。"
+    },
+    {
+      "id": "3670",
+      "name_zh": "负重下斜仰卧起坐",
+      "regions": ["lumbar"],
+      "level": "avoid",
+      "reason": "负重叠加下斜体位，腰椎屈曲与髋屈肌应力显著增加，腰部问题人群避免。"
+    },
+    {
+      "id": "0084",
+      "name_zh": "杠铃滚轮健腹",
+      "regions": ["lumbar"],
+      "level": "avoid",
+      "reason": "杠铃滚轮负荷更大、行程更长，腰椎过伸风险高，腰部问题人群避免。"
+    },
+    {
+      "id": "0044",
+      "name_zh": "杠铃早安式",
+      "regions": ["lumbar"],
+      "level": "avoid",
+      "reason": "颈后杠铃加长力臂髋铰链，腰椎剪切力矩居杠铃动作前列，技术门槛高且常无保护完成；腰部问题人群避免。"
+    },
+    {
+      "id": "0735",
+      "name_zh": "仰卧起坐",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "全程仰卧起坐髋屈肌参与多、腰椎反复屈曲，建议控制幅度或改为卷腹类。"
+    },
+    {
+      "id": "3679",
+      "name_zh": "双手抱胸仰卧起坐",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "抱胸增加难度，同仰卧起坐族，提示控制幅度与次数。"
+    },
+    {
+      "id": "3202",
+      "name_zh": "半仰卧起坐",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "幅度较小的仰卧起坐，风险低于全程，提示。"
+    },
+    {
+      "id": "0641",
+      "name_zh": "负重仰卧起坐",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "负重屈曲增加腰椎负荷（英文名 otis up），提示。"
+    },
+    {
+      "id": "0001",
+      "name_zh": "四分之三仰卧起坐",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "幅度大于半仰卧起坐，同族提示。"
+    },
+    {
+      "id": "0277",
+      "name_zh": "下斜卷腹",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "下斜体位增加髋屈肌与腰椎参与，卷腹幅度较短，提示。"
+    },
+    {
+      "id": "0495",
+      "name_zh": "上斜凳转体仰卧起坐",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "屈曲合并旋转的组合负荷，腰部问题人群提示。"
+    },
+    {
+      "id": "0489",
+      "name_zh": "罗马椅背伸",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "腰椎过伸机制，幅度大或负重时风险明确，腰部问题人群提示。"
+    },
+    {
+      "id": "0573",
+      "name_zh": "器械背伸",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "与罗马椅背伸同机制，器械版幅度与负重提示。"
+    },
+    {
+      "id": "0507",
+      "name_zh": "V字两头起",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "屈曲加举腿组合，属仰卧起坐同族，提示。"
+    },
+    {
+      "id": "0475",
+      "name_zh": "悬垂直腿举腿",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "直腿举腿对核心要求高，腰椎前凸代偿常见，核心不足者提示。"
+    },
+    {
+      "id": "2963",
+      "name_zh": "队长椅直腿举腿",
+      "regions": ["lumbar"],
+      "level": "caution",
+      "reason": "与悬垂直腿举腿同机制，核心不足时腰椎代偿，提示。"
+    },
+    {
+      "id": "0123",
+      "name_zh": "宽握杠铃直立划船",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "直立划船肩内旋伴屈曲，肩峰下撞击风险，肩部问题人群提示。"
+    },
+    {
+      "id": "0437",
+      "name_zh": "哑铃直立划船",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "直立划船肩内旋伴屈曲，肩峰下撞击风险，肩部问题人群提示。"
+    },
+    {
+      "id": "0246",
+      "name_zh": "绳索直立划船",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "直立划船肩内旋伴屈曲，肩峰下撞击风险，肩部问题人群提示。"
+    },
+    {
+      "id": "0120",
+      "name_zh": "杠铃直立划船",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "直立划船肩内旋伴屈曲，肩峰下撞击风险，肩部问题人群提示。"
+    },
+    {
+      "id": "0775",
+      "name_zh": "史密斯直立划船",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "直立划船肩内旋伴屈曲，肩峰下撞击风险，肩部问题人群提示。"
+    },
+    {
+      "id": "0092",
+      "name_zh": "坐姿杠铃颈后臂屈伸",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "过顶加肩外旋位，肩活动度不足者撞击风险，肩部问题人群提示。"
+    },
+    {
+      "id": "0453",
+      "name_zh": "坐姿曲杠颈后臂屈伸",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "过顶加肩外旋位，肩活动度不足者撞击风险，肩部问题人群提示。"
+    },
+    {
+      "id": "0430",
+      "name_zh": "站姿哑铃颈后臂屈伸",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "过顶加肩外旋位，站姿还需肩稳定，肩部问题人群提示。"
+    },
+    {
+      "id": "0389",
+      "name_zh": "坐姿哑铃颈后臂屈伸",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "过顶加肩外旋位，肩活动度不足者撞击风险，肩部问题人群提示。"
+    },
+    {
+      "id": "1429",
+      "name_zh": "宽握引体向上",
+      "regions": ["shoulder"],
+      "level": "caution",
+      "reason": "宽握增加肩关节压力，撞击风险高于标准握，肩部问题人群提示。"
+    },
+    {
+      "id": "1759",
+      "name_zh": "手枪深蹲",
+      "regions": ["knee"],
+      "level": "avoid",
+      "reason": "单腿全幅度深蹲，膝关节剪切力与髌股压力集中，膝部问题人群避免。该动作难度为进阶，已由候选池难度过滤移出，标签用于输出校验兜底与手动添加路径。"
+    },
+    {
+      "id": "1489",
+      "name_zh": "徒手西西深蹲",
+      "regions": ["knee"],
+      "level": "caution",
+      "reason": "膝部前移、髌股压力集中，膝部问题人群提示。"
+    },
+    {
+      "id": "0514",
+      "name_zh": "深蹲跳",
+      "regions": ["knee"],
+      "level": "caution",
+      "reason": "落地冲击，膝踝负荷集中，膝部问题人群提示。"
+    },
+    {
+      "id": "3582",
+      "name_zh": "交替弓步跳",
+      "regions": ["knee"],
+      "level": "caution",
+      "reason": "冲击类动作，单腿落地对膝稳定性要求更高，膝部问题人群提示。"
+    },
+    {
+      "id": "0410",
+      "name_zh": "哑铃保加利亚分腿蹲",
+      "regions": ["knee"],
+      "level": "caution",
+      "reason": "单腿深度蹲加平衡要求，髌股负荷大，膝部问题人群提示。"
+    },
+    {
+      "id": "0768",
+      "name_zh": "史密斯保加利亚分腿蹲",
+      "regions": ["knee"],
+      "level": "caution",
+      "reason": "与哑铃保加利亚分腿蹲同机制，固定轨迹但膝屈深度负荷同级，膝部问题人群提示。"
+    }
+  ]
+}

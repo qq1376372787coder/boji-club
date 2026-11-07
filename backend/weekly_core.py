@@ -108,7 +108,10 @@ summary 简洁概括最重要的发现，training、nutrition、recovery 只写�
 '''
     system += "\n每日记录的body_weight_kg是该日实际测量，body_weight_history只列有测量的日期；多天输入可能重复带上同一段历史，必须按日期去重，不能算成多次测量。不得补齐漏记、用资料weight代替每日体重、把测量次数说成连续天数或用短期体重波动认定增肌减脂成果。问卷体重与每日测量分开引用，日期不同不能强行覆盖；趋势说明实际跨度与样本数量，数据不足就说明不足。"
     from ai_core import analysis_facts, candidate_prompt
-    system += '\n' + candidate_prompt()
+    # P0 动作禁忌拦截：周报候选池同样按 limitations 剔除 avoid 动作；
+    # 无 limitations 时 exclude_ids 为空，输出与改动前逐字节一致。
+    import exercise_risk
+    system += '\n' + candidate_prompt(exclude_ids=exercise_risk.excluded_for(payload['profile'].get('limitations', '')))
     if payload.get('coaching_version') == 1:
         system += "\n本次质量要求：JSON字段各自用完整段落，不缩成摘要。summary约180字；training至少350字；recovery至少250字；reason至少220字。每段都有输入依据、局限和对应行动，不用增加不存在的事实凑字。只输出规定字段，notes与photoFeedback为字符串数组。"
         if payload.get('scope') == 'training':
@@ -144,6 +147,9 @@ def clean_result(request, result, helpers):
     excluded_movement = False
     sessions=[]; seen=set(); end=iso_date(request['date'])
     venue_profile = {**request['payload']['profile'], 'trainingDays':request['payload']['survey']['trainingDays']}
+    # P0 动作禁忌拦截：avoid 部位与用户 limitations 有交集才拦；caution 永不拦截。
+    import exercise_risk
+    limited = exercise_risk.limited_regions(request['payload']['profile'].get('limitations', ''))
     if request['payload']['survey']['pain']!='无疼痛':
         blocked_prescription = True
         clean['decision']='insufficient'; clean['reason']='你报告了疼痛或尚未明确疼痛状态，请先评估身体情况，本次不自动提出训练调整。'
@@ -164,7 +170,8 @@ def clean_result(request, result, helpers):
                 if any(ord(char) > 127 for char in query):
                     raise ValueError('library query must be English')
                 from ai_core import home_movements, is_home_session, movement_reference, requires_duration, recommended_reference
-                if recommended_reference(query) is None:
+                risk_row = recommended_reference(query)
+                if risk_row is None or exercise_risk.is_avoid(risk_row['id'], limited):
                     excluded_movement = True
                 if requires_duration(query, exercise.get("name", "")) and any(s.get("durationSeconds") is None for s in sets):
                     raise ValueError("static hold requires durationSeconds")
@@ -208,7 +215,7 @@ def clean_result(request, result, helpers):
         blocked_prescription = True
         clean['decision'] = 'insufficient'
         sessions = []
-        clean['reason'] += ' 本次候选调整还包含推荐动作库之外的动作，未提供自动应用；原训练记录和原计划保留。请在动作库中手动选择替换动作。'
+        clean['reason'] += ' 本次候选调整还包含推荐动作库之外、或与你填写的身体情况不匹配的动作，未提供自动应用；原训练记录和原计划保留。请在动作库中手动选择替换动作。'
     from ai_core import analysis_text, validate_output_prose
     blocked_prescription = blocked_prescription or clean['decision'] != 'adjust'
     # If the structured candidate was blocked, its prose cannot still instruct
