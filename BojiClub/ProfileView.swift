@@ -109,7 +109,7 @@ struct ProfileView: View {
                 }.buttonStyle(.plain).accessibilityLabel("编辑头像与昵称")
             }
             Section {
-                NavigationLink { ClubAIMemoryView().clubPushDestination132() } label: { Label("AI 对我的了解", systemImage: "person.text.rectangle") }
+                NavigationLink { ClubAIMemoryView().clubPushDestination132() } label: { Label("个人资料", systemImage: "person.text.rectangle") }
                 NavigationLink { ManagedPlanList(focusDate: Date(), initialCycleStart: nil).clubPushDestination132() } label: { Label("我的计划", systemImage: "calendar") }
                 NavigationLink { MembershipView().clubPushDestination132() } label: { Label("会员与订阅", systemImage: "crown") }
                 NavigationLink { SettingsHub130().clubPushDestination132() } label: { Label("设置", systemImage: "gearshape") }
@@ -184,7 +184,7 @@ struct NotificationSettingsView: View {
                     MealReminderSlotEditor(slot: $notifications.mealReminders.lunch)
                     MealReminderSlotEditor(slot: $notifications.mealReminders.dinner)
                 }
-                Section("AI 总结提醒") {
+                Section("日报提醒") {
                     Toggle("日总结完成", isOn: $notifications.dailyReportEnabled)
                     Toggle("周总结完成", isOn: $notifications.weeklyReviewEnabled)
                 }
@@ -816,7 +816,7 @@ struct ClubUsageGuideView: View {
                     Label("登记训练：点重量、次数或秒数，做完一组再完成。", systemImage: "dumbbell")
                 }
                 Section {
-                    Text("首次使用时，相关位置会显示简短操作提示；不需要先读完说明书。拍照识别与 AI 建议都需要你核对后保存。").bojiType(.label).foregroundStyle(.secondary)
+                    Text("首次使用会显示简短提示。拍照识别需核对后保存。").bojiType(.label).foregroundStyle(.secondary)
                     Button("重新显示操作提示") {
                         if let id = firstVisitAccountID {
                             for step in ["chat", "first_set"] { UserDefaults.standard.removeObject(forKey: "club.guide123.\(id).\(step)") }

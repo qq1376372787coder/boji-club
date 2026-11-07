@@ -337,7 +337,7 @@ final class WeeklyReviewService: ObservableObject {
         guard ticket == reminderGeneration, accountTicket == generation else { return }
         center.removePendingNotificationRequests(withIdentifiers: reminderIDs + pending.map(\.identifier).filter { $0.hasPrefix("boji.weekly.gen.") })
         guard reminder, let owner = accountID else { return }
-        let content = UNMutableNotificationContent(); content.title = "留一点时间给自己"; content.body = "本周训练、饮食和身体感受，来做一次复盘吧。"; content.sound = .default
+        let content = UNMutableNotificationContent(); content.title = "本周总结"; content.body = "本周训练、饮食和身体感受可生成总结。"; content.sound = .default
         content.userInfo = ["boji_kind": "weekly_center", "boji_account": owner]
         var components = DateComponents(); components.calendar = Calendar.current; components.weekday = weekday; components.hour = 19; components.minute = 0; components.second = 0
         var occurrences: [(DateComponents, Bool)] = []

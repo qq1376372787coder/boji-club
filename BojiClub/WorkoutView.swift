@@ -155,7 +155,7 @@ struct WorkoutView: View {
             }
             Button("继续训练", role: .cancel) {}
         } message: {
-            Text("当前尚未记录任何完成组。退出后将重置开始时间，原有动作与计划安排完整保留。")
+            Text("还没有完成的组。退出会重置开始时间，动作与计划会保留。")
         }
         .sheet(isPresented: $showPlan) { PlanCreationSheet(date: selectedDate) }
         .sheet(isPresented: $showMyPlans) { TrainingPlansView(focusDate: selectedDate) }
@@ -294,9 +294,9 @@ struct WorkoutView: View {
                     Button {
                         let card = ShareCardView(
                             title: "\(ClubDates.label(selectedDate)) \(log.totalSets > 0 && log.completedSets >= log.totalSets ? "训练完成" : "训练记录")",
-                            headline: "已完成 \(log.completedSets) / \(log.totalSets) 组，每一组都有记录。",
+                            headline: "已完成 \(log.completedSets) / \(log.totalSets) 组",
                             stats: TrainingRecordText.summary(log),
-                            tagline: "把进步交给时间。"
+                            tagline: ""
                         )
                         shareDraft = ShareDraft(card: card)
                     } label: { Label("分享训练记录卡", systemImage: "square.and.arrow.up") }
@@ -336,7 +336,7 @@ struct WorkoutView: View {
             ClubCard {
                 VStack(alignment: .leading, spacing: BojiLayout.inline) {
                     HStack {
-                        Label("欢迎回来训练", systemImage: "sparkles")
+                        Label("今日训练", systemImage: "sparkles")
                             .bojiType(.secondary)
                             .foregroundStyle(BojiColor.brandAccent)
                         Spacer()
@@ -347,7 +347,7 @@ struct WorkoutView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    Text("距上次训练已有 \(days) 天。体能需要循序渐进地唤醒，建议今日适度降低负荷或多做热身组找找节奏，避免突然大重量引起过度酸痛。")
+                    Text("距上次训练已有 \(days) 天。建议先做热身组，再逐步加量。")
                         .bojiType(.label)
                         .foregroundStyle(BojiColor.textSecondary)
                     HStack(spacing: BojiLayout.inline) {
@@ -391,7 +391,7 @@ struct WorkoutView: View {
             }
             trainingStartControls
             if log.workoutStartedAt == nil {
-                ClubInlineGuide(step: "first_set", message: "点重量或次数填写实际数值，做完一组再点完成。")
+                ClubInlineGuide(step: "first_set", message: "填写重量与次数，完成后点「完成」。")
             }
 
             emptyTrainingContent
@@ -406,7 +406,7 @@ struct WorkoutView: View {
             HStack {
                 Text("已完成 0 / \(log.totalSets) 组").bojiFont(.cardTitle)
                 Spacer()
-                Text("训练进行中 · 记录第一组").bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
+                Text("训练进行中").bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
             }
             ProgressView(value: 0, total: Double(max(1, log.totalSets)))
                 .tint(ClubBrand.accent)
@@ -422,9 +422,9 @@ struct WorkoutView: View {
                 VStack(alignment: .leading, spacing: BojiLayout.tight) {
                     Text("已完成 \(log.completedSets) / \(log.totalSets) 组")
                         .bojiFont(.cardTitle)
-                    Text(log.workoutSavedAt != nil ? "本次训练记录已确认，汗水已入账"
-                         : log.workoutEndedAt != nil ? "训练已结束 · 点击右上角确认保存"
-                         : log.workoutStartedAt == nil && log.completedSets == 0 ? "训练准备 · 核对动作与目标" : "训练进行中 · 记录每一次突破")
+                    Text(log.workoutSavedAt != nil ? "训练已保存"
+                         : log.workoutEndedAt != nil ? "训练已结束 · 点按确认保存"
+                         : log.workoutStartedAt == nil && log.completedSets == 0 ? "训练准备 · 核对动作与目标" : "训练进行中")
                         .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
                 }
                 Spacer()
@@ -444,7 +444,7 @@ struct WorkoutView: View {
                     .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
             }
             if log.completedSets == 0 && !hasFinished {
-                Text("完成首组后即可保存本堂训练。")
+                Text("完成第一组后可保存。")
                     .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
             }
         }

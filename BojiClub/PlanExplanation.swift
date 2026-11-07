@@ -79,7 +79,7 @@ struct PlanExplanationCard: View {
                 Spacer()
                 Image(systemName: "text.bubble").foregroundStyle(.secondary).accessibilityHidden(true)
             }
-            Text(notice == nil ? "为什么这样为你安排" : "原方案的制定依据").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
+            Text(notice == nil ? "安排依据" : "原方案的制定依据").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
             if let notice { Text(notice).bojiType(.secondary).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true) }
             ForEach(Array(explanation.summary.prefix(3).enumerated()), id: \.offset) { index, text in
                 HStack(alignment: .top, spacing: BojiLayout.inline) {

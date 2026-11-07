@@ -91,8 +91,8 @@ struct PlanView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: ClubUI.sectionSpacing) {
                         FlowHeading(eyebrow: preview == nil ? "MADE FOR YOUR LIFE" : "YOUR TRAINING BLUEPRINT",
-                                    title: preview == nil ? "把目标，变成日程。" : "你的训练安排已准备好。",
-                                    subtitle: preview == nil ? "从 \(ClubDates.label(planStartDate)) 开始，为每一次训练留出位置。" : "先看整体节奏，再逐项调整。确认后才写入月历。")
+                                    title: preview == nil ? "训练计划" : "训练安排已准备好。",
+                                    subtitle: preview == nil ? "从 \(ClubDates.label(planStartDate)) 开始。" : "确认后写入月历。")
                         if let preview {
                             planSummary(preview).clubReveal()
                             if let explanation = preview.explanation, explanation.version == 1 {
@@ -136,7 +136,7 @@ struct PlanView: View {
             }
             .sheet(item: $editableDraft) { ManualPlanView(initialDraft: $0) }
             .sheet(item: $adoptionPreview) { value in adoptionSheet(value) }
-            .navigationTitle(preview == nil ? "制定计划" : "确认计划").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(preview == nil ? "生成" : "确认").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { guard editingAccountID != nil, editingAccountID == store.editingAccountID else { dismiss(); return }; if store.savePlanText(text) { dismiss() } else { error = store.takeMessage() } } label: { Image(systemName: "xmark").bojiType(.secondary) }.accessibilityLabel("关闭，保留进度")
@@ -205,7 +205,7 @@ struct PlanView: View {
             // Legacy parse jobs remain readable; new plans start from generation or the schedule editor.
             if mode == "generate_plan" {
                 FlowSurface {
-                    Label("根据你的训练档案", systemImage: "person.crop.circle").bojiType(.secondary).foregroundStyle(FlowPalette.secondaryInk)
+                    Label("按你的训练档案", systemImage: "person.crop.circle").bojiType(.secondary).foregroundStyle(FlowPalette.secondaryInk)
                     Text(store.state.profile.goal).bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
                     planWeightChoice
                     if !store.state.profile.canPrepareTrainingPlan { Button("核对训练日与条件") { showConditions=true }.buttonStyle(SecondaryButton()) }
@@ -216,7 +216,7 @@ struct PlanView: View {
                     Divider()
                     Text("\(store.state.profile.experience) · 优先关注\(store.state.profile.focus)").bojiType(.label).foregroundStyle(.secondary)
                     if let limitations = store.state.profile.limitations, !limitations.isEmpty {
-                        Text("AI 记忆禁忌与偏好：\(limitations)").bojiType(.label).foregroundStyle(FlowPalette.secondaryInk)
+                        Text("禁忌与偏好：\(limitations)").bojiType(.label).foregroundStyle(FlowPalette.secondaryInk)
                     }
                 }
                 Label("生成后可查看动作示范，修改动作、组数与次数。", systemImage: "slider.horizontal.3")
@@ -232,7 +232,7 @@ struct PlanView: View {
                     }
                     HStack { Text("原文自动保存在当前账号"); Spacer(); Text("\(text.count) / 16000") }.bojiType(.caption).foregroundStyle(.secondary)
                 }
-                Text("AI 会整理日期、动作与组次。识别结果由你确认后保存。")
+                Text("日期、动作与组次已整理，确认后保存。")
                     .bojiType(.label).foregroundStyle(.secondary)
             }
         }
@@ -245,7 +245,7 @@ struct PlanView: View {
             HStack(spacing: BojiLayout.cardInset) {
                 AIProcessingMark()
                 VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                    Text(mode == "parse_plan" ? "正在整理你的计划" : "正在制定你的训练安排").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
+                    Text(mode == "parse_plan" ? "正在生成计划" : "正在生成计划").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
                     Text(waitingMessage)
                         .bojiType(.label).foregroundStyle(.secondary)
                 }
@@ -261,11 +261,11 @@ struct PlanView: View {
 
     private var waitingMessage: String {
         if job?.errorCode == "invalid_output" {
-            return "AI 已返回方案，但日期或内容未符合要求，正在重新生成；你的资料已保留。"
+            return "方案日期或内容不符合要求，正在重新生成。资料已保留。"
         }
         if job?.status == "retrying" { return "服务暂时未完成，正在自动重试；你的资料已保留。" }
         if job?.status == "pending" { return "任务等待处理，输入已经保留。" }
-        return "正在等待 AI 返回完整方案。"
+        return "正在生成计划…"
     }
 
     private var failure: some View {
@@ -284,14 +284,14 @@ struct PlanView: View {
     private func planSummary(_ result: AIResult) -> some View {
         FlowSurface {
             HStack { Label("已准备好", systemImage: "checkmark.circle.fill").foregroundStyle(FlowPalette.secondaryInk); Spacer(); Text("\(sessions.count) 个训练日").foregroundStyle(.secondary) }.bojiType(.caption)
-            Text(PlanDisplayCopy.heading(result.title ?? "", fallback: "你的训练方案")).bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
+            Text(PlanDisplayCopy.heading(result.title ?? "", fallback: "训练方案")).bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
             if mode == "generate_plan", sessions.contains(where: { $0.date < ClubDates.key(Date()) }) {
-                Text("部分安排的日期已经过去。保留这份预览，可以从今天重新制定，避免写入过去的计划。")
+                Text("部分日期已过去。保留预览，可从今天重新生成。")
                     .bojiType(.secondary).foregroundStyle(.secondary)
                 Button("从今天重新安排") { planStartDate = Date() }.buttonStyle(SecondaryButton())
             }
             if let length = result.plan_days {
-                Text("\(length) 天安排 · 每周可以回顾并确认调整下一周")
+                Text("\(length) 天安排 · 每周可确认调整下一周")
                     .bojiType(.secondary).foregroundStyle(.secondary)
                 if length > 7 {
                     Text("第 2 周起沿用基础周的动作与组次，不自动加重；后续强度由每周回顾后确认调整。")

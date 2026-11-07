@@ -8,7 +8,7 @@ extension ClubInsightKind {
         case .body: return "身体动态"
         case .workout: return "完成小结"
         case .plan: return "日程跟进"
-        default: return "智能分析"
+        default: return "分析"
         }
     }
     var symbol: String {
@@ -164,7 +164,7 @@ struct ClubInsightMessageView: View {
                     .padding(.top, BojiSpace.tightRow)
             }.bojiType(.label).tint(BojiColor.textSecondary)
             if display != .current {
-                Text(display == .updated ? "记录已更新，请以最新依据为准" : "这条洞察目前不可执行")
+                Text(display == .updated ? "记录已更新，请以最新依据为准" : "这条洞察不可执行")
                     .bojiType(.label).foregroundStyle(BojiColor.textSecondary)
             }
 
@@ -393,7 +393,7 @@ struct ClubInsightTimelineView: View {
                 filterSection
 
                 if threads.isEmpty {
-                    EmptyNote(title: "暂无此类跟进", detail: "记录训练、饮食或称重后，Club AI 会根据实际记录给出洞察。")
+                    EmptyNote(title: "还没有洞察", detail: "记录训练、饮食或称重后显示。")
                         .padding(.top, BojiLayout.blockGap)
                 }
 
@@ -415,7 +415,7 @@ struct ClubInsightTimelineView: View {
             .frame(maxWidth: .infinity)
         }
         .background { ClubBackground() }
-        .navigationTitle("Club AI Insights")
+        .navigationTitle("洞察")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if !embedded {
@@ -468,8 +468,8 @@ struct ClubInsightTimelineView: View {
                 HStack(spacing: BojiLayout.inline) {
                     Image(systemName: "sun.max.fill").foregroundStyle(BojiColor.aiGold)
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("今日日报").bojiType(.secondary).foregroundStyle(BojiColor.textPrimary)
-                        Text(hasDaily ? "已生成 · 点击查看" : "按今日记录生成")
+                        Text("今日").bojiType(.secondary).foregroundStyle(BojiColor.textPrimary)
+                        Text(hasDaily ? "已生成" : "按今日记录生成")
                             .bojiType(.caption).foregroundStyle(BojiColor.textSecondary).lineLimit(1)
                     }
                     Spacer(minLength: 2)
@@ -486,7 +486,7 @@ struct ClubInsightTimelineView: View {
                     Image(systemName: "calendar.badge.checkmark").foregroundStyle(BojiColor.aiViolet)
                     VStack(alignment: .leading, spacing: 0) {
                         Text("上周解读").bojiType(.secondary).foregroundStyle(BojiColor.textPrimary)
-                        Text(hasWeekly ? "已完成 · 点击查看" : readiness.trainingReady ? "已达标 · 可开始复盘" : "训练 \(readiness.trainingDays)/\(readiness.neededTrainingDays) 天")
+                        Text(hasWeekly ? "已完成 · 点击查看" : readiness.trainingReady ? "已达标 · 可生成周报" : "训练 \(readiness.trainingDays)/\(readiness.neededTrainingDays) 天")
                             .bojiType(.caption).foregroundStyle(BojiColor.textSecondary).lineLimit(1)
                     }
                     Spacer(minLength: 2)
@@ -506,7 +506,7 @@ struct ClubInsightTimelineView: View {
             Text(ClubAIStatusRules.summary(state: store.state, date: Date()))
                 .bojiFont(.secondary)
                 .foregroundStyle(BojiColor.textSecondary)
-            Text("现在最值得关注")
+            Text("今日重点")
                 .bojiFont(.pageTitle)
                 .foregroundStyle(BojiColor.textPrimary)
         }

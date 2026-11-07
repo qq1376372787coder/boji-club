@@ -419,7 +419,7 @@ struct FirstLaunchPermissionsView: View {
             FlowBackground()
             ScrollView {
                 VStack(alignment: .leading, spacing: BojiLayout.sectionGap) {
-                    FlowHeading(eyebrow: "首次设置", title: "开启提醒与健康同步", subtitle: "随时可以在「设置」里更改；也可以先跳过，不影响记录。")
+                    FlowHeading(eyebrow: "首次设置", title: "开启提醒与健康同步", subtitle: "可随时在设置中更改，也可以先跳过。")
                     ClubCard {
                         HStack(alignment: .top, spacing: BojiLayout.rowGap) {
                             Image(systemName: "bell.badge").bojiType(.section).foregroundStyle(ClubBrand.accent)

@@ -116,7 +116,7 @@ struct SettingsHub130: View {
             }
             Section("偏好") {
                 NavigationLink { NotificationSettingsView().clubPushDestination132() } label: { Text("通知与提醒") }
-                NavigationLink { ClubAISettingsView().clubPushDestination132() } label: { Text("AI 跟进") }
+                NavigationLink { ClubAISettingsView().clubPushDestination132() } label: { Text("跟进") }
             }
             Section("数据与隐私") {
                 NavigationLink { HealthConnectionsView(date: Date()).clubPushDestination132() } label: { Text("健康与设备") }
@@ -158,7 +158,7 @@ private struct ClubCloudPrivacyView130: View {
                 AIPrivacyConsentControls130()
             } footer: { Text("主动发送的文字、照片和选中记录用于云端 AI 分析。关闭后仍可手动记录。") }
             Section {
-                NavigationLink { ClubActionPreferencesView().clubPushDestination132() } label: { Text("AI 记录与授权") }
+                NavigationLink { ClubActionPreferencesView().clubPushDestination132() } label: { Text("数据与授权") }
                 NavigationLink { LegalDocumentView(document: .privacy).clubPushDestination132() } label: { Text("隐私政策") }
                 NavigationLink { LegalDocumentView(document: .aiNotice).clubPushDestination132() } label: { Text("AI 服务说明") }
                 NavigationLink { LegalDocumentView(document: .healthDisclaimer).clubPushDestination132() } label: { Text("健康与运动风险提示") }
