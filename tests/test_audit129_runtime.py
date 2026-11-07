@@ -65,7 +65,10 @@ try:
   code,body,_=get(opener,base+'?p=login');csrf=re.search(rb'name="csrf" value="([^"]+)"',body).group(1).decode()
   data=urllib.parse.urlencode({'csrf':csrf,'action':'login','username':'fixture-'+role,'password':'fixture-password129'}).encode()
   code,body,_=get(opener,base,data);assert code==200 and ('fixture-'+role).encode() in body,(role,code)
-  allowed={'photo':role!='content','reward_photo':role!='support','catalog_photo':role!='support','ai_live':role not in ['support','content']}
+  # 成员饮食照片走 users_sensitive（仅 super_admin/operator，见 index.php photo
+  # 处理器注释与 requireAdminWrite('member_photo')）；旧矩阵 photo:role!='content'
+  # 是收紧前的语义，已按现行权限更新。其余端点仍按页面权限矩阵。
+  allowed={'photo':role in ('super_admin','operator'),'reward_photo':role!='support','catalog_photo':role!='support','ai_live':role not in ['support','content']}
   for endpoint in endpoints:
    page=urllib.parse.parse_qs(endpoint[1:])['p'][0];expected=200 if allowed[page] else 403
    before=Stats.count;code,body,content=get(opener,base+endpoint)

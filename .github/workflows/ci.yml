@@ -37,6 +37,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Install test dependencies (must be visible under python3 -I)
+        # test_backup_status 需要 cryptography（backup.py AES-256-GCM）。
+        # 注意：套件用 python3 -I 跑，-I 不加载 user site——必须装进 system site，
+        # 装完用 -I 自检，防止“装了但看不见”。
+        run: |
+          python3 -I -c "import cryptography" 2>/dev/null && exit 0
+          sudo python3 -m pip install cryptography \
+            || sudo python3 -m pip install --break-system-packages cryptography \
+            || python3 -m pip install --break-system-packages cryptography
+          python3 -I -c "import cryptography; print('cryptography visible under -I')"
       - name: Python offline regression
         run: python3 -I tests/run_offline.py
 
