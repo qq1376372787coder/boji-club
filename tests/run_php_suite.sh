@@ -94,8 +94,13 @@ for file in "$ROOT"/tests/test_*.php; do
 done
 echo "PHP suites: $(grep -c PASS "$OUT/results.tsv") passed, $fail failed. Logs: $OUT"
 if [ "$fail" -gt 0 ]; then
-  # CI 回收 runner 后日志丢失——失败套件名必须直接进 job 输出。
+  # CI 回收 runner 后日志丢失——失败套件名与错误尾部必须直接进 job 输出。
   echo "--- failed suites ---"
   grep -F "FAIL" "$OUT/results.tsv" || true
+  echo "--- failure tails ---"
+  grep -F "FAIL" "$OUT/results.tsv" | cut -f1 | while read -r name; do
+    echo "### $name"
+    tail -n 8 "$OUT/$name.log" 2>/dev/null || true
+  done
 fi
 exit $([ $fail -eq 0 ] && echo 0 || echo 1)

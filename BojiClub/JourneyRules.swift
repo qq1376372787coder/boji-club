@@ -79,7 +79,8 @@ enum CloudAnalysisConsent {
     // allowed; the first AI action asks for consent before any job is sent.
     static func key(accountID: Int) -> String { "ai.routing-consent.v3.\(accountID)" }
     static func allowed(accountID: Int?, defaults: UserDefaults = .standard) -> Bool {
-        guard let accountID, accountID > 0 else { return true }
+        // 已登出 / 无效 owner 永不放行：无账号即无从决策、也无从撤回。
+        guard let accountID, accountID > 0 else { return false }
         let value = defaults.object(forKey: key(accountID: accountID)) as? Bool
         // 未决策 = 不放行（与本枚举顶部注释、fail-closed 同意原则一致）。
         // 原 `?? true` 使从未表态的账号默认开启健康数据云端分析——隐私回归，
