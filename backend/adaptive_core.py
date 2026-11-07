@@ -3,6 +3,11 @@ import copy
 import datetime as dt
 import uuid
 
+# 统一渐进策略 progression.policy.v1：加重上限的唯一真源在 fitness_intelligence，
+# 本模块与 progression_advisory 共用它，保证"聊天渐进建议"与"加重量能力"两个入口
+# 对同一重量给出同一结论（评估报告 P1-4）。
+from fitness_intelligence import max_load_increase
+
 def clean_upcoming(raw, date, helpers):
     text, number, sequence, iso_date = helpers
     start = iso_date(date)
@@ -29,7 +34,19 @@ def clean_upcoming(raw, date, helpers):
     return sorted(rows,key=lambda s:s['date'])
 
 def supported_increase(payload, movement, value, before):
-    if before<=0 or value>before+max(2.5,before*0.05):return False
+    # 统一口径（progression.policy.v1，保守侧优先）：上限 = max_load_increase(before)
+    # = min(2.5kg, 5%) 向下取 0.5kg 粒度，另受 10% 硬顶约束。
+    # 修订前这里是 max(2.5, 5%)：5kg 放行到 7.5kg（+50%）、20kg 放行到 22.5kg（+12.5%），
+    # 与 progression_advisory 的 min(2.5, 5%) 且 ≤10% 方向相反——同一用户两入口结论冲突。
+    # 现在两处调用同一函数：5kg 上限为 0（两入口都回答"不加重"，小重量走 reps 进阶）、
+    # 20kg 上限 1.0kg、100kg 上限 2.5kg（绝对值封顶）。只收紧不放宽。
+    if before <= 0:
+        return False
+    cap = max_load_increase(before)
+    # 只收紧"加重"这一侧：非加重请求沿用原语义继续走证据校验，
+    # 上限为 0（<10kg）时任何加重都拒绝——此时另一入口同样回答"不加重"。
+    if value > before and (cap <= 0 or value > before + cap):
+        return False
     identity='custom_id' if movement.get('custom_id') else 'library_id'
     if not movement.get(identity):return False
     observed=set();sessions=set()
