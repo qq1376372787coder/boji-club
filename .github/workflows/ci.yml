@@ -1,19 +1,30 @@
-# BOJI CLUB CI（R-02）
+# BOJI CLUB CI（R-02）· GitHub Actions
 #
-# 统一入口：scripts/run-all-checks.sh（Python 离线 640 项 + Swift 规则链 52 个 +
-# 模拟器编译 + 单元测试 + UI 测试含无障碍审计与启动性能采样）。
+# 托管：GitHub（2026-11-07 用户确认）。push 到 main/develop、PR、手动触发（workflow_dispatch）均运行。
+#
+# 任务矩阵：
+# · checks               — 统一入口 scripts/run-all-checks.sh（Python 离线回归 + Swift 规则链 +
+#                          模拟器编译 + 单元测试 + UI 测试含无障碍审计与启动性能采样），macOS
+# · action-backend       — AI Action 关键 PHP 回归（5 套件 + capability unittest），MySQL 8.4
+# · admin-runtime-integration — 审计 SQL/并发/后台 HTTP 集成，MySQL 8.4
+# · php-suite            — PHP 全量套件 tests/run_php_suite.sh（此前只在本地跑，R-02 遗留项）
+# · php-subdir-regression— tests/php/ 子目录 4 个测试（R-39：曾被 runner glob 漏掉；首次纳入
+#                          先 continue-on-error 非阻塞，全绿稳定一个周期后改为阻断）
+# · release-gate         — scripts/check-release-ready.py 发布门禁（当前存在已知阻断项：
+#                          缺 ReleaseChecklist.local.plist、LegalReviewed 未确认、隐私政策域名
+#                          无解析；先非阻塞以暴露状态，阻断项清零后移除 continue-on-error）
 #
 # 说明：
 # · 需要 Xcode 26+ 与 iPhone 17 模拟器运行时（首次由 -destination 自动解析可用机型）。
-# · AI Action 的关键 PHP/MySQL 回归在下方 action-backend 独立任务执行。
-# · 本仓库当前无远端托管；接入 GitHub/GitLab 后此文件立即生效。
-# · 密钥提示：本仓库不含任何密钥；CI 无需配置 secrets。
+# · 本 workflow 不使用任何 secrets：GitHub PAT 只用于人工 git push，绝不进 workflow/仓库。
+# · 本地与 CI 同源：scripts/run-all-checks.sh 与 tests/run_php_suite.sh。
 
 name: ci
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   checks:
@@ -91,3 +102,84 @@ jobs:
           php tests/test_audit129_sql.php check
       - name: Run real concurrent transaction and Admin HTTP integration
         run: python3 tests/test_audit129_runtime.py
+
+  php-suite:
+    # R-02 遗留项：PHP 全量套件此前只在交付验证中人工执行，未进 CI。
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: fixture-only
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pfixture-only"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      BOJI_TEST_DSN_BASE: mysql:host=127.0.0.1;port=3306
+      BOJI_TEST_DB_USER: root
+      BOJI_TEST_DB_PASSWORD: fixture-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, mbstring, gd
+          coverage: none
+      - name: Run full PHP suite (isolated, refuses configured checkout)
+        run: bash tests/run_php_suite.sh
+
+  php-subdir-regression:
+    # R-39：tests/php/ 下 4 个测试不在 run_php_suite.sh 的 glob（tests/test_*.php）内，静默漏跑。
+    # 首次纳入、从未在任何流水线执行过——先非阻塞暴露真实状态；连续全绿一个周期后
+    # 移除本行 continue-on-error，改为阻断任务。
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: fixture-only
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pfixture-only"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      BOJI_TEST_DSN_BASE: mysql:host=127.0.0.1;port=3306
+      BOJI_TEST_DB_USER: root
+      BOJI_TEST_DB_PASSWORD: fixture-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, mbstring, gd
+          coverage: none
+      - name: Prepare fixture schemas for the four subdir tests
+        run: |
+          php -r 'require "tests/php_test_bootstrap.php";
+          $pdo = new PDO(getenv("BOJI_TEST_DSN_BASE"), getenv("BOJI_TEST_DB_USER") ?: "root", getenv("BOJI_TEST_DB_PASSWORD") ?: "", [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+          foreach (["bojiclub_automation_test", "bojiclub_media_test"] as $db) {
+              $pdo->exec("DROP DATABASE IF EXISTS `$db`");
+              bojiTestSchema(bojiTestDatabase($db), "account-server");
+          }'
+      - name: Run tests/php subdirectory tests (R-39)
+        run: |
+          BOJI_TEST_DB=bojiclub_automation_test php tests/php/test_automation_terminal.php
+          BOJI_TEST_DB=bojiclub_media_test php tests/php/test_media_store_atomic.php
+          php tests/php/test_cloud_dictionary_types.php
+          php tests/php/test_plan_lifecycle.php
+
+  release-gate:
+    # 发布门禁（P0-2 修复版）：真实校验 DNS、签名团队、LegalReviewed、隐私政策 URL 可访问性。
+    # 当前已知未通过项为真实发布阻断（见 scripts/check-release-ready.py 输出），故先非阻塞；
+    # 阻断项清零后移除本行 continue-on-error，让门禁真正拦住不合规合并/发布。
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Release readiness gate
+        run: python3 scripts/check-release-ready.py
