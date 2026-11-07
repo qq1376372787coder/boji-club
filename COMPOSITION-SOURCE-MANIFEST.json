@@ -1,0 +1,102 @@
+{
+  "baseline": "user-supplied 20261020 ZIP",
+  "modifiedSwiftFiles": [
+    {
+      "file": "BojiClub/AIService.swift",
+      "sha256": "beaa470c37b1791f14547624fccb25d68a4d7ef51f9c68c14bb19c5e20c67107"
+    },
+    {
+      "file": "BojiClub/AppStore.swift",
+      "sha256": "51993e3a5dc0e75c4a6e3c7d5f71114a12b8517175e005099993ef27ace4eb64"
+    },
+    {
+      "file": "BojiClub/BodyWeightView.swift",
+      "sha256": "4f1e7760d40d22d3a45289207bc7d9573fc77240894f12ca3040c86c01e9dde8"
+    },
+    {
+      "file": "BojiClub/BojiClubApp.swift",
+      "sha256": "6e1ab52706e0efcb7ca6b207568b715df463ef5a6f658597b28c5f94db21a229"
+    },
+    {
+      "file": "BojiClub/BojiComponentGalleryView.swift",
+      "sha256": "036218be6b278c68af6b63bd7bd679d896f67d13726e7a897d7416e7085d70e2"
+    },
+    {
+      "file": "BojiClub/BojiComponents.swift",
+      "sha256": "7dcee29b4638ca1ecdfbb60f9bcef1d8c3f3461868548debe1a30272640fbe20"
+    },
+    {
+      "file": "BojiClub/ClubInsightTimelineView.swift",
+      "sha256": "fafcf37bd2123a8973e78e2e6ce46db6e2cd65d8c5596493d25d0bcf6e8c30e8"
+    },
+    {
+      "file": "BojiClub/ClubSeason.swift",
+      "sha256": "ff917503501387346501e27bd953336fa77b20830d64a27fb4be2b5ec7808386"
+    },
+    {
+      "file": "BojiClub/ClubSeasonView.swift",
+      "sha256": "1e86a40394d3e7e8b90debe58c32985822182f1aee5773928f11bc3f7f35950d"
+    },
+    {
+      "file": "BojiClub/ClubWorkoutSummaryView.swift",
+      "sha256": "13e3294aebbd937a7c0a7818e664b6f6827cc1e56ea8c2f0689fa938f34d35d7"
+    },
+    {
+      "file": "BojiClub/DesignTokens.swift",
+      "sha256": "fb45ceb3d1e2c24a9ea15ef2ccc84284d7f53da53bb4853c73665029b6d6ac74"
+    },
+    {
+      "file": "BojiClub/ExerciseLibraryView.swift",
+      "sha256": "b15b9146c8e5f5248d3d91259b643b20d08b9bc7ceb82cfd93674e731ec80cf7"
+    },
+    {
+      "file": "BojiClub/HomeView.swift",
+      "sha256": "b4b3e4961505d7010699578bdc26e230e30058f07cd4e477f7bcc23154fa502f"
+    },
+    {
+      "file": "BojiClub/NutritionView.swift",
+      "sha256": "43f91c347bf6d3f2d72029cd38011d69df6b4d7d4e633e42456723c53ea37251"
+    },
+    {
+      "file": "BojiClub/OnboardingView.swift",
+      "sha256": "b335b98d70233e888597be028c36896ccae2506f80b2632ed8a87ee70f21448c"
+    },
+    {
+      "file": "BojiClub/PlanHubViews.swift",
+      "sha256": "491082e6d50c0c539f35ddd06712abc67a47f0fed1b6f168fcc0d2fab801985b"
+    },
+    {
+      "file": "BojiClub/PlanView.swift",
+      "sha256": "14326339919694b3970b06029997597f8a3b3944c57351e89041dcadb43b3704"
+    },
+    {
+      "file": "BojiClub/ProductArchitecture.swift",
+      "sha256": "e741ab6bcbee37bf7cc27aa5579bbe26e0f9e2cba3e507a5873fdd7c567ae5bf"
+    },
+    {
+      "file": "BojiClub/ProfileView.swift",
+      "sha256": "628a030b9e783224df2a2412c10ae4022ce08060a257e9095fe7086177ad9f5a"
+    },
+    {
+      "file": "BojiClub/ReportLibraryView.swift",
+      "sha256": "5ee7106e0979ea8a44a19902aef353bd4cb17c3508cc76fc8d588d9492669c9e"
+    },
+    {
+      "file": "BojiClub/ReviewDashboardView.swift",
+      "sha256": "3d2f8a85a0d950c855b7810a2c67d954dd9cc7e10334fdbda9df4fb3d682e1db"
+    },
+    {
+      "file": "BojiClub/TrainingPreviewView.swift",
+      "sha256": "af877dc351e923389c1a3f98902c7b17b7d3cdeb8f54fbe01987e56fdbfa9919"
+    },
+    {
+      "file": "BojiClub/WorkoutView.swift",
+      "sha256": "24f6aba583a17568f2d291d05d13bb8bb8e23f89ae159fbb761c885626c4b08c"
+    },
+    {
+      "file": "BojiClubUITests/BojiClubUITests.swift",
+      "sha256": "c4acc07afe3a11a35e3330c14a8b46de8b0dbe56cbe34b8e344d3758f458f157"
+    }
+  ],
+  "note": "Historical release manifests retained as archival records; this file describes only composition work."
+}

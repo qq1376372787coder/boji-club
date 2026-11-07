@@ -1,0 +1,58 @@
+{
+  "build": 106,
+  "deployed": true,
+  "server": "117.50.119.49",
+  "backup": "/opt/bojiclub-account/.backups/build106-20261016-032009",
+  "protected_sqlite_backup": "/opt/bojiclub-account/.backups/build106-20261016-032009/jobs-before.sqlite3",
+  "hashes": {
+    "account-server/public/automation.php": "ce1ed568eb8c75ef341d25f353da65751032e970ab69fdb07456e0284b2f0c92",
+    "account-server/public/task-recovery.php": "33104af7d612463878471a43e09d0479d70c65ebeed92600c0fdf9b3958bce67",
+    "account-server/public/weekly.php": "653987718113b07562f5ecfe1bc9a016e084f24f3cc9e47f8bea02da6ddad615",
+    "account-server/process-club-automation.php": "4d3700a386d267760c551fd86c6a9c8d2ba9a4e2e58184694c8dd89242e9de7a",
+    "backend/adaptive_core.py": "5b576ea68785de9d6f1a5a0993a6d806b2ea4066966b772dabfced716e5cbc9c",
+    "backend/automation_core.py": "86dcedacf63fddeb140417523a334ca6ca8da0faafee9e268416d199a5e8523c",
+    "backend/server.py": "0386cd3737d653b70762e8f4c69b7e3da24590a3168137fc8e155f5e405f9ca2"
+  },
+  "sqlite_migration": {
+    "report_archive_ready": true,
+    "capacity_settings_unchanged": true
+  },
+  "production_tests": {
+    "passed": true,
+    "tests": 98,
+    "production_import_paths_verified": true,
+    "real_models_called": false
+  },
+  "backend_regressions": {
+    "passed": true,
+    "tests": 336,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database_integration": {
+    "passed": true,
+    "checks": 34,
+    "pagination_total_recovered": 52,
+    "archived_report_after_45_days": true,
+    "direct_id_lookup": true,
+    "cross_account_access_blocked": true,
+    "partitioned_old_goal_restored": true,
+    "setting_and_record_conflicts_distinguished": true,
+    "real_models_called": false,
+    "production_account_data_used": false
+  },
+  "php_groups": 19,
+  "services": [
+    "active",
+    "active",
+    "active",
+    "active"
+  ],
+  "health": "ok",
+  "provider_calls_made": false,
+  "payment_config_changed": false,
+  "apns_config_changed": false,
+  "capacity_settings_unchanged": true,
+  "xcode_executed": false
+}

@@ -1,0 +1,30 @@
+{
+  "original_retained": 1324,
+  "original_visible": 665,
+  "original_hidden_retained": 659,
+  "supplemental_without_demo": 13,
+  "visible_total": 678,
+  "original_added": 315,
+  "added_total": 328,
+  "categories": {
+    "背": 98,
+    "大腿": 88,
+    "核心": 106,
+    "肩": 73,
+    "手臂": 122,
+    "臀": 49,
+    "胸": 64,
+    "小腿": 31,
+    "有氧与全身": 47
+  },
+  "training_types": {
+    "力量／稳定性": 586,
+    "拉伸／活动度": 45,
+    "有氧": 20,
+    "体能／全身": 27
+  },
+  "unique_ids_and_names": true,
+  "source_media_mapping_unchanged": true,
+  "all_gifs_technique_verified": false,
+  "country_usage_frequency_measured": false
+}

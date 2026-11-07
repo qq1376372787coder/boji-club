@@ -1,0 +1,2658 @@
+import Foundation
+import CryptoKit
+
+enum ClubDates {
+    static func isFuture(_ date: Date, now: Date = Date()) -> Bool {
+        calendar.startOfDay(for: date) > calendar.startOfDay(for: now)
+    }
+    static var calendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        return calendar
+    }
+
+    private static let formatterCache = ClubDateFormatterCache()
+    static func key(_ date: Date) -> String { formatterCache.string(date, format: "yyyy-MM-dd", locale: "en_US_POSIX") }
+    static func date(fromKey value: String) -> Date? { formatterCache.date(value) }
+    static func label(_ date: Date, format: String = "M月d日") -> String { formatterCache.string(date, format: format, locale: "zh_CN") }
+
+}
+
+final class ClubDateFormatterCache: @unchecked Sendable {
+    private let lock = NSLock()
+    private var formatters: [String: DateFormatter] = [:]
+    func string(_ date: Date, format: String, locale: String, timezone: TimeZone = .current) -> String {
+        lock.lock(); defer { lock.unlock() }
+        return formatter(format: format, locale: locale, timezone: timezone).string(from: date)
+    }
+    func date(_ value: String, timezone: TimeZone = .current) -> Date? {
+        lock.lock(); defer { lock.unlock() }
+        let f = formatter(format: "yyyy-MM-dd", locale: "en_US_POSIX", timezone: timezone)
+        guard let date = f.date(from: value), f.string(from: date) == value else { return nil }
+        return date
+    }
+    private func formatter(format: String, locale: String, timezone: TimeZone) -> DateFormatter {
+        let key = locale + "/" + format + "/" + timezone.identifier
+        if let found = formatters[key] { return found }
+        if formatters.count >= 32 { formatters.removeAll() }
+        let f = DateFormatter(); f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: locale); f.timeZone = timezone
+        f.dateFormat = format; f.isLenient = false; formatters[key] = f
+        return f
+    }
+}
+
+struct TrainingSet: Identifiable, Codable, Equatable {
+    var id = UUID()
+    var weight: Double = 0
+    var reps: Int = 10
+    var completed = false
+    var durationSeconds: Int? = nil
+    var validCompletion: Bool { completed && (durationSeconds.map { $0 > 0 } ?? (reps > 0)) }
+    var volume: Double { validCompletion && durationSeconds == nil ? weight * Double(reps) : 0 }
+}
+
+struct Exercise: Identifiable, Codable {
+    var id = UUID()
+    var name: String
+    var muscle: String
+    var displayName: String { customExerciseID != nil ? name : ExerciseNames.display(name, id: libraryID, query: libraryQuery) }
+    var sets: [TrainingSet] = (0..<3).map { _ in TrainingSet() }
+    var libraryID: String?
+    var equipment: String?
+    var imageURL: String?
+    var gifURL: String?
+    var libraryQuery: String?
+    var deletedSetIDs: [String]?
+    var workoutSessionID: UUID? = nil
+    var customExerciseID: UUID? = nil
+    var customUnit: String? = nil
+    var restSeconds: Int? = nil
+    enum CodingKeys: String, CodingKey { case id, name, muscle, sets, libraryID, equipment, imageURL, gifURL, libraryQuery, deletedSetIDs, workoutSessionID, customExerciseID, customUnit, restSeconds }
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id); try c.encode(name, forKey: .name); try c.encode(muscle, forKey: .muscle); try c.encode(sets, forKey: .sets)
+        try c.encodeIfPresent(libraryID, forKey: .libraryID); try c.encodeIfPresent(equipment, forKey: .equipment)
+        try c.encodeIfPresent(imageURL, forKey: .imageURL); try c.encodeIfPresent(gifURL, forKey: .gifURL); try c.encodeIfPresent(libraryQuery, forKey: .libraryQuery)
+        try c.encodeIfPresent(deletedSetIDs, forKey: .deletedSetIDs); try c.encodeIfPresent(workoutSessionID, forKey: .workoutSessionID)
+        try c.encodeIfPresent(customExerciseID, forKey: .customExerciseID); try c.encodeIfPresent(customUnit, forKey: .customUnit)
+        // Explicit null resets an override; old clients omit this key entirely.
+        try c.encode(restSeconds, forKey: .restSeconds)
+    }
+}
+
+struct Meal: Identifiable, Codable {
+    var id = UUID()
+    var name: String
+    var category: String
+    var calories: Double
+    var protein: Double
+    var carbs: Double
+    var fat: Double
+    var photoFilename: String?
+    var photoRemoteID: String? = nil
+    var sourceAIJobID: String?
+    var estimated: Bool?
+    var estimateNotes: [String]?
+    var components: [FoodComponent]? = nil
+    var consumedFraction: Double? = nil
+    var nutritionKnown: Bool? = nil
+    var placementConflictDates: [String]? = nil
+    var placementConfirmedAt: Date? = nil
+    var hasNutrition: Bool { nutritionKnown != false }
+}
+
+struct WorkoutBaselineSet: Codable, Equatable {
+    var id: UUID
+    var exerciseID: UUID
+    var unit: String
+    var targetSeconds: Int?
+    var targetReps: Int? = nil
+    var targetWeight: Double? = nil
+    var targetRestSeconds: Int? = nil
+}
+
+struct WorkoutExecutionBaseline: Codable, Equatable {
+    var version = 1
+    var capturedAt: Date
+    var sets: [WorkoutBaselineSet]
+    var restSeconds: Int? = nil
+}
+
+struct WorkoutSession: Identifiable, Codable {
+    var id: UUID
+    var startedAt: Date?
+    var endedAt: Date?
+    var savedAt: Date?
+    var linkedDeviceWorkoutID: String?
+    var executionBaseline: WorkoutExecutionBaseline? = nil
+}
+
+struct DayLog: Codable {
+    var insightEvents: [ClubInsightEvent]? = nil
+    var insightFeedback: [ClubInsightFeedback]? = nil
+    var goalVersions: [ClubGoalVersion]? = nil
+    var planVersions: [ClubPlanVersion]? = nil
+    var exercises: [Exercise] = []
+    var meals: [Meal] = []
+    var health: HealthDay?
+    var weeklyReview: WeeklyReview?
+    var weeklyReviewHistory: [WeeklyReview]? = nil
+    var deletedWeeklyReviewIDs: [String]? = nil
+    var workoutSavedAt: Date?
+    // Optional additions keep all pre-0.13.18 records decodable.
+    var workoutStartedAt: Date?
+    var workoutEndedAt: Date?
+    var linkedDeviceWorkoutID: String?
+    var nutritionTarget: NutritionTarget?
+    var bodyWeight: BodyWeightEntry?
+    var workoutSessions: [WorkoutSession]? = nil
+    var activeWorkoutSessionID: UUID? = nil
+    var planCycle: TrainingCycle? = nil
+    var mealCompletion: MealCompletion? = nil
+    var movedFromDate: String? = nil
+    var plannedMoveDestination: String? = nil
+    var mealsComplete: Bool { !meals.isEmpty && mealCompletion?.signature == MealCompletion.signature(meals) }
+    var trainingLog: DayLog {
+        guard let active = activeWorkoutSessionID, workoutSessions?.contains(where: { $0.id == active }) == true else { return self }
+        var result = self
+        result.exercises = exercises.filter { $0.workoutSessionID == active }
+        result.workoutSessions = nil; result.activeWorkoutSessionID = nil
+        return result
+    }
+    var hasUnconfirmedTraining: Bool {
+        guard let sessions = workoutSessions, !sessions.isEmpty else { return completedSets > 0 && workoutSavedAt == nil }
+        return sessions.contains { session in
+            session.savedAt == nil && exercises.contains { $0.workoutSessionID == session.id && $0.sets.contains(where: \.validCompletion) }
+        }
+    }
+    var isTrainingConfirmed: Bool { completedSets > 0 && !hasUnconfirmedTraining }
+    var volume: Double { exercises.flatMap(\.sets).reduce(0) { $0 + $1.volume } }
+    var completedSets: Int { exercises.flatMap(\.sets).filter(\.validCompletion).count }
+    var totalSets: Int { exercises.reduce(0) { $0 + $1.sets.count } }
+    var timedSeconds: Int { exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0) { $0 + ($1.durationSeconds ?? 0) } }
+    var unknownNutritionMeals: Int { meals.filter { !$0.hasNutrition }.count }
+    var knownMeals: [Meal] { meals.filter(\.hasNutrition) }
+    var calories: Double { knownMeals.reduce(0) { $0 + $1.calories } }
+    var protein: Double { knownMeals.reduce(0) { $0 + $1.protein } }
+}
+
+struct MemberProfile: Codable, Equatable {
+    var nickname = "薄肌新成员"
+    var identityVersion: Int?
+    var avatarID: String?
+    var avatarImage: Data?
+    var gender: String?
+    var age = 28
+    var height: Double = 175
+    var weight: Double = 68
+    var goal = "增肌"
+    var experience = "新手"
+    var venue = "健身房"
+    var daysPerWeek = 3
+    var focus = "全身"
+    var equipment: String?
+    var equipmentOther: String?
+    var sessionMinutes: Int?
+    var limitations: String?
+    var trainingDays: [Int]?
+    var dailyActivity: String?
+    var nutritionContext: String?
+    var homeTrainingDays: [Int]?
+    var planDurationDays: Int? = nil
+    var aiProfile: MemberProfile { var copy = self; copy.identityVersion = nil; copy.avatarID = nil; copy.avatarImage = nil; copy.nickname = "薄肌成员"; return copy }
+}
+
+struct NutritionTarget: Codable, Equatable {
+    var caloriesMin: Double
+    var caloriesMax: Double
+    var proteinMin: Double
+    var proteinMax: Double
+    var fatMin: Double
+    var fatMax: Double
+    var meals: Int
+    var note: String
+
+    var maintenanceMin: Double? = nil
+    var maintenanceMax: Double? = nil
+    var strategy: String? = nil
+    var calculationVersion: Int? = nil
+    var generalGuidanceOnly: Bool? = nil
+
+    static func estimate(_ profile: MemberProfile) -> NutritionTarget {
+        let weight = profile.weight.isFinite ? max(20, min(400, profile.weight)) : 68
+        let height = profile.height.isFinite ? max(100, min(250, profile.height)) : 175
+        let age = max(18, min(100, profile.age))
+        let genderOffset = profile.gender == "女" ? -161.0 : profile.gender == "男" ? 5.0 : -78.0
+        let bmr = 10 * weight + 6.25 * height - 5 * Double(age) + genderOffset
+        let base = profile.dailyActivity == "日常体力活动较多" ? 1.55 : profile.dailyActivity == "经常站立走动" ? 1.4 : 1.2
+        let activity = min(1.85, base + Double(max(0, min(7, profile.daysPerWeek))) * 0.035)
+        let maintenance = min(9000, max(1400, bmr * activity))
+        let bmi = BodyProfileAssessment.bmi(profile)
+        let special = profile.age < 18 || (profile.nutritionContext != nil && profile.nutritionContext != "普通成人")
+        let underweight = bmi.map { $0 < 18.5 } ?? false
+        let lose = profile.goal.contains("减脂") && !underweight && !special
+        let gain = (profile.goal.contains("增肌") || profile.goal.contains("力量")) && (bmi ?? 24) < 24 && !special
+        let strategy = special ? "需要个别评估" : lose ? "温和热量缺口" : gain ? "小幅热量盈余" : "维持热量与规律训练"
+        let calories = maintenance * (lose ? 0.9 : gain ? 1.05 : 1)
+        let band = max(100, calories * 0.04)
+        var note = "估算结合身体资料、日常活动和每周训练频率。先观察至少两周的真实记录与体重均值，再决定调整；手表运动热量不直接加回饮食目标。"
+        if profile.dailyActivity == nil { note += "目前按主要久坐估算，可在资料页补充日常活动。" }
+        if underweight && profile.goal.contains("减脂") { note += "当前 BMI 偏轻，未设置减脂缺口，建议重新确认目标。" }
+        if special { note = "当前情况不适用通用成人减脂或增重算法。保留饮食记录与规律饮食建议，具体目标请结合专业评估。" }
+        return NutritionTarget(caloriesMin: max(1200, (calories-band).rounded()), caloriesMax: max(1300, (calories+band).rounded()),
+            proteinMin: (weight * (gain ? 1.6 : 1.2)).rounded(), proteinMax: (weight * (gain ? 2.0 : 1.6)).rounded(), fatMin: (weight*0.8).rounded(), fatMax: (weight*1.0).rounded(),
+            meals: 3, note: note, maintenanceMin: (maintenance*0.95).rounded(), maintenanceMax: (maintenance*1.05).rounded(),
+            strategy: strategy, calculationVersion: 2, generalGuidanceOnly: special)
+    }
+}
+
+struct PostDraft: Identifiable, Codable {
+    // Legacy records remain decodable; the forum feature has been removed.
+    var id = UUID()
+    var text: String
+    var createdAt = Date()
+}
+
+struct CustomExercise: Identifiable, Codable, Equatable {
+    var id = UUID()
+    var name = ""
+    var muscle = ""
+    var equipment = ""
+    var unit = "次"
+    var updatedAt = Date()
+    static let muscles = ["胸", "背", "肩", "手臂", "大腿", "臀", "小腿", "核心", "有氧"]
+    var normalizedName: String { name.trimmingCharacters(in: .whitespacesAndNewlines).folding(options: [.caseInsensitive, .widthInsensitive], locale: Locale(identifier: "zh_CN")) }
+    var valid: Bool { !normalizedName.isEmpty && name.unicodeScalars.count <= 60 && !name.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }) && ["次","秒"].contains(unit) && (muscle.isEmpty || Self.muscles.contains(muscle)) && equipment.unicodeScalars.count <= 60 }
+    var bodyPart: String { ["胸":"chest", "背":"back", "肩":"shoulders", "手臂":"upper arms", "大腿":"upper legs", "臀":"glutes", "小腿":"lower legs", "核心":"waist", "有氧":"cardio"][muscle] ?? "" }
+    var blankSet: TrainingSet { TrainingSet(reps: unit == "秒" ? 0 : 10, durationSeconds: unit == "秒" ? 30 : nil) }
+    func exercise() -> Exercise {
+        Exercise(name: name, muscle: muscle.isEmpty ? "未指定" : muscle, sets: (0..<3).map { _ in blankSet }, equipment: equipment.isEmpty ? nil : equipment, customExerciseID: id, customUnit: unit)
+    }
+}
+
+struct SavedState: Codable {
+    var version = 1
+    var days: [String: DayLog] = [:]
+    var profile = MemberProfile()
+    var drafts: [PostDraft] = []
+    var importedPlan = ""
+    // Optional for compatibility with records saved by version 0.1.
+    var appliedAIJobs: [String]?
+    var deletedExerciseIDs: [String]?
+    var deletedMealIDs: [String]?
+    var deletedMediaIDs: [String]?
+    var deletedAIJobIDs: [String]?
+    var nutritionTarget: NutritionTarget?
+    var customExercises: [CustomExercise]? = nil
+    var deletedCustomExerciseIDs: [String]? = nil
+}
+
+struct BodyWeightEntry: Codable, Equatable {
+    var kilograms: Double?
+    var updatedAt: Date
+    var isValid: Bool { kilograms.map { $0.isFinite && (20...400).contains($0) } ?? true }
+}
+
+struct BodyWeightPoint: Identifiable {
+    let date: Date
+    let kilograms: Double
+    var id: String { ClubDates.key(date) }
+}
+
+enum BodyWeightHistory {
+    static func points(days: [String: DayLog], through date: Date, limit: Int = 30) -> [BodyWeightPoint] {
+        let end = ClubDates.key(date)
+        return days.keys.sorted().filter { $0 <= end }.compactMap { key in
+            guard let entry = days[key]?.bodyWeight, entry.isValid,
+                  let kg = entry.kilograms, let measured = ClubDates.date(fromKey: key) else { return nil }
+            return BodyWeightPoint(date: measured, kilograms: kg)
+        }.suffix(max(0, limit)).map { $0 }
+    }
+}
+
+struct MealCompletion: Codable {
+    var signature: String
+    var updatedAt: Date = Date()
+    static func signature(_ meals: [Meal]) -> String {
+        // Media upload/download and provenance do not alter what the person ate.
+        let content = meals.sorted { $0.id.uuidString < $1.id.uuidString }.map { meal -> Meal in
+            var copy = meal; copy.photoFilename = nil; copy.photoRemoteID = nil
+            copy.estimateNotes = nil; copy.estimated = nil; copy.sourceAIJobID = nil
+            return copy
+        }
+        return ExperienceDigest.of(content)
+    }
+}
+
+enum BodyProfileAssessment {
+    static let activityOptions = ["主要久坐", "经常站立走动", "日常体力活动较多"]
+    static let contextOptions = ["普通成人", "孕期或哺乳期", "需按医生建议饮食"]
+    static func bmi(_ p: MemberProfile) -> Double? {
+        guard p.age >= 18, p.nutritionContext != "孕期或哺乳期", p.height.isFinite, (100...250).contains(p.height), p.weight.isFinite, (20...400).contains(p.weight) else { return nil }
+        return ((p.weight / pow(p.height / 100, 2)) * 10).rounded() / 10
+    }
+    static func category(_ p: MemberProfile) -> String {
+        guard let value = bmi(p) else { return "不适用成人 BMI 分类" }
+        if value < 18.5 { return "偏轻" }; if value < 24 { return "适中" }
+        return value < 28 ? "超重范围" : "肥胖范围"
+    }
+    static func suggestedGoal(_ p: MemberProfile) -> String {
+        guard let value = bmi(p), p.nutritionContext == nil || p.nutritionContext == "普通成人" else { return "养成运动习惯" }
+        return value < 18.5 ? "增肌塑形" : value >= 24 ? "减脂瘦身" : "增肌塑形"
+    }
+    static func explanation(_ p: MemberProfile) -> String {
+        if p.nutritionContext == "孕期或哺乳期" { return "孕期或哺乳期不使用当前体重的成人 BMI 分类来推荐减脂目标，请结合个人情况评估。" }
+        if p.age < 18 { return "未成年人不使用成人 BMI 分类和减脂热量目标，身体发育情况需要结合年龄评估。" }
+        guard bmi(p) != nil else { return "请核对身高与体重后查看 BMI 参考；超出适用范围时不提供分类。" }
+        return "BMI 只反映身高与体重关系，不能区分肌肉和脂肪。建议还要结合腰围、训练经验与个人目标；不会替你更改选择。"
+    }
+}
+
+enum ExperienceDigest {
+    // Stable, non-security fingerprint. sortedKeys also makes it device-independent.
+    static func of<T: Encodable>(_ value: T) -> String {
+        let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
+        guard let data = try? encoder.encode(value) else { return "invalid" }
+        var hash: UInt64 = 14695981039346656037
+        for byte in data { hash = (hash ^ UInt64(byte)) &* 1099511628211 }
+        return String(hash, radix: 16)
+    }
+}
+
+
+struct FoodComponent: Codable {}
+struct HealthDay: Codable { var hasData:Bool { false } }
+struct WeeklyReview: Codable { var result: String? = nil }
+enum ExerciseNames { static func display(_ name:String,id:String?,query:String?)->String { name } }
+
+
+struct AIPlanSet: Codable, Equatable { var weight: Double?; var reps: Int; var durationSeconds: Int? = nil
+    var repetitionLabel: String { durationSeconds.map { "\($0) 秒" } ?? "\(reps) 次" }
+}
+
+struct AIPlanExercise: Codable, Equatable { var name: String; var muscle: String; var sets: [AIPlanSet]; var library_query: String?; var library_id: String? = nil; var custom_id: UUID? = nil; var custom_unit: String? = nil; var rest_seconds: Int? = nil }
+
+struct AIPlanSession: Codable, Equatable { var date: String; var label: String; var exercises: [AIPlanExercise] }
+
+extension AIPlanExercise { var displayName: String { custom_id != nil ? name : ExerciseNames.display(name, id: library_id, query: library_query) } }
+
+struct FixtureExplanation { var version = 1 }
+struct AIResult { var kind:String;var notes:[String] = [];var title:String? = nil;var sessions:[AIPlanSession]?;var plan_days:Int? = nil;var explanation:FixtureExplanation? = nil }
+
+struct TrainingCycle: Codable, Equatable, Identifiable {
+    var start: String
+    var plannedDates: [String]
+    var sourceJobID: String? = nil
+    var explanationVersion: Int? = nil
+    // A new plan may split a previous cycle. Keep its actual remaining interval.
+    var endDate: String? = nil
+    var id: String { start }
+    var dates: [String] {
+        guard let date = ClubDates.date(fromKey: start) else { return [] }
+        let full = (0..<7).compactMap { ClubDates.calendar.date(byAdding: .day, value: $0, to: date) }.map(ClubDates.key)
+        guard let endDate else { return full }
+        return full.filter { $0 <= endDate }
+    }
+    var end: String { dates.last ?? start }
+    var label: String { start + " — " + end }
+    func ended(now: Date = Date()) -> Bool { end < ClubDates.key(now) }
+    static func available(days: [String: DayLog], now: Date = Date()) -> [TrainingCycle] {
+        var byStart: [String: TrainingCycle] = [:]
+        for cycle in ownedIntervals(days: days) { byStart[cycle.start] = cycle }
+        // Legacy plans have no cycle marker. Anchor to their first actual schedule,
+        // keep seven-day boundaries stable, and include the latest completed period.
+        if byStart.isEmpty {
+            let first = days.keys.filter { !(days[$0]?.exercises.isEmpty ?? true) }.sorted().first
+            let today = ClubDates.calendar.startOfDay(for: now)
+            let start = first.flatMap(ClubDates.date(fromKey:)) ?? today
+            let elapsed = max(0, ClubDates.calendar.dateComponents([.day], from: start, to: today).day ?? 0)
+            let last = elapsed / 7
+            for index in max(0, last - 12)...last {
+                guard let anchor = ClubDates.calendar.date(byAdding: .day, value: index * 7, to: start) else { continue }
+                var cycle = TrainingCycle(start: ClubDates.key(anchor), plannedDates: [])
+                cycle.plannedDates = cycle.dates.filter { !(days[$0]?.exercises.isEmpty ?? true) }
+                byStart[cycle.start] = cycle
+            }
+        }
+        // Old/manual/imported schedules can coexist with newly stamped AI cycles.
+        var covered = Set(byStart.values.flatMap(\.dates))
+        for key in days.keys.sorted() where !covered.contains(key) && !(days[key]?.exercises.isEmpty ?? true) {
+            var cycle = TrainingCycle(start: key, plannedDates: [])
+            cycle.plannedDates = cycle.dates.filter { !(days[$0]?.exercises.isEmpty ?? true) }
+            guard !cycle.dates.contains(where: { covered.contains($0) }) else { continue }
+            byStart[key] = cycle; covered.formUnion(cycle.dates)
+        }
+        return byStart.values.sorted { $0.start > $1.start }
+    }
+    static func preferred(days: [String: DayLog], now: Date = Date()) -> TrainingCycle {
+        let all = available(days: days, now: now)
+        return all.first(where: { $0.ended(now: now) && days[$0.end]?.weeklyReview?.result == nil })
+            ?? all.first(where: { $0.dates.contains(ClubDates.key(now)) })
+            ?? all.first ?? TrainingCycle(start: ClubDates.key(now), plannedDates: [])
+    }
+    // Actual per-day ownership is authoritative, including old overlapping markers.
+    // Split at ownership changes/gaps; never combine provenance from different jobs.
+    static func ownedIntervals(days: [String: DayLog]) -> [TrainingCycle] {
+        let keys = days.keys.sorted().filter { key in days[key]?.planCycle?.dates.contains(key) == true }
+        var result: [TrainingCycle] = []
+        var group: [String] = []
+        func appendGroup() {
+            guard let first = group.first, let last = group.last, var source = days[first]?.planCycle else { return }
+            source.start = first; source.endDate = last
+            source.plannedDates = source.plannedDates.filter { group.contains($0) }
+            result.append(source)
+        }
+        for key in keys {
+            if let previous = group.last {
+                let previousCycle = days[previous]?.planCycle
+                let currentCycle = days[key]?.planCycle
+                let next = ClubDates.date(fromKey: previous).flatMap { ClubDates.calendar.date(byAdding: .day, value: 1, to: $0) }.map(ClubDates.key)
+                if next != key || previousCycle?.start != currentCycle?.start || previousCycle?.sourceJobID != currentCycle?.sourceJobID {
+                    appendGroup(); group = []
+                }
+            }
+            group.append(key)
+        }
+        appendGroup()
+        return result
+    }
+    // Called inside the same persistence transaction as plan changes.
+    static func stamp(days: inout [String: DayLog], start: Date, plannedDates: [String], sourceJobID: String? = nil) -> [String] {
+        var cycle = TrainingCycle(start: ClubDates.key(start), plannedDates: plannedDates.sorted())
+        cycle.endDate = cycle.end
+        cycle.sourceJobID = sourceJobID
+        cycle.explanationVersion = 1
+        cycle.plannedDates = cycle.dates.filter { !(days[$0]?.exercises.isEmpty ?? true) }
+        var changed = Set(cycle.dates)
+        // Remove only cycle markers inside the new interval, never training data.
+        // Normalize the surviving prefixes/suffixes and retain their source jobs.
+        for key in cycle.dates { days[key]?.planCycle = nil }
+        for survivor in ownedIntervals(days: days) {
+            for key in survivor.dates where days[key]?.planCycle != survivor {
+                days[key]?.planCycle = survivor; changed.insert(key)
+            }
+        }
+        for key in cycle.dates { days[key, default: DayLog()].planCycle = cycle }
+        return changed.sorted()
+    }
+}
+
+enum WorkoutEditing { static func isProtected(_ day: DayLog) -> Bool {
+        day.workoutSavedAt != nil || day.workoutStartedAt != nil || day.exercises.contains { $0.sets.contains(where: \.completed) }
+    } }
+
+enum PlanAdoptionRules { static func isProtected(_ day: DayLog) -> Bool {
+        WorkoutEditing.isProtected(day) || day.workoutSessions?.contains { $0.startedAt != nil || $0.savedAt != nil } == true
+    } }
+
+import Foundation
+
+// Each row belongs to its actual record date. A profile first observed today
+// cannot be used as evidence of what the member wanted last month.
+struct ClubAIDayContext: Codable, Equatable {
+    let date: String
+    let goalVersionID: String?
+    let profile: MemberProfile?
+    let goalChangedDuringDay: Bool
+    let planVersionID: String?
+    let planSource: String?
+}
+
+struct ClubAIContext: Codable, Equatable {
+    var version = 1
+    let start: String
+    let end: String
+    let days: [ClubAIDayContext]
+
+    static func make(state: SavedState, start: Date, end: Date, now: Date = Date()) -> ClubAIContext {
+        let first = ClubDates.calendar.startOfDay(for: start)
+        let last = min(ClubDates.calendar.startOfDay(for: end), ClubDates.calendar.startOfDay(for: now))
+        var goals: [ClubGoalVersion] = []
+        var plans: [ClubPlanVersion] = []
+        for log in state.days.values {
+            for goal in log.goalVersions ?? [] where goal.version == 1 && goal.recordedAt <= now {
+                goals.append(goal)
+            }
+            for plan in log.planVersions ?? [] where plan.version == 1 && plan.recordedAt <= now {
+                plans.append(plan)
+            }
+        }
+        goals.sort { (left: ClubGoalVersion, right: ClubGoalVersion) -> Bool in
+            if left.recordedAt == right.recordedAt { return left.id.uuidString < right.id.uuidString }
+            return left.recordedAt < right.recordedAt
+        }
+        var rows: [ClubAIDayContext] = []
+        if first <= last {
+            let span = min(28, (ClubDates.calendar.dateComponents([.day], from: first, to: last).day ?? 0) + 1)
+            for offset in 0..<span {
+                guard let day = ClubDates.calendar.date(byAdding: .day, value: offset, to: first),
+                      let next = ClubDates.calendar.date(byAdding: .day, value: 1, to: day) else { continue }
+                let key = ClubDates.key(day)
+                let goal = goals.last { $0.recordedAt < next }
+                let changes = goals.filter { $0.recordedAt >= day && $0.recordedAt < next }
+                let matchingPlans: [ClubPlanVersion] = plans.filter {
+                    $0.scopeDates.contains(key) && !$0.retainedDates.contains(key)
+                }
+                let plan: ClubPlanVersion? = matchingPlans.max { (left: ClubPlanVersion, right: ClubPlanVersion) -> Bool in
+                    if left.recordedAt == right.recordedAt { return left.id < right.id }
+                    return left.recordedAt < right.recordedAt
+                }
+                let hasEarlierGoal = goals.contains { $0.recordedAt < day }
+                let changedDuringDay = changes.count > 1 || (changes.count == 1 && hasEarlierGoal)
+                let row = ClubAIDayContext(date: key, goalVersionID: goal?.id.uuidString.lowercased(),
+                    profile: goal?.profile.aiProfile, goalChangedDuringDay: changedDuringDay,
+                    planVersionID: plan?.id, planSource: plan?.source)
+                rows.append(row)
+            }
+        }
+        return ClubAIContext(start: rows.first?.date ?? ClubDates.key(first), end: rows.last?.date ?? ClubDates.key(last), days: rows)
+    }
+}
+
+struct ClubGoalVersion: Identifiable, Codable, Equatable {
+    var version = 1
+    let id: UUID
+    let recordedAt: Date
+    let profile: MemberProfile
+    let nutrition: NutritionTarget
+}
+
+struct ClubPlanVersion: Identifiable, Codable, Equatable {
+    var version = 1
+    let id: String
+    let recordedAt: Date
+    let source: String
+    let title: String
+    let start: String
+    let duration: Int
+    let sessions: [AIPlanSession]
+    let requestedProfile: MemberProfile
+    let adoptedProfile: MemberProfile
+    let nutrition: NutritionTarget
+    let previousIDs: [String]
+    let scopeDates: [String]
+    let retainedDates: [String]
+    var changes: [ClubPlanDayChange]? = nil
+}
+
+struct ClubPlanDayChange: Codable, Equatable, Identifiable {
+    let date: String
+    let before: [AIPlanExercise]
+    let after: [AIPlanExercise]
+    let retained: Bool
+    var id: String { date }
+    var changed: Bool { !ClubPlanChangeRules.sameContents(before, after) }
+    var label: String {
+        if retained { return "保留已开始的训练" }
+        if !changed { return "安排不变" }
+        if after.isEmpty { return "改为休息日" }
+        if before.isEmpty { return "新增训练安排" }
+        return "更新训练安排"
+    }
+}
+
+struct ClubPlanMovementChange: Identifiable {
+    let before: AIPlanExercise?
+    let after: AIPlanExercise?
+    let oldIndex: Int?
+    let newIndex: Int?
+    var id: String { "\(oldIndex ?? -1)/\(newIndex ?? -1)" }
+    var changed: Bool {
+        guard let before, let after else { return true }
+        return !ClubPlanChangeRules.sameContents([before], [after]) || oldIndex != newIndex
+    }
+    var label: String {
+        if before == nil { return "新增" }
+        if after == nil { return "移除" }
+        if before?.sets != after?.sets || before?.rest_seconds != after?.rest_seconds { return "参数更新" }
+        if before?.displayName != after?.displayName { return "动作名称更新" }
+        return oldIndex == newIndex ? "保持" : "调整顺序"
+    }
+}
+
+enum ClubPlanChangeRules {
+    static func snapshot(_ exercises: [Exercise]) -> [AIPlanExercise] {
+        exercises.map { exercise in
+            AIPlanExercise(name: exercise.displayName, muscle: exercise.muscle,
+                sets: exercise.sets.map { AIPlanSet(weight: $0.weight, reps: $0.reps, durationSeconds: $0.durationSeconds) },
+                library_query: exercise.libraryQuery, library_id: exercise.libraryID,
+                custom_id: exercise.customExerciseID, custom_unit: exercise.customUnit, rest_seconds: exercise.restSeconds)
+        }
+    }
+    static func stored(_ exercises: [AIPlanExercise]) -> [AIPlanExercise] {
+        exercises.map { exercise in
+            var copy = exercise
+            copy.name = exercise.displayName
+            copy.sets = exercise.sets.map { set in var value = set; value.weight = set.weight ?? 0; return value }
+            return copy
+        }
+    }
+    static func preview(before: [String: DayLog], sessions: [AIPlanSession], scope: [String], replace: Bool) -> [ClubPlanDayChange] {
+        Set(scope).sorted().map { key in
+            let day = before[key] ?? DayLog()
+            let old = snapshot(day.exercises)
+            let retained = PlanAdoptionRules.isProtected(day)
+            let proposed = stored(sessions.first { $0.date == key }?.exercises ?? [])
+            let next = retained ? old : replace ? proposed : old + proposed
+            return ClubPlanDayChange(date: key, before: old, after: next, retained: retained)
+        }
+    }
+    private static func sameMovement(_ left: AIPlanExercise, _ right: AIPlanExercise) -> Bool {
+        if left.custom_id != nil || right.custom_id != nil { return left.custom_id != nil && left.custom_id == right.custom_id }
+        if let a = left.library_id, let b = right.library_id { return a == b }
+        return left.displayName == right.displayName
+    }
+    static func sameContents(_ left: [AIPlanExercise], _ right: [AIPlanExercise]) -> Bool {
+        guard left.count == right.count else { return false }
+        return zip(left, right).allSatisfy { a, b in
+            sameMovement(a, b) && a.displayName == b.displayName && a.sets == b.sets && a.custom_unit == b.custom_unit && a.rest_seconds == b.rest_seconds
+        }
+    }
+    static func movements(_ change: ClubPlanDayChange) -> [ClubPlanMovementChange] {
+        var used = Set<Int>()
+        var rows: [ClubPlanMovementChange] = []
+        for (index, movement) in change.after.enumerated() {
+            let previous = change.before.indices.first { !used.contains($0) && sameMovement(change.before[$0], movement) }
+            if let previous { used.insert(previous) }
+            rows.append(ClubPlanMovementChange(before: previous.map { change.before[$0] }, after: movement, oldIndex: previous, newIndex: index))
+        }
+        for index in change.before.indices where !used.contains(index) {
+            rows.append(ClubPlanMovementChange(before: change.before[index], after: nil, oldIndex: index, newIndex: nil))
+        }
+        return rows
+    }
+    static func setLabel(_ set: AIPlanSet) -> String {
+        if let seconds = set.durationSeconds { return "\(seconds) 秒" }
+        let weight = set.weight ?? 0
+        return "\(set.reps) 次 · " + (weight == 0 ? "自重或未设置重量" : "\(weight.formatted()) kg")
+    }
+}
+
+enum ClubHistoryRules {
+    // Establish a baseline only when it is observed. Never invent a profile for
+    // dates before this client first recorded it.
+    static func recordGoal(days: inout [String: DayLog], profile: MemberProfile,
+                           nutrition: NutritionTarget, now: Date = Date()) -> String? {
+        let clean = profile.aiProfile
+        var latest: ClubGoalVersion?
+        for log in days.values {
+            for candidate in log.goalVersions ?? [] where candidate.recordedAt <= now {
+                if let current = latest {
+                    if candidate.recordedAt < current.recordedAt { continue }
+                    if candidate.recordedAt == current.recordedAt && candidate.id.uuidString <= current.id.uuidString { continue }
+                }
+                latest = candidate
+            }
+        }
+        if let latest, latest.profile == clean, latest.nutrition == nutrition { return nil }
+        let key = ClubDates.key(now)
+        var day = days[key] ?? DayLog()
+        day.goalVersions = (day.goalVersions ?? []) + [ClubGoalVersion(id: UUID(), recordedAt: now, profile: clean, nutrition: nutrition)]
+        days[key] = day
+        return key
+    }
+
+    static func recordPlan(days: inout [String: DayLog], previous: [String: DayLog],
+                           operationID: String, result: AIResult, start: Date, source: String,
+                           requestedProfile: MemberProfile, adoptedProfile: MemberProfile,
+                           nutrition: NutritionTarget, scope: [String], now: Date = Date()) {
+        let key = ClubDates.key(start)
+        var old: [ClubPlanVersion] = []
+        for log in previous.values { old.append(contentsOf: log.planVersions ?? []) }
+        guard !old.contains(where: { $0.id == operationID }) else { return }
+        let dates = Set(scope)
+        let parents = old.filter { !dates.isDisjoint(with: $0.scopeDates) }.map(\.id)
+        let retained = scope.filter { PlanAdoptionRules.isProtected(previous[$0] ?? DayLog()) }.sorted()
+        let record = ClubPlanVersion(id: operationID, recordedAt: now, source: source,
+            title: result.title ?? "训练计划", start: key, duration: result.plan_days ?? 7,
+            sessions: result.sessions ?? [], requestedProfile: requestedProfile.aiProfile,
+            adoptedProfile: adoptedProfile.aiProfile, nutrition: nutrition,
+            previousIDs: Array(Set(parents)).sorted(), scopeDates: Array(dates).sorted(), retainedDates: retained)
+        var confirmed = record
+        confirmed.changes = dates.sorted().map { date in
+            ClubPlanDayChange(date: date, before: ClubPlanChangeRules.snapshot(previous[date]?.exercises ?? []),
+                after: ClubPlanChangeRules.snapshot(days[date]?.exercises ?? []), retained: retained.contains(date))
+        }
+        var day = days[key] ?? DayLog()
+        day.planVersions = (day.planVersions ?? []) + [confirmed]
+        days[key] = day
+    }
+
+    static func profile(on date: Date, days: [String: DayLog]) -> MemberProfile? {
+        guard let end = ClubDates.calendar.date(byAdding: .day, value: 1, to: ClubDates.calendar.startOfDay(for: date)) else { return nil }
+        var latest: ClubGoalVersion?
+        for log in days.values {
+            for candidate in log.goalVersions ?? [] where candidate.recordedAt < end {
+                if let current = latest {
+                    if candidate.recordedAt < current.recordedAt { continue }
+                    if candidate.recordedAt == current.recordedAt && candidate.id.uuidString <= current.id.uuidString { continue }
+                }
+                latest = candidate
+            }
+        }
+        return latest?.profile
+    }
+}
+
+
+import Foundation
+
+struct ClubWorkoutComparison: Codable, Equatable, Identifiable {
+    let exerciseID: UUID
+    let name: String
+    let priorDate: String
+    let priorSessionID: UUID?
+    let priorExerciseID: UUID
+    let unit: String
+    let weight: Double?
+    let currentSets: Int
+    let priorSets: Int
+    let currentValue: Int
+    let priorValue: Int
+    var id: String { exerciseID.uuidString + "/" + unit + "/" + (weight.map { String($0) } ?? "time") }
+    var comparable: Bool { currentSets == priorSets }
+}
+
+struct ClubWorkoutSummary: Codable, Equatable {
+    let date: String
+    let sessionID: UUID
+    let completedSets: Int
+    let timedSeconds: Int
+    let targetSets: Int?
+    let originalCompletedSets: Int?
+    let changedTargetSets: Int?
+    let restSeconds: Int?
+    let comparisons: [ClubWorkoutComparison]
+    let limitations: [String]
+    // Stable source values: no generation clock, photo URLs or device data.
+    let exercises: [ClubWorkoutLoggedExercise]
+    let baseline: WorkoutExecutionBaseline?
+}
+
+struct ClubWorkoutLoggedExercise: Codable, Equatable, Identifiable {
+    let id: UUID
+    let name: String
+    let libraryID: String?
+    let customID: UUID?
+    let sets: [TrainingSet]
+}
+
+enum ClubWorkoutSummaryRules {
+    private struct Entry {
+        let date: String
+        let session: WorkoutSession
+        let exercises: [Exercise]
+        var order: Date? { session.startedAt ?? session.endedAt }
+    }
+    private static func entries(_ state: SavedState) -> [Entry] {
+        state.days.keys.sorted().flatMap { key -> [Entry] in
+            guard let day = state.days[key] else { return [] }
+            if let sessions = day.workoutSessions, !sessions.isEmpty {
+                return sessions.filter { $0.savedAt != nil }.map { session in
+                    Entry(date: key, session: session, exercises: day.exercises.filter { $0.workoutSessionID == session.id })
+                }
+            }
+            guard day.workoutSavedAt != nil, let identity = day.exercises.first?.id else { return [] }
+            return [Entry(date: key, session: WorkoutSession(id: identity, startedAt: day.workoutStartedAt,
+                endedAt: day.workoutEndedAt, savedAt: day.workoutSavedAt), exercises: day.exercises)]
+        }
+    }
+    static func available(state: SavedState, date: Date, now: Date = Date()) -> [UUID] {
+        guard !ClubDates.isFuture(date, now: now) else { return [] }
+        return entries(state).filter { $0.date == ClubDates.key(date) && $0.exercises.contains { $0.sets.contains(where: \.validCompletion) } }
+            .sorted { ($0.order ?? .distantPast) == ($1.order ?? .distantPast) ? $0.session.id.uuidString < $1.session.id.uuidString : ($0.order ?? .distantPast) < ($1.order ?? .distantPast) }
+            .map { $0.session.id }
+    }
+    private static func identity(_ exercise: Exercise) -> String? {
+        if let id = exercise.customExerciseID { return "custom/" + id.uuidString }
+        if let id = exercise.libraryID { return "library/" + id }
+        // Legacy free-text names alone cannot prove the same exercise variant.
+        guard let query = exercise.libraryQuery, !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+        return "query/" + query.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    private static func unit(_ exercise: Exercise) -> String? {
+        let done = exercise.sets.filter(\.validCompletion)
+        guard !done.isEmpty else { return nil }
+        let values = Set(done.map { $0.durationSeconds == nil ? "reps" : "time" })
+        return values.count == 1 ? values.first : nil
+    }
+    static func make(state: SavedState, date: Date, sessionID: UUID, now: Date = Date()) -> ClubWorkoutSummary? {
+        guard !ClubDates.isFuture(date, now: now) else { return nil }
+        let key = ClubDates.key(date)
+        let all = entries(state)
+        guard let current = all.first(where: { $0.date == key && $0.session.id == sessionID }),
+              current.exercises.contains(where: { $0.sets.contains(where: \.validCompletion) }) else { return nil }
+        let prior = all.filter { item in
+            guard item.session.id != sessionID, item.date <= key else { return false }
+            if item.date < key { return true }
+            guard let a = item.order, let b = current.order else { return false }
+            return a < b
+        }.sorted {
+            if $0.date != $1.date { return $0.date > $1.date }
+            if $0.order != $1.order { return ($0.order ?? .distantPast) > ($1.order ?? .distantPast) }
+            return $0.session.id.uuidString < $1.session.id.uuidString
+        }
+        var comparisons: [ClubWorkoutComparison] = []
+        var limitations: [String] = []
+        for exercise in current.exercises where exercise.sets.contains(where: \.validCompletion) {
+            guard let identity = identity(exercise), let metric = unit(exercise) else {
+                limitations.append(exercise.displayName + "缺少稳定动作标识，或混用了次数与时间，暂不作历史对比。")
+                continue
+            }
+            // Duplicate same-variant exercises in one session are ambiguous.
+            guard current.exercises.filter({ self.identity($0) == identity }).count == 1 else {
+                limitations.append(exercise.displayName + "在同次训练中重复出现，暂不自动配对。")
+                continue
+            }
+            let done = exercise.sets.filter(\.validCompletion)
+            let weights: [Double?] = metric == "time" ? [nil] : Array(Set(done.map(\.weight))).sorted().map(Optional.some)
+            var matched = false
+            for weight in weights {
+                let nowSets = done.filter { weight == nil || $0.weight == weight }
+                let match = prior.compactMap { entry -> (Entry, Exercise)? in
+                    let matches = entry.exercises.filter { self.identity($0) == identity }
+                    guard matches.count == 1, let candidate = matches.first, unit(candidate) == metric,
+                          candidate.sets.contains(where: { $0.validCompletion && (weight == nil || $0.weight == weight) }) else { return nil }
+                    return (entry, candidate)
+                }.first
+                guard let (entry, old) = match else { continue }
+                let oldSets = old.sets.filter { $0.validCompletion && (weight == nil || $0.weight == weight) }
+                matched = true
+                comparisons.append(ClubWorkoutComparison(exerciseID: exercise.id, name: exercise.displayName,
+                    priorDate: entry.date, priorSessionID: entry.session.id, priorExerciseID: old.id, unit: metric, weight: weight,
+                    currentSets: nowSets.count, priorSets: oldSets.count,
+                    currentValue: nowSets.reduce(0) { $0 + (metric == "time" ? ($1.durationSeconds ?? 0) : $1.reps) },
+                    priorValue: oldSets.reduce(0) { $0 + (metric == "time" ? ($1.durationSeconds ?? 0) : $1.reps) }))
+            }
+            if !matched { limitations.append(exercise.displayName + "尚无同动作、同计量方式的已确认对照；计次动作还需相同登记重量。") }
+        }
+        let baseline = current.session.executionBaseline.flatMap { $0.version == 1 ? $0 : nil }
+        let sets = current.exercises.flatMap(\.sets)
+        let byID = Dictionary(sets.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let owners = Dictionary(current.exercises.flatMap { ex in ex.sets.map { ($0.id, ex.id) } }, uniquingKeysWith: { first, _ in first })
+        let original = baseline?.sets ?? []
+        let changed = original.filter { target in
+            guard let set = byID[target.id], owners[target.id] == target.exerciseID else { return true }
+            return (set.durationSeconds == nil ? "reps" : "time") != target.unit
+        }
+        let completed = original.filter { target in
+            owners[target.id] == target.exerciseID && byID[target.id]?.validCompletion == true &&
+                (byID[target.id]?.durationSeconds == nil ? "reps" : "time") == target.unit
+        }.count
+        if baseline == nil { limitations.insert("没有开始时的目标快照，保留实际完成量，不补造原目标。", at: 0) }
+        else if original.contains(where: { $0.unit == "reps" && ($0.targetReps == nil || $0.targetWeight == nil) }) {
+            limitations.insert("部分旧目标只保存了单位，未保存原重量或次数，不倒填。", at: 0)
+        }
+        if !changed.isEmpty { limitations.insert("部分原组已移除、更换动作或变更单位，不能按当前总组数判定原计划全部完成。", at: 0) }
+        limitations.append("对比仅反映登记数据；动作幅度、技术质量、余力与器械条件可能不同，不能据此认定力量或肌肉变化。")
+        return ClubWorkoutSummary(date: key, sessionID: sessionID, completedSets: sets.filter(\.validCompletion).count,
+            timedSeconds: sets.filter(\.validCompletion).reduce(0) { $0 + ($1.durationSeconds ?? 0) },
+            targetSets: baseline.map { $0.sets.count }, originalCompletedSets: baseline == nil ? nil : completed,
+            changedTargetSets: baseline == nil ? nil : changed.count, restSeconds: baseline?.restSeconds,
+            comparisons: comparisons, limitations: limitations,
+            exercises: current.exercises.map { ClubWorkoutLoggedExercise(id: $0.id, name: $0.displayName,
+                libraryID: $0.libraryID, customID: $0.customExerciseID, sets: $0.sets) }, baseline: baseline)
+    }
+}
+
+
+import Foundation
+
+// Facts are rebuilt from the current saved records. No generated claim is cached
+// under a date after its source has changed or been deleted.
+struct ClubInsightKind: RawRepresentable, Codable, Hashable {
+    let rawValue: String
+    static let training = Self(rawValue: "training")
+    static let nutrition = Self(rawValue: "nutrition")
+    static let body = Self(rawValue: "body")
+    static let workout = Self(rawValue: "workout")
+    var supported: Bool { [Self.training, .nutrition, .body, .workout].contains(self) }
+    init(rawValue: String) { self.rawValue = rawValue }
+    init(from decoder: Decoder) throws { rawValue = try decoder.singleValueContainer().decode(String.self) }
+    func encode(to encoder: Encoder) throws { var value = encoder.singleValueContainer(); try value.encode(rawValue) }
+}
+
+struct ClubInsightFact: Identifiable, Equatable {
+    let id: String
+    let kind: ClubInsightKind
+    let title: String
+    let detail: String
+    let evidence: String
+    let priority: Int
+    var sourceSessionID: UUID? = nil
+    var action: ClubInsightAction? = nil
+    var sourceDigest: String? = nil
+}
+
+struct ClubGoalContext {
+    let profile: MemberProfile
+    let nutrition: NutritionTarget
+    let dateKey: String
+    let usesHistoricalNutrition: Bool
+    let canEvaluateNutrition: Bool
+
+    init(state: SavedState, date: Date, now: Date = Date()) {
+        let key = ClubDates.key(date)
+        dateKey = key
+        let historical = ClubDates.key(date) < ClubDates.key(now)
+        profile = historical ? (ClubHistoryRules.profile(on: date, days: state.days) ?? state.profile).aiProfile : state.profile.aiProfile
+        let snapshot = state.days[key]?.nutritionTarget
+        nutrition = (historical ? snapshot : nil) ?? state.nutritionTarget ?? NutritionTarget.estimate(state.profile)
+        usesHistoricalNutrition = historical && snapshot != nil
+        canEvaluateNutrition = !historical || snapshot != nil
+    }
+}
+
+enum ClubInsightRules {
+    static func facts(state: SavedState, date: Date, now: Date = Date()) -> [ClubInsightFact] {
+        guard !ClubDates.isFuture(date, now: now) else { return [] }
+        let key = ClubDates.key(date)
+        let day = state.days[key] ?? DayLog()
+        let context = ClubGoalContext(state: state, date: date, now: now)
+        var result: [ClubInsightFact] = []
+        for sessionID in ClubWorkoutSummaryRules.available(state: state, date: date, now: now) {
+            guard let report = ClubWorkoutSummaryRules.make(state: state, date: date, sessionID: sessionID, now: now) else { continue }
+            result.append(.init(id: key + "/workout/" + sessionID.uuidString.lowercased(), kind: .workout,
+                title: "本次训练总结已更新", detail: "这次已确认 \(report.completedSets) 组。" + (report.comparisons.isEmpty ? "先保留这次实际表现，不凭单次记录判断进步。" : "有符合条件的历史记录，可以展开逐项对照。"),
+                evidence: "依据：\(key) 这一次已确认训练；按场次区分，历史只采用此前已确认的记录。",
+                priority: 110, sourceSessionID: sessionID,
+                action: ClubInsightAction(type: "workout_summary", date: key, sessionID: sessionID),
+                sourceDigest: ClubInsightLedger.digest(report)))
+        }
+        let isToday = key == ClubDates.key(now)
+        if day.isTrainingConfirmed {
+            result.append(.init(id: key + "/training", kind: .training, title: "训练已保存",
+                detail: "已确认完成 \(day.completedSets) 组" + (day.timedSeconds > 0 ? "，其中按秒训练累计 \(day.timedSeconds) 秒。" : "。") + "可以结合饮食记录查看本日分析。",
+                evidence: "依据：\(key) 已确认的有效训练组。普通保存和计划目标不算完成。", priority: 100))
+        } else if day.completedSets > 0 {
+            result.append(.init(id: key + "/training", kind: .training, title: "训练记录待确认",
+                detail: "已记录 \(day.completedSets) 个有效完成组。结束训练后，请确认保存实际完成的部分。",
+                evidence: "依据：\(key) 已登记组次，仍有未确认的训练。", priority: 90))
+        } else if day.workoutStartedAt != nil && day.workoutSavedAt == nil && day.workoutEndedAt == nil {
+            result.append(.init(id: key + "/training", kind: .training, title: "训练已开始，记录待完成",
+                detail: "已保存开始状态，尚无有效完成组。确实完成训练后，可以登记组次并确认保存。",
+                evidence: "依据：这一天的训练开始标记，不据此推断实际完成量。", priority: 85))
+        } else if isToday && !day.exercises.isEmpty {
+            result.append(.init(id: key + "/training", kind: .training, title: "今天的训练已安排",
+                detail: "日程中有 \(day.exercises.count) 个动作、\(day.totalSets) 组。准备好后可以开始。",
+                evidence: "依据：今天保存的训练安排。尚无完成记录，不代表你没有训练。", priority: 70))
+        } else if isToday, let cycle = day.planCycle, cycle.dates.contains(key), !cycle.plannedDates.contains(key) {
+            result.append(.init(id: key + "/training", kind: .training, title: "今天按计划休息",
+                detail: "当前计划把今天留给恢复。如果想提前练，可以在当天安排里选择后续训练。",
+                evidence: "依据：当前计划中的休息日。", priority: 50))
+        }
+        if !day.meals.isEmpty {
+            let known = day.knownMeals
+            let protein = known.reduce(0) { $0 + $1.protein }
+            let number = String(format: "%.0f", protein)
+            let hasUnknown = day.unknownNutritionMeals > 0
+            var detail = "已登记 \(day.meals.count) 条饮食"
+            detail += known.isEmpty ? "，目前没有可汇总的营养估算。" : "，其中已知蛋白质约 \(number) g。"
+            if hasUnknown || !day.mealsComplete {
+                detail += "可能存在漏记或未知营养，暂不判断全天是否达标。"
+            } else if !context.canEvaluateNutrition {
+                detail += "缺少当时的饮食目标，不使用今天的目标评价历史记录。"
+            } else if context.nutrition.generalGuidanceOnly == true {
+                detail += "当前身体背景需要个别评估，不按通用目标判断缺口。"
+            } else if protein < context.nutrition.proteinMin {
+                detail += "你已确认饮食记录完整；已登记蛋白质低于参考下限，可以核对份量与明细。"
+            } else {
+                detail += "你已确认饮食记录完整，可以查看全天分析。"
+            }
+            result.append(.init(id: key + "/nutrition", kind: .nutrition, title: "饮食记录跟进", detail: detail,
+                evidence: "依据：\(key) 已登记饮食及完整性确认。营养值为估算，未记录不等于没吃。", priority: 60))
+        }
+        // BodyWeightHistory filters dates, invalid values, and takes the most recent
+        // entries. Never infer a plateau from a pair of measurements.
+        let points = BodyWeightHistory.points(days: state.days, through: date, limit: 30)
+        if let last = points.last {
+            result.append(.init(id: key + "/body", kind: .body, title: ClubDates.key(last.date) == key ? "身体记录已更新" : "最近一次身体记录",
+                detail: "最近一次测量为 \(ClubDates.label(last.date))，\(String(format: "%.1f", last.kilograms)) kg。单次波动不能说明增肌或减脂效果。",
+                evidence: "依据：截至 \(key) 的实际称重记录。资料中的体重不作为实测点。", priority: 30))
+        }
+        return result.sorted { $0.priority == $1.priority ? $0.id < $1.id : $0.priority > $1.priority }
+    }
+}
+
+
+import Foundation
+import CryptoKit
+
+struct ClubInsightState: RawRepresentable, Codable, Hashable {
+    let rawValue: String
+    static let active = Self(rawValue: "active")
+    static let withdrawn = Self(rawValue: "withdrawn")
+    static let expired = Self(rawValue: "expired")
+    var supported: Bool { [Self.active, .withdrawn, .expired].contains(self) }
+    init(rawValue: String) { self.rawValue = rawValue }
+    init(from decoder: Decoder) throws { rawValue = try decoder.singleValueContainer().decode(String.self) }
+    func encode(to encoder: Encoder) throws { var value = encoder.singleValueContainer(); try value.encode(rawValue) }
+}
+enum ClubInsightDisplayState: Equatable { case current, updated, withdrawn, expired, unsupported }
+struct ClubInsightFeedbackAction: RawRepresentable, Codable, Hashable {
+    let rawValue: String
+    static let helpful = Self(rawValue: "helpful")
+    static let reduce = Self(rawValue: "reduce")
+    static let normal = Self(rawValue: "normal")
+    static let dismissToday = Self(rawValue: "dismiss_today")
+    static let restoreToday = Self(rawValue: "restore_today")
+    static let read = Self(rawValue: "read")
+    static let unread = Self(rawValue: "unread")
+    static let archive = Self(rawValue: "archive")
+    static let unarchive = Self(rawValue: "unarchive")
+    init(rawValue: String) { self.rawValue = rawValue }
+    init(from decoder: Decoder) throws { rawValue = try decoder.singleValueContainer().decode(String.self) }
+    func encode(to encoder: Encoder) throws { var value = encoder.singleValueContainer(); try value.encode(rawValue) }
+}
+
+struct ClubInsightEvent: Identifiable, Codable, Equatable {
+    var version = 1
+    let id: String
+    let date: String
+    let groupID: String
+    let kind: ClubInsightKind
+    let recordedAt: Date
+    let previousIDs: [String]
+    let state: ClubInsightState
+    let evidenceDigest: String
+    let title: String
+    let detail: String
+    let evidence: String
+    let priority: Int
+    let isTodayReminder: Bool
+    var sourceSessionID: UUID? = nil
+    var action: ClubInsightAction? = nil
+}
+
+struct ClubInsightAction: Codable, Equatable {
+    let type: String
+    let date: String
+    var sessionID: UUID? = nil
+}
+
+struct ClubInsightFeedback: Identifiable, Codable, Equatable {
+    var version = 1
+    let id: String
+    let date: String
+    let recordedAt: Date
+    let kind: ClubInsightKind
+    let action: ClubInsightFeedbackAction
+    let eventID: String?
+    let scope: String
+    let previousIDs: [String]
+}
+
+enum ClubInsightLedger {
+    static func validGroup(_ event: ClubInsightEvent) -> Bool {
+        if event.kind == .workout, let session = event.sourceSessionID {
+            return event.groupID == event.date + "/workout/" + session.uuidString.lowercased()
+        }
+        return event.kind != .workout && event.sourceSessionID == nil && event.groupID == event.date + "/" + event.kind.rawValue
+    }
+    private struct TrainingSource: Encodable {
+        let exercises: [Exercise]
+        let confirmed: Bool
+        let started: Bool
+        let plannedRest: Bool
+    }
+    private struct NutritionSource: Encodable {
+        let meals: [Meal]
+        let complete: Bool
+        let target: NutritionTarget
+        let canEvaluate: Bool
+    }
+    private struct BodySource: Encodable { let date: String; let kilograms: Double }
+    private struct Identity: Encodable {
+        let group: String
+        let value: String
+        let previous: [String]
+    }
+
+    static func digest<T: Encodable>(_ value: T) -> String {
+        let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
+        guard let data = try? encoder.encode(value) else { return "invalid" }
+        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+    }
+
+    static func events(in state: SavedState) -> [ClubInsightEvent] {
+        var seen = Set<String>()
+        return state.days.keys.sorted().flatMap { state.days[$0]?.insightEvents ?? [] }
+            .filter { seen.insert($0.id).inserted }
+    }
+
+    static func feedback(in state: SavedState) -> [ClubInsightFeedback] {
+        var seen = Set<String>()
+        return state.days.keys.sorted().flatMap { state.days[$0]?.insightFeedback ?? [] }
+            .filter { seen.insert($0.id).inserted }
+    }
+
+    static func leaves(_ events: [ClubInsightEvent]) -> [ClubInsightEvent] {
+        let superseded = Set(events.flatMap(\.previousIDs))
+        return events.filter { !superseded.contains($0.id) }.sorted {
+            $0.recordedAt == $1.recordedAt ? $0.id > $1.id : $0.recordedAt > $1.recordedAt
+        }
+    }
+
+    private static func preference(scope: String, records: [ClubInsightFeedback]) -> ClubInsightFeedback? {
+        let items = records.filter { $0.scope == scope }
+        let superseded = Set(items.flatMap(\.previousIDs))
+        let terminals = items.filter { !superseded.contains($0.id) }
+        // A concurrent reduction wins until the user explicitly restores it.
+        return terminals.sorted {
+            let left = $0.action == .reduce || $0.action == .dismissToday || $0.action == .archive
+            let right = $1.action == .reduce || $1.action == .dismissToday || $1.action == .archive
+            if left != right { return left }
+            return $0.recordedAt == $1.recordedAt ? $0.id > $1.id : $0.recordedAt > $1.recordedAt
+        }.first
+    }
+
+    static func reduced(_ kind: ClubInsightKind, in state: SavedState) -> Bool {
+        preference(scope: (kind == .workout ? ClubInsightKind.training : kind).rawValue + "/preference", records: feedback(in: state))?.action == .reduce
+    }
+
+    static func dismissedToday(_ kind: ClubInsightKind, in state: SavedState, now: Date = Date()) -> Bool {
+        preference(scope: (kind == .workout ? ClubInsightKind.training : kind).rawValue + "/today/" + ClubDates.key(now), records: feedback(in: state))?.action == .dismissToday
+    }
+    static func isRead(_ event: ClubInsightEvent, in state: SavedState) -> Bool {
+        preference(scope: event.kind.rawValue + "/reading/" + event.id, records: feedback(in: state))?.action == .read
+    }
+    static func isArchived(_ event: ClubInsightEvent, in state: SavedState) -> Bool {
+        preference(scope: event.kind.rawValue + "/archive/" + event.id, records: feedback(in: state))?.action == .archive
+    }
+    static func groupArchived(_ group: String, in state: SavedState) -> Bool {
+        guard let latest = leaves(events(in: state).filter { $0.groupID == group }).first else { return false }
+        return isArchived(latest, in: state)
+    }
+
+    static func sourceDigest(kind: ClubInsightKind, date: Date, state: SavedState, now: Date = Date(), sessionID: UUID? = nil) -> String? {
+        guard !ClubDates.isFuture(date, now: now) else { return nil }
+        let key = ClubDates.key(date)
+        let day = state.days[key] ?? DayLog()
+        switch kind {
+        case .workout:
+            guard let sessionID, let report = ClubWorkoutSummaryRules.make(state: state, date: date, sessionID: sessionID, now: now) else { return nil }
+            return digest(report)
+        case .training:
+            let exercises = day.exercises.map { exercise -> Exercise in
+                var copy = exercise; copy.imageURL = nil; copy.gifURL = nil
+                return copy
+            }
+            let rest = day.planCycle.map { $0.dates.contains(key) && !$0.plannedDates.contains(key) } ?? false
+            return digest(TrainingSource(exercises: exercises, confirmed: day.isTrainingConfirmed,
+                started: day.workoutStartedAt != nil, plannedRest: rest))
+        case .nutrition:
+            let meals = day.meals.sorted { $0.id.uuidString < $1.id.uuidString }.map { meal -> Meal in
+                var copy = meal; copy.photoFilename = nil; copy.photoRemoteID = nil
+                copy.estimateNotes = nil; copy.estimated = nil; copy.sourceAIJobID = nil
+                return copy
+            }
+            let context = ClubGoalContext(state: state, date: date, now: now)
+            return digest(NutritionSource(meals: meals, complete: day.mealsComplete,
+                target: context.nutrition, canEvaluate: context.canEvaluateNutrition))
+        case .body:
+            // An old measurement can remain on the body panel without becoming
+            // a new "body updated" event on every subsequent day.
+            guard let point = day.bodyWeight, point.isValid, let kilograms = point.kilograms else { return nil }
+            return digest(BodySource(date: key, kilograms: kilograms))
+        default: return nil
+        }
+    }
+
+    static func reconcile(state: inout SavedState, dates: [String], now: Date = Date(), includeDependentWorkouts: Bool = true) -> [String] {
+        var changed: [String] = []
+        var trainingChanged: [String] = []
+        for key in Set(dates).sorted() {
+            guard let date = ClubDates.date(fromKey: key), !ClubDates.isFuture(date, now: now) else { continue }
+            let facts = ClubInsightRules.facts(state: state, date: date, now: now).filter {
+                $0.kind != .body || state.days[key]?.bodyWeight?.kilograms != nil
+            }
+            var day = state.days[key] ?? DayLog()
+            let all = day.insightEvents ?? []
+            let groups = Set(all.map(\.groupID)).union(facts.map(\.id))
+            var additions: [ClubInsightEvent] = []
+            for group in groups.sorted() {
+                let terminals = leaves(all.filter { $0.groupID == group })
+                let parents = terminals.map(\.id).sorted()
+                let previous = terminals.first
+                if let previous, previous.version != 1 || !previous.kind.supported || !previous.state.supported || !validGroup(previous) { continue }
+                if let fact = facts.first(where: { $0.id == group }),
+                   let evidence = fact.sourceDigest ?? sourceDigest(kind: fact.kind, date: date, state: state, now: now, sessionID: fact.sourceSessionID), evidence != "invalid" {
+                    if terminals.count == 1, previous?.state == .active, previous?.evidenceDigest == evidence,
+                       previous?.title == fact.title, previous?.detail == fact.detail { continue }
+                    let content = evidence + "/" + digest([fact.title, fact.detail, fact.evidence])
+                    let id = "insight/" + digest(Identity(group: group, value: content, previous: parents))
+                    guard !all.contains(where: { $0.id == id }) else { continue }
+                    additions.append(ClubInsightEvent(id: id, date: key, groupID: group, kind: fact.kind,
+                        recordedAt: now, previousIDs: parents, state: .active, evidenceDigest: evidence,
+                        title: fact.title, detail: fact.detail, evidence: fact.evidence, priority: fact.priority,
+                        isTodayReminder: fact.kind == .training && day.completedSets == 0 && day.workoutStartedAt == nil && key == ClubDates.key(now),
+                        sourceSessionID: fact.sourceSessionID, action: fact.action))
+                } else if let previous, previous.state == .active {
+                    let expired = previous.isTodayReminder && key < ClubDates.key(now)
+                    let status: ClubInsightState = expired ? .expired : .withdrawn
+                    let id = "insight/" + digest(Identity(group: group, value: status.rawValue, previous: parents))
+                    guard !all.contains(where: { $0.id == id }) else { continue }
+                    additions.append(ClubInsightEvent(id: id, date: key, groupID: group, kind: previous.kind,
+                        recordedAt: now, previousIDs: parents, state: status, evidenceDigest: previous.evidenceDigest,
+                        title: expired ? "当天提醒已结束" : "此前跟进已撤回",
+                        detail: expired ? "当日安排提醒已经结束。没有完成记录不等于没有训练。" : "原记录已删除或改变，目前不再沿用此前结论。",
+                        evidence: "原跟进保留在历史中；以目前保存的记录为准。", priority: previous.priority,
+                        isTodayReminder: previous.isTodayReminder, sourceSessionID: previous.sourceSessionID))
+                }
+            }
+            if !additions.isEmpty {
+                day.insightEvents = all + additions; state.days[key] = day; changed.append(key)
+                if additions.contains(where: { $0.kind == .training || $0.kind == .workout }) { trainingChanged.append(key) }
+            }
+        }
+        if includeDependentWorkouts, let first = trainingChanged.min() {
+            let dependent = state.days.keys.filter { key in
+                key > first && key <= ClubDates.key(now) && !dates.contains(key) &&
+                    (state.days[key]?.insightEvents?.contains { $0.kind == .workout } ?? false)
+            }
+            changed += reconcile(state: &state, dates: dependent, now: now, includeDependentWorkouts: false)
+        }
+        return Array(Set(changed)).sorted()
+    }
+
+    static func current(in state: SavedState, date: Date, now: Date = Date()) -> [ClubInsightEvent] {
+        guard !ClubDates.isFuture(date, now: now) else { return [] }
+        let key = ClubDates.key(date)
+        let all = state.days[key]?.insightEvents ?? []
+        let facts = ClubInsightRules.facts(state: state, date: date, now: now)
+        return Set(all.map(\.groupID)).compactMap { group -> ClubInsightEvent? in
+            guard let fact = facts.first(where: { $0.id == group }),
+                  let hash = fact.sourceDigest ?? sourceDigest(kind: fact.kind, date: date, state: state, now: now, sessionID: fact.sourceSessionID),
+                  let item = leaves(all.filter { $0.groupID == group }).first(where: {
+                      $0.version == 1 && $0.state == .active && $0.evidenceDigest == hash && $0.title == fact.title && $0.detail == fact.detail
+                  }), !isArchived(item, in: state), !reduced(item.kind, in: state), !dismissedToday(item.kind, in: state, now: now) else { return nil }
+            return item
+        }.sorted { $0.priority == $1.priority ? $0.id < $1.id : $0.priority > $1.priority }
+    }
+
+    static func displayState(_ event: ClubInsightEvent, in state: SavedState, now: Date = Date()) -> ClubInsightDisplayState {
+        guard event.version == 1, event.kind.supported, event.state.supported,
+              validGroup(event) else { return .unsupported }
+        if event.state == .withdrawn { return .withdrawn }
+        if event.state == .expired || (event.isTodayReminder && event.date < ClubDates.key(now)) { return .expired }
+        let group = (state.days[event.date]?.insightEvents ?? []).filter { $0.groupID == event.groupID }
+        if group.contains(where: { $0.previousIDs.contains(event.id) }) { return .updated }
+        guard let date = ClubDates.date(fromKey: event.date), !ClubDates.isFuture(date, now: now),
+              let fact = ClubInsightRules.facts(state: state, date: date, now: now).first(where: { $0.id == event.groupID }),
+              (fact.sourceDigest ?? sourceDigest(kind: event.kind, date: date, state: state, now: now, sessionID: event.sourceSessionID)) == event.evidenceDigest,
+              fact.title == event.title, fact.detail == event.detail else { return .updated }
+        return .current
+    }
+
+    @discardableResult
+    static func recordFeedback(state: inout SavedState, kind: ClubInsightKind, action: ClubInsightFeedbackAction,
+                               eventID: String? = nil, now: Date = Date()) -> String? {
+        guard kind.supported else { return nil }
+        let familyPreference = [ClubInsightFeedbackAction.reduce, .normal, .dismissToday, .restoreToday].contains(action)
+        let kind = kind == .workout && familyPreference ? ClubInsightKind.training : kind
+        let records = feedback(in: state)
+        let key = ClubDates.key(now)
+        let scope: String
+        switch action {
+        case .helpful:
+            guard let eventID, events(in: state).contains(where: { $0.id == eventID && $0.kind == kind }) else { return nil }
+            scope = kind.rawValue + "/helpful/" + eventID
+        case .read, .unread, .archive, .unarchive:
+            guard let eventID, events(in: state).contains(where: { $0.id == eventID && $0.kind == kind }) else { return nil }
+            let category = action == .read || action == .unread ? "reading" : "archive"
+            scope = kind.rawValue + "/" + category + "/" + eventID
+        case .reduce, .normal: scope = kind.rawValue + "/preference"
+        case .dismissToday, .restoreToday: scope = kind.rawValue + "/today/" + key
+        default: return nil
+        }
+        let related = records.filter { $0.scope == scope }
+        let referenced = Set(related.flatMap(\.previousIDs))
+        let terminals = related.filter { !referenced.contains($0.id) }
+        if terminals.count == 1, terminals.first?.action == action { return nil }
+        let parents = terminals.map(\.id).sorted()
+        let id = "feedback/" + digest(Identity(group: scope + "/" + key, value: action.rawValue, previous: parents))
+        if records.contains(where: { $0.id == id }) { return nil }
+        let entry = ClubInsightFeedback(id: id, date: key, recordedAt: now, kind: kind, action: action,
+                                       eventID: eventID, scope: scope, previousIDs: parents)
+        var day = state.days[key] ?? DayLog()
+        day.insightFeedback = (day.insightFeedback ?? []) + [entry]; state.days[key] = day
+        return key
+    }
+}
+
+
+
+var tests = 0
+func check(_ value: @autoclosure () -> Bool, _ name: String) {
+    precondition(value(), name); tests += 1
+}
+let now = ClubDates.date(fromKey: "2026-10-15")!
+let today = ClubDates.key(now)
+let yesterday = ClubDates.calendar.date(byAdding: .day, value: -1, to: now)!
+let tomorrow = ClubDates.calendar.date(byAdding: .day, value: 1, to: now)!
+func facts(_ state: SavedState, date: Date = now) -> [ClubInsightFact] {
+    ClubInsightRules.facts(state: state, date: date, now: now)
+}
+var state = SavedState()
+check(facts(state).isEmpty, "profile weight is not a measured weight")
+var meal = Meal(name: "鸡蛋", category: "早餐", calories: 150, protein: 12, carbs: 1, fat: 10)
+var day = DayLog(); day.meals = [meal]; state.days[today] = day
+check(facts(state).first!.detail.contains("暂不判断全天"), "single meal must not infer a daily shortfall")
+day.mealCompletion = MealCompletion(signature: MealCompletion.signature(day.meals)); state.days[today] = day
+check(facts(state).first!.detail.contains("低于参考下限"), "explicit complete records can compare a reference")
+day.meals[0].nutritionKnown = false
+day.mealCompletion = MealCompletion(signature: MealCompletion.signature(day.meals)); state.days[today] = day
+check(facts(state).first!.detail.contains("暂不判断全天"), "unknown nutrition blocks daily judgement even after confirmation")
+state.days[ClubDates.key(tomorrow)] = day
+check(facts(state,date:tomorrow).isEmpty, "future records never produce insights")
+day.meals[0].nutritionKnown = true
+day.mealCompletion = MealCompletion(signature: MealCompletion.signature(day.meals))
+state.days[ClubDates.key(yesterday)] = day
+check(facts(state,date:yesterday).first!.detail.contains("缺少当时"), "historical target cannot be invented")
+day.nutritionTarget = NutritionTarget.estimate(state.profile)
+day.nutritionTarget!.proteinMin = 5
+state.days[ClubDates.key(yesterday)] = day
+check(!facts(state,date:yesterday).first!.detail.contains("低于参考下限"), "historical target wins over today's target")
+var timed = DayLog()
+timed.exercises = [Exercise(name:"平板支撑",muscle:"核心",sets:[TrainingSet(reps:0,completed:true,durationSeconds:60)])]
+state.days[today] = timed
+check(facts(state).first!.title == "训练记录待确认", "completed set is not a confirmed workout")
+timed.workoutSavedAt = now; state.days[today] = timed
+check(facts(state).first(where: { $0.kind == .training })!.detail.contains("60 秒"), "timed training is not zero training")
+check(facts(state).first(where: { $0.kind == .training })!.title == "训练已保存", "confirmed workout becomes completion feedback")
+let first = facts(state)
+check(first == facts(state), "re-reading does not manufacture messages or timestamps")
+state.days[today] = DayLog()
+check(facts(state).isEmpty, "deleted training retracts the current fact")
+var rest = DayLog(); rest.planCycle = TrainingCycle(start:today,plannedDates:[])
+state.days[today] = rest
+check(facts(state).first!.title == "今天按计划休息", "rest days are not missed workouts")
+rest.bodyWeight = BodyWeightEntry(kilograms:70,updatedAt:now); state.days[today] = rest
+check(facts(state).filter { $0.kind == .body }.count == 1, "actual measured point is visible")
+check(!facts(state).contains { $0.detail.contains("平台期") }, "one measurement cannot establish a plateau")
+state.days[today]!.bodyWeight = nil
+check(!facts(state).contains { $0.kind == .body }, "deleted measurement removes fact")
+check(facts(SavedState()).isEmpty, "a different empty account inherits no facts")
+var special = SavedState(); special.profile.nutritionContext = "孕期或哺乳期"
+special.days[today] = day; special.days[today]!.nutritionTarget = nil
+check(facts(special).first!.detail.contains("个别评估"), "special context does not receive generic deficits")
+print("Club AI foundation: \(tests) behavioral checks passed")
+
+enum RecordLimits { static let maximumWeight = 2000.0
+    static let maximumReps = 1000
+    static let maximumSeconds = 6 * 3600
+    static let maximumNutrition = 100000.0
+    static func valid(_ set: TrainingSet) -> Bool {
+        set.weight.isFinite && (0...maximumWeight).contains(set.weight) && (0...maximumReps).contains(set.reps)
+            && (set.durationSeconds.map { (0...maximumSeconds).contains($0) } ?? true)
+    } }
+
+import Foundation
+
+struct ManualPlanMovement: Identifiable, Codable, Equatable {
+    var id = UUID()
+    var name: String
+    var muscle: String
+    var query: String?
+    var libraryID: String?
+    var customID: UUID?
+    var unit = "次"
+    var count = 3
+    var weight: Double = 0
+    var reps = 10
+    var seconds = 30
+    var restSeconds: Int? = nil
+    var individualSets: [AIPlanSet]? = nil
+
+    var effectiveSets: [AIPlanSet] {
+        individualSets ?? Array(repeating: AIPlanSet(weight: unit == "秒" ? 0 : weight, reps: unit == "秒" ? 0 : reps, durationSeconds: unit == "秒" ? seconds : nil), count: max(0, min(count, 50)))
+    }
+
+    var valid: Bool {
+        guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, name.count <= 100,
+              ["次", "秒"].contains(unit), (1...50).contains(effectiveSets.count),
+              restSeconds.map({ (0...3600).contains($0) }) ?? true else { return false }
+        if individualSets == nil && !(1...50).contains(count) { return false }
+        return effectiveSets.allSatisfy { set in
+            let weight = set.weight ?? 0
+            guard weight.isFinite, (0...RecordLimits.maximumWeight).contains(weight) else { return false }
+            if unit == "秒" { return set.durationSeconds.map { (1...RecordLimits.maximumSeconds).contains($0) } == true }
+            return set.durationSeconds == nil && (1...RecordLimits.maximumReps).contains(set.reps)
+        }
+    }
+    var plannedExercise: AIPlanExercise {
+        return AIPlanExercise(name: name, muscle: muscle, sets: effectiveSets,
+            library_query: query, library_id: libraryID, custom_id: customID, custom_unit: customID == nil ? nil : unit, rest_seconds: restSeconds)
+    }
+}
+
+struct ManualPlanDay: Codable, Equatable {
+    var title = ""
+    var movements: [ManualPlanMovement] = []
+}
+
+struct ManualPlanDraft: Identifiable, Codable, Equatable {
+    var version = 1
+    var id = UUID()
+    var title = "我的训练计划"
+    var start = ClubDates.key(Date())
+    var duration = 7
+    // Keep hidden days when shortening a draft, so changing duration is reversible.
+    var days = Array(repeating: ManualPlanDay(), count: 28)
+    var proposalJobID: String? = nil
+    var suggestedForProfile: MemberProfile? = nil
+    var operationID: String { proposalJobID.map { "coach-plan-" + $0 } ?? ("manual-plan-" + id.uuidString.lowercased()) }
+    var activeDays: [ManualPlanDay] { Array(days.prefix(max(0, min(duration, 28)))) }
+    func dateKey(offset: Int) -> String? {
+        guard let date = ClubDates.date(fromKey: start), (0..<28).contains(offset),
+              let result = ClubDates.calendar.date(byAdding: .day, value: offset, to: date) else { return nil }
+        return ClubDates.key(result)
+    }
+    func validation(now: Date = Date()) -> String? {
+        guard version == 1, days.count == 28, [7,14,28].contains(duration),
+              let date = ClubDates.date(fromKey: start), !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              title.count <= 80 else { return "计划名称、周期或草稿格式不正确。" }
+        guard ClubDates.key(date) >= ClubDates.key(now) else { return "开始日期已过去，请选择今天或未来日期。" }
+        guard activeDays.contains(where: { !$0.movements.isEmpty }) else { return "至少安排一个训练日，其他空白日期会作为休息日。" }
+        guard activeDays.allSatisfy({ $0.title.count <= 80 && $0.movements.count <= 30 && $0.movements.allSatisfy(\.valid) }) else {
+            return "请核对动作与每组目标：每个训练日最多 30 个动作，每个动作 1–50 组，次数和时间不能为零。"
+        }
+        return nil
+    }
+    func result(now: Date = Date()) throws -> AIResult {
+        if let message = validation(now: now) { throw ManualPlanError.message(message) }
+        let sessions = try activeDays.enumerated().compactMap { offset, day -> AIPlanSession? in
+            guard !day.movements.isEmpty else { return nil }
+            guard let key = dateKey(offset: offset) else { throw ManualPlanError.message("日期计算失败，请重新选择开始日期。") }
+            return AIPlanSession(date: key, label: day.title.isEmpty ? "自由训练" : day.title,
+                                 exercises: day.movements.map(\.plannedExercise))
+        }
+        return AIResult(kind: "plan", notes: [], title: title, sessions: sessions, plan_days: duration)
+    }
+    static func importing(_ result: AIResult, originalStart: String, start: Date = Date()) throws -> ManualPlanDraft {
+        guard result.kind == "plan", let sessions = result.sessions, !sessions.isEmpty,
+              let origin = ClubDates.date(fromKey: originalStart), [7,14,28].contains(result.plan_days ?? 7),
+              Set(sessions.map(\.date)).count == sessions.count else { throw ManualPlanError.message("方案格式不完整，无法创建可编辑副本。") }
+        var draft = ManualPlanDraft(); draft.title = String((result.title ?? "复用训练计划").prefix(80))
+        draft.start = ClubDates.key(start); draft.duration = result.plan_days ?? 7
+        for session in sessions {
+            guard let date = ClubDates.date(fromKey: session.date),
+                  let offset = ClubDates.calendar.dateComponents([.day], from: origin, to: date).day,
+                  (0..<draft.duration).contains(offset) else { throw ManualPlanError.message("方案日期超出周期，请重新选择。") }
+            draft.days[offset].title = session.label
+            draft.days[offset].movements = try session.exercises.map { exercise in
+                let timed = exercise.sets.first?.durationSeconds != nil
+                guard !exercise.sets.isEmpty, exercise.sets.allSatisfy({ ($0.durationSeconds != nil) == timed }) else { throw ManualPlanError.message("同一动作包含混合计量方式，请先核对原方案。") }
+                let first = exercise.sets[0]
+                return ManualPlanMovement(name: exercise.displayName, muscle: exercise.muscle, query: exercise.library_query,
+                    libraryID: exercise.library_id, customID: exercise.custom_id, unit: timed ? "秒" : "次", count: exercise.sets.count,
+                    weight: first.weight ?? 0, reps: first.reps, seconds: first.durationSeconds ?? 30,
+                    restSeconds: exercise.rest_seconds, individualSets: exercise.sets)
+            }
+        }
+        if let issue = draft.validation(now: start) { throw ManualPlanError.message(issue) }
+        return draft
+    }
+    mutating func repeatFirstWeek() {
+        guard days.count == 28, [14,28].contains(duration) else { return }
+        for index in 7..<duration {
+            days[index] = days[index % 7]
+            for movement in days[index].movements.indices { days[index].movements[movement].id = UUID() }
+        }
+    }
+    mutating func copyDay(from source: Int, to target: Int) {
+        guard days.count == 28, [7,14,28].contains(duration), (0..<duration).contains(source), (0..<duration).contains(target), source != target else { return }
+        days[target] = days[source]
+        for index in days[target].movements.indices { days[target].movements[index].id = UUID() }
+    }
+    func reusable(start: Date = Date()) -> ManualPlanDraft {
+        var copy = self; copy.id = UUID(); copy.start = ClubDates.key(start); copy.proposalJobID = nil; copy.suggestedForProfile = nil
+        for day in copy.days.indices {
+            for movement in copy.days[day].movements.indices { copy.days[day].movements[movement].id = UUID() }
+        }
+        return copy
+    }
+}
+
+struct ManualPlanTemplate: Identifiable, Codable, Equatable {
+    var id = UUID()
+    let createdAt: Date
+    let draft: ManualPlanDraft
+}
+struct ManualTemplateList {
+    let items: [ManualPlanTemplate]
+    let unreadableCount: Int
+}
+
+enum ManualPlanError: LocalizedError {
+    case message(String)
+    var errorDescription: String? { if case .message(let text) = self { return text }; return nil }
+}
+
+
+
+
+var draft = ManualPlanDraft();draft.start = today
+check(draft.validation(now:now) != nil, "empty plan is not adoptable")
+let movement = ManualPlanMovement(name:"哑铃卧推",muscle:"胸",query:"dumbbell bench press",libraryID:"sample",customID:nil,count:3,weight:10,reps:12)
+draft.days[0].movements = [movement]
+check(draft.validation(now:now) == nil, "one training day and rest days is valid")
+let result = try draft.result(now:now)
+check(result.sessions!.count == 1 && result.sessions![0].date == today, "rest days do not become fake workouts")
+check(result.sessions![0].exercises[0].sets.count == 3, "set count is retained")
+check(result.sessions![0].exercises[0].sets[0].weight == 10, "load retained")
+draft.duration = 28;draft.repeatFirstWeek()
+let longResult = try draft.result(now:now)
+check(longResult.sessions!.count == 4, "four weeks repeat the same weekday")
+check(Set(draft.activeDays.flatMap(\.movements).map(\.id)).count == 4, "copied movements get independent IDs")
+draft.duration = 7
+let shortResult = try draft.result(now:now)
+check(shortResult.sessions!.count == 1, "short cycle excludes hidden dates")
+draft.duration = 28
+check(draft.days[21].movements.count == 1, "shortening preserves hidden draft days")
+draft.copyDay(from:0,to:1)
+check(draft.days[1].movements[0].name == draft.days[0].movements[0].name, "daily copy retains movement")
+check(draft.days[1].movements[0].id != draft.days[0].movements[0].id, "daily copy can be edited independently")
+draft.days[1].movements=[]
+draft.days[0].movements[0].reps = 0
+check(draft.validation(now:now) != nil, "zero repetitions rejected")
+draft.days[0].movements[0].unit = "秒";draft.days[0].movements[0].seconds = 120
+let timedPlan = try draft.result(now:now)
+check(timedPlan.sessions![0].exercises[0].sets[0].durationSeconds == 120, "time target retained")
+check(timedPlan.sessions![0].exercises[0].sets[0].reps == 0, "timed target does not carry repetitions")
+check(timedPlan.sessions![0].exercises[0].sets[0].weight == 0, "timed target does not inherit load")
+let operation = draft.operationID
+let reused = draft.reusable(start:tomorrow)
+check(reused.id != draft.id && reused.operationID != operation, "reused template creates a fresh adoption operation")
+check(reused.start == ClubDates.key(tomorrow) && draft.start == today, "template reuse reanchors without changing the original")
+check(reused.days[0].movements[0].id != draft.days[0].movements[0].id && reused.days[0].movements[0].seconds == draft.days[0].movements[0].seconds, "template clone preserves numeric targets with independent movement identities")
+let template = ManualPlanTemplate(createdAt:now,draft:draft)
+let restoredTemplate = try JSONDecoder().decode(ManualPlanTemplate.self,from:JSONEncoder().encode(template))
+check(restoredTemplate==template,"template survives local restoration without applying a schedule")
+let restored = try JSONDecoder().decode(ManualPlanDraft.self,from:JSONEncoder().encode(draft))
+check(restored == draft && restored.operationID == operation, "draft restoration retains idempotency key")
+draft.start = ClubDates.key(yesterday)
+check(draft.validation(now:now) != nil, "past start rejected before adoption")
+draft.start = today;draft.duration = 8
+check(draft.validation(now:now) != nil, "unsupported duration rejected")
+
+let variedExercise = AIPlanExercise(name:"卧推",muscle:"胸",sets:[AIPlanSet(weight:20,reps:10),AIPlanSet(weight:22.5,reps:8)],library_query:"bench",library_id:"bench",rest_seconds:90)
+let variedResult = AIResult(kind:"plan",title:"逐组方案",sessions:[AIPlanSession(date:today,label:"训练",exercises:[variedExercise])],plan_days:7)
+let variedDraft = try ManualPlanDraft.importing(variedResult,originalStart:today,start:tomorrow)
+let variedExport = try variedDraft.result(now:tomorrow)
+check(variedExport.sessions![0].date == ClubDates.key(tomorrow),"AI import reanchors without changing the sequence")
+check(variedExport.sessions![0].exercises[0].sets == variedExercise.sets,"individual loads and reps survive import and adoption payload")
+check(variedExport.sessions![0].exercises[0].rest_seconds == 90,"per-exercise rest survives editable draft")
+var invalidCount = movement;invalidCount.count=51
+check(!invalidCount.valid,"too many uniform sets cannot be silently clamped")
+var invalidRest = movement;invalidRest.restSeconds=3601
+check(!invalidRest.valid,"out-of-range rest rejected before preview")
+var proposedDraft=variedDraft;proposedDraft.proposalJobID="proposal-job"
+check(proposedDraft.operationID=="coach-plan-proposal-job","accepted suggestions retain an idempotent proposal source")
+check(proposedDraft.reusable(start:tomorrow).proposalJobID==nil,"template reuse is a new operation rather than replaying an applied proposal")
+var explicitDefault=Exercise(name:"卧推",muscle:"胸");explicitDefault.restSeconds=nil
+let restJSON=try JSONSerialization.jsonObject(with:JSONEncoder().encode(explicitDefault)) as! [String:Any]
+check(restJSON["restSeconds"] is NSNull,"default rest reset is explicit and distinguishable from old-client omission")
+print("Manual plan and insight foundation: \(tests) checks passed")
+
+
+
+enum CloudMerge {
+    static func same<T:Encodable>(_ lhs:T,_ rhs:T) throws -> Bool {
+        let encoder=JSONEncoder();encoder.outputFormatting=[.sortedKeys]
+        return try encoder.encode(lhs)==encoder.encode(rhs)
+    }
+}
+extension PlanAdoptionRules {
+
+
+static func sameTraining(_ current: DayLog, _ expected: DayLog) -> Bool {
+        (try? CloudMerge.same(current.exercises, expected.exercises)) == true
+            && (try? CloudMerge.same(current.workoutSessions, expected.workoutSessions)) == true
+            && current.activeWorkoutSessionID == expected.activeWorkoutSessionID
+            && current.workoutStartedAt == expected.workoutStartedAt
+            && current.workoutSavedAt == expected.workoutSavedAt
+            && current.planCycle == expected.planCycle
+            && current.plannedMoveDestination == expected.plannedMoveDestination
+            && current.movedFromDate == expected.movedFromDate
+    }
+
+}
+
+
+final class FixtureJobService { func job(_ id:String)->Int? { nil } }
+final class AdoptionFixture {
+    var state=SavedState();var message:String?;var writesAllowed=true
+    var aiService:FixtureJobService?
+    func historyProfile(jobID:String?)->MemberProfile { state.profile }
+    func hasAppliedAIJob(_ id:String)->Bool { state.appliedAIJobs?.contains(id)==true }
+    func persist(changedDates:[String])->Bool { writesAllowed }
+
+
+func stableID(_ key: String) -> UUID {
+        let hex = SHA256.hash(data: Data(key.utf8)).map { String(format: "%02x", $0) }.joined()
+        let value = "\(hex.prefix(8))-\(hex.dropFirst(8).prefix(4))-\(hex.dropFirst(12).prefix(4))-\(hex.dropFirst(16).prefix(4))-\(hex.dropFirst(20).prefix(12))"
+        return UUID(uuidString: value)!
+    }
+
+func recordPlanHistory(operationID: String, result: AIResult, start: Date, previous: SavedState,
+                                   scope: [String], source: String? = nil, requestedJobID: String? = nil) {
+        let origin = source ?? ((operationID.hasPrefix("manual-plan-") || operationID.hasPrefix("coach-plan-")) ? "manual" : aiService?.job(operationID) == nil ? "continuation" : "ai")
+        ClubHistoryRules.recordPlan(days: &state.days, previous: previous.days, operationID: operationID,
+            result: result, start: start, source: origin, requestedProfile: historyProfile(jobID: requestedJobID ?? operationID),
+            adoptedProfile: state.profile, nutrition: state.nutritionTarget ?? NutritionTarget.estimate(state.profile), scope: scope)
+    }
+
+func applyAIPlan(_ result: AIResult, jobID: String, replaceUnstarted: Bool = false, cycleStart: Date? = nil, minimumCycleStart: Date? = nil, expectedDays: [String: DayLog]? = nil) -> Bool {
+        if hasAppliedAIJob(jobID) { return true }
+        guard result.kind == "plan", let sessions = result.sessions, !sessions.isEmpty,
+              sessions.allSatisfy({ ClubDates.date(fromKey: $0.date) != nil }) else {
+            message = "计划日期不完整，请重新生成。"
+            return false
+        }
+        if let minimumCycleStart {
+            guard let cycleStart, ClubDates.key(cycleStart) >= ClubDates.key(minimumCycleStart) else {
+                message = "下一周必须从原安排结束后的日期开始，请重新选择。"
+                return false
+            }
+        }
+        var window: Set<String> = []
+        if let start = cycleStart {
+            guard ClubDates.key(start) >= ClubDates.key(Date()) else { message = "计划开始日期已过去，请重新预览。"; return false }
+            let duration = result.plan_days ?? 7
+            guard [7,14,28].contains(duration) else { message = "计划长度不正确，请重新预览。"; return false }
+            window = Set((0..<duration).compactMap { ClubDates.calendar.date(byAdding: .day, value: $0, to: start) }.map(ClubDates.key))
+            guard Set(sessions.map(\.date)).count == sessions.count,
+                  sessions.allSatisfy({ window.contains($0.date) && $0.date >= ClubDates.key(Date()) && !PlanAdoptionRules.isProtected(state.days[$0.date] ?? DayLog()) }) else {
+                message = "计划日期已过去、重复或已有开始的训练，请重新预览。"; return false
+            }
+        }
+        let affectedDates = replaceUnstarted && cycleStart != nil ? window : Set(sessions.map(\.date))
+        if let expectedDays {
+            guard affectedDates.allSatisfy({ key in
+                guard let expected = expectedDays[key] else { return false }
+                return PlanAdoptionRules.sameTraining(state.days[key] ?? DayLog(), expected)
+            }) else { message = "安排在预览后发生了变化，请重新核对再保存。"; return false }
+        }
+        guard sessions.allSatisfy({ session in
+            !session.exercises.isEmpty && session.exercises.count <= 30 && session.exercises.allSatisfy { exercise in
+                !exercise.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && (exercise.rest_seconds.map { (0...3600).contains($0) } ?? true) && (1...50).contains(exercise.sets.count)
+                    && exercise.sets.allSatisfy { set in
+                        (set.weight ?? 0).isFinite && (0...RecordLimits.maximumWeight).contains(set.weight ?? 0)
+                            && (set.durationSeconds.map { (1...RecordLimits.maximumSeconds).contains($0) } ?? (1...RecordLimits.maximumReps).contains(set.reps))
+                    }
+            }
+        }) else { message = "动作或组次数据不完整，请重新核对计划。"; return false }
+        let previous = state
+        // Rest days belong to the replacement scope too. Leave started records intact.
+        let restDates = affectedDates.subtracting(sessions.map(\.date))
+        for key in restDates where !PlanAdoptionRules.isProtected(state.days[key] ?? DayLog()) {
+            var day = state.days[key] ?? DayLog()
+            state.deletedExerciseIDs = Array(Set((state.deletedExerciseIDs ?? []) + day.exercises.map { $0.id.uuidString })).sorted()
+            day.exercises = []; day.plannedMoveDestination = nil; day.movedFromDate = nil
+            day.workoutSavedAt = nil
+            state.days[key] = day
+        }
+        for session in sessions {
+            var log = state.days[session.date] ?? DayLog()
+            log.plannedMoveDestination = nil
+            if replaceUnstarted && PlanAdoptionRules.isProtected(log) { state = previous; message = "这一天已经开始训练，请保留记录后另选日期。"; return false }
+            if replaceUnstarted {
+                log.movedFromDate = nil
+                let removable = log.exercises.filter { !$0.sets.contains(where: { $0.completed }) }
+                state.deletedExerciseIDs = Array(Set((state.deletedExerciseIDs ?? []) + removable.map { $0.id.uuidString })).sorted()
+                log.exercises.removeAll { !$0.sets.contains(where: { $0.completed }) }
+            }
+            guard log.exercises.count + session.exercises.count <= 30 else { state = previous; message = "该日期的动作将超过 30 个，请先精简已有计划。"; return false }
+            log.workoutSavedAt = nil
+            log.exercises.append(contentsOf: session.exercises.enumerated().map { index, exercise in
+                let key = "\(jobID)/\(session.date)/\(index)"
+                return Exercise(id: stableID(key), name: exercise.name, muscle: exercise.muscle, sets: exercise.sets.enumerated().map { setIndex, set in
+                    TrainingSet(id: stableID("\(key)/\(setIndex)"), weight: set.weight ?? 0, reps: set.reps, durationSeconds: set.durationSeconds)
+                }, libraryID: exercise.library_id, libraryQuery: exercise.library_query, customExerciseID: exercise.custom_id, customUnit: exercise.custom_unit, restSeconds: exercise.rest_seconds)
+            })
+            state.days[session.date] = log
+        }
+        state.appliedAIJobs = (state.appliedAIJobs ?? []) + [jobID]
+        var cycleDates: [String] = []
+        if let start = cycleStart {
+            let weeks = (result.plan_days ?? 7) / 7
+            for week in 0..<weeks {
+                guard let anchor = ClubDates.calendar.date(byAdding: .day, value: week * 7, to: start) else { state = previous; message = "计划日期无法读取。"; return false }
+                cycleDates += TrainingCycle.stamp(days: &state.days, start: anchor, plannedDates: sessions.map(\.date) + Array(restDates.filter { !(state.days[$0]?.exercises.isEmpty ?? true) }), sourceJobID: result.explanation?.version == 1 ? jobID : nil)
+            }
+        }
+        if let start = cycleStart {
+            recordPlanHistory(operationID: jobID, result: result, start: start, previous: previous, scope: Array(affectedDates))
+        }
+        if persist(changedDates: Array(affectedDates.union(cycleDates))) { return true }
+        state = previous
+        return false
+    }
+
+}
+
+
+var historyState = SavedState()
+let initialTarget = NutritionTarget.estimate(historyState.profile)
+let firstAnchor = ClubHistoryRules.recordGoal(days:&historyState.days,profile:historyState.profile,nutrition:initialTarget,now:now)
+check(firstAnchor == today, "first observed goal anchors to its actual date")
+check(ClubHistoryRules.profile(on:yesterday,days:historyState.days) == nil, "migration does not invent historical goals")
+check(ClubHistoryRules.recordGoal(days:&historyState.days,profile:historyState.profile,nutrition:initialTarget,now:now) == nil, "unchanged goal does not create repeated versions")
+let originalGoal = historyState.days[today]!.goalVersions![0]
+historyState.profile.goal = "减脂"
+_ = ClubHistoryRules.recordGoal(days:&historyState.days,profile:historyState.profile,nutrition:NutritionTarget.estimate(historyState.profile),now:now.addingTimeInterval(60))
+check(historyState.days[today]!.goalVersions!.count == 2, "changed goal appends a version")
+check(historyState.days[today]!.goalVersions![0] == originalGoal, "old goal is immutable")
+check(ClubHistoryRules.profile(on:now,days:historyState.days)?.goal == "减脂", "date resolves its last observed goal")
+historyState.profile.avatarImage = Data([1,2,3]);historyState.profile.nickname = "私人昵称"
+_ = ClubHistoryRules.recordGoal(days:&historyState.days,profile:historyState.profile,nutrition:NutritionTarget.estimate(historyState.profile),now:now.addingTimeInterval(120))
+check(historyState.days[today]!.goalVersions!.count == 2, "cosmetic profile changes are not new fitness goals")
+let futureStart = ClubDates.calendar.date(byAdding:.day,value:14,to:Date())!
+let futureKey = ClubDates.key(futureStart)
+var package = ManualPlanDraft();package.start=futureKey;package.days[0].title="胸肩";package.days[0].movements=[movement]
+let prepared = try package.result()
+let adoption = AdoptionFixture()
+let window = (0..<7).map { ClubDates.key(ClubDates.calendar.date(byAdding:.day,value:$0,to:futureStart)!) }
+for key in window { adoption.state.days[key] = DayLog(exercises:[Exercise(name:"旧动作",muscle:"全身")]) }
+let baseline = adoption.state.days
+check(adoption.applyAIPlan(prepared,jobID:package.operationID,replaceUnstarted:true,cycleStart:futureStart,expectedDays:baseline), "manual package uses actual production adoption")
+check(adoption.state.days[window[1]]!.exercises.isEmpty, "rest dates clear old unstarted schedules")
+let savedVersion = adoption.state.days[futureKey]!.planVersions!.first!
+check(savedVersion.title == package.title && savedVersion.sessions[0].label == "胸肩", "package and daily titles survive adoption")
+check(savedVersion.source == "manual" && savedVersion.scopeDates.count == 7, "manual origin and full replacement scope retained")
+let retainedIDs = adoption.state.days[futureKey]!.exercises.map(\.id)
+check(adoption.applyAIPlan(prepared,jobID:package.operationID,replaceUnstarted:true,cycleStart:futureStart), "repeated confirm remains successful")
+check(adoption.state.days[futureKey]!.exercises.map(\.id) == retainedIDs && adoption.state.days[futureKey]!.planVersions!.count == 1, "retry adds neither actions nor versions")
+let diskFailure = AdoptionFixture();diskFailure.writesAllowed=false
+check(!diskFailure.applyAIPlan(prepared,jobID:package.operationID,replaceUnstarted:true,cycleStart:futureStart), "disk failure rejects adoption")
+check(diskFailure.state.days.isEmpty && diskFailure.state.appliedAIJobs == nil, "failed save rolls back snapshot, records and operation marker")
+let changed = AdoptionFixture();changed.state.days=baseline
+changed.state.days[window[1]]!.exercises.append(Exercise(name:"新动作",muscle:"背"))
+check(!changed.applyAIPlan(prepared,jobID:package.operationID,replaceUnstarted:true,cycleStart:futureStart,expectedDays:baseline), "concurrent schedule change rejects stale preview")
+let protected = AdoptionFixture();protected.state.days[futureKey]=DayLog(exercises:[Exercise(name:"已开始",muscle:"背")],workoutStartedAt:Date())
+check(!protected.applyAIPlan(prepared,jobID:package.operationID,replaceUnstarted:true,cycleStart:futureStart), "started workout cannot be overwritten")
+let nextID="manual-plan-next"
+check(adoption.applyAIPlan(prepared,jobID:nextID,replaceUnstarted:true,cycleStart:futureStart), "subsequent plan can update unstarted window")
+let chain=adoption.state.days[futureKey]!.planVersions!
+check(chain.count==2 && chain.last!.previousIDs.contains(package.operationID), "overlapping updates preserve parent references")
+let restoredHistory = try JSONDecoder().decode(SavedState.self,from:JSONEncoder().encode(adoption.state))
+check(restoredHistory.days[futureKey]!.planVersions! == chain, "plan history survives local and cloud Codable round-trip")
+print("History and production adoption: \(tests) total checks passed")
+
+
+enum JSONValue: Codable, Equatable {
+    case string(String), number(Double), bool(Bool), object([String: JSONValue]), array([JSONValue]), null
+    init(from decoder: Decoder) throws {
+        let c = try decoder.singleValueContainer()
+        if c.decodeNil() { self = .null }
+        else if let v = try? c.decode(Bool.self) { self = .bool(v) }
+        else if let v = try? c.decode(Double.self) { self = .number(v) }
+        else if let v = try? c.decode(String.self) { self = .string(v) }
+        else if let v = try? c.decode([String: JSONValue].self) { self = .object(v) }
+        else { self = .array(try c.decode([JSONValue].self)) }
+    }
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.singleValueContainer()
+        switch self {
+        case .string(let v): try c.encode(v)
+        case .number(let v): try c.encode(v)
+        case .bool(let v): try c.encode(v)
+        case .object(let v): try c.encode(v)
+        case .array(let v): try c.encode(v)
+        case .null: try c.encodeNil()
+        }
+    }
+    var string: String? { if case .string(let v) = self { return v }; return nil }
+    static func encode<T: Encodable>(_ value: T) throws -> JSONValue {
+        try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(value))
+    }
+}
+
+extension CloudMerge {
+
+private static func mergeValue(_ local: JSONValue?, _ remote: JSONValue?, _ base: JSONValue?, key: String = "") -> JSONValue? {
+        if key == "coach" {
+            // A finished task's response is immutable. Old readers omit this field.
+            if let base { return base }
+            return remote ?? local
+        }
+        if ["goalVersions", "planVersions", "insightEvents", "insightFeedback"].contains(key) {
+            func values(_ item: JSONValue?) -> [JSONValue] { if case .array(let items)? = item { return items }; return [] }
+            var records: [String: JSONValue] = [:]
+            for value in values(base) + values(remote) + values(local) {
+                if let id = id(value)?.lowercased(), records[id] == nil { records[id] = value }
+            }
+            return records.isEmpty && local == nil && remote == nil && base == nil ? nil : .array(records.keys.sorted().compactMap { records[$0] })
+        }
+        let unions = ["appliedAIJobs", "deletedExerciseIDs", "deletedMealIDs", "deletedMediaIDs", "deletedAIJobIDs", "deletedSetIDs", "deletedCustomExerciseIDs", "deletedWeeklyReviewIDs"]
+        if unions.contains(key) {
+            let l = strings(local); let r = strings(remote)
+            return .array(Array(Set(l + r)).sorted().map { .string($0) })
+        }
+        // Never let a one-sided edit or an old client's omission rewrite a committed start target.
+        if key == "executionBaseline" {
+            if let base, case .object = base { return base }
+            if case .object(let l)? = local, case .object(let r)? = remote {
+                if case .number(let lt)? = l["capturedAt"], case .number(let rt)? = r["capturedAt"] { return lt <= rt ? local : remote }
+            }
+            return local ?? remote
+        }
+        if local == remote { return local }
+        if local == base { return remote }
+        if remote == base { return local }
+        // Health summaries are indivisible observations, never merge metric fragments.
+        if ["health", "weeklyReview", "bodyWeight", "mealCompletion", "planCycle", "nutritionTarget"].contains(key), case .object(let l)? = local, case .object(let r)? = remote {
+            if case .number(let lt)? = l["updatedAt"], case .number(let rt)? = r["updatedAt"] {
+                return lt >= rt ? local : remote
+            }
+            return local
+        }
+        if case .object(let l)? = local, case .object(let r)? = remote, l["unit"] != nil, r["unit"] != nil, l["updatedAt"] != nil, r["updatedAt"] != nil {
+            if case .number(let lt)? = l["updatedAt"], case .number(let rt)? = r["updatedAt"] { return lt >= rt ? local : remote }
+            return local
+        }
+        if case .object(let l)? = local, case .object(let r)? = remote, l["survey"] != nil, r["survey"] != nil {
+            if case .number(let lt)? = l["updatedAt"], case .number(let rt)? = r["updatedAt"] { return lt >= rt ? local : remote }
+            return local
+        }
+        if case .object(let l)? = local, case .object(let r)? = remote {
+            let b: [String: JSONValue]
+            if case .object(let values)? = base { b = values } else { b = [:] }
+            var output: [String: JSONValue] = [:]
+            for field in Set(l.keys).union(r.keys).union(b.keys) {
+                output[field] = mergeValue(l[field], r[field], b[field], key: field)
+            }
+            // An avatar choice is one observation. Do not combine a new
+            // default avatar with an old uploaded photo from another device.
+            if l["nickname"] != nil && r["nickname"] != nil {
+                let avatarKeys = ["avatarID", "avatarImage", "identityVersion"]
+                let source = avatarKeys.allSatisfy { l[$0] == b[$0] } ? r : l
+                for field in avatarKeys { output[field] = source[field] }
+            }
+            // A meal's values and known/unknown status form one observation, including manual meals.
+            if l["category"] != nil, l["calories"] != nil {
+                let nutritionKeys = ["components", "consumedFraction", "calories", "protein", "carbs", "fat", "nutritionKnown"]
+                let source = nutritionKeys.allSatisfy { l[$0] == b[$0] } ? r : l
+                for field in nutritionKeys { output[field] = source[field] }
+                let placementKeys = ["placementConfirmedAt", "placementConflictDates"]
+                let placementSource = placementKeys.allSatisfy { l[$0] == b[$0] } ? r : l
+                for field in placementKeys { output[field] = placementSource[field] }
+            }
+            return .object(output)
+        }
+        if ["exercises", "sets", "meals", "drafts", "aiJobs", "workoutSessions", "customExercises", "weeklyReviewHistory"].contains(key),
+           case .array(let l)? = local, case .array(let r)? = remote {
+            let b: [JSONValue]
+            if case .array(let values)? = base { b = values } else { b = [] }
+            let lm = indexed(l), rm = indexed(r), bm = indexed(b)
+            var seen = Set<String>()
+            let order = (r + l + b).compactMap(id).filter { seen.insert($0).inserted }
+            return .array(order.compactMap { mergeValue(lm[$0], rm[$0], bm[$0]) })
+        }
+        // Deletion wins when the record was present at the common baseline.
+        if base != nil && (local == nil || remote == nil) { return nil }
+        return local ?? remote
+    }
+
+private static func id(_ value: JSONValue) -> String? {
+        guard case .object(let fields) = value else { return nil }
+        return fields["id"]?.string
+    }
+
+private static func indexed(_ values: [JSONValue]) -> [String: JSONValue] {
+        var result: [String: JSONValue] = [:]
+        for value in values { if let key = id(value) { result[key] = value } }
+        return result
+    }
+
+private static func strings(_ value: JSONValue?) -> [String] {
+        guard case .array(let values)? = value else { return [] }
+        return values.compactMap(\.string)
+    }
+
+
+static func testLedgerMerge<T:Codable>(_ local:T?,_ remote:T?,_ base:T?,key:String) throws -> T? {
+    let l=try local.map { try JSONValue.encode($0) }
+    let r=try remote.map { try JSONValue.encode($0) }
+    let b=try base.map { try JSONValue.encode($0) }
+    guard let value=mergeValue(l,r,b,key:key) else { return nil }
+    return try JSONDecoder().decode(T.self,from:JSONEncoder().encode(value))
+}
+}
+
+var ledgerState=SavedState()
+let ledgerMovement=Exercise(name:"哑铃卧推",muscle:"胸",sets:[TrainingSet(weight:10,reps:12)])
+ledgerState.days[today]=DayLog(exercises:[ledgerMovement])
+let untouched=ledgerState
+check(ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now)==[today], "saving a schedule observes it once")
+let firstObservation=ledgerState.days[today]!.insightEvents!.first!
+check(firstObservation.isTodayReminder, "unstarted schedule is a time-bound reminder")
+check(ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now.addingTimeInterval(1)).isEmpty, "repeated read/save does not manufacture events")
+var concurrentObservation=untouched
+_ = ClubInsightLedger.reconcile(state:&concurrentObservation,dates:[today],now:now.addingTimeInterval(10))
+check(concurrentObservation.days[today]!.insightEvents!.first!.id==firstObservation.id, "same evidence and parents deduplicate across devices")
+ledgerState.days[today]!.exercises[0].imageURL="https://example.invalid/image"
+ledgerState.days[today]!.exercises[0].gifURL="https://example.invalid/gif"
+check(ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now).isEmpty, "media loading is not new training evidence")
+ledgerState.days[today]!.workoutStartedAt=now
+_ = ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now.addingTimeInterval(20))
+check(ClubInsightLedger.current(in:ledgerState,date:now,now:now).first(where: { $0.kind == .training })!.title.contains("已开始"), "started session is not described as waiting to start")
+ledgerState.days[today]!.exercises[0].sets[0].completed=true
+_ = ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now.addingTimeInterval(30))
+check(ClubInsightLedger.current(in:ledgerState,date:now,now:now).first(where: { $0.kind == .training })!.title.contains("待确认"), "checked set is not a confirmed workout")
+ledgerState.days[today]!.workoutSavedAt=now
+_ = ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now.addingTimeInterval(40))
+let savedObservation=ClubInsightLedger.current(in:ledgerState,date:now,now:now).first(where: { $0.kind == .training })!
+check(savedObservation.title=="训练已保存", "confirmed record becomes completion feedback")
+ledgerState.days[today]!.exercises[0].sets[0].weight=12
+_ = ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now.addingTimeInterval(50))
+let updatedObservation=ClubInsightLedger.current(in:ledgerState,date:now,now:now).first(where: { $0.kind == .training })!
+check(updatedObservation.id != savedObservation.id && updatedObservation.evidenceDigest != savedObservation.evidenceDigest, "weight changes update evidence even if summary counts match")
+check(ClubInsightLedger.displayState(savedObservation,in:ledgerState,now:now) == .updated, "old observation is visibly superseded")
+let completedDay=ledgerState.days[today]!
+ledgerState.days[today]!.exercises=[];ledgerState.days[today]!.workoutStartedAt=nil;ledgerState.days[today]!.workoutSavedAt=nil
+_ = ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now.addingTimeInterval(60))
+check(ClubInsightLedger.current(in:ledgerState,date:now,now:now).isEmpty, "deleted source cannot remain current on home")
+check(ClubInsightLedger.leaves(ledgerState.days[today]!.insightEvents!).first!.state == .withdrawn, "deletion records a retraction without destroying old evidence")
+ledgerState.days[today]!.exercises=completedDay.exercises;ledgerState.days[today]!.workoutStartedAt=completedDay.workoutStartedAt;ledgerState.days[today]!.workoutSavedAt=completedDay.workoutSavedAt
+_ = ClubInsightLedger.reconcile(state:&ledgerState,dates:[today],now:now.addingTimeInterval(70))
+let restoredObservation=ClubInsightLedger.current(in:ledgerState,date:now,now:now).first(where: { $0.kind == .training })!
+check(restoredObservation.id != updatedObservation.id, "restoring identical data after a retraction creates a new causal observation")
+var expiredState=untouched
+_ = ClubInsightLedger.reconcile(state:&expiredState,dates:[today],now:now)
+_ = ClubInsightLedger.reconcile(state:&expiredState,dates:[today],now:tomorrow)
+check(ClubInsightLedger.leaves(expiredState.days[today]!.insightEvents!).first!.state == .expired, "past-day reminder expires without accusing user of missing training")
+expiredState.days[ClubDates.key(tomorrow)]=DayLog(exercises:[ledgerMovement])
+check(ClubInsightLedger.reconcile(state:&expiredState,dates:[ClubDates.key(tomorrow)],now:now).isEmpty, "future records cannot create observations")
+var bodyLedger=SavedState();bodyLedger.days[ClubDates.key(yesterday)]=DayLog(bodyWeight:BodyWeightEntry(kilograms:69,updatedAt:yesterday))
+bodyLedger.days[today]=DayLog(bodyWeight:BodyWeightEntry(kilograms:70,updatedAt:now))
+_ = ClubInsightLedger.reconcile(state:&bodyLedger,dates:[today],now:now)
+check(ClubInsightLedger.events(in:bodyLedger).count==1, "actual measurement creates one body observation")
+check(ClubInsightLedger.reconcile(state:&bodyLedger,dates:[ClubDates.key(tomorrow)],now:tomorrow).isEmpty, "old weight is not republished as a new daily measurement")
+bodyLedger.days[today]!.bodyWeight=nil
+_ = ClubInsightLedger.reconcile(state:&bodyLedger,dates:[today],now:now)
+check(ClubInsightLedger.current(in:bodyLedger,date:now,now:now).isEmpty, "deleting weight does not promote an older point into a new measurement event")
+var foodLedger=SavedState();foodLedger.days[today]=DayLog(meals:[meal])
+_ = ClubInsightLedger.reconcile(state:&foodLedger,dates:[today],now:now)
+let foodObservation=ClubInsightLedger.events(in:foodLedger).first!
+check(foodObservation.detail.contains("暂不判断全天"), "one meal still cannot prove a daily deficit")
+foodLedger.days[today]!.meals[0].photoFilename="local.jpg";foodLedger.days[today]!.meals[0].photoRemoteID="remote.jpg"
+foodLedger.days[today]!.meals[0].sourceAIJobID="upload-complete"
+check(ClubInsightLedger.reconcile(state:&foodLedger,dates:[today],now:now).isEmpty, "photo/provenance sync does not duplicate nutrition events")
+foodLedger.days[today]!.meals[0].protein=20
+_ = ClubInsightLedger.reconcile(state:&foodLedger,dates:[today],now:now)
+check(ClubInsightLedger.events(in:foodLedger).count==2, "nutrition edits retain both observations")
+let feedbackKey=ClubInsightLedger.recordFeedback(state:&ledgerState,kind:.training,action:.helpful,eventID:restoredObservation.id,now:now)
+check(feedbackKey==today, "helpful feedback attaches to current account/date")
+check(ClubInsightLedger.recordFeedback(state:&ledgerState,kind:.training,action:.helpful,eventID:restoredObservation.id,now:now)==nil, "repeated helpful tap is idempotent")
+_ = ClubInsightLedger.recordFeedback(state:&ledgerState,kind:.training,action:.reduce,now:now)
+check(ClubInsightLedger.current(in:ledgerState,date:now,now:now).isEmpty, "reduced category leaves home")
+check(!ClubInsightLedger.events(in:ledgerState).isEmpty, "reducing reminders preserves timeline")
+_ = ClubInsightLedger.recordFeedback(state:&ledgerState,kind:.training,action:.normal,now:now.addingTimeInterval(-60))
+check(!ClubInsightLedger.reduced(.training,in:ledgerState), "causal restore works despite device clock moving backwards")
+_ = ClubInsightLedger.recordFeedback(state:&ledgerState,kind:.training,action:.dismissToday,now:now)
+check(ClubInsightLedger.dismissedToday(.training,in:ledgerState,now:now), "day dismissal hides current reminder")
+check(!ClubInsightLedger.dismissedToday(.training,in:ledgerState,now:tomorrow), "today dismissal expires tomorrow")
+_ = ClubInsightLedger.recordFeedback(state:&ledgerState,kind:.training,action:.restoreToday,now:now)
+check(!ClubInsightLedger.current(in:ledgerState,date:now,now:now).isEmpty, "explicit restore shows current evidence")
+let roundTripLedger=try JSONDecoder().decode(SavedState.self,from:JSONEncoder().encode(ledgerState))
+check(ClubInsightLedger.events(in:roundTripLedger)==ClubInsightLedger.events(in:ledgerState), "observations survive restart/Codable round-trip")
+check(ClubInsightLedger.feedback(in:roundTripLedger)==ClubInsightLedger.feedback(in:ledgerState), "preferences survive restart/Codable round-trip")
+check(ClubInsightLedger.events(in:SavedState()).isEmpty && ClubInsightLedger.feedback(in:SavedState()).isEmpty, "empty account inherits no observations or preferences")
+let mergedObservations: [ClubInsightEvent]? = try CloudMerge.testLedgerMerge([firstObservation],[updatedObservation],nil,key:"insightEvents")
+check(mergedObservations!.count==2, "actual cloud merge retains concurrent observations")
+let omittedObservations: [ClubInsightEvent]? = try CloudMerge.testLedgerMerge(nil,[firstObservation],[firstObservation],key:"insightEvents")
+check(omittedObservations==[firstObservation], "omission cannot delete a committed observation")
+var leftPreference=SavedState(),rightPreference=SavedState()
+_ = ClubInsightLedger.recordFeedback(state:&leftPreference,kind:.training,action:.reduce,now:now)
+_ = ClubInsightLedger.recordFeedback(state:&rightPreference,kind:.training,action:.normal,now:now.addingTimeInterval(60))
+let mergedPreferences: [ClubInsightFeedback]? = try CloudMerge.testLedgerMerge(ClubInsightLedger.feedback(in:leftPreference),ClubInsightLedger.feedback(in:rightPreference),nil,key:"insightFeedback")
+var conflictPreferences=SavedState();conflictPreferences.days[today]=DayLog(insightFeedback:mergedPreferences)
+check(ClubInsightLedger.reduced(.training,in:conflictPreferences), "concurrent reduction wins without guessing timestamp authority")
+_ = ClubInsightLedger.recordFeedback(state:&conflictPreferences,kind:.training,action:.normal,now:now.addingTimeInterval(70))
+check(!ClubInsightLedger.reduced(.training,in:conflictPreferences), "explicit restore closes both concurrent preference branches")
+var otherDayPreference=SavedState()
+_ = ClubInsightLedger.recordFeedback(state:&otherDayPreference,kind:.training,action:.reduce,now:tomorrow)
+check(ClubInsightLedger.feedback(in:leftPreference).first!.id != ClubInsightLedger.feedback(in:otherDayPreference).first!.id, "offline preferences from different days cannot collide")
+let futureKind = try JSONDecoder().decode(ClubInsightKind.self,from:Data("\"future_kind\"".utf8))
+let futureKindEncoded=try JSONEncoder().encode(futureKind)
+check(futureKind.rawValue=="future_kind" && String(data:futureKindEncoded,encoding:.utf8)=="\"future_kind\"", "unknown future kind preserves exact raw value")
+let futureStatus = try JSONDecoder().decode(ClubInsightState.self,from:Data("\"future_state\"".utf8))
+check(!futureStatus.supported, "future event state does not break decoding or become a current claim")
+print("Insights, history and adoption: \(tests) total behavioral checks passed")
+
+ 
+var contextState=SavedState()
+let baselineDate=ClubDates.calendar.date(byAdding:.day,value:-2,to:now)!
+_ = ClubHistoryRules.recordGoal(days:&contextState.days,profile:contextState.profile,nutrition:NutritionTarget.estimate(contextState.profile),now:baselineDate)
+let unknownDate=ClubDates.calendar.date(byAdding:.day,value:-3,to:now)!
+let unknownContext=ClubAIContext.make(state:contextState,start:unknownDate,end:unknownDate,now:now)
+check(unknownContext.days[0].profile == nil, "today profile does not backfill an unobserved historical goal")
+contextState.profile.goal="减脂";contextState.profile.nickname="不应发送";contextState.profile.avatarImage=Data([1,2])
+_ = ClubHistoryRules.recordGoal(days:&contextState.days,profile:contextState.profile,nutrition:NutritionTarget.estimate(contextState.profile),now:now.addingTimeInterval(60))
+let oldContext=ClubAIContext.make(state:contextState,start:yesterday,end:yesterday,now:now)
+check(oldContext.days[0].profile?.goal == "增肌", "historical record retains its historical goal")
+let contextNow=now.addingTimeInterval(120)
+let newContext=ClubAIContext.make(state:contextState,start:now,end:now,now:contextNow)
+check(newContext.days[0].profile?.goal == "减脂" && newContext.days[0].goalChangedDuringDay, "same-day target change is explicit")
+check(newContext.days[0].profile?.avatarImage == nil && newContext.days[0].profile?.nickname == "薄肌成员", "historical AI context strips identity and avatar")
+check(ClubAIContext.make(state:contextState,start:tomorrow,end:tomorrow,now:now).days.isEmpty, "future dates never masquerade as observed context")
+let originalContext=newContext
+_ = ClubHistoryRules.recordGoal(days:&contextState.days,profile:contextState.profile,nutrition:NutritionTarget.estimate(contextState.profile),now:tomorrow)
+check(ClubAIContext.make(state:contextState,start:now,end:now,now:contextNow) == originalContext, "future-dated synced goal is not current evidence")
+let week=ClubAIContext.make(state:contextState,start:unknownDate,end:now,now:contextNow)
+check(week.days.count == 4 && week.days[0].profile == nil && week.days[1].profile?.goal == "增肌" && week.days[3].profile?.goal == "减脂", "mixed-target week keeps separate dates instead of overwriting all days")
+let contextData=try JSONEncoder().encode(week)
+let decodedContext=try JSONDecoder().decode(ClubAIContext.self,from:contextData)
+check(decodedContext == week, "goal context survives request persistence")
+print("Goal context: \(tests) combined behavioral checks passed")
+
+extension AdoptionFixture {
+func applyProfilePlan(_ result: AIResult, jobID: String, start: Date, expectedDays: [String: DayLog]? = nil) -> Bool {
+        if hasAppliedAIJob(jobID) { return true }
+        let startDay = ClubDates.calendar.startOfDay(for: start)
+        guard startDay > ClubDates.calendar.startOfDay(for: Date()),
+              result.kind == "plan", let sessions = result.sessions, !sessions.isEmpty else {
+            message = "更新计划必须从未来日期开始，请重新选择起始日。"; return false
+        }
+        let dates = (0..<7).compactMap { ClubDates.calendar.date(byAdding: .day, value: $0, to: startDay) }.map(ClubDates.key)
+        let window = Set(dates)
+        if let expectedDays {
+            guard dates.allSatisfy({ key in
+                guard let expected = expectedDays[key] else { return false }
+                return PlanAdoptionRules.sameTraining(state.days[key] ?? DayLog(), expected)
+            }) else { message = "安排在预览后发生了变化，请返回重新核对。原记录已保留。"; return false }
+        }
+        let expectedDates = Set(dates.filter { key in
+            guard let date = ClubDates.date(fromKey: key) else { return false }
+            let weekday = (ClubDates.calendar.component(.weekday, from: date) + 5) % 7 + 1
+            return (state.profile.trainingDays ?? []).contains(weekday)
+        })
+        guard !expectedDates.isEmpty, Set(sessions.map(\.date)) == expectedDates,
+              Set(sessions.map(\.date)).count == sessions.count,
+              sessions.allSatisfy({ session in
+                  guard let dayDate = ClubDates.date(fromKey: session.date) else { return false }
+                  let weekday = (ClubDates.calendar.component(.weekday, from: dayDate) + 5) % 7 + 1
+                  return window.contains(session.date) && (state.profile.trainingDays ?? []).contains(weekday) &&
+                    !session.exercises.isEmpty && session.exercises.count <= 30 && session.exercises.allSatisfy { exercise in
+                        !exercise.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !exercise.sets.isEmpty && exercise.sets.count <= 50 &&
+                        exercise.sets.allSatisfy { set in
+                            let weight = set.weight ?? 0
+                            return weight.isFinite && (0...2000).contains(weight) &&
+                                (set.durationSeconds.map { (1...RecordLimits.maximumSeconds).contains($0) } ?? (1...RecordLimits.maximumReps).contains(set.reps))
+                        }
+                    }
+              }) else { message = "新方案的日期或训练组不完整，请重新生成。"; return false }
+        let previous = state
+        for key in dates {
+            var day = state.days[key] ?? DayLog()
+            guard !WorkoutEditing.isProtected(day) else { continue }
+            state.deletedExerciseIDs = Array(Set((state.deletedExerciseIDs ?? []) + day.exercises.map { $0.id.uuidString })).sorted()
+            day.exercises = []
+            day.workoutSavedAt = nil; day.linkedDeviceWorkoutID = nil; day.workoutEndedAt = nil
+            if let session = sessions.first(where: { $0.date == key }) {
+                day.exercises = session.exercises.enumerated().map { i, exercise in
+                    let prefix = "\(jobID)/\(key)/\(i)"
+                    return Exercise(id: stableID(prefix), name: exercise.name, muscle: exercise.muscle,
+                                    sets: exercise.sets.enumerated().map { j, set in
+                                        TrainingSet(id: stableID("\(prefix)/\(j)"), weight: set.durationSeconds == nil ? (set.weight ?? 0) : 0,
+                                                    reps: set.durationSeconds == nil ? set.reps : 0, durationSeconds: set.durationSeconds)
+                                    }, libraryID: exercise.library_id, libraryQuery: exercise.library_query, customExerciseID: exercise.custom_id, customUnit: exercise.custom_unit, restSeconds: exercise.rest_seconds)
+                }
+            }
+            // Rest days still retain all meals, health observations and reviews.
+            state.days[key] = day
+        }
+        state.appliedAIJobs = (state.appliedAIJobs ?? []) + [jobID]
+        let cycleDates = TrainingCycle.stamp(days: &state.days, start: startDay, plannedDates: sessions.map(\.date), sourceJobID: result.explanation?.version == 1 ? jobID : nil)
+        recordPlanHistory(operationID: jobID, result: result, start: startDay, previous: previous, scope: dates, source: "ai")
+        if persist(changedDates: Array(Set(dates + cycleDates)).sorted()) { return true }
+        state = previous; return false
+    }
+}
+
+let comparisonKey=window[0]
+let oldMovement=Exercise(name:"俯卧撑",muscle:"胸",sets:[TrainingSet(weight:0,reps:10)],libraryID:"push")
+let updatedMovement=AIPlanExercise(name:"俯卧撑",muscle:"胸",sets:[AIPlanSet(weight:nil,reps:12)],library_query:nil,library_id:"push")
+let oldComparison=[comparisonKey:DayLog(exercises:[oldMovement])]
+let newSession=AIPlanSession(date:comparisonKey,label:"胸",exercises:[updatedMovement])
+let diffs=ClubPlanChangeRules.preview(before:oldComparison,sessions:[newSession],scope:[comparisonKey,comparisonKey,window[1]],replace:true)
+check(diffs.count==2 && diffs[0].changed, "preview deduplicates scope and detects a changed rep target")
+let diffRows=ClubPlanChangeRules.movements(diffs[0])
+check(diffRows.count==1 && diffRows[0].label=="参数更新", "stable movement identity yields a per-set comparison")
+check(diffRows[0].before?.sets[0].reps==10 && diffRows[0].after?.sets[0].reps==12, "before and after retain actual per-set values")
+let appended=ClubPlanChangeRules.preview(before:oldComparison,sessions:[newSession],scope:[comparisonKey],replace:false)
+check(appended[0].after.count==2, "append preview retains old movements and adds the proposal")
+let rested=ClubPlanChangeRules.preview(before:oldComparison,sessions:[],scope:[comparisonKey],replace:true)
+check(rested[0].label=="改为休息日" && rested[0].before.count==1 && rested[0].after.isEmpty, "rest-day replacement explicitly removes old schedule")
+var startedComparison=oldComparison;startedComparison[comparisonKey]!.workoutStartedAt=Date()
+let retainedDiff=ClubPlanChangeRules.preview(before:startedComparison,sessions:[newSession],scope:[comparisonKey],replace:true)
+check(retainedDiff[0].retained && !retainedDiff[0].changed && retainedDiff[0].before==retainedDiff[0].after, "protected date preview never pretends a proposal was applied")
+let noID=AIPlanExercise(name:"俯卧撑",muscle:"不同的标签",sets:[AIPlanSet(weight:0,reps:10)],library_query:"old query")
+check(ClubPlanChangeRules.sameContents(ClubPlanChangeRules.snapshot([oldMovement]),[noID]), "nonfunctional metadata changes do not claim training parameters changed")
+let timed=AIPlanExercise(name:"平板支撑",muscle:"核心",sets:[AIPlanSet(weight:nil,reps:0,durationSeconds:30)],library_query:nil)
+let timedDay=ClubPlanDayChange(date:comparisonKey,before:[noID],after:[timed],retained:false)
+let timedRows=ClubPlanChangeRules.movements(timedDay)
+check(timedRows.count==2 && timedRows[0].before==nil && timedRows[1].after==nil, "different movement and time unit appear as add/remove rather than a false weight comparison")
+check(ClubPlanChangeRules.setLabel(timed.sets[0])=="30 秒", "timed targets display seconds without an invented weight")
+let swapped=ClubPlanDayChange(date:comparisonKey,before:[noID,timed],after:[timed,noID],retained:false)
+check(ClubPlanChangeRules.movements(swapped).allSatisfy { $0.label=="调整顺序" }, "reordering retains identity and marks order changes")
+let duplicate=ClubPlanDayChange(date:comparisonKey,before:[noID,noID],after:[noID,noID],retained:false)
+check(ClubPlanChangeRules.movements(duplicate).count==2 && !duplicate.changed, "repeated movements pair one-to-one without duplicate rows")
+check(savedVersion.changes?.count==7 && savedVersion.changes?.first?.before.first?.name=="旧动作", "production adoption archives the actual previous arrangement")
+check(savedVersion.changes?.first?.after.first?.name==prepared.sessions?.first?.exercises.first?.displayName, "production audit is built from saved schedule rather than unadopted proposal")
+var oldVersion=savedVersion;oldVersion.changes=nil
+let oldData=try JSONEncoder().encode(oldVersion)
+let decodedOld=try JSONDecoder().decode(ClubPlanVersion.self,from:oldData)
+check(decodedOld.changes==nil, "old versions decode without fabricating a before/after audit")
+var profileFixture=AdoptionFixture();profileFixture.state.profile.trainingDays=[1,3,5]
+let profileBaseline=Dictionary(uniqueKeysWithValues:window.map { ($0,DayLog()) })
+let validProfileSessions=window.filter { key in
+    let day=ClubDates.date(fromKey:key)!;let weekday=(ClubDates.calendar.component(.weekday,from:day)+5)%7+1
+    return [1,3,5].contains(weekday)
+}.map { AIPlanSession(date:$0,label:"更新",exercises:[updatedMovement]) }
+let profileResult=AIResult(kind:"plan",sessions:validProfileSessions,plan_days:7)
+profileFixture.state.days=profileBaseline
+profileFixture.state.days[window[0]]!.exercises=[oldMovement]
+check(!profileFixture.applyProfilePlan(profileResult,jobID:"profile-stale",start:futureStart,expectedDays:profileBaseline), "profile-generated plan rejects a stale training preview")
+check(profileFixture.state.days[window[0]]!.exercises.first?.id==oldMovement.id, "stale profile adoption leaves original schedule intact")
+profileFixture.state.days=profileBaseline
+check(profileFixture.applyProfilePlan(profileResult,jobID:"profile-fresh",start:futureStart,expectedDays:profileBaseline), "profile-generated plan accepts unchanged confirmed baseline")
+check(profileFixture.state.days[window[0]]!.planVersions?.first?.changes?.count==7, "profile adoption stores the same exact audit trail")
+print("Plan changes: \(tests) combined behavioral checks passed")
+
+enum WorkoutSessions { static func initialize(_ day: inout DayLog) {
+        guard day.workoutSessions?.isEmpty != false else { return }
+        let id = day.exercises.first?.id ?? UUID()
+        day.workoutSessions = [WorkoutSession(id: id, startedAt: day.workoutStartedAt, endedAt: day.workoutEndedAt, savedAt: day.workoutSavedAt, linkedDeviceWorkoutID: day.linkedDeviceWorkoutID)]
+        day.activeWorkoutSessionID = id
+        for index in day.exercises.indices { day.exercises[index].workoutSessionID = id }
+    } }
+enum TrainingExecutionCapture {
+    static func reconcile(_ day: inout DayLog, base: DayLog?, local: DayLog?, remote: DayLog?) {
+        guard var sessions = day.workoutSessions else { return }
+        for index in sessions.indices {
+            let id = sessions[index].id
+            if let committed = base?.workoutSessions?.first(where: { $0.id == id })?.executionBaseline {
+                sessions[index].executionBaseline = committed
+            } else {
+                let snapshots = [local, remote].compactMap { $0?.workoutSessions?.first(where: { $0.id == id })?.executionBaseline }
+                if let earliest = snapshots.min(by: { $0.capturedAt < $1.capturedAt }) { sessions[index].executionBaseline = earliest }
+            }
+        }
+        day.workoutSessions = sessions
+    }
+    // Freeze before the first started/completed mutation, never backfill old training.
+    static func capture(before: DayLog, after: inout DayLog, on date: Date, restSeconds: Int? = nil) {
+        guard ClubDates.calendar.isDateInToday(date),
+              before.activeWorkoutSessionID == after.activeWorkoutSessionID else { return }
+        let original = before.trainingLog
+        guard !original.exercises.isEmpty, original.workoutStartedAt == nil,
+              original.completedSets == 0, original.workoutSavedAt == nil, original.workoutEndedAt == nil else { return }
+        let updated = after.trainingLog
+        guard updated.workoutStartedAt != nil || updated.completedSets > 0 else { return }
+        let targets = original.exercises.flatMap { exercise in
+            exercise.sets.map { set in WorkoutBaselineSet(id: set.id, exerciseID: exercise.id,
+                unit: set.durationSeconds == nil ? "reps" : "time", targetSeconds: set.durationSeconds,
+                targetReps: set.durationSeconds == nil && (1...RecordLimits.maximumReps).contains(set.reps) ? set.reps : nil,
+                targetWeight: set.durationSeconds == nil && set.weight.isFinite && (0...RecordLimits.maximumWeight).contains(set.weight) ? set.weight : nil, targetRestSeconds: exercise.restSeconds ?? restSeconds) }
+        }
+        guard !targets.isEmpty, targets.count <= 1500,
+              Set(targets.map(\.id)).count == targets.count,
+              targets.allSatisfy({ $0.unit != "time" || ($0.targetSeconds.map { (1...RecordLimits.maximumSeconds).contains($0) } ?? false) }) else { return }
+        WorkoutSessions.initialize(&after)
+        guard let index = after.workoutSessions?.firstIndex(where: { $0.id == after.activeWorkoutSessionID }),
+              after.workoutSessions?[index].executionBaseline == nil else { return }
+        after.workoutSessions?[index].executionBaseline = WorkoutExecutionBaseline(
+            capturedAt: updated.workoutStartedAt ?? updated.workoutSavedAt ?? Date(), sets: targets,
+            restSeconds: restSeconds.flatMap { (0...3600).contains($0) ? $0 : nil })
+    }
+}
+func summaryDay(on date:Date,weight:Double=20,reps:Int=10,count:Int=2,time:Int?=nil,saved:Bool=true) -> DayLog {
+    let session=UUID();let exercise=Exercise(name:time == nil ? "卧推" : "平板支撑",muscle:"全身",sets:(0..<count).map { _ in TrainingSet(weight:time == nil ? weight : 0,reps:time == nil ? reps : 0,completed:true,durationSeconds:time) },libraryID:time == nil ? "bench" : "plank",workoutSessionID:session)
+    var day=DayLog();day.exercises=[exercise];day.workoutStartedAt=date;day.workoutEndedAt=date.addingTimeInterval(60);day.workoutSavedAt=saved ? date.addingTimeInterval(61):nil
+    day.activeWorkoutSessionID=session;day.workoutSessions=[WorkoutSession(id:session,startedAt:date,endedAt:day.workoutEndedAt,savedAt:day.workoutSavedAt)]
+    return day
+}
+let summaryNow=now.addingTimeInterval(3600)
+var summaryState=SavedState();summaryState.days[ClubDates.key(yesterday)]=summaryDay(on:yesterday,reps:10)
+summaryState.days[today]=summaryDay(on:now,reps:12)
+let sessionID=summaryState.days[today]!.activeWorkoutSessionID!
+let summary=ClubWorkoutSummaryRules.make(state:summaryState,date:now,sessionID:sessionID,now:summaryNow)!
+check(summary.completedSets==2 && summary.comparisons.count==1 && summary.comparisons[0].currentValue==24 && summary.comparisons[0].priorValue==20, "same exercise, unit, weight and group count produce traceable actual rep comparison")
+check(summary.comparisons[0].priorSessionID==summaryState.days[ClubDates.key(yesterday)]!.activeWorkoutSessionID, "comparison records the exact prior session")
+check(summary.targetSets==nil && summary.limitations.contains { $0.contains("不补造") }, "old sessions never receive invented target baselines")
+var moreGroups=summaryState;moreGroups.days[today]=summaryDay(on:now,reps:12,count:3)
+let moreReport=ClubWorkoutSummaryRules.make(state:moreGroups,date:now,sessionID:moreGroups.days[today]!.activeWorkoutSessionID!,now:summaryNow)!
+check(!moreReport.comparisons[0].comparable, "different group counts cannot claim progress from aggregate reps")
+var heavier=summaryState;heavier.days[today]=summaryDay(on:now,weight:25)
+check(ClubWorkoutSummaryRules.make(state:heavier,date:now,sessionID:heavier.days[today]!.activeWorkoutSessionID!,now:summaryNow)!.comparisons.isEmpty, "different weight does not masquerade as same-load improvement")
+var unconfirmed=summaryState;unconfirmed.days[ClubDates.key(yesterday)]!.workoutSessions![0].savedAt=nil
+check(ClubWorkoutSummaryRules.make(state:unconfirmed,date:now,sessionID:sessionID,now:summaryNow)!.comparisons.isEmpty, "unconfirmed previous training is not a comparison source")
+var unknown=summaryState;unknown.days[today]!.exercises[0].libraryID=nil;unknown.days[ClubDates.key(yesterday)]!.exercises[0].libraryID=nil
+check(ClubWorkoutSummaryRules.make(state:unknown,date:now,sessionID:sessionID,now:summaryNow)!.comparisons.isEmpty, "free-text names alone do not prove a matching variant")
+var timedSummary=SavedState();timedSummary.days[ClubDates.key(yesterday)]=summaryDay(on:yesterday,time:30);timedSummary.days[today]=summaryDay(on:now,time:40)
+let timeReport=ClubWorkoutSummaryRules.make(state:timedSummary,date:now,sessionID:timedSummary.days[today]!.activeWorkoutSessionID!,now:summaryNow)!
+check(timeReport.timedSeconds==80 && timeReport.comparisons[0].unit=="time" && timeReport.comparisons[0].currentValue==80, "timed activities compare seconds without inventing volume or load")
+var duplicateSummary=summaryState;var duplicateExercise=duplicateSummary.days[today]!.exercises[0];duplicateExercise.id=UUID();duplicateExercise.sets=duplicateExercise.sets.map { set in var copy=set;copy.id=UUID();return copy };duplicateSummary.days[today]!.exercises.append(duplicateExercise)
+check(ClubWorkoutSummaryRules.make(state:duplicateSummary,date:now,sessionID:sessionID,now:summaryNow)!.comparisons.isEmpty, "duplicated exercise variants are not paired arbitrarily")
+check(ClubWorkoutSummaryRules.make(state:summaryState,date:tomorrow,sessionID:sessionID,now:summaryNow)==nil, "future training cannot produce a summary")
+var captureBefore=DayLog(exercises:[Exercise(name:"卧推",muscle:"胸",sets:[TrainingSet(weight:20,reps:10)],libraryID:"bench")])
+var captureAfter=captureBefore;captureAfter.workoutStartedAt=Date();captureAfter.exercises[0].sets[0].weight=25;captureAfter.exercises[0].sets[0].reps=8;captureAfter.exercises[0].sets[0].completed=true
+TrainingExecutionCapture.capture(before:captureBefore,after:&captureAfter,on:Date(),restSeconds:90)
+let executionSnapshot=captureAfter.workoutSessions!.first!.executionBaseline!
+check(executionSnapshot.sets[0].targetWeight==20 && executionSnapshot.sets[0].targetReps==10 && executionSnapshot.restSeconds==90, "first completion freezes BEFORE values and configured rest, not the entered actual result")
+var changedCapture=captureAfter;changedCapture.exercises[0].sets[0].weight=30
+TrainingExecutionCapture.capture(before:captureAfter,after:&changedCapture,on:Date(),restSeconds:120)
+check(changedCapture.workoutSessions!.first!.executionBaseline==executionSnapshot, "later edits never overwrite captured targets")
+var oldCapture=captureBefore;oldCapture.workoutStartedAt=Date()
+TrainingExecutionCapture.capture(before:captureBefore,after:&oldCapture,on:ClubDates.calendar.date(byAdding:.day,value:-1,to:Date())!)
+check(oldCapture.workoutSessions==nil, "historical backfill never manufactures a start-time baseline")
+var perSession=summaryState;let second=summaryDay(on:now.addingTimeInterval(300),reps:14)
+perSession.days[today]!.exercises+=second.exercises;perSession.days[today]!.workoutSessions!+=second.workoutSessions!
+let sessions=ClubWorkoutSummaryRules.available(state:perSession,date:now,now:summaryNow)
+check(sessions.count==2, "same-day workouts remain separate summary identities")
+_ = ClubInsightLedger.reconcile(state:&perSession,dates:[today],now:summaryNow)
+let sessionEvents=ClubInsightLedger.events(in:perSession).filter { $0.kind == .workout }
+check(sessionEvents.count==2 && Set(sessionEvents.map(\.groupID)).count==2, "one workout summary group per confirmed session")
+check(ClubInsightLedger.reconcile(state:&perSession,dates:[today],now:summaryNow.addingTimeInterval(1)).isEmpty, "reopening or retry does not duplicate session summaries")
+let summaryEvent=sessionEvents.first { $0.sourceSessionID==sessionID }!
+_ = ClubInsightLedger.recordFeedback(state:&perSession,kind:.workout,action:.read,eventID:summaryEvent.id,now:summaryNow)
+_ = ClubInsightLedger.recordFeedback(state:&perSession,kind:.workout,action:.archive,eventID:summaryEvent.id,now:summaryNow)
+check(ClubInsightLedger.isRead(summaryEvent,in:perSession) && ClubInsightLedger.isArchived(summaryEvent,in:perSession), "read and archived are independent from evidence validity")
+check(ClubInsightLedger.displayState(summaryEvent,in:perSession,now:summaryNow) == .current && !ClubInsightLedger.current(in:perSession,date:now,now:summaryNow).contains { $0.id==summaryEvent.id }, "archiving hides home card without declaring its evidence stale")
+_ = ClubInsightLedger.recordFeedback(state:&perSession,kind:.workout,action:.unarchive,eventID:summaryEvent.id,now:summaryNow)
+check(!ClubInsightLedger.isArchived(summaryEvent,in:perSession) && ClubInsightLedger.isRead(summaryEvent,in:perSession), "unarchive restores display while preserving read state")
+perSession.days[today]!.exercises[0].gifURL="https://example.invalid/changed.gif"
+check(ClubInsightLedger.reconcile(state:&perSession,dates:[today],now:summaryNow).isEmpty, "GIF URL changes do not manufacture new training summary evidence")
+perSession.days[ClubDates.key(yesterday)]!.exercises[0].sets[0].reps=5
+let changedSummaryDates=ClubInsightLedger.reconcile(state:&perSession,dates:[ClubDates.key(yesterday)],now:summaryNow)
+check(changedSummaryDates.contains(today), "correcting an earlier source updates dependent later summaries offline")
+check(ClubInsightLedger.displayState(summaryEvent,in:perSession,now:summaryNow) == .updated, "superseded comparison is visibly out of date")
+let newSummaryEvent=ClubInsightLedger.current(in:perSession,date:now,now:summaryNow).first { $0.kind == .workout && $0.sourceSessionID==sessionID }!
+check(!ClubInsightLedger.isRead(newSummaryEvent,in:perSession), "new evidence is unread rather than inheriting old version reading state")
+var isolated=SavedState();isolated.days[today]=summaryDay(on:now,reps:12)
+check(ClubWorkoutSummaryRules.make(state:isolated,date:now,sessionID:isolated.days[today]!.activeWorkoutSessionID!,now:summaryNow)!.comparisons.isEmpty, "another account has no access to prior comparison records")
+let summaryBytes=try JSONEncoder().encode(summary)
+let decodedSummary=try JSONDecoder().decode(ClubWorkoutSummary.self,from:summaryBytes)
+check(decodedSummary==summary, "computed report includes exact evidence and completion flags through Codable")
+print("Workout summaries: \(tests) combined behavioral checks passed")
+
+enum DailyReportEligibility {
+    static func hasRecords(_ log: DayLog) -> Bool {
+        log.completedSets > 0 || !log.meals.isEmpty || log.bodyWeight?.kilograms != nil || log.health?.hasData == true
+    }
+    static let missingMessage = "这一天还没有实际记录。先记一餐、完成一组训练、登记体重或确认分享健康数据，再生成复盘。"
+}
+enum DailyAnalysisReadiness {
+    static func warnings(_ log: DayLog) -> [String] {
+        var messages: [String] = []
+        if !log.exercises.isEmpty {
+            if log.completedSets == 0 {
+                messages.append("今天安排了训练，但还没有完成记录；本次不会把计划当成已完成训练。")
+            } else if log.hasUnconfirmedTraining {
+                messages.append("训练还没有点击完成保存。建议先完成本次训练，分析依据会更完整。")
+            } else if log.completedSets < log.totalSets {
+                messages.append("已保存的训练只完成了部分组数；本次仅分析实际完成的部分。")
+            }
+        }
+        if !log.mealsComplete {
+            messages.append(log.meals.isEmpty ? "还没有饮食记录，本次无法评价全天饮食。" : "目前只登记了 \(log.meals.count) 餐，尚未确认全天记录齐全；不会据此判断全天吃多或吃少。")
+        }
+        if log.unknownNutritionMeals > 0 {
+            messages.append("另有 \(log.unknownNutritionMeals) 餐营养数据未知，会作为缺失说明，不能当作零热量。")
+        }
+        return messages
+    }
+}
+import Foundation
+
+/// Device preferences never imply a new health-data sharing permission.
+struct ClubAutomationSettings: Codable, Equatable {
+    var version = 1
+    var automaticDaily = false
+    var enabledFrom: String? = nil
+    var dailyHour = 21
+    var includePartial = false
+    var automaticWeekly: Bool? = nil
+    var automaticWorkout: Bool? = nil
+    var serverAutomation: Bool? = nil
+    var serverZone: String? = nil
+    var enabledAt: Date? = nil
+    var weeklyEnabled: Bool { get { automaticWeekly ?? false } set { automaticWeekly = newValue } }
+    var workoutEnabled: Bool { get { automaticWorkout ?? false } set { automaticWorkout = newValue } }
+    var serverEnabled: Bool { get { serverAutomation ?? false } set { serverAutomation = newValue } }
+    var anyAutomatic: Bool { automaticDaily || weeklyEnabled || workoutEnabled }
+    var quietEnabled = true
+    var quietStart = 22
+    var quietEnd = 8
+
+    var valid: Bool {
+        version == 1 && (serverZone == nil || TimeZone(identifier: serverZone!) != nil) && (0...23).contains(dailyHour) && (0...23).contains(quietStart) &&
+        (0...23).contains(quietEnd) && quietStart != quietEnd &&
+        (enabledFrom == nil || ClubDates.date(fromKey: enabledFrom!) != nil)
+    }
+    static func key(_ owner: Int) -> String { "club-ai.automation.v1.\(owner)" }
+    static func load(owner: Int, defaults: UserDefaults = .standard) throws -> Self {
+        guard let data = defaults.data(forKey: key(owner)) else { return Self() }
+        let value = try JSONDecoder().decode(Self.self, from: data)
+        guard value.valid else { throw ClubAutomationError.invalidPreferences }
+        return value
+    }
+    func save(owner: Int, defaults: UserDefaults = .standard) throws {
+        guard owner > 0, valid else { throw ClubAutomationError.invalidPreferences }
+        defaults.set(try JSONEncoder().encode(self), forKey: Self.key(owner))
+    }
+    func nextAllowedNotification(after now: Date, calendar: Calendar = ClubDates.calendar) -> Date {
+        guard quietEnabled else { return now }
+        let hour = calendar.component(.hour, from: now)
+        let quiet = quietStart < quietEnd ? (quietStart..<quietEnd).contains(hour) : hour >= quietStart || hour < quietEnd
+        guard quiet else { return now }
+        var components = DateComponents(); components.hour = quietEnd; components.minute = 0; components.second = 0
+        return calendar.nextDate(after: now, matching: components, matchingPolicy: .nextTime) ?? now.addingTimeInterval(86400)
+    }
+}
+
+enum ClubAutomationError: LocalizedError {
+    case invalidPreferences
+    var errorDescription: String? { "自动分析设置无法读取，已暂停自动提交；原设置仍保留。请核对后重新保存。" }
+}
+
+enum ClubAnalysisNotifications {
+    static func key(kind: String, owner: Int) -> String {
+        "notifications." + (["report","club_workout"].contains(kind) ? "daily_report" : "weekly_review") + ".user.\(owner)"
+    }
+    static func enabled(kind: String, owner: Int, defaults: UserDefaults = .standard) -> Bool {
+        (defaults.object(forKey: key(kind: kind, owner: owner)) as? Bool) ?? true
+    }
+    static func migrateLegacy(owner: Int, defaults: UserDefaults = .standard) {
+        guard owner > 0, !defaults.bool(forKey: "notifications.scoped-preferences-migrated") else { return }
+        for kind in ["report", "weekly_review"] {
+            let key = Self.key(kind: kind, owner: owner)
+            let legacy = "notifications." + (kind == "report" ? "daily_report" : "weekly_review")
+            if defaults.object(forKey: key) == nil { defaults.set((defaults.object(forKey: legacy) as? Bool) ?? true, forKey: key) }
+        }
+        defaults.set(true, forKey: "notifications.scoped-preferences-migrated")
+    }
+}
+
+enum ClubAutomationRules {
+    static func recentWorkoutDates(now: Date, calendar: Calendar = ClubDates.calendar) -> [Date] {
+        (0...1).compactMap { calendar.date(byAdding: .day, value: -$0, to: now) }
+    }
+    /// At most yesterday and today, and never before the explicit opt-in date.
+    /// This is a foreground catch-up rule, not an iOS background execution promise.
+    static func candidates(settings: ClubAutomationSettings, now: Date = Date()) -> [String] {
+        guard settings.valid, settings.automaticDaily, let first = settings.enabledFrom else { return [] }
+        let calendar = ClubDates.calendar
+        let today = calendar.startOfDay(for: now)
+        let dates = [calendar.date(byAdding: .day, value: -1, to: today), today].compactMap { $0 }
+        return dates.filter {
+            guard ClubDates.key($0) >= first else { return false }
+            let due = calendar.date(bySettingHour: settings.dailyHour, minute: 0, second: 0, of: $0) ?? .distantFuture
+            return due <= now
+        }.map(ClubDates.key)
+    }
+    static func eligible(_ day: DayLog, partialAllowed: Bool) -> Bool {
+        guard DailyReportEligibility.hasRecords(day), !day.hasUnconfirmedTraining else { return false }
+        if partialAllowed { return true }
+        return DailyAnalysisReadiness.warnings(day).isEmpty
+    }
+    /// Same account and natural date always reserve the same automatic job.
+    /// No evidence in the identifier; retries cannot create a second daily job.
+    static func jobID(owner: Int, date: String) -> String? {
+        guard owner > 0, ClubDates.date(fromKey: date) != nil else { return nil }
+        let bytes = UInt64(owner)
+        let ownerHex = String(format: "%016llx", bytes)
+        let compactDate = date.replacingOccurrences(of: "-", with: "")
+        return "a170da11-\(compactDate.prefix(4))-\(compactDate.suffix(4))-\(ownerHex.prefix(4))-\(ownerHex.suffix(12))"
+    }
+}
+
+struct ClubRestResume: Codable, Equatable {
+    let deadline: Date
+    let sessionID: UUID?
+}
+
+enum ClubRestStorage {
+    static func key(owner: Int, date: Date) -> String { "club-rest.v1.\(owner).\(ClubDates.key(date))" }
+    static func save(_ end: Date?, owner: Int, date: Date, sessionID: UUID?, defaults: UserDefaults = .standard) {
+        let key = Self.key(owner: owner, date: date)
+        guard owner > 0, let end, end > Date(), end.timeIntervalSinceNow <= 3600,
+              let data = try? JSONEncoder().encode(ClubRestResume(deadline: end, sessionID: sessionID)) else {
+            defaults.removeObject(forKey: key); return
+        }
+        defaults.set(data, forKey: key)
+    }
+    static func deadline(owner: Int, date: Date, sessionID: UUID?, unfinished: Bool,
+                         now: Date = Date(), defaults: UserDefaults = .standard) -> Date? {
+        guard owner > 0, unfinished, let data = defaults.data(forKey: key(owner: owner, date: date)),
+              let value = try? JSONDecoder().decode(ClubRestResume.self, from: data),
+              value.sessionID == sessionID, value.deadline > now, value.deadline.timeIntervalSince(now) <= 3600 else { return nil }
+        return value.deadline
+    }
+    static func erase(owner: Int, defaults: UserDefaults = .standard) {
+        for key in defaults.dictionaryRepresentation().keys where key.hasPrefix("club-rest.v1.\(owner).") {
+            defaults.removeObject(forKey: key)
+        }
+        defaults.removeObject(forKey: ClubAutomationSettings.key(owner))
+        defaults.removeObject(forKey: ClubAnalysisNotifications.key(kind: "report", owner: owner))
+        defaults.removeObject(forKey: ClubAnalysisNotifications.key(kind: "weekly_review", owner: owner))
+    }
+}
+
+
+var sydney=Calendar(identifier:.gregorian);sydney.timeZone=TimeZone(identifier:"Australia/Sydney")!
+let dstNow=sydney.date(from:DateComponents(year:2026,month:10,day:5,hour:0,minute:30))!
+let dstDates=ClubAutomationRules.recentWorkoutDates(now:dstNow,calendar:sydney)
+check(dstDates.count==2 && sydney.component(.day,from:dstDates[1])==4,"calendar yesterday survives a 23-hour DST day")
+let dstFall=sydney.date(from:DateComponents(year:2026,month:4,day:6,hour:0,minute:30))!
+let fallDates=ClubAutomationRules.recentWorkoutDates(now:dstFall,calendar:sydney)
+check(fallDates.count==2 && sydney.component(.day,from:fallDates[1])==5,"calendar yesterday survives a 25-hour DST day")
+let automationSuite="boji-automation-tests-"+UUID().uuidString
+let automationDefaults=UserDefaults(suiteName:automationSuite)!
+defer { automationDefaults.removePersistentDomain(forName:automationSuite) }
+func automationTime(_ day:String,_ hour:Int,_ minute:Int=0)->Date {
+    ClubDates.calendar.date(bySettingHour:hour,minute:minute,second:0,of:ClubDates.date(fromKey:day)!)!
+}
+var automatic=ClubAutomationSettings()
+check(!automatic.automaticDaily && automatic.quietEnabled, "automatic model use is explicit opt-in and analysis notifications default to quiet nights")
+check(ClubAutomationRules.candidates(settings:automatic,now:automationTime(today,23)).isEmpty, "closed automation never creates a candidate")
+automatic.automaticDaily=true;automatic.enabledFrom=today
+check(ClubAutomationRules.candidates(settings:automatic,now:automationTime(today,20)).isEmpty, "no premature daily analysis")
+check(ClubAutomationRules.candidates(settings:automatic,now:automationTime(today,21)) == [today], "scheduled hour includes today exactly once")
+check(ClubAutomationRules.candidates(settings:automatic,now:automationTime(ClubDates.key(tomorrow),9)) == [today], "missed yesterday catches up on next foreground without pre-opt-in backfill")
+let twoDaysLater=ClubDates.calendar.date(byAdding:.day,value:2,to:now)!
+check(!ClubAutomationRules.candidates(settings:automatic,now:automationTime(ClubDates.key(twoDaysLater),21)).contains(today), "older missed days never trigger an unbounded backlog")
+check(ClubAutomationRules.jobID(owner:1,date:today) == ClubAutomationRules.jobID(owner:1,date:today), "same account and date use one deterministic reservation")
+check(ClubAutomationRules.jobID(owner:1,date:today) != ClubAutomationRules.jobID(owner:2,date:today), "automatic task identities are isolated per account")
+check(ClubAutomationRules.jobID(owner:1,date:today) != ClubAutomationRules.jobID(owner:1,date:ClubDates.key(yesterday)), "different natural days have separate tasks")
+check(UUID(uuidString:ClubAutomationRules.jobID(owner:Int.max,date:today)!) != nil, "largest supported account remains a legal UUID")
+check(ClubAutomationRules.jobID(owner:0,date:today)==nil && ClubAutomationRules.jobID(owner:1,date:"bad")==nil, "invalid automatic identity fails closed")
+try automatic.save(owner:11,defaults:automationDefaults)
+let loadedAutomatic=try ClubAutomationSettings.load(owner:11,defaults:automationDefaults)
+check(loadedAutomatic==automatic, "explicit preferences persist across process reconstruction")
+let isolatedAutomatic=try ClubAutomationSettings.load(owner:12,defaults:automationDefaults)
+check(isolatedAutomatic.automaticDaily==false, "new account does not inherit another account opt-in")
+let night=automationTime(today,23,30)
+let morning=automatic.nextAllowedNotification(after:night)
+check(ClubDates.calendar.component(.hour,from:morning)==8 && ClubDates.key(morning)==ClubDates.key(tomorrow), "overnight quiet hours defer to next morning")
+check(automatic.nextAllowedNotification(after:automationTime(today,8))==automationTime(today,8), "quiet end is an inclusive allowed boundary")
+check(automatic.nextAllowedNotification(after:automationTime(today,21))==automationTime(today,21), "normal evening delivery is not delayed")
+automatic.quietStart=9;automatic.quietEnd=17
+check(automatic.nextAllowedNotification(after:automationTime(today,12))==automationTime(today,17), "same-day quiet interval is supported")
+automatic.quietEnabled=false
+check(automatic.nextAllowedNotification(after:night)==night, "quiet opt-out delivers immediately")
+automatic.quietEnabled=true;automatic.quietEnd=9
+check(!automatic.valid && ClubAutomationRules.candidates(settings:automatic,now:night).isEmpty, "equal quiet endpoints cannot silently mean all day or no day")
+automationDefaults.set(Data("broken".utf8),forKey:ClubAutomationSettings.key(13))
+do { _ = try ClubAutomationSettings.load(owner:13,defaults:automationDefaults);check(false,"corrupt preference must fail closed") } catch { check(true,"corrupt preference is preserved instead of silently enabling defaults") }
+check(automationDefaults.data(forKey:ClubAutomationSettings.key(13)) == Data("broken".utf8), "failed preference read never erases original bytes")
+var complete=summaryDay(on:now)
+check(!ClubAutomationRules.eligible(DayLog(),partialAllowed:true), "empty days never spend a model request")
+check(!ClubAutomationRules.eligible(complete,partialAllowed:false), "missing confirmed food prevents default automatic report")
+check(ClubAutomationRules.eligible(complete,partialAllowed:true), "explicit partial setting permits a saved partial day")
+complete.workoutSessions![0].savedAt=nil
+check(!ClubAutomationRules.eligible(complete,partialAllowed:true), "partial opt-in does not analyze an unconfirmed active workout")
+let futureEnd=Date().addingTimeInterval(120);let restSession=UUID()
+ClubRestStorage.save(futureEnd,owner:11,date:Date(),sessionID:restSession,defaults:automationDefaults)
+check(ClubRestStorage.deadline(owner:11,date:Date(),sessionID:restSession,unfinished:true,defaults:automationDefaults)==futureEnd, "rest survives a reconstructed screen/process")
+check(ClubRestStorage.deadline(owner:12,date:Date(),sessionID:restSession,unfinished:true,defaults:automationDefaults)==nil, "rest does not cross accounts")
+check(ClubRestStorage.deadline(owner:11,date:Date(),sessionID:UUID(),unfinished:true,defaults:automationDefaults)==nil, "rest does not cross workout sessions")
+check(ClubRestStorage.deadline(owner:11,date:Date(),sessionID:restSession,unfinished:false,defaults:automationDefaults)==nil, "ended training never resumes rest")
+check(ClubRestStorage.deadline(owner:11,date:Date(),sessionID:restSession,unfinished:true,now:futureEnd.addingTimeInterval(1),defaults:automationDefaults)==nil, "expired deadline never restarts a fresh countdown")
+ClubRestStorage.save(nil,owner:11,date:Date(),sessionID:restSession,defaults:automationDefaults)
+check(ClubRestStorage.deadline(owner:11,date:Date(),sessionID:restSession,unfinished:true,defaults:automationDefaults)==nil, "skip/end rest persists clearing")
+ClubRestStorage.erase(owner:11,defaults:automationDefaults)
+check(automationDefaults.data(forKey:ClubAutomationSettings.key(11))==nil && automationDefaults.data(forKey:ClubAutomationSettings.key(13)) != nil, "account erasure clears only its own automation settings")
+automationDefaults.set(false,forKey:"notifications.daily_report")
+ClubAnalysisNotifications.migrateLegacy(owner:21,defaults:automationDefaults)
+check(!ClubAnalysisNotifications.enabled(kind:"report",owner:21,defaults:automationDefaults),"first existing account retains the legacy disabled reminder preference")
+ClubAnalysisNotifications.migrateLegacy(owner:22,defaults:automationDefaults)
+check(ClubAnalysisNotifications.enabled(kind:"report",owner:22,defaults:automationDefaults),"a different account does not inherit another account notification override")
+automationDefaults.set(false,forKey:ClubAnalysisNotifications.key(kind:"weekly_review",owner:22))
+check(ClubAnalysisNotifications.enabled(kind:"weekly_review",owner:21,defaults:automationDefaults),"weekly reminder toggle is account-scoped")
+ClubRestStorage.erase(owner:22,defaults:automationDefaults)
+check(automationDefaults.object(forKey:ClubAnalysisNotifications.key(kind:"weekly_review",owner:22))==nil,"account erasure clears scoped notification preferences")
+print("Automation and durable rest checks passed; total assertions: \(tests)")
+
+struct AIInput: Codable, Equatable {
+    var kind: String
+    var date: String
+    var payload: [String: JSONValue]
+}
+enum ClubAutomaticReports {
+static func jobID(owner: Int, mode: String, key: String) -> String {
+        let hex = SHA256.hash(data: Data("club-auto-v1/\(owner)/\(mode)/\(key)".utf8)).prefix(16).map { String(format: "%02x", $0) }.joined()
+        let a = Array(hex)
+        return [String(a[0..<8]),String(a[8..<12]),String(a[12..<16]),String(a[16..<20]),String(a[20..<32])].joined(separator: "-")
+    }
+}
+
+enum AppErrorText { static func message(_ error: Error) -> String { error.localizedDescription } }
+enum V107Failure: Error { case unavailable }
+final class AppStore {
+    var state = SavedState()
+    func log(for date: Date) -> DayLog { state.days[ClubDates.key(date)] ?? DayLog() }
+}
+final class AIService {
+    var known = Set<String>()
+    var inputs: [AIInput] = []
+    var sourceSessions: [UUID?] = []
+    var shouldFail = false
+    func job(_ id: String) -> Bool? { known.contains(id) ? true : nil }
+    func coachInput(question: String, conversation: String, history: [JSONValue], through date: Date,
+                    contextDays: Int, store: AppStore, sessionID: UUID? = nil) throws -> AIInput {
+        sourceSessions.append(sessionID)
+        return AIInput(kind: "coach", date: ClubDates.key(date), payload: ["context_days": .number(Double(contextDays))])
+    }
+    func submit(_ input: AIInput, submissionID: String) throws -> String {
+        if shouldFail { throw V107Failure.unavailable }
+        inputs.append(input); known.insert(submissionID)
+        return submissionID
+    }
+}
+final class AutomationCallerFixture {
+    var owner: Int? = 71
+    var settings = ClubAutomationSettings()
+    var error: String?
+func evaluateCoach(store: AppStore, ai: AIService, now: Date) {
+        guard let owner, let first = settings.enabledFrom else { return }
+        if settings.workoutEnabled {
+            for key in ClubAutomationRules.recentWorkoutDates(now: now).map(ClubDates.key) where key >= first {
+                guard let date = ClubDates.date(fromKey: key) else { continue }
+                let sessionIDs: [UUID] = ClubWorkoutSummaryRules.available(state: store.state, date: date, now: now)
+                for sessionID in sessionIDs {
+                    guard let session = store.state.days[key]?.workoutSessions?.first(where: { $0.id == sessionID }),
+                          let saved = session.savedAt, saved >= (settings.enabledAt ?? now), saved <= now else { continue }
+                    let id = ClubAutomaticReports.jobID(owner: owner, mode: "workout", key: session.id.uuidString.lowercased())
+                    guard ai.job(id) == nil else { continue }
+                    do {
+                        var input = try ai.coachInput(question: "请锐评本次已确认训练：先核对完成情况与开始目标，明确哪些比较有依据，最后给下一次一个可执行建议。不能编造动作技术或恢复情况。", conversation: id, history: [], through: date, contextDays: 7, store: store, sessionID: session.id)
+                        input.payload["purpose"] = JSONValue.string("workout")
+                        input.payload["source_session"] = JSONValue.string(sessionID.uuidString.lowercased())
+                        _ = try ai.submit(input, submissionID: id)
+                    } catch { self.error = AppErrorText.message(error) }
+                    return
+                }
+            }
+        }
+        if settings.weeklyEnabled {
+            let today = ClubDates.calendar.startOfDay(for: now)
+            let weekday = (ClubDates.calendar.component(.weekday, from: today) + 5) % 7
+            guard let end = ClubDates.calendar.date(byAdding: .day, value: -weekday-1, to: today),
+                  let start = ClubDates.calendar.date(byAdding: .day, value: -6, to: end), ClubDates.key(start) >= first else { return }
+            let days = (0..<7).compactMap { ClubDates.calendar.date(byAdding: .day, value: $0, to: start) }.map { store.log(for: $0) }
+            guard days.filter({ $0.isTrainingConfirmed && $0.completedSets > 0 }).count >= 2 || days.filter(\.mealsComplete).count >= 3 else { return }
+            let id = ClubAutomaticReports.jobID(owner: owner, mode: "weekly", key: ClubDates.key(end))
+            guard ai.job(id) == nil else { return }
+            do {
+                var input = try ai.coachInput(question: "生成截至请求日期这七天的记录成长报告：训练执行、饮食覆盖、身体测量趋势、最值得肯定与最需要改正的行为、下一周一件事。此前额外七天仅作为上一周对照，缺少可比数据时说明，不合并成两周评价。专业直白、有适度幽默；不代填感受，不把缺记录当未完成。", conversation: id, history: [], through: end, contextDays: 14, store: store)
+                input.payload["purpose"] = .string("weekly")
+                _ = try ai.submit(input, submissionID: id)
+            } catch { self.error = AppErrorText.message(error) }
+        }
+    }
+}
+
+let compileStore = AppStore()
+compileStore.state.days[today] = summaryDay(on: now)
+let compileSession = compileStore.state.days[today]!.activeWorkoutSessionID!
+let compileCaller = AutomationCallerFixture()
+compileCaller.settings.enabledFrom = today
+compileCaller.settings.enabledAt = now
+compileCaller.settings.workoutEnabled = true
+let compileAI = AIService()
+compileCaller.evaluateCoach(store: compileStore, ai: compileAI, now: summaryNow)
+check(compileAI.inputs.count == 1, "actual caller accepts UUID returned by available and submits confirmed training")
+check(compileAI.sourceSessions.first! == compileSession, "actual caller passes the exact session UUID into coach context")
+check(compileAI.inputs[0].payload["purpose"] == JSONValue.string("workout"), "workout purpose payload has the concrete JSON value type")
+check(compileAI.inputs[0].payload["source_session"] == JSONValue.string(compileSession.uuidString.lowercased()), "payload retains the UUID rather than a summary object")
+compileCaller.evaluateCoach(store: compileStore, ai: compileAI, now: summaryNow)
+check(compileAI.inputs.count == 1, "repeated evaluation does not generate a duplicate training report")
+
+let compileUnconfirmed = AppStore()
+compileUnconfirmed.state.days[today] = summaryDay(on: now, saved: false)
+let compileUnconfirmedAI = AIService()
+compileCaller.evaluateCoach(store: compileUnconfirmed, ai: compileUnconfirmedAI, now: summaryNow)
+check(compileUnconfirmedAI.inputs.isEmpty, "actual caller never submits a training that was not confirmed")
+
+let compileBeforeEnable = AppStore()
+compileBeforeEnable.state.days[today] = summaryDay(on: now)
+compileCaller.settings.enabledAt = now.addingTimeInterval(120)
+let compileBeforeEnableAI = AIService()
+compileCaller.evaluateCoach(store: compileBeforeEnable, ai: compileBeforeEnableAI, now: summaryNow)
+check(compileBeforeEnableAI.inputs.isEmpty, "a workout saved before opt-in does not trigger retrospective model use")
+compileCaller.settings.enabledAt = now
+let compileFailAI = AIService(); compileFailAI.shouldFail = true
+compileCaller.evaluateCoach(store: compileStore, ai: compileFailAI, now: summaryNow)
+check(compileCaller.error != nil && compileStore.state.days[today]!.isTrainingConfirmed, "submission failure surfaces an error and preserves the saved workout")
+
+let weeklyCaller = AutomationCallerFixture()
+weeklyCaller.settings.weeklyEnabled = true
+weeklyCaller.settings.enabledFrom = "2026-10-05"
+let weeklyStore = AppStore()
+let weeklyNow = ClubDates.date(fromKey: "2026-10-19")!
+for key in ["2026-10-13", "2026-10-15"] {
+    weeklyStore.state.days[key] = summaryDay(on: ClubDates.date(fromKey: key)!)
+}
+let weeklyAI = AIService()
+weeklyCaller.evaluateCoach(store: weeklyStore, ai: weeklyAI, now: weeklyNow)
+check(weeklyAI.inputs.count == 1 && weeklyAI.inputs[0].payload["purpose"] == JSONValue.string("weekly"), "weekly branch still submits when two confirmed dates meet the rule")
+check(weeklyAI.inputs[0].date == "2026-10-18" && weeklyAI.inputs[0].payload["context_days"] == JSONValue.number(14), "weekly report keeps a seven-day scope and fourteen-day comparison context")
+
+// Preserve exact date and UUID tie ordering after replacing overloaded chains.
+var tieState = SavedState()
+var lowerProfile = tieState.profile; lowerProfile.goal = "低编号"
+var higherProfile = tieState.profile; higherProfile.goal = "高编号"
+let lowerGoal = ClubGoalVersion(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, recordedAt: now, profile: lowerProfile, nutrition: initialTarget)
+let higherGoal = ClubGoalVersion(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, recordedAt: now, profile: higherProfile, nutrition: initialTarget)
+tieState.days[today] = DayLog()
+tieState.days[today]!.goalVersions = [higherGoal, lowerGoal]
+check(ClubHistoryRules.profile(on: now, days: tieState.days)?.goal == "高编号", "historical profile preserves deterministic UUID tie breaking")
+let tieContext = ClubAIContext.make(state: tieState, start: now, end: now, now: summaryNow)
+check(tieContext.days[0].goalVersionID == higherGoal.id.uuidString.lowercased(), "AI context uses the same deterministic goal ordering")
+check(ClubHistoryRules.recordGoal(days: &tieState.days, profile: higherProfile, nutrition: initialTarget, now: now) == nil, "same target is not duplicated after explicit latest-version selection")
+print("PASS Build 107 actual automation caller and history regression checks; combined assertions: \(tests)")

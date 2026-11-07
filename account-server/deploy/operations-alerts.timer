@@ -1,0 +1,12 @@
+[Unit]
+Description=Check Boji Club operational alerts every five minutes
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5min
+AccuracySec=20s
+Persistent=true
+Unit=operations-alerts.service
+
+[Install]
+WantedBy=timers.target

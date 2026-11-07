@@ -1,0 +1,51 @@
+{
+  "size": [
+    1206,
+    2622
+  ],
+  "mode": "RGB",
+  "metadataKeys": [
+    "srgb",
+    "exif",
+    "xmp",
+    "XML:com.adobe.xmp"
+  ],
+  "auditedHeaderPointRect": [
+    8,
+    340,
+    353.7,
+    50.3
+  ],
+  "observedHeaderGlyphPixelBBox": [
+    75,
+    1073,
+    169,
+    1119
+  ],
+  "observedHeaderGlyphPointBBox": [
+    25.0,
+    357.67,
+    56.33,
+    373.0
+  ],
+  "foregroundModeRGB": [
+    25,
+    26,
+    30
+  ],
+  "foregroundCorePixelCount": 1526,
+  "adjacentBackgroundModeRGB": [
+    244,
+    244,
+    244
+  ],
+  "adjacentBackgroundModeCount": 5038,
+  "adjacentBackgroundMedianRGB": [
+    244.0,
+    244.0,
+    244.0
+  ],
+  "representativeContrastRatio": 15.807743588080777,
+  "medianBackgroundContrastRatio": 15.807743588080777,
+  "caveat": "This is the supplied static screenshot, not an issue-time audit screenshot; it does not establish audit-time Dynamic Type layout or identify element-nil clipping reports."
+}

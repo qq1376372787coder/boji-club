@@ -1,0 +1,60 @@
+{
+  "build": 123,
+  "database_migration": false,
+  "files": [
+    {
+      "file": "account-server/public/cloud-validation.php",
+      "baseline_lf_sha256": "74826290942ecce67c02656225bbdbca28ea872f46c88d70f6134beecfeff155",
+      "sha256": "3949d4293c6c0b73bd5c6d627bf1b3a859e3ec9ec7c682586fbd067b55653fb5",
+      "remote": "/opt/bojiclub-account/public/cloud-validation.php"
+    },
+    {
+      "file": "account-server/public/profile-facts.php",
+      "baseline_lf_sha256": "3617890ed3f83162e55b51475a35745815f58188411c07ab345e352b62b07035",
+      "sha256": "b8c2fbbf318fe1043ec51e90a669d14485f71edc01d7d568bdb5a9a564ab0cde",
+      "remote": "/opt/bojiclub-account/public/profile-facts.php"
+    },
+    {
+      "file": "account-server/public/ai-context.php",
+      "baseline_lf_sha256": "eb5ad17b5c85ec19c2f6875325ec2d1bc49949b97da28d15341e6042d6f25641",
+      "sha256": "318efa13d2815dbc9ca2a25e6876c07c4836b4705f66fba2ea3c3a4d795d233f",
+      "remote": "/opt/bojiclub-account/public/ai-context.php"
+    },
+    {
+      "file": "account-server/public/chat-input.php",
+      "baseline_lf_sha256": "0125b5ece24c805e7e8b6f5d30b785f4c71dda22b6c80ff57e9df266cb9da1ca",
+      "sha256": "d281f27b0271d7c9e00f4a4c21457d244725b2a8004cb471e6e77d95795472a5",
+      "remote": "/opt/bojiclub-account/public/chat-input.php"
+    },
+    {
+      "file": "account-server/admin/index.php",
+      "baseline_lf_sha256": "556637ee71e9e9c8f9ede76ff407d38e84cb33d7fc35c982feedde2b5627f87d",
+      "sha256": "e776bab4dcf5ef60fb48a0ca4f7f435f672ad035b64db44a48af34ca264d3b33",
+      "remote": "/opt/bojiclub-account/admin/index.php"
+    },
+    {
+      "file": "backend/ai_core.py",
+      "baseline_lf_sha256": "89c43381e3bd40c95d58a009e4e7c4f85659e91cf11f0993b6f6cc6dabb76741",
+      "sha256": "4301fa56d7b6be045a39ed0b0640283134d63a471f8662408a5c6fdb6ff9b577",
+      "remote": "/opt/bojiclub-ai/ai_core.py"
+    },
+    {
+      "file": "backend/coach_core.py",
+      "baseline_lf_sha256": "491b017c65049365f61726de193401789f5dc1bcfb8dd11e271fe38abbee0746",
+      "sha256": "731f33ce6da90c643fe9c0400e2190eb9344f4fa1cd85067f35099924c549eee",
+      "remote": "/opt/bojiclub-ai/coach_core.py"
+    },
+    {
+      "file": "backend/automation_core.py",
+      "baseline_lf_sha256": "f09cd71db21a123594987ff2d436386ca91a8cc2d4698c6d8be1fdfa5eeaa230",
+      "sha256": "eb82ba61b8161b17f5f9f2b0b7cc5887673dcc3c1674ddb20148d680c5c36b1d",
+      "remote": "/opt/bojiclub-ai/automation_core.py"
+    },
+    {
+      "file": "account-server/public/context-continuation.php",
+      "baseline_lf_sha256": "7c1da7a3d073cd6bf3d9142665594655feed491a19bae427aa2856d4875412f2",
+      "sha256": "f83484ee34df4a7b2a3c5a50350f0c061f9213f5630419c2b385463eb78b5ede",
+      "remote": "/opt/bojiclub-account/public/context-continuation.php"
+    }
+  ]
+}

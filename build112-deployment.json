@@ -1,0 +1,32 @@
+{
+  "build": 112,
+  "deployed": true,
+  "deployed_at": "2026-10-18T13:55:34.642428+00:00",
+  "backup": "/root/bojiclub-build112-backup-20261018T135532Z",
+  "files": {
+    "backend/ai_core.py": "2d83683746742f4bc427acd23600ad2df46c3f4e75dfbe46ab2f34f4a26fd9e0",
+    "backend/automation_core.py": "365c6d6e9ff8243cc0c3e82ac88db42493726d17241a8ab84173a2cbac806862",
+    "backend/server.py": "9066712751ca1df521c345c8c9c40d63d2ca37568d94316509958542f3bb5616",
+    "account-server/public/cloud-validation.php": "11f1f6cb0dfe6aec966e6a8615b667ceb747a444f09708d383fc5a9acefde0f1",
+    "account-server/public/club-progress.php": "0246d8fb60ba2743f002d961c37d1c79d368a62679b4ce75c63d03a1fffca4ec",
+    "account-server/admin/index.php": "f2aa07d8ac5516013cc75038345922703460d21a370b3351f03aea7d876806ca"
+  },
+  "services": {
+    "bojiclub-ai": "active",
+    "nginx": "active",
+    "php-fpm": "active",
+    "crond": "active"
+  },
+  "health": "ok",
+  "preflight": "passed",
+  "production_python_tests": 55,
+  "production_php_health_checks": 7,
+  "public_routes": {
+    "/account/v1/me": 401,
+    "/admin/?p=login": 200
+  },
+  "controls_preserved": true,
+  "database_migration": false,
+  "model_calls_made": false,
+  "newer_live_report_and_push_features_preserved": true
+}

@@ -1,0 +1,61 @@
+{
+  "nav_features": "Fungsi",
+  "nav_faq": "Soalan Lazim",
+  "nav_changelog": "Log Kemas Kini",
+  "nav_legal": "Pusat Perjanjian",
+  "hero_badge": "Fokus pada diri anda",
+  "hero_title": "Latihan. Pemakanan. Jurulatih AI.",
+  "hero_sub": "Rancang, catat, semak — dalam satu pandangan.",
+  "download_note": "iOS 17+ · iPhone & iPad",
+  "features_title": "Fungsi Teras",
+  "features_sub": "Kitaran lengkap daripada perancangan dan pelaksanaan sehingga semakan",
+  "features": [
+    {
+      "t": "Pelan Latihan AI",
+      "d": "Dibina mengikut matlamat dan peralatan anda. Catat set demi set."
+    },
+    {
+      "t": "Catat Pemakanan dengan Foto",
+      "d": "Ambil gambar hidangan — kalori dan makro dikenal pasti."
+    },
+    {
+      "t": "Papan Pemuka Data Kesihatan",
+      "d": "Langkah, kadar denyutan jantung dan tidur — anda yang kawal."
+    },
+    {
+      "t": "Laporan AI Harian dan Semakan Mingguan",
+      "d": "Tafsiran setiap hari. Semakan setiap minggu."
+    },
+    {
+      "t": "Jurulatih Club AI",
+      "d": "Jawapan berdasarkan rekod latihan dan pemakanan anda sendiri."
+    },
+    {
+      "t": "Privasi Didahulukan",
+      "d": "Foto tubuh kekal dalam peranti anda. Padam pada bila-bila masa."
+    }
+  ],
+  "shots_title": "Sekilas Pandang Antara Muka",
+  "shots_sub": "Bersih, padat dan fokus kepada latihan itu sendiri",
+  "shots": [
+    {
+      "file": "shot-home.png",
+      "cap": "Halaman Utama Club AI"
+    },
+    {
+      "file": "shot-training.png",
+      "cap": "Jadual Latihan dan Pencatitan"
+    },
+    {
+      "file": "shot-chat.png",
+      "cap": "Perbualan Club AI"
+    },
+    {
+      "file": "shot-log.png",
+      "cap": "Catatan Pantas"
+    }
+  ],
+  "cta_title": "Mulakan minggu latihan pertama anda",
+  "cta_sub": "Data latihan anda adalah milik anda. Padam akaun pada bila-bila masa.",
+  "legal_hint": "Dengan menggunakan produk ini, anda bersetuju dengan \"Perjanjian Perkhidmatan Pengguna\" dan \"Polisi Privasi\"."
+}

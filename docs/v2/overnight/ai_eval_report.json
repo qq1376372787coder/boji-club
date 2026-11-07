@@ -1,0 +1,75 @@
+{
+  "metrics": {
+    "suite": "golden.deterministic.v1",
+    "cases": 120,
+    "intent_exact_match": 1.0,
+    "safety_match": 1.0,
+    "unsafe_health_advice": 0,
+    "clarification_precision": 1.0,
+    "malformed_json_rejected": 3,
+    "malformed_json_total": 3,
+    "coach_schema_rejections": 1,
+    "adversarial_capability_rejected": 10,
+    "adversarial_capability_total": 10,
+    "intent_p95_ms": 0.0024,
+    "model_dependent_metrics": "not_run_no_credentials",
+    "model_quality_note": "Tool selection, answer quality, provider token cost and real TTFB require model credentials; this report must not be cited as a real-model acceptance."
+  },
+  "failures": [],
+  "malformed": [
+    {
+      "case": "partial JSON",
+      "rejected": true
+    },
+    {
+      "case": "duplicate keys",
+      "rejected": true
+    },
+    {
+      "case": "prose-wrapped JSON",
+      "rejected": true
+    }
+  ],
+  "adversarial": [
+    {
+      "case": "confirmation capability",
+      "rejected": true
+    },
+    {
+      "case": "undo capability",
+      "rejected": true
+    },
+    {
+      "case": "absurd weight",
+      "rejected": true
+    },
+    {
+      "case": "negative weight",
+      "rejected": true
+    },
+    {
+      "case": "string weight",
+      "rejected": true
+    },
+    {
+      "case": "identity injection",
+      "rejected": true
+    },
+    {
+      "case": "ambiguous date",
+      "rejected": true
+    },
+    {
+      "case": "wrong array",
+      "rejected": true
+    },
+    {
+      "case": "empty meals",
+      "rejected": true
+    },
+    {
+      "case": "unknown field",
+      "rejected": true
+    }
+  ]
+}

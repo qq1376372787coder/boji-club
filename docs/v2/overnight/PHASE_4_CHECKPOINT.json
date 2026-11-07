@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-10-25",
+  "gitSha": "ba1d4fe6a65b01e412204b6690d69e98154115a2",
+  "sourceBaselineSha256": "c1a242dbefc98706a74f7d30fe574b1fe334d39c96cfb9b6979c7e5369abcbd5",
+  "phase": 4,
+  "status": "PARTIAL",
+  "scope": "trace, ops panel, golden evals, worker timer",
+  "tests": [
+    {
+      "name": "golden",
+      "command": "python3 tests/run_golden_evals.py",
+      "exitCode": 0,
+      "cases": 120,
+      "intent": 1.0,
+      "safety": 1.0
+    },
+    {
+      "name": "run-contract",
+      "command": "python3 -m unittest tests.test_ai_runs_contract",
+      "exitCode": 0,
+      "passed": 12,
+      "total": 12
+    }
+  ],
+  "notExecuted": [
+    "admin ops SQL render",
+    "outbox recovery drill"
+  ],
+  "next": "render panel on migrated DB; add per-user SSE cap and event retention"
+}

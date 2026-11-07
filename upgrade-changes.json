@@ -1,0 +1,577 @@
+[
+  {
+    "file": "account-server/apns-config.example.php",
+    "sha256": "8feae2cb067aa3aa8ab1ae1fda7ad88d72b82a20f0416cfa27a33c077dddf813",
+    "status": "new"
+  },
+  {
+    "file": "account-server/migrate-20261001.php",
+    "sha256": "8e41bf6798d46706386666319f9b3b849e1cd1ee14dfd4e4de00319db77391b6",
+    "status": "modified"
+  },
+  {
+    "file": "account-server/migrate-club-automation.sql",
+    "sha256": "beca2e2e69291d0143fd7f04fd6cabae87999f2552352a08bf3c2723e04641be",
+    "status": "new"
+  },
+  {
+    "file": "account-server/migrate-club-coach.sql",
+    "sha256": "298cd098ba86a7345d08ede4b96e75ae0e4430cf6dff4389bb527de6062455db",
+    "status": "new"
+  },
+  {
+    "file": "account-server/migrate-club-push.sql",
+    "sha256": "3617e7eb7f94b93b9c79c3b3b2c06f3da5405902e53abbfef13b5a386bfefd73",
+    "status": "new"
+  },
+  {
+    "file": "account-server/process-club-automation.php",
+    "sha256": "1dc59c241e35a947d90fab854cad89c41eab067587dc9e74d03fabc93953abcd",
+    "status": "new"
+  },
+  {
+    "file": "account-server/process-club-push.php",
+    "sha256": "8c36e0e042a1fadc8d724b6eb1b48c441eeb83c37a37d5c0930bc74a2061cd7f",
+    "status": "new"
+  },
+  {
+    "file": "account-server/schema.sql",
+    "sha256": "279422051f74f4be6eed2c7efe0fbd0e7002b449e0f4f017c35c74b896f4f129",
+    "status": "modified"
+  },
+  {
+    "file": "backend/adaptive_core.py",
+    "sha256": "fd86d16deaba6f1324c2b19ed44e01c50bc0f73200bb5d9b5dddb2cfddc5dc75",
+    "status": "new"
+  },
+  {
+    "file": "backend/ai_core.py",
+    "sha256": "060cb839d89f401ed23a368406746c7fcf82203bde9cb25f4d425851bf6533e4",
+    "status": "modified"
+  },
+  {
+    "file": "backend/automation_core.py",
+    "sha256": "69a7ae8f9e8a9bff24482624580e04ab33f3223816f312d87313c92d1472ef40",
+    "status": "new"
+  },
+  {
+    "file": "backend/coach_core.py",
+    "sha256": "eeffe8e83214a4086a0d72eda2f627558ca922f62f6b38b5b6b89df2f9d8ecb4",
+    "status": "new"
+  },
+  {
+    "file": "backend/goal_context.py",
+    "sha256": "7fb4bcfebf9a1b04686798535ea19715618a169b71cc53e83a0f52181037fbbb",
+    "status": "new"
+  },
+  {
+    "file": "backend/server.py",
+    "sha256": "9371e2fd85d07bedce3112749b1f39e731c6292873ca2a4093b95e9df5fe5e9b",
+    "status": "modified"
+  },
+  {
+    "file": "backend/training_feedback.py",
+    "sha256": "774dbf99c90940aeec0eefe1eb2a4c219c77112c1670cb72a02606dc1e52d6c1",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/AIService.swift",
+    "sha256": "5d5fd0798a11fe3c04af2e698d32f857bf8a6743282328e0304b889eafddb033",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/AIViews.swift",
+    "sha256": "1bd28841393f00b14a64d8e14087d3c40c8ec31790945c223aada1da59cfb40b",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/AppStore.swift",
+    "sha256": "668fc1249d2d23e1d625057d2964688546d601f9c389b1f6c611b68c09208a9c",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/BojiClubApp.swift",
+    "sha256": "095a63408eb2b93f9a5e27d3fe7175929a322fbd24561053c1c7ebab4c0e2d1c",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/CloudSync.swift",
+    "sha256": "cfc6459b95b356fcac0418fca700c9716ea8479ca4cc35a0f1d80eec6a5c3966",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ClubAdaptive.swift",
+    "sha256": "6fb5617c072e900fdbf6251fab1660dbcceba5184982313402dd3328b4a0ecd6",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubAutomation.swift",
+    "sha256": "bcf06d744abdd4418a98f67f066ad5fc623fe1397273f83552ce90f870a675fb",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubAutomationService.swift",
+    "sha256": "7b24791c056223ed3284bdbf4e6b0a53c651a1dfaa178ec05dc29bb602373972",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubCoach.swift",
+    "sha256": "51c83b7f28e42192c2f383a3f462c013359c457bb44e3710eb6e7cc91d30bdf2",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubCoachView.swift",
+    "sha256": "395005116af60fb00433a82a0b185aedf8b4f022a780df9e3fc45397063a6a0c",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubHistory.swift",
+    "sha256": "f8840427caeef67ce182f58261dca0ba6bbeedb8cb23c57dc4d2c43727e8e863",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubInsightLedger.swift",
+    "sha256": "6a694dd3b2598fba39597982f62885901d054559c779fdd1e80e02df572e877e",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubInsightRules.swift",
+    "sha256": "6a04b0b81277d0c95a26e974059197dbf04957137ad5e778462b04a294347ccc",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubInsightTimelineView.swift",
+    "sha256": "2d5cbdcd25ea03cb6285e85f4430ba24b44fbe4872e4a95f4b0a04ca34aad440",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubPlanFollowup.swift",
+    "sha256": "83808bf524a82e4122cd1cad04e31a4835a6c8c3e78aeda6fb988f00ee6e61e7",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubPlanFollowupView.swift",
+    "sha256": "4f7791f8ac4568a7029ce690c95871d270e8e074dc0f50a021363b72c71d80b5",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubRemotePush.swift",
+    "sha256": "1345a8ec5176e1d0579b803ff8a265e0d358499329528cd4ec669ef1582fc580",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubWorkoutSummary.swift",
+    "sha256": "58334f49f0b63e6b402d7b97478d71e26dc1f44af1a733fe3ae74b80fcaf702d",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ClubWorkoutSummaryView.swift",
+    "sha256": "e40819821fb6eabcff1b3488e65a5f0132e2b31bcc4533577e243db12ab9b596",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/DailyExperience.swift",
+    "sha256": "be279fd28bb83e2930f1f49a884d357733a8216c1995fd10086848c307c65aec",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/Design.swift",
+    "sha256": "e5d16239c992aa8556396f0ce16250459f6b62022a53f518c6e7371455ddec2d",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/HomeView.swift",
+    "sha256": "f80b2577f72de67d191ff8375b84930b9297afafe8e3e6367da96b65d41c1689",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/JourneyComponents.swift",
+    "sha256": "f7448d4f6c21d19ed2e50f3f3b64312b22125ecc6ea36ca73108ce4aac49e27a",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/JourneyRules.swift",
+    "sha256": "af4aa354c2b4b1c0cac947555145b2467737383eb46658065dbbeecd2e189608",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ManualPlan.swift",
+    "sha256": "f2976c4774e89a99b5386143b346b483c4e0a3e10f9f1dea9940d50a15486552",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ManualPlanView.swift",
+    "sha256": "d6a2ebb9754f65b69a46fc95cad75a9eaec9578e52662daabf4d4e34adb96c49",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/Models.swift",
+    "sha256": "521b9844e83e474fb3c7134b4bd8286e5720d8b0fba8dc5252bf3999b50dc941",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/OnboardingView.swift",
+    "sha256": "24c04574f7b738d9ea4e10d9ce213e35601ec6c99368eabb7429dcaff7390a01",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/PlanExplanation.swift",
+    "sha256": "e179d6bb60999b74ec23e57c1fda21702abbf593c1bc1f883c60065f8f7c6662",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/PlanView.swift",
+    "sha256": "79f7d21720a8f5887f882a98021eeb0916129c73b3fabd7f2dbec41e117144db",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ProductArchitecture.swift",
+    "sha256": "62845a07379b16d2475c72502709032ce0f4f7f584c19d78723e8cd1720b2a54",
+    "status": "new"
+  },
+  {
+    "file": "BojiClub/ProfileView.swift",
+    "sha256": "e8eaed3002b981a5a693af3b5e6844d965de40cae86d3ab725c015b2cc67c4d4",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ReportLibraryView.swift",
+    "sha256": "83022802f6ef252c9b8ec69a0034feb3d3d10524459e4b097755c2df05f279c3",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/TrainingPlansView.swift",
+    "sha256": "fe6f57562a41fa0802b3ebe89db2a3334af9d405fd53bb24d677a92d7181b62f",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/WeeklyReview.swift",
+    "sha256": "c32ca1bce4222929a4127703ca0f986e0551084132abc02091c8c0609b7d6b57",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/WeeklyReviewView.swift",
+    "sha256": "d8bea95f86efb015c1b7b21925d2e1a9db274b8d4341b5d8c46a3a0bb4035acf",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/WorkoutView.swift",
+    "sha256": "53ad7b0b9155195e1454dbbe52de66f4f8c45ae5ccb4db85a487fbd2fb3e3714",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub.xcodeproj/project.pbxproj",
+    "sha256": "41d43dfec26a41657851dda6d2f4493dab7577d71c3cc3a5a4358c60f82b92f1",
+    "status": "modified"
+  },
+  {
+    "file": "scripts/check-upgrade-on-mac.sh",
+    "sha256": "836ad2b6e123409ace816f2d02af081ac27d5b651ca6418b9c624a67dee5bd62",
+    "status": "new"
+  },
+  {
+    "file": "scripts/enable-remote-push.py",
+    "sha256": "8cfaf3abb63d959bed4bc305e3d8972d0bb2950b8813655196610d9f5458c77a",
+    "status": "new"
+  },
+  {
+    "file": "tests/adaptive-generated.swift",
+    "sha256": "d817209645a94945e4f61501f142a4fbef8504a9690013b5202e30407db92db0",
+    "status": "new"
+  },
+  {
+    "file": "tests/automation-generated.swift",
+    "sha256": "24b35d510a39c62bf7b7d2f7bd0ed35b2118281d1d00fe2fdad876f0074ca98a",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_adaptive_swift_tests.py",
+    "sha256": "cfe42c152bd72a2728a0e23890531017056a51ac72c924bc1e0d442f7b7785f1",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_automation_swift_tests.py",
+    "sha256": "a18a9db6722c955906a4efd7297ba1de94c5ce49280de9353ee21c760083f789",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_coach_swift_tests.py",
+    "sha256": "e2a306911f7ffe43a52d82dce96699acf4e23e79e0ddc99c08f2e3ab1ffbdce6",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_goal_context_swift_tests.py",
+    "sha256": "bb9bd7318e2af5f051562d44eedc58785876d3dc4db0e5284f52ff4acc10f05f",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_history_swift_tests.py",
+    "sha256": "a26094dce5f6040b87cf0f72643516688668f57494f49a61a63bf82bb668903e",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_insight_ledger_swift_tests.py",
+    "sha256": "dc241ef6569535a4da24d2de24d13c82c652656cbc74ac6805c3f43d9b460f44",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_manual_plan_swift_tests.py",
+    "sha256": "68ef6d5785014d0f853c5104eb2e2e17c55bb82b8d1dfb621990c383c7097194",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_phase2_swift_tests.py",
+    "sha256": "493f15fc86dbbf7c798cce815d48400c7b177dcd25fe4ae4cb527ae4d5c1dc7a",
+    "status": "modified"
+  },
+  {
+    "file": "tests/build_plan_changes_swift_tests.py",
+    "sha256": "a9c810b65e24ea824e608822d01bbab2ebd74369384bb174338f3d47719eb011",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_plan_followup_swift_tests.py",
+    "sha256": "65b66d2d63ece02397d64b4eb00c5ead408143604887fdb2ff108fce843b866e",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_repair_v75_swift_tests.py",
+    "sha256": "cc4dd154438b50787e1d7527870bfefa6adcdb0ad4fc6374f5d41e565f28a27d",
+    "status": "modified"
+  },
+  {
+    "file": "tests/build_repair_v76_swift_tests.py",
+    "sha256": "91fe1b76f23e7e5a35d41413e71757604ffe4656271d66524f51e6b8fe252713",
+    "status": "modified"
+  },
+  {
+    "file": "tests/build_upgrade_v140_swift_tests.py",
+    "sha256": "0d2ce42853526adac43405fc4f2b024df096cde2cc7c588680612fbb5caa1769",
+    "status": "new"
+  },
+  {
+    "file": "tests/build_workout_summary_swift_tests.py",
+    "sha256": "eb45e2daa553678b89abbd48d3a02a61f0110aa6bcb36785a48c2ec53526bbb9",
+    "status": "new"
+  },
+  {
+    "file": "tests/coach-generated.swift",
+    "sha256": "fadcadbe976585b751e2c4de25677e51de10929e1129e2daa266a0e71fab4d26",
+    "status": "new"
+  },
+  {
+    "file": "tests/goal-context-generated.swift",
+    "sha256": "d6a6dead2f6e527b6d7588d9d3df0da801e966ac70b4e6c1df17fb8bc1f5de2a",
+    "status": "new"
+  },
+  {
+    "file": "tests/history-generated.swift",
+    "sha256": "ecbb91a587915748313ea28924fa927a107b94ec2743737b1fe3a20c97611061",
+    "status": "new"
+  },
+  {
+    "file": "tests/insight-ledger-generated.swift",
+    "sha256": "d22514e592e6d92e14e30c713081499573718c30fb21b3bf168b956d69c983ae",
+    "status": "new"
+  },
+  {
+    "file": "tests/manual-plan-generated.swift",
+    "sha256": "0885a1581899ae17952332038a005087f2a883a46c5654ea8ed159ace3aeffa5",
+    "status": "new"
+  },
+  {
+    "file": "tests/plan-changes-generated.swift",
+    "sha256": "9cd41e185efbccdefadefbd05dd752f7fc0b685c49efb403acf0b76933e41673",
+    "status": "new"
+  },
+  {
+    "file": "tests/plan-followup-generated.swift",
+    "sha256": "7d473763fb050efd5ea366cef0eb4168f530a9f012991033dcfd4ef1ceaac695",
+    "status": "new"
+  },
+  {
+    "file": "tests/regression-v74-generated.swift",
+    "sha256": "edfc13494129f01d145d6efc4448ec1859dc27a540c4b4af2555f9bdf584eab7",
+    "status": "new"
+  },
+  {
+    "file": "tests/regression-v75-generated.swift",
+    "sha256": "59f62203dd0166362a6bcec3c18eb97085d6b31d344d92dd138e97bf30a00612",
+    "status": "new"
+  },
+  {
+    "file": "tests/regression-v76-generated.swift",
+    "sha256": "702561750319d7bd70ddfe19697f33f399b9dec7fa9b888d873b46bbb44ef95b",
+    "status": "new"
+  },
+  {
+    "file": "tests/regression-v77-generated.swift",
+    "sha256": "4467688e2d3800f78b6936c166165bb6f5b9c633f7204e11c798be74c22387b3",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_adaptive.sh",
+    "sha256": "96742d148e4264abeef85a86ae272e00071a9d284b01dd4c90518aa0941b204e",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_automation.sh",
+    "sha256": "b68f0eb98cdf70fa1b1f5619b3decb2a050cbc9289856e2beb0a1f4810557e5c",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_coach.sh",
+    "sha256": "4ca259f7e8f40742f7f0a207c03bff224b35664eb95182a5eed4a3d04fc0afa0",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_goal_context.sh",
+    "sha256": "093e4a97c32a862f698213cf125e5a6fdc8aaa3aa8ebe71a5dc87d066a476ea2",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_history.sh",
+    "sha256": "b6581a7f39c438ac7fa9ec8493ce047dbed0772e22892b9baf4a52bfdf02fad8",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_insight_ledger.sh",
+    "sha256": "29975a429972352435043d3eea6f7bc76bf81c590756fef96773bdefc18df339",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_manual_plan.sh",
+    "sha256": "b47a25425e8e23167c9023684fa4c12bbed24aee8fbfd3e8d7ec629d3c9c185a",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_plan_changes.sh",
+    "sha256": "4e7dd2d729a8da1ff065112e8dddb4b55d48311d2e24812ae5b2c8fe289e6cd9",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_plan_followup.sh",
+    "sha256": "f004d9d14bdc96ca16a80f324829679c2d675d861f7ab46592b6a76fcf8b369e",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_upgrade_offline.py",
+    "sha256": "5a0f673d321340179e5c0c9e282c956aab79ff39e3c94c7f9df8836b31e0383d",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_upgrade_v140.sh",
+    "sha256": "93ff9965607580199e6bf13a32f0501e425e49b6f242f4a6410730b8b10ac617",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_workout_summary.sh",
+    "sha256": "ac6e86bce04363fd5ecffebdd1f63e450a5a1d77842c11ea0887311fc4d6ee35",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_adaptive_automation.py",
+    "sha256": "a19ee8a500a03d9f7df8bac693c82dc1c64ea0ec894646ef0b8ee30650beccd5",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_automation_contract.php",
+    "sha256": "72f131575b1922d3cf87dd6d6f9f4b17f2d2b80dfb2c403b3b094c6c29704b36",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_club_history.php",
+    "sha256": "2811b19e13ec75e013950e5fe87779ab970b9392a0b67d1431544477a6799ea3",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_club_insights.php",
+    "sha256": "881e4c6ee09f098ef69d36e1012ca61e0ee74de0362e5f46e7803e3c376f6d69",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_club_push.php",
+    "sha256": "ba389127715affd3d1985d7afde73afe920bd12eec055f7acde7a51b88c1608a",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_coach.php",
+    "sha256": "76c6cb54e978684f407195c12a81c0780a090faa8b24d7dc08def8547df49003",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_coach.py",
+    "sha256": "0f8abcac3185754d402cd672acf50589b697b534cfa0be3fc992161256910529",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_goal_context.py",
+    "sha256": "f691968a81db6dd560af9427b2d8eb834185d38b91418a1b89c01e6b3cc19c72",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_onboarding_plan_preview.php",
+    "sha256": "00b12735a6ea1cc0bb4638021084353ab3b802e0087e3b73e2d936581d489938",
+    "status": "modified"
+  },
+  {
+    "file": "tests/test_plan_changes.php",
+    "sha256": "de76734f3d55c9a3ab25fac9084e847e2faff275951a1f0674068fc6bf1e4207",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_workout_insights.php",
+    "sha256": "90fc09eadc1ef94aae7e756ea3b9e15f5d29de2b6546557978753c1a609b18ce",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_workout_targets.py",
+    "sha256": "3445984e6c855ef4c568a07b2dbe9d912a6573d36396189c8d699e89473aba8d",
+    "status": "new"
+  },
+  {
+    "file": "tests/upgrade-v140-generated.swift",
+    "sha256": "fadafb1572850a3550881164ad1a6dab11a7755f982833ccbf1e3ad490f6a91b",
+    "status": "new"
+  },
+  {
+    "file": "tests/workout-summary-generated.swift",
+    "sha256": "5d82d1e692790905bf6f0eb29724b51e1815f923279b3553ba01df41514d9f97",
+    "status": "new"
+  },
+  {
+    "file": "account-server/admin/index.php",
+    "sha256": "a01f12922bb2dd447ba0ed867cfe48bfa7b2e29acfe6474f4376d474b276db2a",
+    "status": "modified"
+  },
+  {
+    "file": "account-server/public/ai-response.php",
+    "sha256": "d57c0d138140c117fd58d3f08704cfc2d50769b1bfc6af306341f4997d75e182",
+    "status": "modified"
+  },
+  {
+    "file": "account-server/public/automation.php",
+    "sha256": "199ef4d39020859d983fe371807437d047a5066e2dc28f4eb44b7c32b1d9ac3d",
+    "status": "new"
+  },
+  {
+    "file": "account-server/public/cloud-validation.php",
+    "sha256": "5095b472cdd5d981ae55541d1b1bd3cb5971b0af11df5758a37e5ede9b3bb912",
+    "status": "modified"
+  },
+  {
+    "file": "account-server/public/club-push.php",
+    "sha256": "4ebad38beec51e086cbf98b82fc7ac58b6a408fc3d2304c3c6baacef7c2ef2f2",
+    "status": "new"
+  },
+  {
+    "file": "account-server/public/index.php",
+    "sha256": "7bcc36b62e6ee992ad5dd0b198c01539e224d7eacff94cb6fb39449eb8622584",
+    "status": "modified"
+  },
+  {
+    "file": "account-server/public/weekly.php",
+    "sha256": "3b256bbda73b2c6579df0f9ee18cc6025462f3ba0113cb33fb4024f9749b0f4d",
+    "status": "modified"
+  }
+]

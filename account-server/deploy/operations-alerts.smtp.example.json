@@ -1,0 +1,13 @@
+{
+  "notifications": {
+    "enabled": false,
+    "smtp": {
+      "host": "SMTP_HOST_PENDING",
+      "port": 465,
+      "username": "SMTP_USERNAME_PENDING",
+      "password": "",
+      "sender": "SENDER_PENDING@example.invalid",
+      "recipients": ["biccyy@yeah.net"]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+<?php
+$total=(int)query('SELECT COUNT(*) FROM users')->fetchColumn();
+$activeMembers=(int)query("SELECT COUNT(*) FROM membership_entitlements WHERE status='active' AND expires_at>UTC_TIMESTAMP()")->fetchColumn();
+$todayStart=(new DateTimeImmutable('today',new DateTimeZone('Asia/Shanghai')))->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+$aiToday=(int)query('SELECT COUNT(*) FROM ai_user_jobs WHERE created_at>=?',[$todayStart])->fetchColumn();
+$feedbackPending=(int)query("SELECT COUNT(*) FROM member_feedback_tickets WHERE status='open'")->fetchColumn();
+$fulfillment=(int)query("SELECT COUNT(*) FROM club_reward_claims WHERE status IN ('pending','confirmed','packing','problem')")->fetchColumn();
+$aiFailed=(int)query("SELECT COUNT(*) FROM ai_runs WHERE status='failed' AND updated_at>=?",[$todayStart])->fetchColumn();
+$deletions=(int)query("SELECT COUNT(*) FROM account_deletions WHERE status='failed'")->fetchColumn();
+$configState=appConfigState($db);
+$dates=array_map(fn($n)=>date('Y-m-d',strtotime('-'.$n.' days')),range(6,0));
+require_once __DIR__.'/statistics.php';$stats=overviewActivity($db,$dates);$peak=max(1,...array_values($stats['activity']));
+$work=[['待回复反馈',$feedbackPending,'打开工单，回复用户的问题。','feedback'],['待发货与待核验',$fulfillment,'查看申领，更新处理进度。','shipping'],['AI 任务失败',$aiFailed,'查看失败原因和重试结果。','ai'],['账号清理异常',$deletions,'打开成员详情，处理失败的注销任务。','users']];
+if(adminCanViewPage('system')){$backupState=backupStatus();if(!$backupState||($backupState['state']??'unknown')==='failed')$work[]=['备份状态待核对',1,'检查最近的备份和自动备份是否正常。','system'];}
+if(adminCanViewPage('alerts')){$alerts=operationsAlertsStatus();$activeAlerts=count(array_filter($alerts['events']??[],fn($event)=>is_array($event)&&($event['status']??'')==='active'));if($activeAlerts)$work[]=['服务异常',$activeAlerts,'查看异常原因和邮件发送结果。','alerts'];}
+$work=array_values(array_filter($work,fn($item)=>$item[1]>0&&adminCanViewPage($item[3])));
+?>
+<div class="metrics" aria-label="今日概况"><?php foreach([['成员总数',$total,'累计注册'],['有效会员',$activeMembers,'当前权益有效'],['今日 AI 任务',$aiToday,'北京时间今日'],['待回复反馈',$feedbackPending,'尚未回复的工单']] as [$label,$value,$hint]):?><article><span><?=h($label)?></span><b><?=safeNumber($value)?></b><small><?=h($hint)?></small></article><?php endforeach?></div>
+<div class="overview-grid"><section class="card"><div class="section-head"><div><h2>最近 7 天的训练活跃</h2><p class="muted">按实际完成训练组的记录统计。</p></div><span class="badge"><?=safeNumber($stats['active'])?> 位活跃成员</span></div>
+<?php if(!$stats['active']):?><div class="overview-empty">最近 7 天还没有训练记录<small>用户同步记录后，这里会显示每天的训练人数。</small></div><?php else:?><svg class="overview-chart" viewBox="0 0 640 220" role="img" aria-label="最近七天每日有训练完成记录的人次，明细见柱形图标题"><line class="chart-grid" x1="20" y1="172" x2="620" y2="172"/><line class="chart-grid" x1="20" y1="112" x2="620" y2="112"/><line class="chart-grid" x1="20" y1="52" x2="620" y2="52"/><?php foreach($dates as $i=>$date):$value=(int)($stats['activity'][$date]??0);$height=$value>0?max(4,130*$value/$peak):0;$x=38+$i*84;?><g><title><?=h($date)?>：<?=$value?> 人次</title><rect class="chart-bar" x="<?=$x?>" y="<?=172-$height?>" width="36" height="<?=$height?>" rx="5"/><text class="chart-label" x="<?=$x+18?>" y="200" text-anchor="middle"><?=h(substr($date,5))?></text><?php if($value):?><text class="chart-label" x="<?=$x+18?>" y="<?=160-$height?>" text-anchor="middle"><?=$value?></text><?php endif?></g><?php endforeach?></svg><?php endif?>
+<div class="quick-links"><?php foreach(['users'=>'查看成员','ai'=>'查看 AI 运行','club'=>'管理活动'] as $target=>$label):if(!adminCanViewPage($target))continue;?><a href="?p=<?=$target?>"><?=h($label)?> →</a><?php endforeach?></div></section>
+<section class="card"><div class="section-head"><h2>需要处理</h2><span class="badge"><?=count($work)?> 类事项</span></div><div class="work-list"><?php foreach($work as [$label,$count,$hint,$target]):?><a class="work-item" href="?p=<?=h($target)?><?=$target==='users'?'&amp;status=cleanup_failed':($target==='ai'?'&amp;tab=ai-runs-trace':($target==='system'?'&amp;tab=backup':''))?>"><div><strong><?=h($label)?></strong><small><?=h($hint)?></small></div><span class="work-count"><?=$count?></span></a><?php endforeach;if(!$work):?><p class="empty">目前没有待处理事项。</p><?php endif?></div><?php if($configState['dirty']&&adminCanViewPage('config')):?><a class="work-item" href="?p=config"><div><strong>App 配置有未发布修改</strong><small>核对草稿后发布。</small></div><span>→</span></a><?php endif?></section></div>
+<?php if(adminCanViewPage('users')):?><section class="card"><div class="section-head"><h2>最近加入</h2><a href="?p=users">全部成员 →</a></div><?php members(query($memberSelect.' ORDER BY u.id DESC LIMIT 5')->fetchAll());?></section><?php endif?>

@@ -1,0 +1,192 @@
+{
+  "version": "0.13.73",
+  "build": 92,
+  "implementation_completed_items": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "remaining_implementation_items": [],
+  "xcode_archive_tested": false,
+  "native_ui_tested": false,
+  "swift_syntax": [
+    {
+      "file": "AccountService.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "AIService.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "AIViews.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "AppStore.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "BojiClubApp.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "CloudSync.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "Design.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "ExerciseLibraryView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "HomeView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "JourneyRules.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "Models.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "OnboardingView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "PlanExplanation.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "PlanView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "ProfileView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "TrainingPlansView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "WorkoutView.swift",
+      "syntax_errors": []
+    }
+  ],
+  "multiweek_tests": 10,
+  "cloud_contract_tests": 16,
+  "deployment": {
+    "backup": "/root/bojiclub-experience-v73",
+    "hashes": {
+      "backend/ai_core.py": "357afe65dc59f65cf8f032621a6a85ea5ab569cd45d6affec5e7589f2bce16f1",
+      "account-server/public/cloud-validation.php": "a063c2ef2f961f7aa871788c92448acc4c0447c43fb00d74d5b4508cb7bc8d36"
+    },
+    "running_before_deploy": 0
+  },
+  "live_flow": {
+    "ai_completed": true,
+    "provider": "longcat",
+    "plan_days": 28,
+    "training_sessions": 12,
+    "purpose_dates_match": true,
+    "cloud_saved_28_days": true,
+    "advance_cloud_transition": true,
+    "advance_does_not_complete_sets": true
+  },
+  "photo_flow": {
+    "record_first_saved": true,
+    "photo_uploaded_after_record": true,
+    "photo_reference_saved": true,
+    "photo_roundtrip_bytes_match": true,
+    "meal_not_duplicated": true
+  },
+  "gif_source_samples": [
+    {
+      "id": "0025",
+      "source_git_blob": "74ec3cb38a82ed536e9c8398bcfa34d7ebd0d69c",
+      "server_git_blob": "74ec3cb38a82ed536e9c8398bcfa34d7ebd0d69c",
+      "server_sha256": "2de66afbc9229d7c23b888b39b3c6a917ce950b429082050be29bd8f96c85d75",
+      "same_bytes": true,
+      "frames": 12,
+      "original_delays_ms": [
+        1000,
+        100,
+        100,
+        100,
+        100,
+        100,
+        1000,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "source_loop_seconds": 3.0
+    },
+    {
+      "id": "1705",
+      "source_git_blob": "89cc365c7c51f322afd25526060ebb36de800162",
+      "server_git_blob": "89cc365c7c51f322afd25526060ebb36de800162",
+      "server_sha256": "862ffea35fa9aed2f51c83762c34a7f6686c4ac31e2bd95e88113d14ed869b92",
+      "same_bytes": true,
+      "frames": 12,
+      "original_delays_ms": [
+        1000,
+        100,
+        100,
+        100,
+        100,
+        100,
+        1000,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "source_loop_seconds": 3.0
+    },
+    {
+      "id": "0031",
+      "source_git_blob": "a86dc042b36a33719a14e35f4486b0b6b898f636",
+      "server_git_blob": "a86dc042b36a33719a14e35f4486b0b6b898f636",
+      "server_sha256": "3907d2a2561b7afa76a5b8c4af4237b5f424b11bb8a350175ae73aaaf532021a",
+      "same_bytes": true,
+      "frames": 12,
+      "original_delays_ms": [
+        1000,
+        100,
+        100,
+        100,
+        100,
+        100,
+        1000,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "source_loop_seconds": 3.0
+    }
+  ]
+}

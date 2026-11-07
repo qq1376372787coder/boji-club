@@ -1,0 +1,38 @@
+{
+  "version": "0.13.53",
+  "build": 72,
+  "created": "2026-10-11T14:53:57.047619+00:00",
+  "changed_existing_files": [
+    "BojiClub/HomeView.swift",
+    "BojiClub/JourneyRules.swift",
+    "BojiClub/MealBatchReviewView.swift",
+    "BojiClub/MealEditorView.swift",
+    "BojiClub.xcodeproj/project.pbxproj",
+    "BUILD-STATUS.md",
+    "README_先读我.md",
+    "scripts/check-on-mac.sh"
+  ],
+  "syntax": {
+    "swift_files_including_generated_rules": 48,
+    "errors": [],
+    "method": "tree-sitter Swift parser"
+  },
+  "native_rule_checks": {
+    "defined": 18,
+    "generated": true,
+    "executed": false
+  },
+  "old_v52_source_unchanged": true,
+  "server_code_unchanged": true,
+  "xcode_build_performed": false,
+  "device_layout_test_performed": false,
+  "behavior": [
+    "batch details collapsed",
+    "known-intake progress only",
+    "over-target color and text",
+    "single result scroll guarded by account and current job",
+    "routine text input starts directly",
+    "changed date/category and replacement protected",
+    "multi-meal extra dialog removed"
+  ]
+}

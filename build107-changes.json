@@ -1,0 +1,127 @@
+[
+  {
+    "file": "BojiClub/BojiClubApp.swift",
+    "sha256": "f017e98394f894f749769417ce53c47f657ef1c0da9daa2623c10399880072fe",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ClubAutomationService.swift",
+    "sha256": "85d58d4fd3da94a2706a3374718f7489c11b83c24af08468e172df7acbf98b47",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ClubHistory.swift",
+    "sha256": "ce65fe7a3523f57357a758d0dfe384941d26f179fa8a3c63f4c1fd5c2cc06273",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ExerciseLibraryView.swift",
+    "sha256": "b0944eaa2ff2131c2b605adbb7a7dfe5aefb6a6cf10e9193c141ce75dee6b596",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ManualPlanView.swift",
+    "sha256": "8c6b64036cba5e776e15bc9545553d2185ecfe0145f534dd1fb7b755c84e6209",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ProductArchitecture.swift",
+    "sha256": "2da512c2b3c5b1116c2df4ab71290ab7814aebe65ac2713b482eefae1273deb3",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ProfileView.swift",
+    "sha256": "b93a8ce5edcf6414b4cd7c7cf603bc0c670dd115db24c5d1b47df91a196e4650",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/WorkoutView.swift",
+    "sha256": "0d3c96c2e8c1c0c6a1ff300440abb84062420fa0777d49cb137c1ad849ebe479",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub.xcodeproj/project.pbxproj",
+    "sha256": "2ca323cc58d669468b2a42e6e85b7109a12379d61c2a28ba6541e8d6b485c7cd",
+    "status": "modified"
+  },
+  {
+    "file": "scripts/check-build107-on-mac.sh",
+    "sha256": "515180073889f31ae6406133fddd266d768016c3020ca8890af97266f7d180e6",
+    "status": "new"
+  },
+  {
+    "file": "scripts/check-upgrade-on-mac.sh",
+    "sha256": "6b8465a9e1d9076d14091b0987dc5328a3731c14206a4995dd6ecd01010d060a",
+    "status": "modified"
+  },
+  {
+    "file": "tests/adaptive-generated.swift",
+    "sha256": "8e801f845e68c3dcd3d5ddf545ac2ec60a79da07e3ce6d3f112efbda4805b00f",
+    "status": "modified"
+  },
+  {
+    "file": "tests/automation-generated.swift",
+    "sha256": "3ef41b5f4dc75096ceaf482a7181d2ea415fffd39cbcd5ddc7e9fd97b2ec449e",
+    "status": "modified"
+  },
+  {
+    "file": "tests/build_compile_v107_swift_tests.py",
+    "sha256": "ff62223ca577ec1c5374f1b2e7d3c9be1d41da9e0184db8c69cb362ae09a1dcb",
+    "status": "new"
+  },
+  {
+    "file": "tests/compile-v107-generated.swift",
+    "sha256": "035c8d145d0d699dec92d8f0312766bde4f9688f145b9d20616f3fcb47c764b3",
+    "status": "new"
+  },
+  {
+    "file": "tests/goal-context-generated.swift",
+    "sha256": "c03aad13f521aaed89f6e534bd8d95ebd152b3624b35e220ca1d45dddcee84e3",
+    "status": "modified"
+  },
+  {
+    "file": "tests/history-generated.swift",
+    "sha256": "2110632a99f72d25a5c7e6fbd5ada7264d042aa17c35d356fdc4e3048459156b",
+    "status": "modified"
+  },
+  {
+    "file": "tests/insight-ledger-generated.swift",
+    "sha256": "20edd43a578ac4ba6d4742383ed44c051b2ff90c669633df6b50804053751b60",
+    "status": "modified"
+  },
+  {
+    "file": "tests/manual-plan-generated.swift",
+    "sha256": "a5bd6a7d116ef8d74b35df15d4a6593e2a031289fd9fd2c4e66f3dd47f2ef76a",
+    "status": "modified"
+  },
+  {
+    "file": "tests/plan-changes-generated.swift",
+    "sha256": "c2f841fc36e2cca11b40edba2ec2c3613a15f803402838d3c38f215a676254ce",
+    "status": "modified"
+  },
+  {
+    "file": "tests/plan-followup-generated.swift",
+    "sha256": "f99c9a265787635d80eb1b2a8678a4915c1b444cd2c4cd52b548bf49c4cd2c82",
+    "status": "modified"
+  },
+  {
+    "file": "tests/retry-v106-generated.swift",
+    "sha256": "253050cbc6393dc4c8b41e146321c766c98ca514ea64521b076255bd0925284c",
+    "status": "modified"
+  },
+  {
+    "file": "tests/run_compile_v107.sh",
+    "sha256": "f884014595c51216a80d363a45d002e126a12e1844b6ec60ebee4b27ba4da049",
+    "status": "new"
+  },
+  {
+    "file": "tests/upgrade-v140-generated.swift",
+    "sha256": "2d3b90efda15e28ba58c0e687fe777afcc68c990aeac3e9f2d365d1123ee31c6",
+    "status": "modified"
+  },
+  {
+    "file": "tests/workout-summary-generated.swift",
+    "sha256": "1b96ab3813271ee27db0c0482e29f9ba2462328eb4045aeefd0a56bc57709f24",
+    "status": "modified"
+  }
+]

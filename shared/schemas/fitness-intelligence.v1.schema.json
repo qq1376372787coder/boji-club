@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BojiClubFitnessIntelligenceSchema",
+  "description": "Contracts for the three primary AI features in Boji Club V2.0",
+  "definitions": {
+    "DailyMetrics": {
+      "type": "object",
+      "required": ["date", "training", "nutrition", "body"],
+      "properties": {
+        "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "training": {
+          "type": "object",
+          "properties": {
+            "sessions": { "type": "integer", "minimum": 0 },
+            "duration_minutes": { "type": ["integer", "null"] },
+            "completed_exercises": { "type": "integer", "minimum": 0 },
+            "completed_sets": { "type": "integer", "minimum": 0 },
+            "total_volume_kg": { "type": "number", "minimum": 0 }
+          }
+        },
+        "nutrition": {
+          "type": "object",
+          "properties": {
+            "calories": { "type": ["number", "null"] },
+            "protein": { "type": ["number", "null"] },
+            "carbs": { "type": ["number", "null"] },
+            "fat": { "type": ["number", "null"] },
+            "data_complete": { "type": "boolean" },
+            "unknown_meals": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "weight_kg": { "type": ["number", "null"] },
+            "body_fat_pct": { "type": ["number", "null"] },
+            "waist_cm": { "type": ["number", "null"] }
+          }
+        },
+        "activity": {
+          "type": "object",
+          "properties": {
+            "steps": { "type": ["number", "null"] },
+            "active_energy_kcal": { "type": ["number", "null"] }
+          }
+        },
+        "data_warnings": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "WeeklyMetrics": {
+      "type": "object",
+      "properties": {
+        "training": {
+          "type": "object",
+          "properties": {
+            "training_days": { "type": "integer", "minimum": 0 },
+            "total_sessions": { "type": "integer", "minimum": 0 },
+            "total_duration_minutes": { "type": ["integer", "null"] },
+            "total_completed_sets": { "type": "integer", "minimum": 0 },
+            "total_volume_kg": { "type": "number", "minimum": 0 },
+            "volume_change_pct": { "type": ["number", "null"] }
+          }
+        },
+        "nutrition": {
+          "type": "object",
+          "properties": {
+            "average_calories": { "type": ["number", "null"] },
+            "average_protein": { "type": ["number", "null"] },
+            "days_with_records": { "type": "integer", "minimum": 0 },
+            "complete_days_count": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "start_weight_kg": { "type": ["number", "null"] },
+            "end_weight_kg": { "type": ["number", "null"] },
+            "weight_change_kg": { "type": ["number", "null"] },
+            "weight_trend": { "type": "string", "enum": ["increasing", "decreasing", "stable", "fluctuating", "insufficient_data"] }
+          }
+        },
+        "is_sufficient_for_analysis": { "type": "boolean" }
+      }
+    }
+  }
+}

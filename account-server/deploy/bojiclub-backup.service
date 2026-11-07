@@ -1,0 +1,16 @@
+[Unit]
+Description=Boji Club encrypted full-recovery backup
+After=network.target mariadb.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+# Existing server Python environment includes cryptography.
+ExecStart=/opt/bojiclub-certbot/bin/python /root/bojiclub-rebuild-v59/backup.py
+TimeoutStartSec=1800
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=read-only
+ReadWritePaths=/root/bojiclub-rebuild-v59 /root/bojiclub-backups /opt/bojiclub-account/runtime

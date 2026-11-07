@@ -1,0 +1,35 @@
+{
+  "build": 107,
+  "changed_swift_files": [
+    "BojiClubApp.swift",
+    "ClubAutomationService.swift",
+    "ClubHistory.swift",
+    "ExerciseLibraryView.swift",
+    "ManualPlanView.swift",
+    "ProductArchitecture.swift",
+    "ProfileView.swift",
+    "WorkoutView.swift"
+  ],
+  "checks": {
+    "WorkoutView.swift state declarations unchanged": true,
+    "WorkoutView.swift existing lifecycle calls retained": true,
+    "BojiClubApp.swift state declarations unchanged": true,
+    "BojiClubApp.swift existing lifecycle calls retained": true,
+    "ExerciseLibraryView.swift state declarations unchanged": true,
+    "ExerciseLibraryView.swift existing lifecycle calls retained": true,
+    "no remaining implicit catch error assignment": true,
+    "UUID result is consumed as a UUID": true,
+    "workout JSON fields have concrete JSONValue type": true,
+    "plan-applied callback explicitly labeled": true,
+    "backend unchanged from deployed Build 106": true,
+    "actual automation caller regression source generated": true
+  },
+  "shadowed_catch_assignments": [],
+  "unchanged_server_files": 179,
+  "new_native_assertions_generated": 13,
+  "native_fixture_generated": true,
+  "native_fixture_error": "",
+  "native_tests_executed": false,
+  "xcode_build_executed": false,
+  "note": "Source consistency checks are not Swift type checking or runtime tests."
+}

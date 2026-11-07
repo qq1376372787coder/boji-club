@@ -1,0 +1,23 @@
+[Unit]
+Description=Collect Boji Club operational alerts (dashboard only by default)
+After=network.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+# External channels run only when enabled in the root-only configuration.
+# With no config or enabled=false, only the admin dashboard is updated.
+ExecStart=/usr/bin/python3 /opt/bojiclub-account/deploy/operations-alerts.py --allow-notifications
+TimeoutStartSec=600
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+StateDirectory=bojiclub-operations-alerts
+StateDirectoryMode=0700
+ReadWritePaths=/opt/bojiclub-account/runtime
+# SQLite read-only queries still coordinate via the live WAL shared-memory file.
+# The Python connection itself remains mode=ro and issues aggregate SELECTs only.
+ReadWritePaths=/opt/bojiclub-ai/.data

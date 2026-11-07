@@ -1,0 +1,9 @@
+[Unit]
+Description=Check Boji Club notification schedules every minute
+[Timer]
+OnBootSec=90sec
+OnUnitActiveSec=60sec
+Persistent=true
+Unit=bojiclub-scheduled-notifications.service
+[Install]
+WantedBy=timers.target

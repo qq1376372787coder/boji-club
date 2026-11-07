@@ -1,0 +1,302 @@
+{
+  "bodyweight squat": {
+    "query": "bodyweight squat",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "body weight squat": {
+    "query": "body weight squat",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "squat": {
+    "query": "squat",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "lunge": {
+    "query": "lunge",
+    "library_id": "3470",
+    "canonical_name": "forward lunge (male)",
+    "equipment": "body weight"
+  },
+  "reverse lunge": {
+    "query": "reverse lunge",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "bodyweight lunge": {
+    "query": "bodyweight lunge",
+    "library_id": "3470",
+    "canonical_name": "forward lunge (male)",
+    "equipment": "body weight"
+  },
+  "push up": {
+    "query": "push-up",
+    "library_id": "0662",
+    "canonical_name": "push-up",
+    "equipment": "body weight"
+  },
+  "knee push up": {
+    "query": "knee push up",
+    "library_id": "3211",
+    "canonical_name": "kneeling push-up (male)",
+    "equipment": "body weight"
+  },
+  "kneeling push up": {
+    "query": "kneeling push up",
+    "library_id": "3211",
+    "canonical_name": "kneeling push-up (male)",
+    "equipment": "body weight"
+  },
+  "plank": {
+    "query": "plank",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "side plank": {
+    "query": "side plank",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "glute bridge": {
+    "query": "glute bridge",
+    "library_id": "3013",
+    "canonical_name": "low glute bridge on floor",
+    "equipment": "body weight"
+  },
+  "bodyweight glute bridge": {
+    "query": "bodyweight glute bridge",
+    "library_id": "3013",
+    "canonical_name": "low glute bridge on floor",
+    "equipment": "body weight"
+  },
+  "crunch": {
+    "query": "crunch",
+    "library_id": "0274",
+    "canonical_name": "crunch floor",
+    "equipment": "body weight"
+  },
+  "dead bug": {
+    "query": "dead bug",
+    "library_id": "0276",
+    "canonical_name": "dead bug",
+    "equipment": "body weight"
+  },
+  "bird dog": {
+    "query": "bird dog",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "mountain climber": {
+    "query": "mountain climber",
+    "library_id": "0630",
+    "canonical_name": "mountain climber",
+    "equipment": "body weight"
+  },
+  "calf raise": {
+    "query": "calf raise",
+    "library_id": "1373",
+    "canonical_name": "bodyweight standing calf raise",
+    "equipment": "body weight"
+  },
+  "wall sit": {
+    "query": "wall sit",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "jumping jack": {
+    "query": "jumping jack",
+    "library_id": "3224",
+    "canonical_name": "jack jump (male)",
+    "equipment": "body weight"
+  },
+  "burpee": {
+    "query": "burpee",
+    "library_id": "1160",
+    "canonical_name": "burpee",
+    "equipment": "body weight"
+  },
+  "superman": {
+    "query": "superman",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "dumbbell squat": {
+    "query": "dumbbell squat",
+    "library_id": "0413",
+    "canonical_name": "dumbbell squat",
+    "equipment": "dumbbell"
+  },
+  "dumbbell goblet squat": {
+    "query": "dumbbell goblet squat",
+    "library_id": "1760",
+    "canonical_name": "dumbbell goblet squat",
+    "equipment": "dumbbell"
+  },
+  "dumbbell lunge": {
+    "query": "dumbbell lunge",
+    "library_id": "0336",
+    "canonical_name": "dumbbell lunge",
+    "equipment": "dumbbell"
+  },
+  "dumbbell curl": {
+    "query": "dumbbell curl",
+    "library_id": "0294",
+    "canonical_name": "dumbbell biceps curl",
+    "equipment": "dumbbell"
+  },
+  "dumbbell shoulder press": {
+    "query": "dumbbell shoulder press",
+    "library_id": "0426",
+    "canonical_name": "dumbbell standing overhead press",
+    "equipment": "dumbbell"
+  },
+  "dumbbell lateral raise": {
+    "query": "dumbbell lateral raise",
+    "library_id": "0334",
+    "canonical_name": "dumbbell lateral raise",
+    "equipment": "dumbbell"
+  },
+  "dumbbell row": {
+    "query": "dumbbell row",
+    "library_id": "0293",
+    "canonical_name": "dumbbell bent over row",
+    "equipment": "dumbbell"
+  },
+  "dumbbell bent over row": {
+    "query": "dumbbell bent over row",
+    "library_id": "0293",
+    "canonical_name": "dumbbell bent over row",
+    "equipment": "dumbbell"
+  },
+  "dumbbell floor press": {
+    "query": "dumbbell floor press",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "dumbbell romanian deadlift": {
+    "query": "dumbbell romanian deadlift",
+    "library_id": "1459",
+    "canonical_name": "dumbbell romanian deadlift",
+    "equipment": "dumbbell"
+  },
+  "dumbbell bench press": {
+    "query": "dumbbell bench press",
+    "library_id": "0289",
+    "canonical_name": "dumbbell bench press",
+    "equipment": "dumbbell"
+  },
+  "one arm dumbbell row": {
+    "query": "one arm dumbbell row",
+    "library_id": "0292",
+    "canonical_name": "dumbbell one arm bent-over row",
+    "equipment": "dumbbell"
+  },
+  "incline dumbbell bench press": {
+    "query": "incline dumbbell bench press",
+    "library_id": "0314",
+    "canonical_name": "dumbbell incline bench press",
+    "equipment": "dumbbell"
+  },
+  "band row": {
+    "query": "band row",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "band squat": {
+    "query": "band squat",
+    "library_id": "1004",
+    "canonical_name": "band squat",
+    "equipment": "band"
+  },
+  "band curl": {
+    "query": "band curl",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "band shoulder press": {
+    "query": "band shoulder press",
+    "library_id": "0997",
+    "canonical_name": "band shoulder press",
+    "equipment": "band"
+  },
+  "band pull apart": {
+    "query": "band pull apart",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "kettlebell deadlift": {
+    "query": "kettlebell deadlift",
+    "library_id": null,
+    "canonical_name": null,
+    "equipment": null
+  },
+  "kettlebell goblet squat": {
+    "query": "kettlebell goblet squat",
+    "library_id": "0534",
+    "canonical_name": "kettlebell goblet squat",
+    "equipment": "kettlebell"
+  },
+  "kettlebell swing": {
+    "query": "kettlebell swing",
+    "library_id": "0549",
+    "canonical_name": "kettlebell swing",
+    "equipment": "kettlebell"
+  },
+  "kettlebell row": {
+    "query": "kettlebell row",
+    "library_id": "1345",
+    "canonical_name": "kettlebell two arm row",
+    "equipment": "kettlebell"
+  },
+  "pull up": {
+    "query": "pull up",
+    "library_id": "0652",
+    "canonical_name": "pull-up",
+    "equipment": "body weight"
+  },
+  "chin up": {
+    "query": "chin up",
+    "library_id": "1326",
+    "canonical_name": "chin-up",
+    "equipment": "body weight"
+  },
+  "barbell squat": {
+    "query": "barbell squat",
+    "library_id": "0043",
+    "canonical_name": "barbell full squat",
+    "equipment": "barbell"
+  },
+  "barbell deadlift": {
+    "query": "barbell deadlift",
+    "library_id": "0032",
+    "canonical_name": "barbell deadlift",
+    "equipment": "barbell"
+  },
+  "barbell row": {
+    "query": "barbell row",
+    "library_id": "0027",
+    "canonical_name": "barbell bent over row",
+    "equipment": "barbell"
+  },
+  "barbell bench press": {
+    "query": "barbell bench press",
+    "library_id": "0025",
+    "canonical_name": "barbell bench press",
+    "equipment": "barbell"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bojiclub.invalid/onboarding-content.v1.json",
+  "title": "Published onboarding copy only; no prompts, tools or safety rules",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["welcome_title", "welcome_body", "task_labels", "tips"],
+  "properties": {
+    "welcome_title": {"type": "string", "maxLength": 40},
+    "welcome_body": {"type": "string", "maxLength": 300},
+    "task_labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plan_create": {"type": "string", "maxLength": 12},
+        "plan_import": {"type": "string", "maxLength": 12},
+        "meal_log": {"type": "string", "maxLength": 12},
+        "workout_log": {"type": "string", "maxLength": 12},
+        "explore": {"type": "string", "maxLength": 12}
+      }
+    },
+    "tips": {
+      "type": "array", "maxItems": 12,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "title", "body", "screen"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9._-]{1,40}$"},
+          "title": {"type": "string", "minLength": 1, "maxLength": 30},
+          "body": {"type": "string", "minLength": 1, "maxLength": 120},
+          "screen": {"enum": ["first_set", "food_fraction", "report", "task_center"]}
+        }
+      }
+    }
+  }
+}

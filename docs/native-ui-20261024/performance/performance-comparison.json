@@ -1,0 +1,403 @@
+{
+  "device": "BOJI Native UI Small / iPhone SE 3 / iOS 26.5 Simulator",
+  "configuration": "Debug arm64",
+  "harnessSHA256": "edba010db20f52158aafe3ebf2349d36801426a5bb31aaddc43202c7fdc0954b",
+  "iterationsPerCase": 5,
+  "status": {
+    "baseline": "2/2 passed",
+    "current": "2/2 passed"
+  },
+  "activityTraceVerification": {
+    "baseline": "Native v2-mode-picker absent; v2-mode-training button tapped; visible scroll view selected.",
+    "current": "Native v2-mode-picker SegmentedControl present; its training option tapped; visible scroll view selected."
+  },
+  "metrics": {
+    "baseline": {
+      "com.apple.dt.XCTMetric_ApplicationLaunch-AppLaunch.duration": {
+        "test": "BojiClubUITests/testNativeLaunchBenchmark()",
+        "displayName": "Duration (AppLaunch)",
+        "unit": "s",
+        "samples": [
+          1.502092167,
+          1.407520375,
+          1.454767125,
+          1.366068875,
+          1.666138083
+        ],
+        "mean": 1.479317325,
+        "rsdPercent": 7.85451316839281
+      },
+      "com.apple.dt.XCTMetric_OSSignpost-Scroll_DraggingAndDeceleration.duration": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Duration (Scroll_DraggingAndDeceleration)",
+        "unit": "s",
+        "samples": [
+          0.9843251670000001,
+          0.984140542,
+          1.000829041,
+          1.000443583,
+          0.99972925
+        ],
+        "mean": 0.9938935166,
+        "rsdPercent": 0.8882241304836745
+      },
+      "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.instructions_retired": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "CPU Instructions Retired (dev)",
+        "unit": "kI",
+        "samples": [
+          1493440.339,
+          1478685.621,
+          1492022.635,
+          1471966.419,
+          1483931.856
+        ],
+        "mean": 1484009.374,
+        "rsdPercent": 0.6088345297482919
+      },
+      "com.apple.dt.XCTMetric_Clock.time.monotonic": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Clock Monotonic Time",
+        "unit": "s",
+        "samples": [
+          2.8514518460000002,
+          2.3745288170000003,
+          2.596822781,
+          2.324478559,
+          2.44168038
+        ],
+        "mean": 2.5177924766000004,
+        "rsdPercent": 8.454806072225496
+      },
+      "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.time": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "CPU Time (dev)",
+        "unit": "s",
+        "samples": [
+          0.30350602600000004,
+          0.29606661700000003,
+          0.34264372400000004,
+          0.28383434900000004,
+          0.29411284400000004
+        ],
+        "mean": 0.30403271200000004,
+        "rsdPercent": 7.465874332342129
+      },
+      "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.cycles": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "CPU Cycles (dev)",
+        "unit": "kC",
+        "samples": [
+          928954.244,
+          901109.299,
+          971453.955,
+          787726.342,
+          867601.429
+        ],
+        "mean": 891369.0538,
+        "rsdPercent": 7.778171210658059
+      },
+      "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_absolute": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Absolute Memory Physical (dev)",
+        "unit": "kB",
+        "samples": [
+          85887.376,
+          85903.76,
+          85870.992,
+          85854.608,
+          85870.992
+        ],
+        "mean": 85877.5456,
+        "rsdPercent": 0.021752640966051794
+      },
+      "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Memory Physical (dev)",
+        "unit": "kB",
+        "samples": [
+          -49.152,
+          16.384,
+          -16.384,
+          0,
+          16.384
+        ],
+        "mean": -6.5536,
+        "rsdPercent": 418.33001326703777
+      },
+      "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_peak": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Memory Peak Physical (dev)",
+        "unit": "kB",
+        "samples": [
+          86100.368,
+          86133.136,
+          85936.528,
+          86100.368,
+          85952.912
+        ],
+        "mean": 86044.6624,
+        "rsdPercent": 0.10737657925659613
+      }
+    },
+    "current": {
+      "com.apple.dt.XCTMetric_ApplicationLaunch-AppLaunch.duration": {
+        "test": "BojiClubUITests/testNativeLaunchBenchmark()",
+        "displayName": "Duration (AppLaunch)",
+        "unit": "s",
+        "samples": [
+          1.339361417,
+          1.298561542,
+          1.3570973750000002,
+          1.316683542,
+          1.3086895
+        ],
+        "mean": 1.3240786752,
+        "rsdPercent": 1.7977442070039171
+      },
+      "com.apple.dt.XCTMetric_OSSignpost-Scroll_DraggingAndDeceleration.duration": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Duration (Scroll_DraggingAndDeceleration)",
+        "unit": "s",
+        "samples": [
+          0.950466125,
+          0.949726375,
+          0.9503474590000001,
+          0.9336843340000001,
+          0.950647
+        ],
+        "mean": 0.9469742586000001,
+        "rsdPercent": 0.7853806993282482
+      },
+      "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.instructions_retired": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "CPU Instructions Retired (dev)",
+        "unit": "kI",
+        "samples": [
+          2048190.678,
+          2045039.037,
+          2046652.904,
+          2053785.055,
+          2046520.035
+        ],
+        "mean": 2048037.5418,
+        "rsdPercent": 0.16606362436189728
+      },
+      "com.apple.dt.XCTMetric_Clock.time.monotonic": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Clock Monotonic Time",
+        "unit": "s",
+        "samples": [
+          2.6201877380000003,
+          2.362825982,
+          2.355029176,
+          2.362748369,
+          2.593556639
+        ],
+        "mean": 2.4588695808,
+        "rsdPercent": 5.5095232403472885
+      },
+      "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.time": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "CPU Time (dev)",
+        "unit": "s",
+        "samples": [
+          0.42451482,
+          0.462115592,
+          0.43950942200000004,
+          0.460287812,
+          0.45150885100000004
+        ],
+        "mean": 0.4475872994,
+        "rsdPercent": 3.506600174470463
+      },
+      "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.cycles": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "CPU Cycles (dev)",
+        "unit": "kC",
+        "samples": [
+          1161212.274,
+          1216501.48,
+          1178704.037,
+          1191959.183,
+          1191508.411
+        ],
+        "mean": 1187977.077,
+        "rsdPercent": 1.7066882146216835
+      },
+      "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_absolute": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Absolute Memory Physical (dev)",
+        "unit": "kB",
+        "samples": [
+          85641.616,
+          85674.384,
+          87017.872,
+          86952.336,
+          86952.336
+        ],
+        "mean": 86447.7088,
+        "rsdPercent": 0.8345987948619878
+      },
+      "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Memory Physical (dev)",
+        "unit": "kB",
+        "samples": [
+          -32.768,
+          49.152,
+          1359.872,
+          -49.152,
+          16.384
+        ],
+        "mean": 268.6976,
+        "rsdPercent": 227.4807063093706
+      },
+      "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_peak": {
+        "test": "BojiClubUITests/testNativeScrollBenchmark()",
+        "displayName": "Memory Peak Physical (dev)",
+        "unit": "kB",
+        "samples": [
+          85723.536,
+          85707.152,
+          87034.256,
+          87067.024,
+          86985.104
+        ],
+        "mean": 86503.4144,
+        "rsdPercent": 0.8323606862384179
+      }
+    }
+  },
+  "comparison": [
+    {
+      "identifier": "com.apple.dt.XCTMetric_ApplicationLaunch-AppLaunch.duration",
+      "name": "Duration (AppLaunch)",
+      "unit": "s",
+      "baselineMean": 1.479317325,
+      "currentMean": 1.3240786752,
+      "delta": -0.15523864980000002,
+      "percentChange": -10.493938465839303
+    },
+    {
+      "identifier": "com.apple.dt.XCTMetric_OSSignpost-Scroll_DraggingAndDeceleration.duration",
+      "name": "Duration (Scroll_DraggingAndDeceleration)",
+      "unit": "s",
+      "baselineMean": 0.9938935166,
+      "currentMean": 0.9469742586000001,
+      "delta": -0.046919257999999964,
+      "percentChange": -4.720752999828948
+    },
+    {
+      "identifier": "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.instructions_retired",
+      "name": "CPU Instructions Retired (dev)",
+      "unit": "kI",
+      "baselineMean": 1484009.374,
+      "currentMean": 2048037.5418,
+      "delta": 564028.1677999999,
+      "percentChange": 38.00704885574395
+    },
+    {
+      "identifier": "com.apple.dt.XCTMetric_Clock.time.monotonic",
+      "name": "Clock Monotonic Time",
+      "unit": "s",
+      "baselineMean": 2.5177924766000004,
+      "currentMean": 2.4588695808,
+      "delta": -0.05892289580000032,
+      "percentChange": -2.3402602219055435
+    },
+    {
+      "identifier": "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.time",
+      "name": "CPU Time (dev)",
+      "unit": "s",
+      "baselineMean": 0.30403271200000004,
+      "currentMean": 0.4475872994,
+      "delta": 0.1435545874,
+      "percentChange": 47.216822971338686
+    },
+    {
+      "identifier": "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.cycles",
+      "name": "CPU Cycles (dev)",
+      "unit": "kC",
+      "baselineMean": 891369.0538,
+      "currentMean": 1187977.077,
+      "delta": 296608.02320000005,
+      "percentChange": 33.27555763076235
+    },
+    {
+      "identifier": "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_absolute",
+      "name": "Absolute Memory Physical (dev)",
+      "unit": "kB",
+      "baselineMean": 85877.5456,
+      "currentMean": 86447.7088,
+      "delta": 570.1631999999954,
+      "percentChange": 0.6639258213732679
+    },
+    {
+      "identifier": "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical",
+      "name": "Memory Physical (dev)",
+      "unit": "kB",
+      "baselineMean": -6.5536,
+      "currentMean": 268.6976,
+      "delta": 275.25120000000004,
+      "percentChange": null
+    },
+    {
+      "identifier": "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_peak",
+      "name": "Memory Peak Physical (dev)",
+      "unit": "kB",
+      "baselineMean": 86044.6624,
+      "currentMean": 86503.4144,
+      "delta": 458.75199999999313,
+      "percentChange": 0.5331556742792065
+    }
+  ],
+  "rss": {
+    "baseline": {
+      "samplesMiB": [
+        326.41,
+        335.05
+      ],
+      "meanMiB": 330.7265625,
+      "settleSeconds": 12
+    },
+    "native": {
+      "samplesMiB": [
+        318.97,
+        311.31
+      ],
+      "meanMiB": 315.140625,
+      "settleSeconds": 12
+    }
+  },
+  "rssPercentChange": -4.712635532563247,
+  "hitchOrDroppedFrameMetrics": {
+    "status": "unavailable",
+    "reason": "Both xcresults export only the scrolling signpost duration; no hitch count, hitch ratio, frame rate, or dropped-frame metric was provided. Duration is not a hitch metric."
+  },
+  "warnings": [
+    "The current version used 47.2% more app CPU time (+0.144 seconds per swipe-up/down workload) and 38.0% more retired instructions. This is an observed increase, not a performance pass for CPU.",
+    "The first baseline attempt used an offscreen inactive legacy ScrollView, invalidating that scroll measurement. The attempt is preserved separately and excluded from this comparison.",
+    "The first baseline launch sample set had 14.1% RSD; the corrected back-to-back run used here has 7.0% baseline launch RSD and 1.6% current launch RSD.",
+    "Only 5 repetitions per case and 2 RSS samples were collected; no statistical significance or device Release performance claim is made.",
+    "XCTest physical-memory kB and ps RSS MiB are separate observations. Memory delta percentages near zero are not interpreted."
+  ],
+  "artifacts": {
+    "baseline": {
+      "xcresult": "baseline-performance.xcresult",
+      "log": "baseline-performance.log",
+      "metrics": "baseline-performance-metrics.json",
+      "tests": "baseline-performance-tests.json",
+      "summary": "baseline-performance-summary.json",
+      "activities": "baseline-performance-scroll-activities.json"
+    },
+    "current": {
+      "xcresult": "current-performance.xcresult",
+      "log": "current-performance.log",
+      "metrics": "current-performance-metrics.json",
+      "tests": "current-performance-tests.json",
+      "summary": "current-performance-summary.json",
+      "activities": "current-performance-scroll-activities.json"
+    }
+  }
+}

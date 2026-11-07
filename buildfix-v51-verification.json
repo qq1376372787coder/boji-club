@@ -1,0 +1,25 @@
+{
+  "version": "0.13.51",
+  "build": 70,
+  "created": "2026-10-11T12:41:42.644264+00:00",
+  "reported_error": "HomeView.swift:79:44 compiler unable to type-check expression in reasonable time",
+  "modified_existing_files": [
+    "BojiClub/HomeView.swift",
+    "BojiClub.xcodeproj/project.pbxproj",
+    "BUILD-STATUS.md",
+    "README_先读我.md"
+  ],
+  "syntax_check": {
+    "file": "BojiClub/HomeView.swift",
+    "errors": [],
+    "method": "tree-sitter Swift syntax parser"
+  },
+  "existing_record_opening_and_card_content_unchanged": true,
+  "ai_and_share_views_unchanged": true,
+  "old_v50_source_unchanged": true,
+  "server_code_unchanged": true,
+  "xcode_build_performed": false,
+  "compile_time_measured": false,
+  "device_test_performed": false,
+  "swift_source_sha256": "0b3cdc5d207bb2bf11f9f1c1624a77d6e832b3b4c49180fafaba5a63b751d425"
+}

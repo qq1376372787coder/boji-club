@@ -1,0 +1,10 @@
+[Unit]
+Description=Boji Club action-jobs timer
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=30s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

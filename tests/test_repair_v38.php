@@ -1,0 +1,70 @@
+<?php
+declare(strict_types=1);
+function fail(string $message,int $status=400): never {throw new RuntimeException($message);}
+require __DIR__.'/../account-server/public/cloud-validation.php';
+$checks=0;
+function check(bool $ok,string $name):void {global $checks;if(!$ok)throw new RuntimeException($name);$checks++;}
+// Exercise the real request decoder without executing HTTP auth or touching production data.
+$index=file_get_contents(__DIR__.'/../account-server/public/index.php');
+preg_match('/function decodedState\(array \$input(?:, bool \$requireDays = true)?\): array \{.*?\n\}/s',$index,$function);
+eval($function[0]);
+$weekly=file_get_contents(__DIR__.'/../account-server/public/weekly.php');
+preg_match('/function aiRetryConsumesUsage\(.*?\n\}/s',$weekly,$function);eval($function[0]);
+$profile=['nickname'=>'测试','age'=>30,'height'=>175,'weight'=>70,'goal'=>'增肌','experience'=>'新手','venue'=>'健身房','daysPerWeek'=>3,'focus'=>'全身'];
+$empty=['version'=>1,'days'=>[],'profile'=>$profile,'drafts'=>[],'importedPlan'=>''];
+[$normal]=decodedState(['state'=>$empty]);cloudValidate($normal,'state');
+check(json_decode(json_encode($normal))->days instanceof stdClass,'empty dictionary remains an object through revalidation');
+$normal=cloudReconcileRecords($normal,[]);cloudValidate($normal,'state');check(true,'normalized state accepted by second validation');
+$invalid=$empty;$invalid['drafts']=(object)[];$accepted=true;
+try{cloudValidate($invalid,'state');}catch(RuntimeException $e){$accepted=false;}
+check(!$accepted,'dictionary permission does not allow object in a list');
+$id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';$id2='bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+$date='2026-10-08';$other='2026-10-09';
+$meal=['id'=>$id,'name'=>'鸡蛋','category'=>'早餐','calories'=>150,'protein'=>12,'carbs'=>1,'fat'=>10,'sourceAIJobID'=>'fixture-ai'];
+$state=$empty;$state['recordIntegrityVersion']=1;
+$state['days']=[$date=>['exercises'=>[],'meals'=>[$meal]],$other=>['exercises'=>[],'meals'=>[$meal]]];
+$merged=cloudReconcileRecords($state,[]);cloudValidate($merged,'state');$days=(array)$merged['days'];
+check(count($days[$date]['meals'])+count($days[$other]['meals'])===1,'single AI result counted once across dates');
+check($days[$date]['meals'][0]['placementConflictDates']===[$date,$other],'user sees both possible dates');
+$resolved=$days[$date]['meals'][0];unset($resolved['placementConflictDates']);$resolved['placementConfirmedAt']=800000100;
+$state['days'][$date]['meals']=[$meal];$state['days'][$other]['meals']=[$resolved];
+$next=cloudReconcileRecords($state,$merged);$nextDays=(array)$next['days'];
+check(count($nextDays[$date]['meals'])===0 && count($nextDays[$other]['meals'])===1,'confirmed placement wins over stale offline copy');
+check(!isset($nextDays[$other]['meals'][0]['placementConflictDates']),'stale copy cannot recreate prompt');
+$manual=$meal;unset($manual['sourceAIJobID']);$manual['id']=$id2;$state['days'][$date]['meals'][]=$manual;
+$next=cloudReconcileRecords($state,$merged);
+check(count(((array)$next['days'])[$date]['meals'])===1,'manual entry with the same name remains');
+$result=['kind'=>'weekly_review','summary'=>'总结','training'=>'训练','nutrition'=>'饮食','recovery'=>'恢复','appearance'=>'体态','photoFeedback'=>[],'decision'=>'repeat','reason'=>'原因','notes'=>[],'sessions'=>[]];
+$review=['id'=>$id,'date'=>$date,'survey'=>['bodyFatSource'=>'未知','fatigue'=>'适中','pain'=>'无','difficulty'=>'合适','diet'=>'一般','notes'=>'','days'=>3],'photos'=>[],'status'=>'succeeded','result'=>$result,'baseline'=>[],'applied'=>false,'updatedAt'=>800000000];
+$new=$review;$new['id']=$id2;$new['updatedAt']=800000100;
+$state=$empty;$state['recordIntegrityVersion']=1;$state['days']=[$date=>['exercises'=>[],'meals'=>[],'weeklyReview'=>$new,'weeklyReviewHistory'=>[$review]]];
+[$decoded]=decodedState(['state'=>$state]);$canonical=cloudReconcileRecords($decoded,[]);cloudValidate($canonical,'state');
+$day=((array)$canonical['days'])[$date];
+check($day['weeklyReview']['id']===$id2 && count($day['weeklyReviewHistory'])===1,'latest review and history survive request normalization');
+check($day['weeklyReview']['baseline'] instanceof stdClass,'weekly baseline keeps Swift dictionary format');
+check(cloudExperienceValid($canonical),'review belongs to its day');
+$bad=$state;$bad['days'][$date]['weeklyReviewHistory'][0]['date']=$other;
+check(!cloudExperienceValid($bad),'review on an unrelated day is rejected');
+$state['days'][$date]['deletedWeeklyReviewIDs']=[$id2];$removed=cloudReconcileRecords($state,$canonical);
+check(((array)$removed['days'])[$date]['weeklyReview']['id']===$id,'deleting latest promotes previous version');
+$stale=cloudReconcileRecords($state,$removed);check(((array)$stale['days'])[$date]['weeklyReview']['id']===$id,'deleted latest cannot resurrect');
+$legacy=$empty;$legacy['days']=[$date=>['exercises'=>[],'meals'=>[],'weeklyReview'=>$new]];
+$old=$empty;$old['days']=[$date=>['exercises'=>[],'meals'=>[],'weeklyReview'=>$review]];
+$kept=cloudReconcileRecords($legacy,$old);
+check(count(((array)$kept['days'])[$date]['weeklyReviewHistory'])===1,'older app replacement also retains previous review');
+$target=['caloriesMin'=>1800,'caloriesMax'=>2000,'proteinMin'=>90,'proteinMax'=>120,'fatMin'=>40,'fatMax'=>60,'meals'=>3,'note'=>'原说明','maintenanceMin'=>2100,'maintenanceMax'=>2300,'strategy'=>'温和缺口','calculationVersion'=>2,'generalGuidanceOnly'=>false];
+$old=$empty;$old['nutritionTarget']=$target;$legacy=$empty;
+$legacy['nutritionTarget']=array_diff_key($target,array_flip(['maintenanceMin','maintenanceMax','strategy','calculationVersion','generalGuidanceOnly']));
+$kept=cloudPreserveLegacyExperience($legacy,$old);
+check($kept['nutritionTarget']===$target,'legacy client preserves root strategy metadata');
+$legacy['profile']['age']=16;$kept=cloudPreserveLegacyExperience($legacy,$old);
+check($kept['nutritionTarget']['generalGuidanceOnly']===true,'minor never inherits adult calorie strategy');
+$legacy['profile']['age']=30;$legacy['nutritionTarget']['caloriesMin']=1700;$kept=cloudPreserveLegacyExperience($legacy,$old);
+check($kept['nutritionTarget']['calculationVersion']===1,'changed legacy numbers marked for recalculation');
+check(!aiRetryConsumesUsage(200,['retry_started'=>false]),'no-op retry rolls quota back');
+check(!aiRetryConsumesUsage(200,['retry_started'=>true]),'real restart never charges usage');
+check(!aiRetryConsumesUsage(200,[]),'uncertain response never charges usage');
+$definition=['id'=>$id,'name'=>str_repeat('👨‍👩‍👧‍👦',9),'muscle'=>'核心','equipment'=>'','unit'=>'秒','updatedAt'=>800000000];$accepted=true;
+try{cloudValidate($definition,'customExercise');}catch(RuntimeException $e){$accepted=false;}
+check(!$accepted,'composed emoji use same 60 scalar rule as Swift');
+echo json_encode(['passed'=>true,'checks'=>$checks],JSON_UNESCAPED_UNICODE).PHP_EOL;

@@ -1,0 +1,93 @@
+# BOJI CLUB CI（R-02）
+#
+# 统一入口：scripts/run-all-checks.sh（Python 离线 640 项 + Swift 规则链 52 个 +
+# 模拟器编译 + 单元测试 + UI 测试含无障碍审计与启动性能采样）。
+#
+# 说明：
+# · 需要 Xcode 26+ 与 iPhone 17 模拟器运行时（首次由 -destination 自动解析可用机型）。
+# · AI Action 的关键 PHP/MySQL 回归在下方 action-backend 独立任务执行。
+# · 本仓库当前无远端托管；接入 GitHub/GitLab 后此文件立即生效。
+# · 密钥提示：本仓库不含任何密钥；CI 无需配置 secrets。
+
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.app/Contents/Developer || true
+      - name: Run all checks
+        run: bash scripts/run-all-checks.sh
+      - name: Upload test artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresults-and-logs
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresult
+          if-no-files-found: ignore
+
+  action-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: fixture-only
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pfixture-only"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      BOJI_TEST_DSN_BASE: mysql:host=127.0.0.1;port=3306
+      BOJI_TEST_DB_USER: root
+      BOJI_TEST_DB_PASSWORD: fixture-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, mbstring
+          coverage: none
+      - name: Domain commands, action recovery, projections and migration
+        run: bash tests/run_action_checks.sh
+
+  admin-runtime-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    env:
+      BOJI_TEST_DSN_BASE: mysql:host=127.0.0.1;port=3306
+      BOJI_TEST_DB_USER: root
+      BOJI_TEST_DB_PASSWORD: ""
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, mbstring, gd
+          coverage: none
+      - name: Install MySQL diagnostic client
+        run: sudo apt-get update && sudo apt-get install -y mariadb-client
+      - name: Prepare disposable schema and run SQL regressions
+        run: |
+          php tests/test_audit129_sql.php prepare
+          php tests/test_audit129_sql.php check
+      - name: Run real concurrent transaction and Admin HTTP integration
+        run: python3 tests/test_audit129_runtime.py

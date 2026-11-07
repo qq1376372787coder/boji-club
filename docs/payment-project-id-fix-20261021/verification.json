@@ -1,0 +1,25 @@
+{
+  "tests": {
+    "test_membership_verify_v70.php": {
+      "exit": 0,
+      "passed": 23,
+      "checks": null
+    },
+    "test_membership_project_ids_20261021.php": {
+      "exit": 0,
+      "passed": 13,
+      "checks": null
+    },
+    "test_revenuecat_v60.php": {
+      "exit": 0,
+      "passed": true,
+      "checks": 33
+    }
+  },
+  "verification": "verified",
+  "member_source": "apple",
+  "product": "yongjiu",
+  "verified_status": "active",
+  "last_error_code": null,
+  "policy_sha256": "0390b4741249adfbeaf600546e07ee2d3ff154b4e97b4f8c99aa05bd57e87b61"
+}

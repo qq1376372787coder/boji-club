@@ -1,0 +1,40 @@
+{
+  "version": "0.14.0",
+  "build": 106,
+  "date": "2026-10-16",
+  "backend_regressions": {
+    "passed": true,
+    "tests": 336,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database_integration": {
+    "passed": true,
+    "checks": 34,
+    "pagination_total_recovered": 52,
+    "archived_report_after_45_days": true,
+    "direct_id_lookup": true,
+    "cross_account_access_blocked": true,
+    "partitioned_old_goal_restored": true,
+    "setting_and_record_conflicts_distinguished": true,
+    "real_models_called": false,
+    "production_account_data_used": false
+  },
+  "production_targeted": {
+    "passed": true,
+    "tests": 98,
+    "production_import_paths_verified": true,
+    "real_models_called": false
+  },
+  "php_groups": 19,
+  "swift_grammar_files": 88,
+  "swift_fixture_groups_generated": 16,
+  "backend_deployed": true,
+  "full_v2_plan_completed": false,
+  "xcode_build_executed": false,
+  "native_tests_executed": false,
+  "device_tests_executed": false,
+  "apns_delivery_verified": false,
+  "status": "8 audit fixes implemented; server deployed; full V2 requirements partial; native/device/payment acceptance pending"
+}

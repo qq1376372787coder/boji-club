@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "tests": 282,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "backend_hashes": {
+    "ai_core.py": "28721714aca85355d9686329feee83367ac540e806a9ea67cd42e9e638c9c03c",
+    "coach_core.py": "c20183b9d37708e8e8731bf371128d8604cb6128f7fe76080506fa9b2e226dc5",
+    "curated_library.py": "a9b37d60413350b48098fa8e40c5bf3d04a282700c355a4fc715686351390bd7",
+    "food_core.py": "fb23dc5db842d344d44fa33c8c6b6f4e37fe1f5d8a771f70366f7ffe263b8089",
+    "goal_context.py": "7fb4bcfebf9a1b04686798535ea19715618a169b71cc53e83a0f52181037fbbb",
+    "plan_explanation.py": "e0794cf4725212db1735fffcf5b72b4337a080434f9f41b307e7be77f04e8ad2",
+    "server.py": "6e0f4b1985a40b535a8b50b06d415d909f8689abcff9d166ce7a2356d0c5f3ad",
+    "setup.py": "baa221117d025aa9b34477530095c262411e00754c6a6158fda45502ece2c70e",
+    "training_feedback.py": "9b7ddc1b1db72e6348d70e98ca350faf14127c5efcbddd53531c21fb8bb0007a",
+    "weekly_core.py": "6b4d195eed11612e1fbfbcdcc524836bb594ac3be769674fc743c33ab80318af"
+  },
+  "native_swift_tests_executed": false,
+  "xcode_build_executed": false
+}

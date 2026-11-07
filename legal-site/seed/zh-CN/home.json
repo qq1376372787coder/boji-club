@@ -1,0 +1,61 @@
+{
+  "nav_features": "功能",
+  "nav_faq": "常见问题",
+  "nav_changelog": "更新日志",
+  "nav_legal": "协议中心",
+  "hero_badge": "专注自己",
+  "hero_title": "训练、饮食、AI 教练。",
+  "hero_sub": "计划、记录、复盘，一目了然。",
+  "download_note": "iOS 17+ · iPhone 与 iPad",
+  "features_title": "核心功能",
+  "features_sub": "从计划、执行到复盘的完整闭环",
+  "features": [
+    {
+      "t": "AI 训练计划",
+      "d": "按你的目标定制，逐组登记，进度一目了然。"
+    },
+    {
+      "t": "拍照记录饮食",
+      "d": "拍下餐食，热量与营养自动识别。"
+    },
+    {
+      "t": "健康数据看板",
+      "d": "步数、心率与睡眠，经你确认后呈现。"
+    },
+    {
+      "t": "AI 日报与周复盘",
+      "d": "每天一份解读，每周一份复盘。"
+    },
+    {
+      "t": "Club AI 教练",
+      "d": "基于你的真实记录，回答训练与饮食问题。"
+    },
+    {
+      "t": "隐私优先",
+      "d": "身体照片默认留在本机，账号可彻底删除。"
+    }
+  ],
+  "shots_title": "界面一览",
+  "shots_sub": "简洁、克制、专注训练本身",
+  "shots": [
+    {
+      "file": "shot-home.png",
+      "cap": "Club AI 首页"
+    },
+    {
+      "file": "shot-training.png",
+      "cap": "训练日程与登记"
+    },
+    {
+      "file": "shot-chat.png",
+      "cap": "Club AI 对话"
+    },
+    {
+      "file": "shot-log.png",
+      "cap": "快速记录"
+    }
+  ],
+  "cta_title": "开始你的第一周训练",
+  "cta_sub": "训练数据属于你，随时可注销并删除全部数据。",
+  "legal_hint": "使用本产品即表示你同意《用户服务协议》与《隐私政策》。"
+}

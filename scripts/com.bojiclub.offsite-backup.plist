@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+    <key>Label</key><string>com.bojiclub.offsite-backup</string>
+    <key>ProgramArguments</key><array>
+        <!-- Replace PYTHON3_ABSOLUTE_PATH with an installed Python 3.10+ executable.
+             Install the script at this fixed private path only after review. -->
+        <string>PYTHON3_ABSOLUTE_PATH</string>
+        <string>/Users/a01/Documents/BOJI_CLUB_Backups/metadata/pull-offsite-backup.py</string>
+    </array>
+    <key>RunAtLoad</key><true/>
+    <!-- Hourly while awake; calendar jobs coalesce on wake. An offline/sleeping
+         Mac does not receive backups. The next successful run fetches latest. -->
+    <key>StartCalendarInterval</key><dict><key>Minute</key><integer>27</integer></dict>
+    <key>ProcessType</key><string>Background</string>
+    <key>Umask</key><integer>63</integer>
+    <key>StandardOutPath</key><string>/Users/a01/Documents/BOJI_CLUB_Backups/metadata/pull-launchd.log</string>
+    <key>StandardErrorPath</key><string>/Users/a01/Documents/BOJI_CLUB_Backups/metadata/pull-launchd-error.log</string>
+</dict></plist>

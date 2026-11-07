@@ -1,0 +1,50 @@
+{
+  "version": "0.13.58",
+  "build": 77,
+  "date": "2026-10-13",
+  "verified_live_at": "2026-10-13T00:21:43+08:00",
+  "settings": {
+    "accepting": true,
+    "account_daily_limit": 0,
+    "daily_limit": 0,
+    "pending_limit": 0,
+    "worker_limit": 32
+  },
+  "live_resources": {
+    "active_workers": 0,
+    "configured_workers": 32,
+    "effective_workers": 17,
+    "job_memory_reserve": 25165824,
+    "maximum_workers": 32,
+    "pause_reason": null,
+    "resources": {
+      "cpu_count": 2,
+      "host_available": 1182916608,
+      "host_total": 1894342656,
+      "memory_current": 22618112,
+      "memory_guard_bytes": 22601728,
+      "memory_limit": 536870912,
+      "php_max_children": 10,
+      "reclaimable_file_cache": 16384
+    }
+  },
+  "deployed_files_sha256": {
+    "backend/server.py": "c09d47fa1a240b0d08d0ce22ce5f41523b4db0c53d1e9e5f720ea7ab01758dfb",
+    "account-server/public/weekly.php": "666c93b4ab8288e8bf36e91cc6d5c75d4b55c6cc8f330a8ec8846e3f68b8de99",
+    "account-server/public/ai-response.php": "00cba8b2fd89da12ed13a5ac5da936eebb6ab771c85cf4ed7c311f6535da4b42",
+    "account-server/public/account-deletion.php": "e6fb97ed622be493dacbc10c3b67bb0c649a0c184954e89deb13e0dde98d5e1b",
+    "account-server/admin/bootstrap.php": "652db64a81d5619a7736d65abb9b3bc8cce749b04cfb2ef368b5d1afb0177151",
+    "account-server/admin/ai-capacity.php": "c4f5d4886fa32aa51843aa7e85887dc6f1ae0a38e9fcec26c147c88329812069",
+    "account-server/admin/app.js": "5764b8b960e7b243f3368e42499161c4dd3d738cc915731070441a181f9965b8"
+  },
+  "python_regressions_passed": 62,
+  "php_python_mysql_integration_checks_passed": 58,
+  "admin_js_scenarios_passed": 5,
+  "php_syntax_checked": 6,
+  "php_regression_assertions_passed": 29,
+  "paid_provider_calls_for_this_change": 0,
+  "native_swift_business_code_changed": false,
+  "xcode_build_completed": false,
+  "production_authenticated_admin_browser_e2e_completed": false,
+  "isolated_admin_login_csrf_save_audit_http_completed": true
+}

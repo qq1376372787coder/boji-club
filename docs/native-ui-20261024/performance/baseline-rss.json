@@ -1,0 +1,24 @@
+{
+  "device": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+  "model": "iPhone SE 3",
+  "runtime": "iOS 26.5",
+  "configuration": "Debug arm64",
+  "fixture": "complete + BOJI_UI_TEST_SEED=1",
+  "label": "baseline",
+  "samples": [
+    {
+      "iteration": 1,
+      "pid": 95834,
+      "settle_seconds": 12,
+      "rss_kib": 334240,
+      "rss_mib": 326.41
+    },
+    {
+      "iteration": 2,
+      "pid": 95874,
+      "settle_seconds": 12,
+      "rss_kib": 343088,
+      "rss_mib": 335.05
+    }
+  ]
+}

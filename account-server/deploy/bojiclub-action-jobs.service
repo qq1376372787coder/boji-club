@@ -1,0 +1,14 @@
+[Unit]
+Description=Boji Club action-jobs
+After=network.target
+ConditionPathExists=/opt/bojiclub-account/config.php
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/php /opt/bojiclub-account/process-action-jobs.php
+TimeoutStartSec=120
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict

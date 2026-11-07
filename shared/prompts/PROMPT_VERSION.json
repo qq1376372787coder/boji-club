@@ -1,0 +1,17 @@
+{
+  "workout_plan": {
+    "version": "boji.workout_plan.v1",
+    "file": "shared/prompts/workout_plan.v1.md"
+  },
+  "daily_report": {
+    "version": "boji.daily_report.v1",
+    "file": "shared/prompts/daily_report.v1.md"
+  },
+  "weekly_report": {
+    "version": "boji.weekly_report.v1",
+    "file": "shared/prompts/weekly_report.v1.md"
+  },
+  "schema": {
+    "file": "shared/schemas/fitness-intelligence.v1.schema.json"
+  }
+}

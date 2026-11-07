@@ -1,0 +1,39 @@
+ M BojiClub.xcodeproj/project.pbxproj
+ M BojiClub/AccountService.swift
+ M BojiClub/AppStore.swift
+ M BojiClub/BojiClubApp.swift
+ M BojiClub/BojiComponentGalleryView.swift
+ M BojiClub/BojiComponents.swift
+ M BojiClub/CloudSync.swift
+ M BojiClub/ClubHistory.swift
+ M BojiClub/DailyExperience.swift
+ M BojiClub/ExerciseLibraryView.swift
+ M BojiClub/HealthData.swift
+ M BojiClub/HealthViews.swift
+ M BojiClub/HomeView.swift
+ M BojiClub/ManualPlan.swift
+ M BojiClub/ManualPlanView.swift
+ M BojiClub/MealEditorView.swift
+ M BojiClub/Models.swift
+ M BojiClub/OnboardingView.swift
+ M BojiClub/PlanHubViews.swift
+ M BojiClub/ProductArchitecture.swift
+ M BojiClub/ProfileView.swift
+ M BojiClub/TrainingPlansView.swift
+ M BojiClub/WorkoutView.swift
+ M BojiClubUITests/BojiClubUITests.swift
+ M PACKAGE-README.txt
+ M README.md
+ M "README_\345\205\210\350\257\273\346\210\221.md"
+ M account-server/public/cloud-validation.php
+ M tests/build_phase1_swift_tests.py
+ M tests/test_experience_v150.py
+ M tests/test_home_flow_v66.py
+?? BojiClub/HealthOverview.swift
+?? BojiClub/HomeWorkoutPoster.png
+?? BojiClub/HomeWorkoutVideo.swift
+?? BojiClub/PlanManagement.swift
+?? docs/experience-upgrade-20261021/
+?? scripts/deploy-experience-sync.sh
+?? tests/build_experience_upgrade_swift_tests.py
+?? tests/php/test_plan_lifecycle.php

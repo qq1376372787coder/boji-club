@@ -1,0 +1,20 @@
+[Unit]
+Description=Boji Club interactive run worker %i
+After=network.target mariadb.service
+ConditionPathExists=/opt/bojiclub-account/config.php
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/php /opt/bojiclub-account/process-ai-runs.php --daemon
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=110
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+MemoryMax=192M
+
+[Install]
+WantedBy=multi-user.target

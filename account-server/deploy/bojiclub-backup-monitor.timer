@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh Boji Club backup dashboard every five minutes
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Persistent=true
+Unit=bojiclub-backup-monitor.service
+[Install]
+WantedBy=timers.target

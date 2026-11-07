@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-25",
+  "gitSha": "ba1d4fe6a65b01e412204b6690d69e98154115a2",
+  "sourceBaselineSha256": "c1a242dbefc98706a74f7d30fe574b1fe334d39c96cfb9b6979c7e5369abcbd5",
+  "phase": 3,
+  "status": "PARTIAL",
+  "scope": "fitness/nutrition/personal deterministic engines + readiness wiring",
+  "tests": [
+    {
+      "name": "engines",
+      "command": "python3 tests/test_intelligence_engines.py",
+      "exitCode": 0,
+      "passed": 28,
+      "total": 28
+    },
+    {
+      "name": "python-offline",
+      "command": "python3 tests/run_offline.py",
+      "exitCode": 0,
+      "passed": 716
+    },
+    {
+      "name": "golden",
+      "command": "python3 tests/run_golden_evals.py",
+      "exitCode": 0,
+      "failures": 0
+    }
+  ],
+  "partial": [
+    "nutrition/progression not surfaced in frozen UI",
+    "PHP readiness wiring not executed"
+  ],
+  "next": "expert review; minimal UI adapter if authorized"
+}

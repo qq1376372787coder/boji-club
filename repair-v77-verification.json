@@ -1,0 +1,257 @@
+{
+  "version": "0.13.77",
+  "build": 96,
+  "fixed_items": [
+    "mixed venues",
+    "continuation measurement ranges",
+    "long elapsed time",
+    "advance workout waits for sync",
+    "activity-specific Health candidates",
+    "custom definition month backup"
+  ],
+  "audit_correction": "Historical nutrition targets were already protected by reportInput; consolidated callers and added regression, not a newly confirmed bug.",
+  "additional_work": [
+    "explicit recent measured weight option",
+    "safe empty workout deletion across sync",
+    "one-day adjustment explanation",
+    "background merge/comparison with edit revision checking"
+  ],
+  "verification": {
+    "python_syntax_errors": [],
+    "php_syntax_errors": [],
+    "swift_syntax_errors": [],
+    "swift_native_executed": false,
+    "xcode_build_executed": false,
+    "swift_files_parsed": 59,
+    "offline_exit_code": 0,
+    "offline": {
+      "passed": true,
+      "tests": 473,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    },
+    "php_contracts": [
+      {
+        "name": "test_repair_v77.php",
+        "exit_code": 0,
+        "output": "PASS 14 v77 duration and session deletion checks\n"
+      },
+      {
+        "name": "test_cycle_v75.php",
+        "exit_code": 0,
+        "output": "PASS 9 v75 interval and provenance checks\n"
+      },
+      {
+        "name": "test_cloud_scope_v73.php",
+        "exit_code": 0,
+        "output": "{\"passed\":16}\n"
+      },
+      {
+        "name": "test_experience_v25.php",
+        "exit_code": 0,
+        "output": "PASS 20 v25 PHP session and reward checks\n"
+      },
+      {
+        "name": "test_membership_verify_v70.php",
+        "exit_code": 0,
+        "output": "{\"passed\":23}\n"
+      },
+      {
+        "name": "test_onboarding_plan_preview.php",
+        "exit_code": 0,
+        "output": "onboarding plan preview policy passed\n"
+      },
+      {
+        "name": "test_plan_explanation.php",
+        "exit_code": 0,
+        "output": "PASS new plan explanation validates\r\nPASS legacy plan has no required explanation\r\nPASS reject malformed version\r\nPASS reject malformed summary\r\nPASS reject malformed sessions\r\nPASS reject malformed sections\r\nPASS source marker validates\r\nPASS legacy cycle validates\r\nPASS retained job and snapshot contract validates\r\nPASS old client does not drop cycle source\r\nPASS old client does not drop unchanged plan reasons\r\nPASS new client can explicitly clear source\r\nPASS different prescription does not inherit reasons\r\nPASS different cycle does not inherit source\r\nPASS deleted records are not resurrected\r\nPASS first sync retains explanation\r\nALL 16 PLAN EXPLANATION PHP CHECKS PASSED; NO DATABASE ACCESSED\r\n"
+      },
+      {
+        "name": "test_training_feedback_v63.php",
+        "exit_code": 0,
+        "output": "{\"passed\":true,\"checks\":13,\"labels\":[\"new contracts accepted\",\"snapshot day validates with mirror fields\",\"old client cannot drop snapshot\",\"committed snapshot cannot be shortened\",\"old client preserves report feedback\",\"same report retains original status\",\"different day and session never inherits old target\",\"duplicate target rejected\",\"zero duration target rejected\",\"capture after confirmation rejected\",\"invalid status rejected\",\"invalid status rejected\",\"invalid status rejected\"]}"
+      },
+      {
+        "name": "test_multi_meal.php",
+        "exit_code": 0,
+        "output": "6 cloud contract cases passed; no database was accessed\n"
+      },
+      {
+        "name": "test_repair_v48.php",
+        "exit_code": 0,
+        "output": "PASS first key fetch\r\nPASS fresh known key uses cache\r\nPASS invalid kid does not fetch\r\nPASS unknown kid rejected after refresh\r\nPASS unknown kid refresh occurs once\r\nPASS unknown kid refresh throttled\r\nPASS throttle prevents network hammering\r\nPASS known key works during probe backoff\r\nPASS expired keys fail closed on network error\r\nPASS failed refresh has backoff\r\nPASS retry succeeds after backoff\r\nPASS new upload within quota\r\nPASS total bytes bounded\r\nPASS replacement accounts for prior bytes\r\nPASS new file count bounded\r\nPASS replacement permitted at file count limit\r\nPASS upload burst limited\r\nPASS proxy keeps required output and drops internal fields\r\nPASS trace error filtered\r\nPASS retry no-op flag preserved\r\nPASS safe actionable error preserved\r\nPASS valid Apple signature accepted\r\nPASS nonce remains checked\r\nPASS audience remains checked\r\nPASS expiry remains checked\r\nALL V48 PHP RULES PASSED\r\n"
+      },
+      {
+        "name": "test_revenuecat_v60.php",
+        "exit_code": 0,
+        "output": "{\n    \"passed\": true,\n    \"checks\": 33,\n    \"database_tested\": false,\n    \"cases\": [\n        \"Lifetime with null expiration grants permanent access\",\n        \"Missing expiration is not silently interpreted as lifetime\",\n        \"Malformed expiration rejected\",\n        \"monthly without expiration rejected\",\n        \"monthly with expiration grants access\",\n        \"six_month without expiration rejected\",\n        \"six_month with expiration grants access\",\n        \"Reject wrong environment\",\n        \"Reject wrong store\",\n        \"Reject wrong app_id\",\n        \"Reject wrong product_id\",\n        \"Wrong\\/missing entitlement cannot grant membership\",\n        \"Wrong\\/missing entitlement cannot grant membership\",\n        \"Wrong\\/missing entitlement cannot grant membership\",\n        \"Lifetime refund revokes even after entitlement mapping removed\",\n        \"Refund reversal can reinstate lifetime\",\n        \"Cancellation is not an immediate loss of access\",\n        \"Apple sandbox accepts configured yuefu\",\n        \"TestFlight server rejects production yuefu\",\n        \"Apple sandbox accepts configured nianfu\",\n        \"TestFlight server rejects production nianfu\",\n        \"Apple sandbox accepts configured yongjiu\",\n        \"TestFlight server rejects production yongjiu\",\n        \"Expiration revokes access\",\n        \"Billing grace period honored\",\n        \"Stable app user ID accepted\",\n        \"Unsupported identity rejected\",\n        \"Unsupported identity rejected\",\n        \"Unsupported identity rejected\",\n        \"Unsupported identity rejected\",\n        \"Missing Authorization rejected\",\n        \"Wrong Authorization rejected\",\n        \"Exact configured Authorization accepted\"\n    ]\n}\n"
+      }
+    ],
+    "elapsed_seconds": 22.8
+  },
+  "backend_deployment": {
+    "deployed": true,
+    "backup": "/opt/bojiclub-ai/.backups/repair-v77-20261015-042822",
+    "hashes": {
+      "backend/ai_core.py": "e68abd02f43b9685b080d9faf01515043f9c3eb7027b5a12c09e4a03bcd08ac9",
+      "backend/weekly_core.py": "6b4d195eed11612e1fbfbcdcc524836bb594ac3be769674fc743c33ab80318af",
+      "backend/training_feedback.py": "db032d10623c5fb132872c8b28736477e323add04197c678813292493e5a14e5",
+      "account-server/public/cloud-validation.php": "324bcb3b1b1bd93bc70300c277f74d9b71f3e7f188f6b5dbc974fc55ba740737"
+    },
+    "validation": {
+      "health": "ok",
+      "actual_provider_payload_keeps_background": true,
+      "mixed_venue_rules": true,
+      "two_hour_report_record_preserved": true
+    },
+    "php_contract": "PASS 14 v77 duration and session deletion checks",
+    "service": "active",
+    "permissions_preserved": true
+  },
+  "online_check": {
+    "hashes": {
+      "backend/ai_core.py": "e68abd02f43b9685b080d9faf01515043f9c3eb7027b5a12c09e4a03bcd08ac9",
+      "backend/curated_library.py": "a9b37d60413350b48098fa8e40c5bf3d04a282700c355a4fc715686351390bd7",
+      "backend/food_core.py": "fb23dc5db842d344d44fa33c8c6b6f4e37fe1f5d8a771f70366f7ffe263b8089",
+      "backend/plan_explanation.py": "e0794cf4725212db1735fffcf5b72b4337a080434f9f41b307e7be77f04e8ad2",
+      "backend/server.py": "de59bc32cd9d176f380edd2607a9c69ed79add8835a69f04decdf6f70a590e92",
+      "backend/setup.py": "baa221117d025aa9b34477530095c262411e00754c6a6158fda45502ece2c70e",
+      "backend/training_feedback.py": "db032d10623c5fb132872c8b28736477e323add04197c678813292493e5a14e5",
+      "backend/weekly_core.py": "6b4d195eed11612e1fbfbcdcc524836bb594ac3be769674fc743c33ab80318af",
+      "account-server/public/account-deletion.php": "5d8c5eb4b825be048f6cfb97102917933a5aa67ed5a43701644312ea0e7e863c",
+      "account-server/public/ai-response.php": "00cba8b2fd89da12ed13a5ac5da936eebb6ab771c85cf4ed7c311f6535da4b42",
+      "account-server/public/apple-auth.php": "38738f65bc54dbc4f7f321d6d425397c7749a3c213d4ab13b9c026c7fd22fa1b",
+      "account-server/public/apple-key-cache.php": "5759b26a9ecfaa9ed81739fa287fa16d24ee8e2bf1bf54dc4b33fc15f85512b6",
+      "account-server/public/apple-tokens.php": "546be718012ee37eb71167707b88ed6494cb85a3be94e7fa2c64b97970a9b974",
+      "account-server/public/cloud-parts.php": "1eaf17474f698ba3e5613f309c106223c5cd1034b3cf643a772bbc921bf725d4",
+      "account-server/public/cloud-validation.php": "324bcb3b1b1bd93bc70300c277f74d9b71f3e7f188f6b5dbc974fc55ba740737",
+      "account-server/public/club-artwork.php": "1e98e4a26e51f5f142f57385dbd010ef25fa4957d813dc88cb35bbf3a7a3daed",
+      "account-server/public/club-lock.php": "dfc147826d75391960bad481d5f39574636374661cf35edf83f7c4bd85f81334",
+      "account-server/public/club-progress.php": "6c2d096e65c37a2d76dd7a5082f4a289288d09b40c666112447cc93b172524fd",
+      "account-server/public/index.php": "4f12a68f62f684f29cd1e9e624fa3d90761131e3538468d2c212f2e7a398dc3a",
+      "account-server/public/media-cleanup.php": "6bf019aac118c27709128bbab1218a881416491e0d91330affe1853cbe154df0",
+      "account-server/public/media-quota.php": "344842c3700ff468e599b083a67cd1a4ac3344d0fa66614b7baff017ac238dfc",
+      "account-server/public/revenuecat-policy.php": "2055d64be38c033ca994daf8577c71c6306352ab58e5a2d12d6845a86794b46a",
+      "account-server/public/revenuecat-snapshot-policy.php": "97bb7fb546d3af9f6b3814414714acfe94b6e237521c876aff07656a6343eaa2",
+      "account-server/public/revenuecat-verify.php": "8391c5b346239f48982b70ad3152ea355806cff19d2c7ecb31637651a3be9493",
+      "account-server/public/revenuecat.php": "8005ffcaaed2c6f0d125505f6ac5934da6b47700a446ecbbcffff4d8ebef1d8e",
+      "account-server/public/storage-settings.php": "ce8520c10b7245788378a51b122d15fd0072182e08080539f7668638f3351476",
+      "account-server/public/weekly.php": "a7e5c662ddb3fb4b06d62dea5b2dfb5a5d866bfb1e4ad4bb3cdbd7a522f9c115",
+      "account-server/admin/ai-capacity.php": "c4f5d4886fa32aa51843aa7e85887dc6f1ae0a38e9fcec26c147c88329812069",
+      "account-server/admin/ai-validation-reasons.php": "f967dea247d44fd74a99fa37c2a0f985696076ce901a0409739d003663121969",
+      "account-server/admin/app.js": "5764b8b960e7b243f3368e42499161c4dd3d738cc915731070441a181f9965b8",
+      "account-server/admin/bootstrap.php": "f4c8808c78570a35e0751cf796a1802087453c1b48bea5e1eb066e8a1e381a66",
+      "account-server/admin/index.php": "2bd6ce8585d10c8e8392a83072ccdfe929d86e9349a6c0c94f0bab1149b8591c",
+      "account-server/admin/statistics.php": "f343817d7140c7c63c2d438db945527ab3cc719bab7a0fb7e962a69ab6885ce9",
+      "account-server/admin/storage.php": "a7719d2ca7b5fcbd589e130ffdcbf4acdc4c2f6890c3ceee343398071c9dd8d3",
+      "account-server/admin/weekly-summary.php": "0248813e714422a4b7540ec39fc5bed8a6930928239106ee95132bb29fc72bf5",
+      "exercise-server/api.py": "fb7a0cd8d7123c0eff8237cfd7ead64332cdf3a73ac1ecb15ba0e98f21e3bed3"
+    },
+    "public_settings": {
+      "sms_mode": "production",
+      "allow_development_phone_auth": false,
+      "membership_enforcement": true,
+      "apple_client_ids": [
+        "com.bojiclub.app.dev"
+      ],
+      "revenuecat_environment": "SANDBOX",
+      "revenuecat_product_ids": [
+        "yuefu",
+        "nianfu",
+        "yongjiu"
+      ],
+      "revenuecat_app_id": "app0302d94ca1",
+      "revenuecat_entitlement_id": "薄肌俱乐部_pro",
+      "apple_revoke_configured": true,
+      "rc_webhook_configured": true,
+      "rc_verify_key_configured": true
+    },
+    "services": {
+      "bojiclub-ai": "active",
+      "nginx": "active",
+      "php-fpm": "active"
+    },
+    "https": {
+      "account": {
+        "status": 401,
+        "expected_without_login": true,
+        "seconds": 0.02
+      },
+      "library": {
+        "status": 200,
+        "seconds": 0.01,
+        "total": 678,
+        "body_keys": [
+          "total",
+          "offset",
+          "limit",
+          "items"
+        ]
+      }
+    },
+    "ai_providers": {
+      "providers": [
+        {
+          "name": "longcat",
+          "model": "LongCat-2.5-Preview",
+          "configured": true,
+          "enabled": true,
+          "priority": 10,
+          "supports_images": true
+        },
+        {
+          "name": "mimo",
+          "model": "mimo-v2.6-flash",
+          "configured": true,
+          "enabled": true,
+          "priority": 20,
+          "supports_images": true
+        },
+        {
+          "name": "deepseek",
+          "model": "deepseek-flash",
+          "configured": true,
+          "enabled": true,
+          "priority": 30,
+          "supports_images": true
+        }
+      ]
+    },
+    "ai_settings": {
+      "accepting": true,
+      "daily_limit": 0,
+      "account_daily_limit": 0,
+      "pending_limit": 800,
+      "worker_limit": 32,
+      "pending": null,
+      "running": null,
+      "succeeded_today": null
+    },
+    "ai_health": {
+      "status": "ok",
+      "version": "0.3",
+      "database_bytes": 163840
+    },
+    "sample_gif": "https://117.50.119.49/media/videos/1748-6CKUx7o.gif",
+    "capacity": {
+      "accepting": "1",
+      "account_daily_limit": "0",
+      "daily_limit": "0",
+      "pending_limit": "800",
+      "worker_limit": "32"
+    },
+    "task_status_counts": {
+      "deleted": 7,
+      "succeeded": 7
+    },
+    "recent_failures": [],
+    "source_mismatches": []
+  },
+  "xcode_build_tested": false,
+  "native_rules_executed": false,
+  "native_device_tested": false,
+  "real_AI_generation_tested_in_this_fix": false,
+  "gif_frame_rate_tested": false,
+  "long_history_phone_performance_tested": false
+}

@@ -1,0 +1,18 @@
+{
+  "deployed": true,
+  "server": "117.50.119.49",
+  "file": "/opt/bojiclub-account/public/cloud-validation.php",
+  "backup": "/opt/bojiclub-account/.backups/history-20261015-161925",
+  "sha256": "01c2dd934f2a6cb4f09a38ec23073b90b3041b7a8bdb7d2e301d783fc7bf3bcd",
+  "remote_contracts": [
+    "PASS 30 insight schema, causal graph and compatibility checks\nPASS 18 session insight and execution target checks",
+    "PASS 20 Club history schema, partition and legacy checks\nPASS 18 plan change schema and immutable history checks",
+    "PASS 30 insight schema, causal graph and compatibility checks",
+    "PASS 20 Club history schema, partition and legacy checks",
+    "PASS 14 v77 duration and session deletion checks"
+  ],
+  "permissions_preserved": true,
+  "services": "active",
+  "database_modified": false,
+  "ai_or_payment_config_modified": false
+}

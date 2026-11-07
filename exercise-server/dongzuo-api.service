@@ -1,0 +1,24 @@
+[Unit]
+Description=Boji Club Exercise Library API
+After=network.target
+
+[Service]
+Type=simple
+User=dongzuo
+Group=dongzuo
+EnvironmentFile=/etc/dongzuo-api.env
+ExecStart=/usr/bin/python3 /opt/dongzuo/api.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=220M
+
+[Install]
+WantedBy=multi-user.target

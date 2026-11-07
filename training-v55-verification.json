@@ -1,0 +1,13 @@
+{
+  "version": "0.13.55",
+  "build": 74,
+  "swift_syntax_files_passed": 47,
+  "changed_code": [
+    "BojiClub/WorkoutView.swift",
+    "BojiClub.xcodeproj/project.pbxproj"
+  ],
+  "source_safety_invariants": "passed",
+  "xcode_build": "not run: Windows host",
+  "device_interaction_and_haptics": "not run",
+  "timestamp": "2026-10-11T19:02:20.666921+00:00"
+}

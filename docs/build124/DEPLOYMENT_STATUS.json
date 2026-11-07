@@ -1,0 +1,86 @@
+{
+  "build": 124,
+  "status": "DEPLOYED_VERIFIED",
+  "server": "117.50.119.49",
+  "production_updated": true,
+  "deployed_at_utc": "2026-10-26T06:15:48.559659+00:00",
+  "backup": "/opt/bojiclub-build124-backup-20261026-061547",
+  "files_verified": 10,
+  "services": {
+    "bojiclub-ai": "active",
+    "php-fpm": "active",
+    "bojiclub-ai-runs@1": "active",
+    "bojiclub-ai-runs@2": "active"
+  },
+  "ai_health": "HTTP 200",
+  "notification_worker": "oneshot exited successfully",
+  "production_test_records_written": false,
+  "database_migrations": "none; file-only compatible update",
+  "files": [
+    {
+      "source": "account-server/process-ai-runs.php",
+      "remote": "/opt/bojiclub-account/process-ai-runs.php",
+      "baseline_sha256": "c4ef3c403081568f01ca813bd9991317c863e0fc0ad188adb846a7fda203c3ef",
+      "new_sha256": "6d03f3ca3fceaa06f3af34e90f1495fff4d2c306a448d13310f4a210d917874f"
+    },
+    {
+      "source": "account-server/process-domain-notifications.php",
+      "remote": "/opt/bojiclub-account/process-domain-notifications.php",
+      "baseline_sha256": "82304437de61594e67e8257a3d2e649d2ddcd91eff30929a66ca1538ddf7fd98",
+      "new_sha256": "770e596c3cda9ae7a497f462993655b0758bfaf5e5d606c1b02f47cc1f4c22e6"
+    },
+    {
+      "source": "account-server/public/action-execution.php",
+      "remote": "/opt/bojiclub-account/public/action-execution.php",
+      "baseline_sha256": "bb1ba47f9a72db736ea569f468f70b7513bbed211d13031c157f46b1a8bb0f50",
+      "new_sha256": "76ff5ae1315014ddc3c9a63105082ec7b63bb57deaaafc63ea9eefde48c21844"
+    },
+    {
+      "source": "account-server/public/action-jobs.php",
+      "remote": "/opt/bojiclub-account/public/action-jobs.php",
+      "baseline_sha256": "d2f17c4acb87d58ee3c8d7b88ca42e60bc188a7116ce1978d6d67821dd8195eb",
+      "new_sha256": "bbfec266dc4a35dcf1fb4b5b16bd6648ba641511cdbf4cecc64570d8bcd0cbdb"
+    },
+    {
+      "source": "account-server/public/action-support.php",
+      "remote": "/opt/bojiclub-account/public/action-support.php",
+      "baseline_sha256": "07d8fa5468da0c7ba67d122fb742f46def7fd5b645698b177b2beb8ba36928e5",
+      "new_sha256": "850341c7b38b1e4ef71c4adf2d03e203fd2e98d570e053988fcc400aa775a384"
+    },
+    {
+      "source": "account-server/public/fast-intent.php",
+      "remote": "/opt/bojiclub-account/public/fast-intent.php",
+      "baseline_sha256": "984803bcec95292f30a331ac610db5c1fcfc2376759942e311ed149e142ce094",
+      "new_sha256": "9b7fef11651c85723c5471adf95e6168611f459bdc39a8ead1277ddda274c678"
+    },
+    {
+      "source": "backend/ai_core.py",
+      "remote": "/opt/bojiclub-ai/ai_core.py",
+      "baseline_sha256": "4301fa56d7b6be045a39ed0b0640283134d63a471f8662408a5c6fdb6ff9b577",
+      "new_sha256": "c474af82b57376cb9f5374785a4088aed5e6b0c79daeb12ba9ec3a41c4f8562f"
+    },
+    {
+      "source": "backend/coach_core.py",
+      "remote": "/opt/bojiclub-ai/coach_core.py",
+      "baseline_sha256": "731f33ce6da90c643fe9c0400e2190eb9344f4fa1cd85067f35099924c549eee",
+      "new_sha256": "0e14ef1e0b7a0aaca84c310a3c74a5ead81f44fb8c602c679817b3e38de2cd93"
+    },
+    {
+      "source": "backend/fast_intent.py",
+      "remote": "/opt/bojiclub-ai/fast_intent.py",
+      "baseline_sha256": "99ca9429e43df46d9fa2f238da6c26321885f01db5e05320c64067463e7889c4",
+      "new_sha256": "a0568c87d18b5eaf8bf983a327321f83ef641d88e3b806ced302fb24f474d611"
+    },
+    {
+      "source": "backend/server.py",
+      "remote": "/opt/bojiclub-ai/server.py",
+      "baseline_sha256": "722cf6e2a55ea34fd9d50ab867c80c8d5f4fa5671337616cde71f2bac80a9c6b",
+      "new_sha256": "0566ae63cf8a8924bc2b23f827981f3d7b7f026c2dacf1ef093672bbf88c4802"
+    }
+  ],
+  "followup_backups": [
+    "/opt/bojiclub-build124-recovery-backup-20261026-062616"
+  ],
+  "recovery_guard_deployed_at_utc": "2026-10-26T06:26:16.716905+00:00",
+  "final_php_checks": 75
+}

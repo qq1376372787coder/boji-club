@@ -1,0 +1,15 @@
+{
+  "deployed": true,
+  "server": "117.50.119.49",
+  "backup": "/opt/bojiclub-ai/.backups/goal-context-20261015-161929",
+  "hashes": {
+    "ai_core.py": "695181d1990c9172072efa48f06fac356b857328a78f233918432e0a66ea448b",
+    "goal_context.py": "7fb4bcfebf9a1b04686798535ea19715618a169b71cc53e83a0f52181037fbbb",
+    "training_feedback.py": "9b7ddc1b1db72e6348d70e98ca350faf14127c5efcbddd53531c21fb8bb0007a"
+  },
+  "staged_tests": "PASS 24 staged goal-context behavior tests",
+  "production_tests": "PASS 24 production goal-context tests; health ok",
+  "services": "active",
+  "provider_calls_made": false,
+  "ai_quota_or_payment_config_modified": false
+}

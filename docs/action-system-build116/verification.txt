@@ -1,0 +1,25 @@
+action-checks.log
+Training commands: 65 assertions passed
+AI router: 83 assertions passed
+Domain projections: 22 assertions passed
+Action repair: 54 integration assertions passed
+Action migration: repeat apply, missing-column detection and restored compatibility passed
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.002s
+
+OK
+
+action-queue.log
+Club AI foundation: 18 behavioral checks passed
+Manual plan and insight foundation: 48 checks passed
+History and production adoption: 68 total checks passed
+Training commands: 99 combined behavioral checks passed
+Action queue: 4 regression assertions passed (production drain function)
+Body merge: 2 regression assertions passed (production merge function)
+
+Additional final integration: Action repair: 56 integration assertions passed
+PHP syntax: 68 files passed
+Plan action context: provider request validation passed
+
+Debug build: ** BUILD SUCCEEDED **

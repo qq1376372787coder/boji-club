@@ -1,0 +1,15 @@
+[Unit]
+Description=Publish non-sensitive Boji Club backup status
+After=network.target
+[Service]
+Type=oneshot
+User=root
+Group=root
+# Existing server Python environment includes cryptography.
+ExecStart=/opt/bojiclub-certbot/bin/python /root/bojiclub-rebuild-v59/backup.py --status-only
+TimeoutStartSec=40
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/opt/bojiclub-account/runtime

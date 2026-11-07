@@ -1,0 +1,14 @@
+[Unit]
+Description=Boji Club domain-outbox
+After=network.target
+ConditionPathExists=/opt/bojiclub-account/config.php
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/php /opt/bojiclub-account/process-domain-outbox.php
+TimeoutStartSec=120
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
