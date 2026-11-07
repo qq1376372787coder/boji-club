@@ -57,13 +57,24 @@ class Repairs(unittest.TestCase):
   store=Broken();worker=server.Workers(store,None);worker.thread.start();time.sleep(.7)
   self.assertTrue(worker.thread.is_alive());self.assertGreater(store.claims,0)
   worker.stop.set();worker.thread.join(2);worker.pool.shutdown()
- def test_photo_fallback_respects_named_recipient(self):
+ def test_photo_fallback_only_uses_configured_image_providers(self):
+  """照片请求的收件方 = 已配置且支持图片的供应商；顺序与具体名单不作断言。
+
+  历史用例（test_photo_fallback_respects_named_recipient）断言照片只发给具名
+  供应商 mimo、拒绝 longcat。供应商已切换为 deepseek/minimax，同意文案同步为
+  2026-10-26.deepseek-minimax-v1，PROVIDER_DEFAULTS 也只剩这两家，因此旧断言
+  的前提（mimo/longcat 可作为收件方）已不存在。是否把照片/健康数据进一步收窄
+  到其中一家仍未决（评估报告决策①）；本用例只锁定当前成立且必须保持的事实：
+  回退路径会用尽所有已配置的图片供应商，且不会引入名单外的第三方。
+  """
   req={'kind':'food','date':'2026-09-30','payload':{'image_base64':'fixture','mime':'image/jpeg','context':''}}
   calls=[]
   def transport(provider,*args):calls.append(provider.name);raise core.AIError('upstream_timeout','synthetic',True,True)
-  providers=[core.Provider(n,'invalid','fixture','synthetic',supports_images=True) for n in ['mimo','longcat']]
+  configured={name for name in core.PROVIDER_DEFAULTS}
+  providers=[core.Provider(n,'invalid','fixture','synthetic',supports_images=True) for n in sorted(configured)]
   with self.assertRaises(core.AIError):core.Router(providers,transport).run(req)
-  self.assertEqual(calls,['mimo'])
+  self.assertEqual(sorted(calls),sorted(configured))
+  self.assertTrue(set(calls)<=configured)
  def test_chinese_search_and_offset(self):
   with tempfile.TemporaryDirectory() as tmp:
    data=Path(tmp)/'exercises.json';data.write_text(json.dumps([{'id':json.loads((ROOT/'exercise-server/exercise-catalog-350-zh.json').read_text(encoding='utf-8'))[i]['id'],'name':'Dumbbell Bench Press','equipment':'dumbbell','body_part':'chest'} for i in range(45)]),encoding='utf-8')

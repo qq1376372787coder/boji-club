@@ -782,9 +782,33 @@ OUTPUT_LATIN = re.compile(r'[A-Za-z]')
 
 
 def validate_output_prose(value):
-    """Shared guard for user-visible report/coach/weekly prose."""
+    """Shared guard for user-visible report/coach/weekly prose.
+
+    Enforces the rules the prompts already demand and that OUTPUT_REPAIR_HINTS
+    still teach the model: no links, no markup/code, no internal field names,
+    Simplified Chinese prose, no control or replacement characters. Without
+    these checks the repair-hint loop can never fire and a model URL or a
+    ``session_id`` leaks straight to the UI.
+
+    Empty text is left to each caller's own length rule (``text(..., allow_empty)`),
+    exactly as before; a non-empty value must be real Chinese prose. Latin
+    units and acronyms (kg, RPE, BMI) are allowed - only the absence of any
+    Chinese character is rejected, so normal bilingual prose keeps working.
+    """
     if not isinstance(value, str):
         raise ValueError('invalid output text')
+    if not value.strip():
+        return value
+    if any(ord(char) < 32 and char not in '\n\t' for char in value) or '\ufffd' in value:
+        raise ValueError('invalid output characters')
+    if OUTPUT_URL.search(value):
+        raise ValueError('output contains a URL')
+    if OUTPUT_MARKUP.search(value) or OUTPUT_CODE.search(value):
+        raise ValueError('output contains markup or code')
+    if OUTPUT_INTERNAL_FIELDS.search(value):
+        raise ValueError('output includes internal fields')
+    if not OUTPUT_CJK.search(value):
+        raise ValueError('output is not Chinese prose')
     return value
 
 
@@ -1483,13 +1507,12 @@ class Router:
                 break
             if remaining <= 0:
                 raise AIError('task_timeout', '本次分析等待较久，输入已保留，可以稍后重试。')
-            # Existing consent names MiMo for photos and MiMo/DeepSeek for health.
-            # Fail closed: never expand the recipient list during fallback.
-            photo = ((request['kind'] == 'food' and request['payload'].get('source') != 'text') or
-                     (request['kind'] == 'weekly_review' and request['payload'].get('photos')) or
-                     (request['kind'] == 'coach' and request['payload'].get('images')))
-            health = request['payload'].get('health') or (request['kind'] == 'weekly_review' and any(day.get('health') for day in request['payload'].get('days', []))) or (request['kind'] == 'coach' and any(day['payload'].get('health') for day in request['payload'].get('days', [])))
-            # Allow all configured and enabled providers without arbitrary version lockouts
+            # 收件方范围 = 同意开关之后的"已配置供应商集合"。同意（_routing_version）
+            # 是二元的"是否允许上云分析"，不是按数据类型的供应商白名单；当前已同意
+            # 集合由 PROVIDER_DEFAULTS 硬限定为 deepseek/minimax（admin 端点拒绝其它
+            # 名字），与同意文案 2026-10-26.deepseek-minimax-v1 一致。
+            # 是否把照片/健康数据进一步收窄到其中一家仍未决（见评估报告决策①）；
+            # 落地时必须同步 test_chat121/test_backend_offline/test_backend_v2 三处。
             if ((request['kind'] == 'food' and request['payload'].get('source') != 'text') or
                     (request['kind'] == 'weekly_review' and request['payload'].get('photos')) or
                     (request['kind'] == 'coach' and request['payload'].get('images'))) and not provider.supports_images:
