@@ -94,13 +94,29 @@ function aiRunWorkerHeartbeat(PDO $db, string $runId, string $owner): void {
 /** Server-authoritative context. Client-supplied memory/capabilities are discarded. */
 function aiRunWorkerRequest(PDO $db, array $row, array $config): array {
     $request = json_decode((string)$row['request_json'], true);
-    if (!is_array($request) || ($request['kind'] ?? '') !== 'coach' || !is_array($request['payload'] ?? null)) {
+    $kind = (string)($request['kind'] ?? '');
+    $supported = array_merge(['coach'], AI_RUN_KINDS);
+    if (!is_array($request) || !in_array($kind, $supported, true) || !is_array($request['payload'] ?? null)) {
         throw new RuntimeException('invalid_run_request');
     }
     $uid = (int)$row['user_id'];
     $payload = $request['payload'];
     aiProviderConsentAssert($db,$uid,$payload);
     unset($payload['memory'], $payload['capabilities'], $payload['action_preferences'], $payload['_onboarding_context']);
+    if ($kind !== 'coach') {
+        // Non-coach kinds carry no conversation context. The polling path sends
+        // this payload unchanged, so the Run path must stay identical for both
+        // paths to reach the same Python job with the same prompt.
+        $payload['_fast_intent_enabled'] = appFeatureEnabled($db,'ai_fast_intent_v1');
+        $payload['_router_v3'] = appFeatureEnabled($db,'ai_router_v3');
+        $payload['_context_status'] = ['memory' => 'not_applicable', 'history' => 'not_applicable',
+                                       'capabilities' => 'not_applicable', 'purpose' => 'not_applicable'];
+        $request['payload'] = $payload;
+        $request['id'] = (string)$row['server_job_id'];
+        $request['_quota_owner'] = aiQuotaOwner($uid, $config);
+        $request['_trace_id'] = (string)$row['trace_id'];
+        return $request;
+    }
     $purpose = (string)($payload['purpose'] ?? 'dialogue');
     $context = ['memory' => 'not_requested', 'history' => 'not_requested', 'capabilities' => 'not_requested', 'purpose' => $purpose];
     if ($purpose === 'onboarding_assist') {
@@ -206,6 +222,74 @@ function aiRunWorkerUsage(array $response, int $latencyMs): array {
     ];
 }
 
+/**
+ * Non-coach completion: no conversation turn and no action resolution.
+ * Marks the shared ai_user_jobs row, publishes the terminal snapshot, writes the
+ * usage ledger and closes the run — all inside one transaction.
+ */
+function aiRunWorkerCompleteKind(PDO $db, array $row, array $config, array $response, int $latencyMs, array $result): void {
+    $uid = (int)$row['user_id'];
+    $runId = (string)$row['id'];
+    $owner = (string)($row['lease_owner'] ?? '');
+    $kind = (string)($result['kind'] ?? '');
+    $usage = aiRunWorkerUsage($response, $latencyMs);
+
+    $preflight = $db->prepare('SELECT status FROM ai_runs WHERE id=?');
+    $preflight->execute([$runId]);
+    $statusNow = (string)$preflight->fetchColumn();
+    if ($statusNow === 'cancelled') {
+        aiRunWorkerLog(['run' => $runId, 'status' => 'cancelled_before_complete', 'persisted' => false]);
+        return;
+    }
+    if ($statusNow === 'completed') {
+        aiRunWorkerLog(['run' => $runId, 'status' => 'already_completed', 'persisted' => true]);
+        return;
+    }
+
+    aiRunWorkerHeartbeat($db, $runId, $owner);
+    $liveRequest = json_decode((string)$row['request_json'], true);
+    aiProviderConsentAssert($db, $uid, $liveRequest['payload'] ?? []);
+
+    $db->beginTransaction();
+    try {
+        lockActiveUser($db, $uid);
+        $lock = $db->prepare('SELECT * FROM ai_runs WHERE id=? FOR UPDATE');
+        $lock->execute([$runId]);
+        $locked = $lock->fetch(PDO::FETCH_ASSOC);
+        if (!$locked) throw new RuntimeException('run_missing');
+        $lockedStatus = (string)$locked['status'];
+        if ($lockedStatus === 'completed') { $db->commit(); return; }
+        if ($lockedStatus === 'cancelled') { $db->rollBack(); aiRunWorkerLog(['run' => $runId, 'status' => 'cancelled_at_commit']); return; }
+        if ($lockedStatus !== 'running') throw new RuntimeException('run_not_running', 409);
+        if ($owner === '' || !hash_equals((string)($locked['lease_owner'] ?? ''), $owner)) throw new RuntimeException('lease_lost', 409);
+        if ($locked['lease_expires_at'] !== null && strtotime((string)$locked['lease_expires_at'] . ' UTC') < time()) throw new RuntimeException('lease_expired', 409);
+
+        $requestStored = json_decode((string)$locked['request_json'], true);
+        aiProviderConsentAssert($db, $uid, $requestStored['payload'] ?? []);
+        aiMarkCompleted($db, $uid, (string)$row['server_job_id'], $response);
+
+        aiRunAppend($db, $runId, 'result.snapshot', ['kind' => $kind, 'result' => $result], $owner);
+        aiRunAppend($db, $runId, 'usage.summary', $usage, $owner);
+
+        $ledger = $db->prepare('SELECT 1 FROM ai_usage_ledger WHERE user_id=? AND server_job_id=? AND kind=? LIMIT 1');
+        $ledger->execute([$uid, (string)$row['server_job_id'], $kind]);
+        if (!$ledger->fetchColumn()) {
+            $db->prepare('INSERT INTO ai_usage_ledger(user_id,server_job_id,kind,status,latency_ms,prompt_tokens,completion_tokens,provider,trace_id,created_at) VALUES(?,?,?,?,?,?,?,?,?,UTC_TIMESTAMP())')
+                ->execute([$uid, (string)$row['server_job_id'], $kind, 'succeeded', $latencyMs,
+                           $usage['prompt_tokens'], $usage['completion_tokens'], $usage['provider'], (string)$row['trace_id']]);
+        }
+
+        aiRunAppend($db, $runId, 'run.completed', ['final_message_id' => (string)$row['message_id'], 'status' => 'completed'], $owner);
+        $db->prepare("UPDATE ai_runs SET status='completed',error_code=NULL,result_json=?,lease_owner=NULL,lease_expires_at=NULL,updated_at=UTC_TIMESTAMP() WHERE id=?")
+            ->execute([json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $runId]);
+        $db->commit();
+    } catch (Throwable $error) {
+        if ($db->inTransaction()) $db->rollBack();
+        throw $error;
+    }
+    aiRunWorkerLog(['run' => $runId, 'status' => 'completed', 'kind' => $kind, 'latency_ms' => $latencyMs]);
+}
+
 /** Finish one succeeded run atomically. */
 function aiRunWorkerComplete(PDO $db, array $row, array $config, array $response, int $latencyMs): void {
     $uid = (int)$row['user_id'];
@@ -213,6 +297,10 @@ function aiRunWorkerComplete(PDO $db, array $row, array $config, array $response
     $messageId = (string)$row['message_id'];
     $owner = (string)($row['lease_owner'] ?? '');
     $result = is_array($response['result'] ?? null) ? $response['result'] : [];
+    if (in_array((string)($result['kind'] ?? ''), AI_RUN_KINDS, true)) {
+        aiRunWorkerCompleteKind($db, $row, $config, $response, $latencyMs, $result);
+        return;
+    }
     if (($result['kind'] ?? '') !== 'coach' || !is_array($result['coach'] ?? null)) {
         throw new RuntimeException('invalid_coach_result');
     }
@@ -388,13 +476,17 @@ function aiRunWorkerProcess(PDO $db, array $row, array $config): void {
     appConfigFeatureSnapshot($db, true);
     $runId = (string)$row['id'];
     $owner = (string)($row['lease_owner'] ?? '');
+    // The tool label is user-visible in the event log; keep coach runs on the
+    // historical name and give non-coach kinds an accurate one.
+    $runKind = (string)(json_decode((string)$row['request_json'], true)['kind'] ?? 'coach');
+    $toolName = $runKind === 'coach' ? 'coach.model' : 'ai.model';
     if ((int)$row['attempts'] > AI_RUN_MAX_ATTEMPTS) {
         aiRunWorkerFail($db, $row, 'RUN_ATTEMPTS_EXHAUSTED', '这次分析未能完成，输入仍在本机，可稍后重试。');
         return;
     }
     try {
         aiRunAppend($db, $runId, 'run.status', ['status' => 'running', 'attempt' => (int)$row['attempts'], 'queue_ms'=>max(0,(int)((microtime(true)-strtotime($row['created_at'].' UTC'))*1000))], $owner);
-        aiRunAppend($db, $runId, 'tool.started', ['tool' => 'coach.model', 'tool_call_id' => 'tc_' . $runId], $owner);
+        aiRunAppend($db, $runId, 'tool.started', ['tool' => $toolName, 'tool_call_id' => 'tc_' . $runId], $owner);
     } catch (Throwable $error) {
         aiRunWorkerLog(['run' => $runId, 'status' => 'fenced_out', 'reason' => $error->getMessage()]);
         return;
@@ -420,7 +512,7 @@ function aiRunWorkerProcess(PDO $db, array $row, array $config): void {
         $request = aiRunWorkerRequest($db, $row, $config);
         aiRunAppend($db,$runId,'context.resolved',['duration_ms'=>(int)((microtime(true)-$contextStarted)*1000),'references'=>count($request['payload']['_references']??[])],$owner);
     } catch (Throwable $error) {
-        try { aiRunAppend($db, $runId, 'tool.failed', ['tool' => 'coach.model', 'tool_call_id' => 'tc_' . $runId, 'status' => 'failed'], $owner); } catch (Throwable) {}
+        try { aiRunAppend($db, $runId, 'tool.failed', ['tool' => $toolName, 'tool_call_id' => 'tc_' . $runId, 'status' => 'failed'], $owner); } catch (Throwable) {}
         aiRunWorkerFail($db, $row, 'INVALID_RUN_REQUEST', $error instanceof RuntimeException && in_array($error->getCode(),[403,409,410],true) ? $error->getMessage() : '这次请求无法恢复，请重新提问。');
         return;
     }
@@ -429,7 +521,7 @@ function aiRunWorkerProcess(PDO $db, array $row, array $config): void {
     try {
         if(!$alreadySubmitted)actionPrivateRequest($config, 'POST', '/v1/jobs', $request);
     } catch (Throwable $error) {
-        try { aiRunAppend($db, $runId, 'tool.failed', ['tool' => 'coach.model', 'tool_call_id' => 'tc_' . $runId, 'status' => 'failed'], $owner); } catch (Throwable) {}
+        try { aiRunAppend($db, $runId, 'tool.failed', ['tool' => $toolName, 'tool_call_id' => 'tc_' . $runId, 'status' => 'failed'], $owner); } catch (Throwable) {}
         if (in_array($error->getCode(), [400,401,403,404,409,410,413,422], true)) {
             aiRunWorkerFail($db,$row,'UPSTREAM_REQUEST_REJECTED','分析请求未通过校验，请刷新引用或资料后重试；原消息中已存在的行动回执会保留。');
             aiRunWorkerLog(['run'=>$runId,'status'=>'request_rejected','upstream_status'=>$error->getCode()]);
@@ -470,7 +562,7 @@ function aiRunWorkerProcess(PDO $db, array $row, array $config): void {
         }
         if ($serverStatus === 'succeeded') {
             try {
-                aiRunAppend($db, $runId, 'tool.completed', ['tool' => 'coach.model', 'tool_call_id' => 'tc_' . $runId, 'status' => 'succeeded'], $owner);
+                aiRunAppend($db, $runId, 'tool.completed', ['tool' => $toolName, 'tool_call_id' => 'tc_' . $runId, 'status' => 'succeeded'], $owner);
             } catch (Throwable $error) {
                 aiRunWorkerLog(['run' => $runId, 'status' => 'fenced_out', 'reason' => $error->getMessage()]);
                 return;
@@ -491,7 +583,7 @@ function aiRunWorkerProcess(PDO $db, array $row, array $config): void {
             return;
         }
         if (in_array($serverStatus, ['failed', 'rejected', 'cancelled', 'expired'], true)) {
-            try { aiRunAppend($db, $runId, 'tool.failed', ['tool' => 'coach.model', 'tool_call_id' => 'tc_' . $runId, 'status' => 'failed'], $owner); } catch (Throwable) {}
+            try { aiRunAppend($db, $runId, 'tool.failed', ['tool' => $toolName, 'tool_call_id' => 'tc_' . $runId, 'status' => 'failed'], $owner); } catch (Throwable) {}
             $code = is_string($response['error_code'] ?? null) && $response['error_code'] !== '' ? $response['error_code'] : 'MODEL_FAILED';
             aiRunWorkerFail($db, $row, $code, '这次分析未能完成，输入已保留；可重新提问。');
             return;

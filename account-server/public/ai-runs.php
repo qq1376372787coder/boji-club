@@ -368,6 +368,108 @@ function aiRunCreate(PDO $db, array $user, array $config, string $conversationId
     ];
 }
 
+/** Kinds the durable Run path serves. Phase 1: report + weekly_review only. */
+const AI_RUN_KINDS = ['report', 'weekly_review'];
+
+/**
+ * POST /me/ai/jobs/runs — durable Run creation for non-coach kinds.
+ *
+ * Uses the same Python job identity as the legacy polling path (aiJobID), so a
+ * client that falls back after a lost response never double-submits and both
+ * paths converge on one ai_user_jobs row.
+ */
+function aiRunCreateForKind(PDO $db, array $user, array $config, string $kind, array $body, ?string $idempotencyKey): array {
+    $uid = (int)$user['id'];
+    // Gate order mirrors aiRunCreate: the run-v2 switch comes first so the client
+    // can tell "not enabled" apart from "AI disabled" (distinct error_code).
+    if (!aiRunV2Enabled($db)) fail('Run 流式暂未开放，请稍后再试。', 503, 'run_v2_disabled');
+    if (!appFeatureEnabled($db, 'ai_enabled')) fail('AI 分析暂未开放，请稍后再试。', 503);
+    if (!aiRunV2KindAllowed($db, $kind)) fail('该分析类型暂未开放流式，请稍后再试。', 503, 'run_v2_kind_disabled');
+    if (!in_array($kind, AI_RUN_KINDS, true)) fail('当前分析类型不支持流式。', 400);
+
+    $clientId = strtolower(trim((string)($body['client_job_id'] ?? '')));
+    if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/D', $clientId)) fail('任务编号不正确。', 400);
+    $idempotencyKey = strtolower(trim((string)($idempotencyKey ?? '')));
+    if ($idempotencyKey === '') fail('缺少幂等标识（Idempotency-Key）。', 400);
+    if (!hash_equals($clientId, $idempotencyKey)) fail('幂等标识与任务编号不一致。', 409);
+
+    $request = $body['request'] ?? null;
+    if (!is_array($request) || ($request['kind'] ?? '') !== $kind) fail('请求格式不正确。', 400);
+    $payload = $request['payload'] ?? null;
+    if (!is_array($payload)) fail('请求格式不正确。', 400);
+    // The same routing consent the polling path requires must be present.
+    if (!isset($payload['_routing_version']) || !in_array((int)$payload['_routing_version'], [2, 3], true)) {
+        fail('缺少云端分析授权版本。', 422);
+    }
+    if (isset($body['client_timezone']) && is_string($body['client_timezone']) && $body['client_timezone'] !== '') {
+        try { $zone = new DateTimeZone($body['client_timezone']); $payload['timeZone'] = $zone->getName(); }
+        catch (Exception) { fail('时区不正确。', 422); }
+    }
+    $request['payload'] = $payload;
+    $requestHash = aiRunStableHash($request);
+    $serverJobId = aiJobID($user, $clientId, $config);
+    $traceId = aiRunTraceId();
+
+    $db->beginTransaction();
+    try {
+        lockActiveUser($db, $uid);
+        $existing = $db->prepare('SELECT * FROM ai_runs WHERE user_id=? AND client_message_id=? FOR UPDATE');
+        $existing->execute([$uid, $clientId]);
+        $row = $existing->fetch(PDO::FETCH_ASSOC) ?: null;
+        if ($row) {
+            if (!hash_equals((string)$row['request_hash'], $requestHash)) {
+                $db->rollBack();
+                fail('同一任务编号不能用于不同的分析。', 409);
+            }
+            $db->commit();
+            return aiRunPublic($row, true);
+        }
+        require_once __DIR__.'/usage-guard131.php'; usageGuard131($db,$uid,$config);
+        $job = $db->prepare('SELECT server_job_id,kind FROM ai_user_jobs WHERE user_id=? AND client_job_id=? FOR UPDATE');
+        $job->execute([$uid, $clientId]);
+        $existingJob = $job->fetch(PDO::FETCH_ASSOC) ?: null;
+        if ($existingJob && $existingJob['kind'] !== $kind) { $db->rollBack(); fail('任务编号已经用于其他分析。', 409); }
+        aiProviderConsentAssert($db,$uid,$payload);
+        if (!aiMayPostJob($db, $user, $config, $kind, $existingJob)) { $db->rollBack(); fail('请先开通会员后使用此功能。', 403); }
+        if ($existingJob === null) {
+            // The durable job row must exist before any network call so deletion
+            // and recovery can always find it (same rule as the polling path).
+            $db->prepare('INSERT INTO ai_user_jobs(user_id,client_job_id,server_job_id,kind,created_at) VALUES(?,?,?,?,UTC_TIMESTAMP())')
+                ->execute([$uid, $clientId, $serverJobId, $kind]);
+        }
+        $activeLimit = max(1, min(5, (int)($config['ai_max_active_runs'] ?? 2)));
+        $active = $db->prepare("SELECT COUNT(*) FROM ai_runs WHERE user_id=? AND status IN ('queued','running')");
+        $active->execute([$uid]);
+        if ((int)$active->fetchColumn() >= $activeLimit) {
+            $db->rollBack();
+            fail('当前有未完成的分析任务，请等待完成或取消后再提交。', 429);
+        }
+
+        $runId = actionUUID('ai-run/' . $uid . '/' . $clientId);
+        // conversation_id has coach-only semantics; non-coach runs use an empty
+        // value and keep client_message_id as the stable client identity.
+        $db->prepare('INSERT INTO ai_runs(id,user_id,conversation_id,client_message_id,server_job_id,message_id,trace_id,status,last_seq,request_hash,request_json,attempts,created_at,updated_at)
+                      VALUES(?,?,?,?,?,?,?,?,?,?,?,0,UTC_TIMESTAMP(),UTC_TIMESTAMP())')
+            ->execute([$runId, $uid, '', $clientId, $serverJobId, $clientId, $traceId, 'queued', 1, $requestHash,
+                       json_encode($request, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)]);
+        $envelope = ['run_id' => $runId, 'seq' => 1, 'event_id' => actionUUID('ai-run-event/' . $runId . '/1'), 'type' => 'run.created',
+                     'ts' => gmdate('c'), 'data' => ['status' => 'queued', 'message_id' => $clientId, 'trace_id' => $traceId, 'kind' => $kind]];
+        $db->prepare('INSERT INTO ai_run_events(run_id,seq,event_id,type,data_json,created_at) VALUES(?,1,?,?,?,UTC_TIMESTAMP())')
+            ->execute([$runId, $envelope['event_id'], 'run.created',
+                       json_encode($envelope, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)]);
+        $db->commit();
+    } catch (Throwable $error) {
+        if ($db->inTransaction()) $db->rollBack();
+        if ($error instanceof RuntimeException && $error->getCode() >= 400 && $error->getCode() < 600) fail($error->getMessage(), $error->getCode());
+        throw $error;
+    }
+    return [
+        'run_id' => $runId, 'message_id' => $clientId, 'status' => 'queued',
+        'stream_url' => '/me/ai/runs/' . $runId . '/events',
+        'last_event_seq' => 1, 'trace_id' => $traceId, 'idempotent' => false, 'kind' => $kind,
+    ];
+}
+
 /** GET /me/ai/runs/{id} — final snapshot for resync (never replays tool writes). */
 function aiRunSnapshot(PDO $db, int $userId, string $runId): array {
     $row = aiRunFetch($db, $userId, $runId);
