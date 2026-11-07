@@ -48,6 +48,15 @@ final class BojiClubUITests: XCTestCase {
         app.descendants(matching: .any)["v2-composer-field"].firstMatch
     }
 
+    /// 拍板 #5 页面入口。该页标题在文案批次中既定改名
+    /// 「AI 记录与授权」→「个人资料与授权」（诗诗 feature/copy-replacement c809404），
+    /// 与迁移分支同批进 develop；用例必须在**合并前后都成立**，故按两种口径匹配，
+    /// 避免批次内两个分支互相踩红。
+    private func aiRecordsEntry(_ app: XCUIApplication) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@",
+                                         "AI 记录与授权", "个人资料与授权")).firstMatch
+    }
+
     private func openSidebar(_ route: String, in app: XCUIApplication) {
         // Build132 replaced the sidebar records/feedback entries with the
         // native mode switch and the settings hub respectively.
@@ -280,7 +289,7 @@ final class BojiClubUITests: XCTestCase {
         let privacy = app.buttons["AI 与隐私"].firstMatch
         XCTAssertTrue(privacy.waitForExistence(timeout: 8), "Settings must expose AI 与隐私")
         privacy.tap()
-        let records = app.buttons["AI 记录与授权"].firstMatch
+        let records = aiRecordsEntry(app)
         XCTAssertTrue(records.waitForExistence(timeout: 8), "AI records and consent entry must exist")
         records.tap()
         XCTAssertTrue(app.staticTexts["我的偏好数据 v1"].waitForExistence(timeout: 8),
@@ -640,7 +649,7 @@ final class BojiClubUITests: XCTestCase {
         let privacy = app.buttons["AI 与隐私"].firstMatch
         XCTAssertTrue(privacy.waitForExistence(timeout: 8))
         privacy.tap()
-        let records = app.buttons["AI 记录与授权"].firstMatch
+        let records = aiRecordsEntry(app)
         XCTAssertTrue(records.waitForExistence(timeout: 8))
         records.tap()
         let manage = app.buttons["管理 AI 记忆（纠正 / 撤回）"].firstMatch
