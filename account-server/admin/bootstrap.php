@@ -196,7 +196,7 @@ function adminActionScope(string $action): string {
     if (str_starts_with($action,'automation_')) return 'automation';
     if (str_starts_with($action,'push_')) return 'push';
     if ($action==='storage_capacity') return 'storage';
-    if (in_array($action,['status','membership_adjust','delete_user'],true)) return 'users_sensitive';
+    if (in_array($action,['status','membership_adjust','delete_user','member_photo'],true)) return 'users_sensitive';
     if (in_array($action,['member_tags','member_note','deletion_retry'],true)) return 'users_support';
     return 'unclassified';
 }

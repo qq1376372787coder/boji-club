@@ -10,6 +10,10 @@ if [ -f account-server/config.php ]; then echo "Use an unconfigured isolated che
 PHP="${PHP:-php}"
 : "${BOJI_TEST_DSN_BASE:?set BOJI_TEST_DSN_BASE, e.g. mysql:host=127.0.0.1;port=13306}"
 export BOJI_TEST_DSN_BASE
+# migrate-ai-context.php 通过 BOJI_MIGRATION_* 取凭据；本地 QA 走免密 socket
+# 从未暴露，CI 是 TCP + fixture-only 密码 → Access denied（首跑静默 exit 1 根因）。
+export BOJI_MIGRATION_USER="${BOJI_TEST_DB_USER:-root}"
+export BOJI_MIGRATION_PASSWORD="${BOJI_TEST_DB_PASSWORD:-}"
 OUT="${BOJI_TEST_LOG_DIR:-/tmp/boji-php-suite}"
 mkdir -p "$OUT"
 # Own this deterministic-only service; do not silently use an unrelated listener.
