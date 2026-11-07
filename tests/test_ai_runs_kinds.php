@@ -49,8 +49,11 @@ $user = ['id' => (int)$db->lastInsertId(), 'status' => 'active'];
 $db->prepare("INSERT INTO membership_entitlements(user_id,status,source,starts_at,expires_at,created_at,updated_at)
               VALUES(?,'active','admin',UTC_TIMESTAMP(),'2099-12-31 23:59:59',UTC_TIMESTAMP(),UTC_TIMESTAMP())")
    ->execute([$user['id']]);
+// Membership is granted by seeding a real entitlement: `membership_enforcement`
+// is retired (test_membership_entry_policy asserts neither value bypasses the
+// gate), so setting it here would be inert and misleading.
 $config = ['otp_secret' => str_repeat('s', 64), 'ai_proxy_token' => str_repeat('t', 32),
-           'membership_enforcement' => false, 'ai_max_active_runs' => 6];
+           'ai_max_active_runs' => 6];
 
 function publishFlags(PDO $db, bool $enabled, string $kinds): void {
     $published = appConfigDefaults();
