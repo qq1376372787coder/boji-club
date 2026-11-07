@@ -11,7 +11,10 @@ session_name('boji_admin');
 // Admin is always served over TLS in every supported topology (direct 443 or
 // reverse proxy); an unrecognised proxy that hides HTTPS must not silently
 // downgrade the cookie, so Secure is unconditional.
-session_set_cookie_params(['lifetime'=>0, 'path'=>'/admin/', 'secure'=>true, 'httponly'=>true, 'samesite'=>'Strict']);
+// secure 必须只在真实 HTTPS 下开启：CI/本地用 `php -S` 明文跑集成测试时，
+// secure cookie 会被客户端丢弃 → session 丢失 → CSRF 403（CI 首跑根因）。
+// php-fpm/apache 下 PHP_SAPI 永远不是 cli-server，生产行为不变。
+session_set_cookie_params(['lifetime'=>0, 'path'=>'/admin/', 'secure'=>PHP_SAPI!=='cli-server', 'httponly'=>true, 'samesite'=>'Strict']);
 session_start();
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 date_default_timezone_set('Asia/Shanghai');
@@ -258,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             if(str_starts_with($action,'club_')) clubRulesLock($db);
             if ($action==='logout') {
                 audit('logout'); $_SESSION=[]; session_destroy();
-                setcookie('boji_admin','',['expires'=>time()-3600,'path'=>'/admin/','secure'=>true,'httponly'=>true,'samesite'=>'Strict']); redirect('login');
+                setcookie('boji_admin','',['expires'=>time()-3600,'path'=>'/admin/','secure'=>PHP_SAPI!=='cli-server','httponly'=>true,'samesite'=>'Strict']); redirect('login');
             }
             if ($action==='delete_user') {
                 $id=filter_var($_POST['user_id']??null,FILTER_VALIDATE_INT);
