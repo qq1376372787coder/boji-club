@@ -1104,6 +1104,7 @@ struct ClubActionPreferencesView: View {
     @State private var unit = "kg"
     @State private var zone = TimeZone.current.identifier
     @State private var proactive = true
+    @State private var personalization = true
     @State private var loaded = false
     @State private var busy = false
     @State private var error: String?
@@ -1112,9 +1113,16 @@ struct ClubActionPreferencesView: View {
         ClubNavigationStack132 {
             Form {
                 if !pendingOnly132 {
-                Section("主动学习") {
-                    Toggle("允许从我的记录中学习偏好并生成主动建议", isOn: $proactive)
-                    Text("关闭后不再提取新的长期记忆或生成首页主动洞察；已确认的记忆仍可用于回答，训练与记录功能不受影响。").bojiType(.label).foregroundStyle(.secondary)
+                // PIPL 阶段4（言言③）：学习与使用拆成**两个独立开关**，不是一个。
+                // 每个回执都写明「已停止什么 / 仍保留什么 / 已发出的请求可能已完成」，
+                // 两者关闭均前瞻即时生效，且不得因关闭而拒绝核心记录功能（第16条）。
+                Section("AI 记忆") {
+                    Toggle("停止学习：不再从我的记录中归纳新记忆", isOn: $proactive)
+                    Text("已停止：写入新的长期记忆、生成首页主动洞察。仍保留：已保存的记忆，可在下方查看、纠正或撤回。不受影响：训练、记录与报告。关闭前已发出并完成的 AI 分析仍保留在历史结果中。")
+                        .bojiType(.label).foregroundStyle(.secondary)
+                    Toggle("停用 AI 记忆处理：不让已保存的记忆进入 AI 回答", isOn: $personalization)
+                    Text("已停止：把记忆喂给模型做个性化回答与建议。仍保留：记忆本身，以及纠正、撤回入口。不受影响：训练、记录、计划与报告。关闭前已发出并完成的 AI 分析仍保留。")
+                        .bojiType(.label).foregroundStyle(.secondary)
                 }
                 Section("AI 记录授权") {
                     Toggle("明确的体重和饮食记录可快速保存", isOn: $fast)
@@ -1195,17 +1203,18 @@ struct ClubActionPreferencesView: View {
             guard account.user?.id == owner else { return }
             fast = p.fast_records; unit = p.weight_unit
             zone = p.time_zone.isEmpty ? TimeZone.current.identifier : p.time_zone
-            proactive = p.proactive_learning ?? true; loaded = true
+            proactive = p.proactive_learning ?? true
+            personalization = p.personalization_enabled ?? true; loaded = true
         } catch { self.error = AppErrorText.message(error) }
     }
     private func save() async {
         guard let owner = account.user?.id else { return }; busy = true; defer { busy = false }
         do {
-            let body = try JSONEncoder().encode(ActionPreferences(fast_records: fast, time_zone: zone, weight_unit: unit, proactive_learning: proactive))
+            let body = try JSONEncoder().encode(ActionPreferences(fast_records: fast, time_zone: zone, weight_unit: unit, proactive_learning: proactive, personalization_enabled: personalization))
             let response = try await account.proposalRequest(path: "/me/ai/action-preferences", method: "PUT", body: body, expectedUserID: owner)
             guard response.statusCode == 200 else { throw AIClientError.message("设置未保存，请重试。") }
             error = "设置已保存。"
         } catch { self.error = AppErrorText.message(error) }
     }
-    private struct ActionPreferences: Codable { var fast_records: Bool; var time_zone: String; var weight_unit: String; var proactive_learning: Bool? }
+    private struct ActionPreferences: Codable { var fast_records: Bool; var time_zone: String; var weight_unit: String; var proactive_learning: Bool?; var personalization_enabled: Bool? }
 }
