@@ -91,6 +91,8 @@ print("Automation and durable rest checks passed; total assertions: \(tests)")
 '''
 # Fixture health data includes the property used by the actual eligibility rule.
 source=source.replace('struct HealthDay: Codable {}','struct HealthDay: Codable { var hasData:Bool { false } }')
+# 链根升级后 HealthDay 桩带指标字段，替换目标同步更新（保留旧目标兼容）。
+source=source.replace('struct HealthDay: Codable { var steps: HealthMetric? = nil; var activeEnergy: HealthMetric? = nil }','struct HealthDay: Codable { var steps: HealthMetric? = nil; var activeEnergy: HealthMetric? = nil; var hasData:Bool { false } }')
 # Throwing expressions cannot appear inside the non-throwing assertion autoclosure.
 source=source.replace('check(try ClubAutomationSettings.load(owner:11,defaults:automationDefaults)==automatic,','let loadedAutomatic=try ClubAutomationSettings.load(owner:11,defaults:automationDefaults)\ncheck(loadedAutomatic==automatic,')
 source=source.replace('check(try ClubAutomationSettings.load(owner:12,defaults:automationDefaults).automaticDaily==false,','let isolatedAutomatic=try ClubAutomationSettings.load(owner:12,defaults:automationDefaults)\ncheck(isolatedAutomatic.automaticDaily==false,')

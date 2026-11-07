@@ -81,7 +81,10 @@ enum CloudAnalysisConsent {
     static func allowed(accountID: Int?, defaults: UserDefaults = .standard) -> Bool {
         guard let accountID, accountID > 0 else { return true }
         let value = defaults.object(forKey: key(accountID: accountID)) as? Bool
-        return value ?? true
+        // 未决策 = 不放行（与本枚举顶部注释、fail-closed 同意原则一致）。
+        // 原 `?? true` 使从未表态的账号默认开启健康数据云端分析——隐私回归，
+        // 由 onboarding_v52/repair_v46/plan_insights_v49/ui_v47 四条 harness 暴露。
+        return value ?? false
     }
     static func routerVersion(accountID: Int?, defaults: UserDefaults = .standard) -> Int {
         return 3
