@@ -52,9 +52,16 @@ class Router125Tests(unittest.TestCase):
         with self.assertRaises(AIError):Router(self.providers(),transport=transport).run(validate_request(request()))
         self.assertEqual(set(calls),{'deepseek'});self.assertLessEqual(len(calls),2)
     def test_no_extra_repair_without_time_budget(self):
-        clock=[0]
+        # 2026-11-08 智智修复（CI 红模块分流）：coach 总预算已由 20s 调整为 45s
+        # （backend/model_router.py:21）。原断言 clock<=20 只在旧预算下成立，
+        # 而 20s 下故障转移本身就不会发生（见 test_router122.test_bucket_and_budget）。
+        # 行为契约不变：预算耗尽时不得再追加修复重试。
+        # 每次 transport 消耗 22s：首试后剩余 23≥2 允许第二家；第二试后剩余 1<2，
+        # 修复槽被预算中断，故 transport 共 2 次、总耗时 44s（<45s 预算）。
+        clock=[0];calls=[]
         def transport(*args):
-            clock[0]+=9.5;value=answer();value['coach']['source_ids']=[];return value,{}
+            calls.append(1);clock[0]+=22;value=answer();value['coach']['source_ids']=[];return value,{}
         with self.assertRaises(AIError):Router(self.providers(),transport=transport,clock=lambda:clock[0]).run(self.body())
-        self.assertLessEqual(clock[0],20)
+        self.assertEqual(len(calls),2)
+        self.assertLessEqual(clock[0],45)
 if __name__=='__main__':unittest.main()

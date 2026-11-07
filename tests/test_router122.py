@@ -22,7 +22,12 @@ class Router122Tests(unittest.TestCase):
         body=request();body['payload']['_routing_version']=3
         self.assertEqual(validate_request(body)['payload']['_routing_version'],3)
     def test_bucket_and_budget(self):
-        self.assertEqual(task_policy({'kind':'coach','payload':{}})['budget'],20)
+        # 2026-11-08 智智修复（CI 红模块分流）：coach/其他类的路由总预算已由 20s
+        # 调整为 45s（backend/model_router.py:21 task_policy：plan 90 / report 60 /
+        # 其他 45）。20s 下首次尝试就吃掉全部预算，第二次尝试 remaining=0 会直接
+        # task_timeout，故障转移不发生；45s 才能满足 ai_core.py:1503-1506 的
+        # “供应商恢复后重试而非终态失败”设计。此处只更新数值，分桶契约不变。
+        self.assertEqual(task_policy({'kind':'coach','payload':{}})['budget'],45)
         self.assertEqual(task_policy({'kind':'generate_plan','payload':{}})['budget'],90)
         self.assertEqual(task_policy({'kind':'coach','payload':{'_references':[{}]}})['bucket'],'reference')
     def test_metrics_do_not_store_content(self):
