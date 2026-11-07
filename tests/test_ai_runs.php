@@ -62,6 +62,7 @@ $published = appConfigDefaults();
 $published['ai_enabled'] = true;
 $published['ai_streaming_v2'] = true;
 $published['action_system_enabled'] = true;
+$published['coach_enabled'] = true; // P2 coach 休眠默认关闭；本套件测 coach 功能，等价于后台发布开关
 $db->prepare('INSERT INTO app_config(config_key,draft_json,published_json,draft_version,published_version,updated_at,published_at)
               VALUES(\'app\',?,?,1,1,UTC_TIMESTAMP(),UTC_TIMESTAMP())')
    ->execute([json_encode($published), json_encode($published)]);

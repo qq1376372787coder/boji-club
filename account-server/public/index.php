@@ -577,6 +577,8 @@ try {
     if ($method === 'POST' && $path === '/me/ai/context/resolve') {
         $user=authenticated($db);
         if(!appFeatureEnabled($db,'ai_context_references_v1'))fail('引用功能暂未开放。',503);
+        // P2 休眠：上下文引用只为 coach 组装输入，随对话链路一起停用。
+        if(!coachEnabled($db))fail('AI 对话功能暂未开放，请稍后再试。',503,'coach_disabled');
         try { respond(200,aiContextResolve($db,(int)$user['id'],body(524288),$config)); }
         catch(RuntimeException $e){fail($e->getMessage(),in_array($e->getCode(),[403,409,410,413,422,429,503],true)?$e->getCode():422);}
     }

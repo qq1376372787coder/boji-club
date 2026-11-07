@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 if(PHP_SAPI!=='cli')exit(1);
+require __DIR__.'/public/app-config.php';
 require __DIR__.'/public/automation.php';
 require __DIR__.'/public/cloud-parts.php';
 require __DIR__.'/public/ai-response.php';
@@ -27,7 +28,7 @@ function clubAutomationHealthHasData(mixed $health): bool {
 foreach($due as $item) {
     if(microtime(true)>$deadline)break;
     $uid=(int)$item['user_id'];
-    $revision=0;$count=0;$attempts=0;$runId=0;
+    $revision=0;$count=0;$attempts=0;$runId=0;$coachSkipped=0;
     // 每次处理写一条执行记录：业务任务（唯一 client_job）与供应商尝试分开计数，重试不算用户使用次数。
     try{$db->prepare("INSERT INTO club_automation_runs(user_id,revision,outcome,tasks_submitted,vendor_attempts,started_at,finished_at) VALUES(?,0,'running',0,0,UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute([$uid]);$runId=(int)$db->lastInsertId();}catch(Throwable){$runId=0;}
     $finish=function(string $outcome,string $summary='')use($db,$runId,&$revision,&$count,&$attempts):void {
@@ -97,6 +98,8 @@ foreach($due as $item) {
             if(!clubAutomationCurrent($db,$uid,$revision)){$abort='revision_changed';break;}
             $client=$task['client_id'];$request=$task['request'];
             if(!preg_match('/^[a-f0-9-]{36}$/D',$client)||!in_array($request['kind']??'', ['report','coach'],true))throw new RuntimeException('invalid internal task');
+            // P2 休眠：自动跟进里的 coach 任务随对话链路一起停用；report 任务照常提交。
+            if(($request['kind']??'')==='coach'&&!coachEnabled($db)){$coachSkipped++;continue;}
             $server=clubAutomationServerID($uid,$client,$config);
             $q=$db->prepare('SELECT kind FROM ai_user_jobs WHERE user_id=? AND client_job_id=?');$q->execute([$uid,$client]);$existing=$q->fetchColumn();
             if($existing && $existing!==$request['kind'])throw new RuntimeException('task identity conflict');
@@ -115,7 +118,7 @@ foreach($due as $item) {
             $attempts++; // 供应商尝试：含修复重提，不计为用户使用次数
             if(!$existing)$count++; // 业务任务：只按唯一 client_job 首次提交计数
         }
-        $final=$count?'submitted':(!empty($prepared['deferred'])?'needs_record_check':'checked');
+        $final=$count?'submitted':(!empty($prepared['deferred'])?'needs_record_check':($coachSkipped>0?'skipped':'checked'));
         $db->prepare('UPDATE club_automation SET retry_count=0,last_status=? WHERE user_id=? AND revision=? AND enabled=1')->execute([$final,$uid,$revision]);
         if($abort==='deadline')$finish('retry_pending','deadline');
         elseif($abort==='revision_changed')$finish('skipped','revision_changed');
