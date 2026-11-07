@@ -48,7 +48,11 @@ enum OnboardingDraftStore {
 
 struct AccountEntryView: View {
     @EnvironmentObject private var account: AccountService
-    @State private var legalAccepted = false
+    /// 协议勾选持久化（付费墙方案 A 可选项）：协议版本未变时免重复勾选，减少重登摩擦。
+    /// 版本与 covenantVersion 同步（2026-10-25）；协议内容变更时更新版本号即可重新征询。
+    static let legalAgreementVersion = "2026-10-25"
+    private static let legalAcceptedKey = "boji.legal-accepted-version"
+    @State private var legalAccepted = UserDefaults.standard.string(forKey: AccountEntryView.legalAcceptedKey) == AccountEntryView.legalAgreementVersion
     @State private var busy = false
     @State private var error: String?
     @State private var appleNonce = ""
@@ -85,7 +89,11 @@ struct AccountEntryView: View {
                     Button("注销说明") { legalDocument = .deletion }
                     Link("管理 Apple 登录授权", destination: URL(string: "https://support.apple.com/zh-cn/102571")!)
                 }.bojiType(.label)
-                Button { legalAccepted.toggle() } label: {
+                Button {
+                    legalAccepted.toggle()
+                    // 协议勾选持久化：勾选后按版本记住，换账号重登免重复勾选；取消勾选即撤销记忆。
+                    UserDefaults.standard.set(legalAccepted ? Self.legalAgreementVersion : nil, forKey: Self.legalAcceptedKey)
+                } label: {
                     HStack(alignment: .top, spacing: BojiLayout.inline) {
                         Image(systemName: legalAccepted ? "checkmark.circle.fill" : "circle").bojiType(.section)
                         Text("我同意用户协议、隐私政策，并允许将主动发送的内容用于云端 AI 分析。")

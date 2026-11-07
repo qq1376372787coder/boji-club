@@ -17,24 +17,33 @@ struct ClubIconButtonStyle: ButtonStyle {
 struct ClubLogoutButton: View {
     @EnvironmentObject private var account: AccountService
     @EnvironmentObject private var store: AppStore
+    /// 场景化文案：付费墙等处替换按钮与弹窗文案；默认保持通用「退出登录」。
+    var title: String = "退出登录"
+    /// 自定义确认弹窗说明；nil 使用默认（含同步状态与保留说明）。
+    var message: String? = nil
+    /// 确认弹窗取消按钮文案（付费墙语境下「继续使用」有歧义，由调用方指定）。
+    var cancelTitle: String = "继续使用"
+    /// VoiceOver 标签；nil 跟随按钮文案。
+    var accessibilityLabel: String? = nil
     @State private var confirming = false
     @State private var loggingOut = false
     @State private var confirmingAccountID: Int?
     var body: some View {
-        Button(loggingOut ? "正在退出…" : "退出登录", role: .destructive) {
+        Button(loggingOut ? "正在退出…" : title, role: .destructive) {
             guard let id = account.user?.id else { return }
             confirmingAccountID = id; confirming = true
         }
             .buttonStyle(DestructiveButton()).disabled(loggingOut)
+            .accessibilityLabel(accessibilityLabel ?? title)
             .confirmationDialog("退出当前账号？", isPresented: $confirming, titleVisibility: .visible) {
                 Button("退出登录", role: .destructive) {
                     guard !loggingOut, confirmingAccountID != nil, confirmingAccountID == account.user?.id else { return }
                     loggingOut = true
                     Task { await account.logout(); loggingOut = false }
                 }
-                Button("继续使用", role: .cancel) { }
+                Button(cancelTitle, role: .cancel) { }
             } message: {
-                Text("当前同步状态：\(store.syncStatus.label)。记录会保留在本机，重新登录同一账号后可以继续同步；退出登录不会注销账号。")
+                Text(message ?? "当前同步状态：\(store.syncStatus.label)。记录会保留在本机，重新登录同一账号后可以继续同步；退出登录不会注销账号。")
             }
             .onChange(of: account.user?.id) { _, _ in confirming = false; confirmingAccountID = nil }
     }
