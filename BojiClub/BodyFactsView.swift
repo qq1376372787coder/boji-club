@@ -531,7 +531,7 @@ struct IndependentProfileOnboardingView: View {
             List {
                 Section {
                     Text("先认识你").bojiType(.display)
-                    Text("填写适合你的资料与目标。这里与你的“AI 对我的了解”共用一份档案，之后可以随时修改。")
+                    Text("填写适合你的资料与目标。这里与你的“个人资料”共用一份档案，之后可以随时修改。")
                         .foregroundStyle(.secondary)
                 }
                 Section {

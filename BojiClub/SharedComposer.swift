@@ -67,7 +67,7 @@ struct ClubSharedComposer: View {
                     .bojiType(.label).foregroundStyle(.secondary)
                     .padding(.horizontal, BojiLayout.rowGap).accessibilityIdentifier("coach-processing-status")
             } else if !enabled {
-                Text("AI 暂不可用，仍可记录饮食、体重和训练。")
+                Text("服务暂不可用，仍可记录饮食、体重和训练。")
                     .bojiType(.label).foregroundStyle(.secondary).padding(.horizontal, BojiLayout.rowGap)
             }
             if let message = uploadFeedback ?? errorText {

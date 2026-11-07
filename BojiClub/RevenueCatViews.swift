@@ -129,8 +129,8 @@ struct MembershipView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: BojiLayout.inline) {
             BojiBrandSignature(size:28)
-            Text("薄肌俱乐部Pro").bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
-            Text("把认真记录，变成你的进步。")
+            Text("薄肌俱乐部 Pro").bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
+            Text("训练计划、饮食记录与每周总结。")
                 .bojiType(.secondary).foregroundStyle(.secondary)
             HStack(spacing: BojiLayout.inline) {
                 Button("使用条款 (EULA)") { legalDocument = .terms }
@@ -160,7 +160,7 @@ struct MembershipView: View {
                         .bojiType(.secondary)
                 }
                 if !membership.serverMembershipActive {
-                    Text(membership.reconciliationError ?? "正在同步俱乐部会员，完成后即可使用。请勿重复购买。")
+                    Text(membership.reconciliationError ?? "正在同步会员…请勿重复购买。")
                         .bojiType(.secondary).foregroundStyle(.secondary)
                     Button("重新查询会员状态") { membership.refreshMembershipStatus() }
                         .buttonStyle(SecondaryButton()).disabled(membership.isBusy)
@@ -195,7 +195,7 @@ struct MembershipView: View {
     private var lifetimeUpgradeCard: some View {
         ClubCard {
             Text("升级永久会员").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
-            Text("一次购买，长期使用 · " + displayPrice(for: .lifetime)).bojiType(.secondary)
+            Text("永久会员 · " + displayPrice(for: .lifetime)).bojiType(.secondary)
             Text("已支付的订阅费用不会抵扣。升级不会自动取消原订阅，请到 Apple 订阅设置关闭自动续费。").bojiType(.secondary).foregroundStyle(.secondary)
             Button("升级永久会员") { confirmingUpgrade = true }.buttonStyle(PrimaryButton())
                 .disabled(!membership.canUseStore || membership.package(for: .lifetime) == nil)
@@ -211,7 +211,7 @@ struct MembershipView: View {
             VStack(alignment: .leading, spacing: BojiLayout.inline) {
                 Label("专属训练计划与逐组记录", systemImage: "checkmark.circle.fill")
                 Label("拍照、语音饮食登记", systemImage: "checkmark.circle.fill")
-                Label("每日复盘与每周回顾", systemImage: "checkmark.circle.fill")
+                Label("日报与每周回顾", systemImage: "checkmark.circle.fill")
                 Label("云端同步与成长记录", systemImage: "checkmark.circle.fill")
             }.bojiType(.secondary)
             Divider().padding(.vertical, BojiLayout.tight)

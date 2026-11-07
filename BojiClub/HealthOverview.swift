@@ -118,7 +118,7 @@ struct BodyOverviewCard: View {
             if metrics.isEmpty {
                 Button("选择要显示的身体指标") { configuring = true }.buttonStyle(SecondaryButton())
             } else if values.isEmpty {
-                Text(health.enabled ? "暂无可读取数据，手动测量也可以记录。" : "连接 Apple 健康，查看活动、睡眠与身体测量。")
+                Text(health.enabled ? "还没有数据。可手动记录。" : "连接 Apple 健康，查看活动、睡眠与身体测量。")
                     .bojiType(.secondary).foregroundStyle(.secondary)
                 HStack { Button("查看与连接", action: openDetails).buttonStyle(SecondaryButton()); Button("手动记录", action: record).buttonStyle(SecondaryButton()) }
             } else if values.count == 1, let first = values.first {
@@ -197,7 +197,7 @@ struct BodyOverviewCard: View {
                             }))
                         }
                     }
-                    Text("仅展示有记录的指标，保留原始测量来源与日期。")
+                    Text("只显示有记录的指标，保留来源与日期。")
                 }.navigationTitle("身体概览指标").toolbar { ToolbarItem(placement: .confirmationAction) { DismissButton() } }
             }
         }
@@ -365,7 +365,7 @@ struct BodyOverviewView: View {
                                 }
                             }
                         } else {
-                            Text("当天暂无测量")
+                            Text("当天没有测量")
                                 .bojiType(.secondary)
                                 .foregroundStyle(BojiColor.textSecondary)
                         }
@@ -382,7 +382,7 @@ struct BodyOverviewView: View {
 
                 let points = metricSeries(.weight, daysCount: weightRange)
                 if points.isEmpty {
-                    EmptyNote(title: "近 \(weightRange) 天暂无体重记录", detail: "可从 Apple 健康读取历史数据，或点击记录。")
+                    EmptyNote(title: "近 \(weightRange) 天没有体重记录", detail: "可从 Apple 健康读取历史数据，或点击记录。")
                 } else {
                     BojiLineTrendChart(
                         points: points,

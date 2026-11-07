@@ -81,7 +81,7 @@ struct WeeklyReportView: View {
             .padding(.vertical, BojiLayout.cardInset)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
-        .navigationTitle("AI 每周周报")
+        .navigationTitle("周报")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -331,7 +331,7 @@ struct WeeklyReportView: View {
             HStack {
                 Image(systemName: "sparkles")
                     .foregroundStyle(BojiColor.brandGold)
-                Text("AI 本周深度复盘")
+                Text("本周深度总结")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textPrimary)
                 Spacer()
@@ -388,7 +388,7 @@ struct WeeklyReportView: View {
                     Image(systemName: "chart.line.text.clipboard")
                         .bojiType(.title)
                         .foregroundStyle(BojiColor.textTertiary)
-                    Text("本周期尚未生成 AI 深度复盘")
+                    Text("本周期尚未生成深度总结")
                         .bojiType(.secondary)
                         .foregroundStyle(BojiColor.textSecondary)
                     Text("依据过去 7 天真实训练与饮食记录，全自动生成长效进阶分析。")
@@ -455,7 +455,7 @@ struct WeeklyReportView: View {
                     } else {
                         Image(systemName: existingReview != nil ? "arrow.clockwise" : "wand.and.stars")
                     }
-                    Text(existingReview != nil ? "重新生成本周深度复盘" : "生成本周 AI 深度复盘")
+                    Text(existingReview != nil ? "重新生成本周深度复盘" : "生成本周深度总结")
                 }
                 .bojiType(.body)
                 .foregroundStyle(.black)

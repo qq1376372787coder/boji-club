@@ -970,8 +970,8 @@ struct ClubAIAmbientPill: View {
         if readiness.trainingReady && !hasWeeklyReport {
             return ProactivePulseBanner(
                 id: "rhythm-weekly-\(cycle.end)",
-                title: "本周 \(readiness.trainingDays) 次训练已达标 · 周报已解锁",
-                subtitle: "一键生成本周复盘或微调下周安排",
+                title: "本周 \(readiness.trainingDays) 次训练已达标 · 周报可生成",
+                subtitle: "生成本周总结，或调整下周安排",
                 buttonTitle: "开启周报",
                 section: "报告",
                 accent: BojiColor.aiViolet
@@ -981,8 +981,8 @@ struct ClubAIAmbientPill: View {
         if hour >= 19, DailyReportEligibility.hasRecords(todayLog), !todayLog.hasUnconfirmedTraining, !hasDailyReport {
             return ProactivePulseBanner(
                 id: "rhythm-daily-\(todayKey)",
-                title: "今日记录已就绪 · 晚间综合日报可生成",
-                subtitle: "汇总今日训练与饮食，给出恢复建议",
+                title: "今日记录已保存 · 日报可生成",
+                subtitle: "汇总今日训练与饮食",
                 buttonTitle: "生成日报",
                 section: "报告",
                 accent: BojiColor.aiGold
@@ -1063,7 +1063,7 @@ struct ClubAIAmbientPill: View {
             triggerPulse(ProactivePulseBanner(
                 id: "pulse-weight-\(newVal)",
                 title: "实测体重 \(newVal.formatted(.number.precision(.fractionLength(1)))) kg 已记录",
-                subtitle: "Club AI 已更新近 14 天体态趋势对照",
+                subtitle: "已更新近 14 天体态趋势对照",
                 buttonTitle: "看趋势",
                 section: "动态",
                 accent: BojiColor.aiViolet
@@ -1075,7 +1075,7 @@ struct ClubAIAmbientPill: View {
             triggerPulse(ProactivePulseBanner(
                 id: "pulse-workout-\(newVal.timeIntervalSince1970)",
                 title: "本场 \(todayLog.completedSets) 组训练已确认入账！",
-                subtitle: "可立即查看 AI 锐评或一键生成今日日报",
+                subtitle: "可查看分析或生成今日日报",
                 buttonTitle: "生成日报",
                 section: "报告",
                 accent: BojiColor.emeraldAccent
@@ -1222,7 +1222,7 @@ struct ClubContextualInsightStrip: View {
 
                     VStack(alignment: .leading, spacing: BojiLayout.tight) {
                         HStack(spacing: BojiLayout.tight) {
-                            Text("Club AI · \(event.kind.label)")
+                            Text("\(event.kind.label)")
                                 .bojiType(.caption)
                                 .foregroundStyle(event.kind.accentColor)
                             Spacer()
@@ -1246,7 +1246,7 @@ struct ClubContextualInsightStrip: View {
                             BojiHaptics.tick()
                             withAnimation(BojiMotion2.state) { showEvidence.toggle() }
                         } label: {
-                            Text(showEvidence ? "收起依据" : "为什么")
+                            Text(showEvidence ? "收起依据" : "依据")
                                 .bojiType(.label)
                                 .modifier(BojiUnderline(color: BojiColor.textSecondary, isActive: true))
                         }
@@ -1266,7 +1266,7 @@ struct ClubContextualInsightStrip: View {
                             BojiHaptics.latch()
                             showShift = true
                         } label: {
-                            Label("一键预览顺延", systemImage: "calendar.badge.clock")
+                            Label("预览顺延", systemImage: "calendar.badge.clock")
                                 .bojiType(.caption)
                                 .padding(.horizontal, BojiSpace.general)
                                 .padding(.vertical, BojiSpace.tight)

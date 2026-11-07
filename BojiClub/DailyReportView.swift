@@ -76,7 +76,7 @@ struct DailyReportView: View {
             .padding(.vertical, BojiLayout.cardInset)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
-        .navigationTitle("AI 每日日报")
+        .navigationTitle("日报")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -311,7 +311,7 @@ struct DailyReportView: View {
             HStack {
                 Image(systemName: "sparkles")
                     .foregroundStyle(BojiColor.brandGold)
-                Text("AI 今日点评")
+                Text("今日点评")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textPrimary)
                 Spacer()
@@ -401,7 +401,7 @@ struct DailyReportView: View {
             } else if pendingJob != nil {
                 HStack(spacing: BojiLayout.rowGap) {
                     ProgressView()
-                    Text("智能分析引擎正在解读今日数据…")
+                    Text("正在解读今日数据…")
                         .bojiType(.secondary)
                         .foregroundStyle(BojiColor.textSecondary)
                 }
@@ -413,7 +413,7 @@ struct DailyReportView: View {
                     Image(systemName: "doc.text.magnifyingglass")
                         .bojiType(.title)
                         .foregroundStyle(BojiColor.textTertiary)
-                    Text("本日尚未生成 AI 点评")
+                    Text("本日尚未生成点评")
                         .bojiType(.secondary)
                         .foregroundStyle(BojiColor.textSecondary)
                     Text("完成当日训练或记录餐食后，点击下方按钮开始分析。")

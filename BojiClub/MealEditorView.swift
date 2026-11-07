@@ -225,7 +225,7 @@ struct MealEditorView: View {
         }
         else { photoCaptureArea }
         if entryMode == "照片" {
-            Text("拍照后 AI 自动估算营养素，保存前可微调。")
+            Text("拍照后自动估算营养素，保存前可微调。")
                 .bojiType(.caption).foregroundStyle(.secondary)
         }
         if !recentFrequentMeals.isEmpty && !isBusy {
@@ -472,7 +472,7 @@ struct MealEditorView: View {
                     .bojiType(.display)
                 Text("kcal").bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
                 Spacer()
-                Text(sourceJobID == nil ? "饮食记录" : "AI 估算").bojiType(.caption).foregroundStyle(.secondary)
+                Text(sourceJobID == nil ? "饮食记录" : "估算").bojiType(.caption).foregroundStyle(.secondary)
             }
             HStack {
                 macro("蛋白质", total(\.protein, fallback: protein))
@@ -1006,7 +1006,7 @@ struct MealEditorView: View {
                 cameraStatus = .preparing; takingPhoto = false; cameraAttempt += 1
             }
             Button("取消", role: .cancel) { }
-        } message: { Text("当前照片及它的 AI 估算会清空，已经保存的餐食记录保留。") }
+        } message: { Text("当前照片及它的估算会清空，已经保存的餐食记录保留。") }
     }
     private func prepareRetakeDraft() -> Bool {
         guard draftLoaded, draftReadable, !saved, draftOwner == store.editingAccountID else { return false }

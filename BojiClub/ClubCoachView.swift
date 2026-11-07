@@ -1037,7 +1037,7 @@ struct ClubCoachView: View {
         if liveRun.phase == .failed, AIRunResumeStore.load(owner: ownerID ?? 0, conversation: conversation) != nil {
             error = "上一条回答等待恢复，请先点击‘恢复这次回答’。"; return
         }
-        guard FeatureFlagService.shared.aiEnabled else { error = "AI 服务暂时无法连接，请稍后重试。仍可手动记录。"; return }
+        guard FeatureFlagService.shared.aiEnabled else { error = "服务暂时无法连接，请稍后重试。仍可手动记录。"; return }
         guard ownerID != nil, ownerID == store.editingAccountID else { return }
         guard ai.routingConsentGranted else { error = "云端分析已关闭，可在隐私说明中开启后使用对话。"; return }
         do {

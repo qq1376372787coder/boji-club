@@ -146,7 +146,7 @@ struct HealthConnectionsView: View {
                     ClubCard {
                         DatePicker("记录日期", selection: $date, in: ...Date(), displayedComponents: .date)
                         if let summary, summary.hasData { HealthMetricsView(summary: summary) }
-                        else { EmptyNote(title: "该日暂无设备数据", detail: "请同步品牌 App、检查读取权限，或选择有记录的日期。") }
+                        else { EmptyNote(title: "这一天没有设备数据", detail: "请同步品牌 App，或选择有记录的日期。") }
                         Button { Task { await health.refresh(date, force: true) } } label: { Label(health.busy ? "正在读取…" : "刷新所选日期", systemImage: "arrow.clockwise") }.buttonStyle(SecondaryButton())
                             .disabled(health.busy || !health.enabled)
                         if health.busy { ClubLoadingCard(title: "正在读取健康数据…") }

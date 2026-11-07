@@ -266,7 +266,7 @@ struct ClubAutomationSettingsSection: View {
     }
     var body: some View {
         ClubCard {
-            Text("AI 自动跟进").bojiType(.bodyStrong)
+            Text("自动跟进").bojiType(.bodyStrong)
             Picker("跟进程度", selection: modeBinding) {
                 ForEach(ClubProactiveMode.allCases, id: \.self) { Text($0.label).tag(Optional($0.rawValue)) }
                 if automation.settings.modeLabel == nil { Text("自定义").tag(Optional("custom")) }

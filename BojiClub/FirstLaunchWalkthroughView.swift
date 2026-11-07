@@ -319,7 +319,7 @@ private struct WalkthroughAICoachSlide: View {
                     .bojiType(.display)
                     .foregroundStyle(BojiColor.textPrimary)
 
-                Text("Club AI 训练建议 · 根据已确认记录给出参考")
+                Text("训练建议 · 根据已确认记录给出")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textSecondary)
                     .multilineTextAlignment(.center)
