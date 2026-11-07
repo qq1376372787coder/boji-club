@@ -56,6 +56,9 @@ $db->prepare("INSERT INTO users(phone,status,created_at,updated_at) VALUES('1391
 $userA = ['id' => (int)$db->lastInsertId(), 'status' => 'active'];
 $db->prepare("INSERT INTO users(phone,status,created_at,updated_at) VALUES('13910000002','active',UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute();
 $userB = ['id' => (int)$db->lastInsertId(), 'status' => 'active'];
+// 会员门不消费已退役的 enforcement 开关：夹具账号直接播种有效权益。
+$ent133=$db->prepare("INSERT INTO membership_entitlements(user_id,status,source,starts_at,expires_at,created_at,updated_at) VALUES(?,'active','admin',UTC_TIMESTAMP(),'2099-12-31 23:59:59',UTC_TIMESTAMP(),UTC_TIMESTAMP())");
+$ent133->execute([$userA['id']]);$ent133->execute([$userB['id']]);
 $config = ['otp_secret' => str_repeat('s', 64), 'ai_proxy_token' => str_repeat('t', 32),
            'membership_enforcement' => false, 'ai_max_active_runs' => 6];
 $published = appConfigDefaults();

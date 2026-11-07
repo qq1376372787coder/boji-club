@@ -11,7 +11,7 @@ $code=file_get_contents($root.'/account-server/public/index.php');preg_match('/f
 $checks=0;
 function check121(bool $ok,string $why):void{global $checks;if(!$ok)throw new RuntimeException('FAIL '.$why);$checks++;}
 function rejects121(int $code,callable $f):void{try{$f();}catch(Throwable $e){check121($e->getCode()===$code,'expected '.$code.' got '.$e->getCode().' '.$e->getMessage());return;}throw new RuntimeException('Expected rejection '.$code);}
-$base=new PDO(getenv('BOJI_TEST_DSN_BASE'),'root','',[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
+$base=new PDO(getenv('BOJI_TEST_DSN_BASE'),getenv('BOJI_TEST_DB_USER')?:'root',getenv('BOJI_TEST_DB_PASSWORD')?:'',[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
 $name='boji_build121_complete_test';$base->exec('DROP DATABASE IF EXISTS '.$name);$base->exec('CREATE DATABASE '.$name.' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
 $db=bojiTestDatabase($name);bojiTestSchema($db,$root.'/account-server');
 [$exit,$out,$err]=bojiTestRunMigration($name,['--apply']);check121($exit===0,'base migration '.$out.$err);
