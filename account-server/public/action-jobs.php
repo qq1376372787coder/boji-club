@@ -4,9 +4,8 @@ require_once __DIR__ . '/membership-access.php';
 /** Transactional, replayable plan job submission. Network I/O never holds an account lock. */
 function actionQueuePlan(PDO $db,array $user,array $input,string $id): array {
  $config=$GLOBALS['config']??[];$uid=(int)$user['id'];
- // membership_enforcement=false 是测试/灰度的显式旁路（与 aiMayPostJob 同名约定）；
- // 此前本门忽略该开关，所有设 false 的路由测试直接 403（CI 首跑根因）。
- if(($config['membership_enforcement']??true)!==false && !membershipHasActiveEntitlement($db,$uid))fail('请先开通会员后使用此功能。',403,'membership_required');
+ // membership_enforcement 已退役（见 aiMayPostJob 注释）：任何 false 值都不得绕过。
+ if(!membershipHasActiveEntitlement($db,$uid))fail('请先开通会员后使用此功能。',403,'membership_required');
  if(empty($config['otp_secret']))fail('AI 服务尚未配置。',503);
  $loaded=aiRouterState($db,$uid,[actionToday($db,$uid)]);$state=$loaded['state'];$profile=$state['profile']??null;
  if(!$profile)return actionClarify('plan.generate_draft','请先在“我的”完善训练目标、器械、经验和可用天数。');

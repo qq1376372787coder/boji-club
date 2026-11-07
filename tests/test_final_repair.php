@@ -18,6 +18,8 @@ $db=bojiTestDatabase('bojiclub_final_repair_test');
 bojiTestSchema($db,__DIR__.'/../account-server');
 $db->exec("INSERT INTO users(phone,status,created_at,updated_at) VALUES('13998765101','active',UTC_TIMESTAMP(),UTC_TIMESTAMP())");
 $uid=(int)$db->lastInsertId();$user=['id'=>$uid];
+// 会员门不消费已退役的 enforcement 开关：夹具账号直接播种有效权益。
+$db->prepare("INSERT INTO membership_entitlements(user_id,status,source,starts_at,expires_at,created_at,updated_at) VALUES(?,'active','admin',UTC_TIMESTAMP(),'2099-12-31 23:59:59',UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute([$uid]);
 $db->prepare("INSERT INTO user_action_preferences(user_id,fast_records,time_zone,weight_unit,proactive_learning,updated_at) VALUES(?,1,'Asia/Shanghai','kg',1,UTC_TIMESTAMP())")->execute([$uid]);
 $db->prepare('INSERT INTO app_states(user_id,revision,state_json,updated_at) VALUES(?,1,?,UTC_TIMESTAMP())')->execute([$uid,json_encode(['days'=>[],'profile'=>[]])]);
 $pub=appConfigDefaults();foreach(['ai_enabled','ai_streaming_v2','action_system_enabled'] as $key)$pub[$key]=true;
