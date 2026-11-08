@@ -147,7 +147,7 @@ struct BojiComponentGalleryView: View {
 
                 // Pattern 3: Metric Band
                 BojiMetricBand(items: [
-                    BojiMetricItem(title: "本周出勤", value: "3", unit: "天", note: "达标"),
+                    BojiMetricItem(title: "本周练了", value: "3", unit: "天", note: "达标"),
                     BojiMetricItem(title: "已记热量", value: "1,820", unit: "kcal", note: nil),
                     BojiMetricItem(title: "蛋白质", value: "135", unit: "g", note: "90%"),
                     BojiMetricItem(title: "睡眠", value: "7.8", unit: "h", note: "优质"),
