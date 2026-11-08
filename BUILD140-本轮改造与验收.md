@@ -252,6 +252,7 @@
 | G-15 | 自绘控件全量复扫 | ✅ 通过 | `LiquidCheckbox`／`ClubNumericKeypad`／`ConfettiView` 全库零命中；`TrainingNumericInput125`／`SmartWeightStepper` 保留同名薄封装但内部已是原生 `TextField`／系统 `Stepper`；`ClubActivityMark`／`AIProcessingMark`／`ClubWaitBar`／`BreathingPulseHalo`／`LaserScanBeamOverlay` 内部均已换原生 ProgressView／Gauge |
 | G-16 | 材质与玻璃分支全量复扫 | ✅ 通过 | `.regularMaterial`/`.ultraThinMaterial` 直写仅剩 `Design.swift:200`（桥接自身降级分支，正确）；`if #available(iOS 26` 仅剩 `Design.swift:160/197/211`（桥接自身，正确）；全库 `clubGlassEffect` 42 处均经逐处判定 |
 | G-17 | 编译回归 | ✅ 通过 | run 42467773417（head `0b638da`），产物 `dist/BojiClub-53aedefe.ipa`（37.43 MB） |
+| G-18 | P1 `RevenueCatViews.swift:318` 会员价格卡去玻璃（Chief 已拍板，不给豁免） | ⏳ 待苹果开发提交后复扫 | 拍板内容：①`:318` `clubGlassEffect` → 不透明 `cardSurface` 背景；②`selected` 描边 1.5pt 保留；③选中卡阴影 y3 → y5/blur18（对齐 L1 内容卡）；④`:317` 旧注释改为「2026-11-08 Chief 拍板改不透明，废止玻璃豁免」。复扫口径：`RevenueCatViews.swift` 内 `clubGlassEffect` 应**零命中** |
 
 **阶段 3 客户端完成条件清点**：①4 个自绘控件全换原生 ✅；②23 处材质收口 ✅；③自绘动效换系统动效（IOS-006~010）✅；④流程断点改造（IOS-012/013）✅；⑤界面设计走查达标（G-08/G-11）✅；⑥云端编译通过 ✅。**待 Chief 过目认可**；P1 `RevenueCatViews.swift:318` 待拍板，CLN-02 建议清理。
 
