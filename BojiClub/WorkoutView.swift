@@ -405,10 +405,11 @@ struct WorkoutView: View {
     /// 开始训练后把进度摘要收成一行，让第一组输入留在首屏，而不是被说明卡挤出屏幕。
     private var startedProgressStrip: some View {
         VStack(alignment: .leading, spacing: BojiLayout.inline) {
-            HStack {
-                Text("已完成 0 / \(log.totalSets) 组").bojiFont(.cardTitle)
+            HStack(alignment: .firstTextBaseline, spacing: BojiLayout.tight) {
+                BojiEditorialNumber(value: "0", scale: .display, tint: BojiColor.textPrimary)
+                Text("/ \(log.totalSets) 组").bojiType(.title).foregroundStyle(BojiColor.textTertiary)
                 Spacer()
-                Text("训练进行中").bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
+                Text("训练进行中").bojiFont(.bodyStrong).foregroundStyle(BojiColor.textSecondary)
             }
             ProgressView(value: 0, total: Double(max(1, log.totalSets)))
                 .tint(ClubBrand.accent)
@@ -417,17 +418,21 @@ struct WorkoutView: View {
         .bojiCard()
     }
 
-    /// 顶部进度摘要：真实完成数据；总训练量按已完成组计算。
+    /// 顶部进度摘要：真实完成数据；总训练量按已完成组计算。2+3 §2.2：巨号完成组数当主角，分母弱化。
     @ViewBuilder private var trainingProgressSummary: some View {
         VStack(alignment: .leading, spacing: BojiLayout.inline) {
-            HStack {
+            HStack(alignment: .bottom) {
                 VStack(alignment: .leading, spacing: BojiLayout.tight) {
-                    Text("已完成 \(log.completedSets) / \(log.totalSets) 组")
-                        .bojiFont(.cardTitle)
+                    HStack(alignment: .firstTextBaseline, spacing: BojiLayout.tight) {
+                        BojiEditorialNumber(value: "\(log.completedSets)", scale: .display, tint: BojiColor.textPrimary)
+                        Text("/ \(log.totalSets) 组")
+                            .bojiType(.title)
+                            .foregroundStyle(BojiColor.textTertiary)
+                    }
                     Text(log.workoutSavedAt != nil ? "训练已保存"
                          : log.workoutEndedAt != nil ? "训练已结束 · 点按确认保存"
-                         : log.workoutStartedAt == nil && log.completedSets == 0 ? "训练准备 · 核对动作与目标" : "训练进行中")
-                        .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
+                         : log.workoutStartedAt == nil && log.completedSets == 0 ? "先核对动作与目标" : "正在练")
+                        .bojiFont(.bodyStrong).foregroundStyle(BojiColor.textSecondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: BojiLayout.tight) {
@@ -439,7 +444,7 @@ struct WorkoutView: View {
             }
             ProgressView(value: Double(log.completedSets), total: Double(max(1, log.totalSets)))
                 .tint(ClubBrand.accent)
-                .clubMotion(value: log.completedSets)
+                .animation(BojiMotion2.progress, value: log.completedSets)
                 .accessibilityLabel("训练完成进度")
             if hasFinished {
                 Text("按已完成组统计额外负重 × 次数")

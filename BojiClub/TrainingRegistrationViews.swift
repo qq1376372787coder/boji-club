@@ -521,6 +521,21 @@ struct TrainingSetEditPanel: View {
     }
 
     private var isTimed: Bool { original.durationSeconds != nil }
+    /// 2+3 §2.4：当前值巨号当主角——已输入显示输入值，未输入显示本组目标值（真实数据，非示例）。
+    @ViewBuilder private var editorialCurrentValue: some View {
+        let raw = isTimed ? amount : weight
+        let target = isTimed
+            ? String(original.durationSeconds ?? original.reps)
+            : original.weight.formatted(.number.grouping(.never).precision(.fractionLength(0...1)))
+        let display = raw.isEmpty ? target : raw
+        BojiEditorialNumber(
+            value: display,
+            label: raw.isEmpty ? (isTimed ? "目标秒数，下方可改" : "目标重量 kg，下方可改") : (isTimed ? "当前秒数" : "当前重量 kg"),
+            scale: .editorial
+        )
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, BojiLayout.tight)
+    }
     private var dirty: Bool {
         weight != (original.hasActualEntry || isPlanTarget ? original.weight.formatted(.number.grouping(.never).precision(.fractionLength(0...1))) : "")
             || amount != (original.hasActualEntry || isPlanTarget ? String(original.durationSeconds ?? original.reps) : "")
@@ -556,6 +571,8 @@ struct TrainingSetEditPanel: View {
                 }
 
                 Section(isTimed ? "时长（秒）" : "重量（kg）") {
+                    // 2+3 §2.4：当前值 .editorial 巨号当主角（真实输入值，空显目标值），键盘仍负责编辑。
+                    editorialCurrentValue
                     HStack(spacing: BojiSpace.general) {
                         if !isTimed {
                             stepButton(symbol: "minus") { adjust(isWeight: true, positive: false) }
