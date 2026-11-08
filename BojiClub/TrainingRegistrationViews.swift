@@ -118,6 +118,7 @@ struct TrainingCollapsedExerciseCard: View {
     let completed: Int
     let moreMenu: AnyView
     let toggle: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var body: some View {
         HStack(spacing: BojiSpace.general) {
             BojiExerciseThumb(exercise: exercise, side: 52)
@@ -128,6 +129,8 @@ struct TrainingCollapsedExerciseCard: View {
                     Text("\(completed)/\(exercise.sets.count) 组")
                         .bojiFont(.label, monospacedDigits: true)
                         .foregroundStyle(BojiColor.textSecondary)
+                        .contentTransition(.numericText())
+                        .animation(reduceMotion ? nil : BojiMotion2.counter, value: completed)
                     BojiSegmentedProgress(total: exercise.sets.count, completed: completed)
                 }
             }

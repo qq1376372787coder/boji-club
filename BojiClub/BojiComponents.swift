@@ -190,7 +190,7 @@ struct BojiSegmentedProgress: View {
                 Capsule()
                     .fill(index < completed ? BojiColor.emeraldAccent : BojiColor.inputSurface)
                     .frame(height: 6)
-                    .animation(.bojiSnappy, value: completed)
+                    .animation(BojiMotion2.progress, value: completed)
             }
         }
         .accessibilityLabel("已完成 \(completed) 组，共 \(total) 组")

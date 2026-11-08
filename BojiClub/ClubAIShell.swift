@@ -1073,6 +1073,7 @@ struct ClubAIWorkspaceIdleView: View {
     @State private var showPresetPlans = false
     @State private var readingDailyReportID: String? = nil
     @State private var appliedModifierNotice: String? = nil
+    @State private var revealed = false
     @ObservedObject private var flags = FeatureFlagService.shared
 
     private var today: DayLog { store.log(for: Date()) }
@@ -1084,13 +1085,18 @@ struct ClubAIWorkspaceIdleView: View {
 
                 // 核心层级 0: Hero 玻璃流光卡（拍板 #2：保留视频感 + 动效）
                 heroGlassCard
+                    .bojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: 0)
 
-                if isNewUser {
-                    newUserDivergenceCard
+                // 首个内容区块与 Hero 构成两拍进场（stagger 0.07s，DES-004）
+                Group {
+                    if isNewUser {
+                        newUserDivergenceCard
+                    }
+
+                    // 核心层级 1: 身体战备与恢复就绪卡
+                    readinessGaugeCard
                 }
-
-                // 核心层级 1: 身体战备与恢复就绪卡
-                readinessGaugeCard
+                .bojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: 1)
 
                 // 核心层级 2: 今日战术任务看板
                 heroMissionCard
@@ -1186,7 +1192,7 @@ struct ClubAIWorkspaceIdleView: View {
             let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
             heroGlassContent(phase: phase)
         }
-        .onAppear { setupHeroVideo() }
+        .onAppear { revealed = true; setupHeroVideo() }
         .onDisappear { teardownHeroVideo() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { heroPlayer?.play() } else { heroPlayer?.pause() }
@@ -2032,5 +2038,24 @@ private struct ClubSidebarListPolicy: ViewModifier {
     @ViewBuilder func body(content: Content) -> some View {
         if floating { content.listStyle(.plain) }
         else { content.listStyle(.sidebar) }
+    }
+}
+
+/// 首页两拍进场（DES-004）：entrance 0.45s + stagger 0.07s，只动 opacity/offset。
+private struct BojiHomeEntrance: ViewModifier {
+    let revealed: Bool
+    let reduceMotion: Bool
+    let index: Int
+    func body(content: Content) -> some View {
+        content
+            .opacity(revealed || reduceMotion ? 1 : 0)
+            .offset(y: revealed || reduceMotion ? 0 : 8)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.45).delay(Double(index) * 0.07), value: revealed)
+    }
+}
+
+extension View {
+    func bojiHomeEntrance(revealed: Bool, reduceMotion: Bool, index: Int) -> some View {
+        modifier(BojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: index))
     }
 }

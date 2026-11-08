@@ -82,6 +82,7 @@
 | IOS-012 | 登录→会员门→引导→首启 walkthrough 四层状态机回写不及时卡门 | 卡门可恢复：会员门新增「重新检查会员状态」按钮（强制刷新会员权益，带检查中态） | ProfileView.swift MembershipGateView | 已修复待验 | 门页不再只能退出：刷新失败可重试；账号管理/退出路径保留 |
 | IOS-013 | 组间休息 pauseService+restDeadlines 双状态 | 以快照为准的单源校正：isPaused 变化或视图出现时同步取消过期提醒 | ClubAIShell.swift | 已修复待验 | 新增 onChange(activeWorkout?.isPaused) 与 onAppear 双保险；跨午夜边界仍待真机复核 |
 | IOS-014 | 品牌视频融入技术位预留 | AVKit/VideoPlayer + 玻璃边框，**位置已定 A：首页 Hero 卡底层**（DEC-1） | ClubAIShell.swift heroGlassCard、pbxproj | 已修复待验 | 代码层按 DES-003 方案 A 完成（AVQueuePlayer 静音循环+三闸门降级+护字渐变+44pt 玻璃暂停钮），brand-video.mp4 已入 bundle 并注册；首帧占位图留阶段 4 |
+| IOS-015 | DES-004 三场景动效落地（首页/训练中/训练完成） | 按《阶段4-动效方案-三场景》逐项实现，复用 BojiMotion2 档位，同时运动元素 ≤2 | ClubAIShell.swift、WorkoutExperience125.swift、TrainingRegistrationViews.swift、BojiComponents.swift | 已修复待验 | ①首页 Hero+首区块两拍进场 entrance 0.45+stagger 0.07（bojiHomeEntrance）；②完成页 6 事实格 stagger 0.35+0.05（整串 0.60s）+ 完成组/次数/训练量数字滚动 + 一次性成功触感；③训练中完成组数 counter + 分段进度改线性 easeOut（去弹簧假进度）；reduceMotion 全部降级 |
 
 ### B2. 界面设计 · 视觉与动效规范（规范产出后贴链接）
 

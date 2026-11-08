@@ -257,22 +257,73 @@ struct WorkoutCelebration125: View {
             Text("辛苦了，训练已完成").bojiType(.section)
             Text("\(facts.completed) 组已登记，为你保存了本次训练。").bojiType(.secondary).foregroundStyle(.secondary)
             LazyVGrid(columns: [GridItem(.flexible()),GridItem(.flexible()),GridItem(.flexible())],spacing: BojiLayout.blockGap) {
-                fact("完成组", "\(appeared ? facts.completed : 0)", "组")
-                fact("训练用时", duration, "")
-                fact("登记动作", "\(facts.registeredExercises)", "项")
-                fact("累计次数", "\(facts.reps)", "次")
-                fact("额外负重训练量", facts.volume.formatted(.number.precision(.fractionLength(0...1))), "kg·次")
-                fact("计时动作", "\(facts.seconds)", "秒")
+                // DES-004：6 格 entrance 0.35s + stagger 0.05s，整串 0.60s
+                rollingFact("完成组", target: Double(facts.completed), unit: "组", index: 0)
+                fact("训练用时", value: duration, unit: "", index: 1)
+                fact("登记动作", value: "\(facts.registeredExercises)", unit: "项", index: 2)
+                rollingFact("累计次数", target: Double(facts.reps), unit: "次", index: 3)
+                rollingFact("额外负重训练量", target: facts.volume, precision: 1, unit: "kg·次", index: 4)
+                fact("计时动作", value: "\(facts.seconds)", unit: "秒", index: 5)
             }.padding(.top, BojiLayout.inline)
         }.frame(maxWidth:.infinity).padding(.vertical, BojiLayout.cardInset)
             .onAppear { withAnimation(reduceMotion ? nil : BojiMotion2.celebrate) { appeared = true } }
+            .sensoryFeedback(.success, trigger: appeared)
     }
-    private func fact(_ title: String,_ value: String,_ unit: String) -> some View {
+    private func fact(_ title: String, value: String, unit: String, index: Int) -> some View {
         VStack(spacing: BojiLayout.tight) {
             Text(title).bojiType(.caption).foregroundStyle(.secondary)
             Text(value).bojiType(.section).contentTransition(.numericText()).lineLimit(1).minimumScaleFactor(0.65)
             Text(unit.isEmpty ? " " : unit).bojiType(.caption).foregroundStyle(.secondary)
         }.frame(maxWidth:.infinity)
+            .bojiStaggeredEntrance(appeared: appeared, reduceMotion: reduceMotion, index: index)
+    }
+
+    /// 数字滚动事实格：从 0 滚到目标值（counter linear 0.35s），减少动态效果直接落终值。
+    private func rollingFact(_ title: String, target: Double, precision: Int = 0, unit: String, index: Int) -> some View {
+        BojiRollingFact(target: target, precision: precision, reduceMotion: reduceMotion) { value in
+            VStack(spacing: BojiLayout.tight) {
+                Text(title).bojiType(.caption).foregroundStyle(.secondary)
+                Text(value).bojiType(.section).lineLimit(1).minimumScaleFactor(0.65)
+                Text(unit.isEmpty ? " " : unit).bojiType(.caption).foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .bojiStaggeredEntrance(appeared: appeared, reduceMotion: reduceMotion, index: index)
+        }
+    }
+}
+
+/// 一次性数字滚动（RollingNumericCounter 同款语义）：减少动态效果直接显示终值。
+private struct BojiRollingFact<Content: View>: View {
+    let target: Double
+    var precision: Int = 0
+    let reduceMotion: Bool
+    @ViewBuilder let content: (String) -> Content
+    @State private var display: Double = 0
+    var body: some View {
+        content(display.formatted(.number.precision(.fractionLength(precision))))
+            .onAppear {
+                if reduceMotion { display = target }
+                else { withAnimation(BojiMotion2.counter) { display = target } }
+            }
+    }
+}
+
+/// 事实格进场：opacity + scale，entrance 0.35s + stagger 0.05s（只动 transform/opacity）。
+private struct BojiStaggeredEntrance: ViewModifier {
+    let appeared: Bool
+    let reduceMotion: Bool
+    let index: Int
+    func body(content: Content) -> some View {
+        content
+            .opacity(appeared || reduceMotion ? 1 : 0)
+            .scaleEffect(appeared || reduceMotion ? 1 : 0.96)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.35).delay(Double(index) * 0.05), value: appeared)
+    }
+}
+
+extension View {
+    func bojiStaggeredEntrance(appeared: Bool, reduceMotion: Bool, index: Int) -> some View {
+        modifier(BojiStaggeredEntrance(appeared: appeared, reduceMotion: reduceMotion, index: index))
     }
 }
 
