@@ -21,6 +21,8 @@ struct WorkoutView: View {
     @State private var showLibrary = false
     @State private var restEnd: Date?
     @State private var restPausedRemaining: TimeInterval?
+    /// 本次组间休息总时长（秒），用于环形进度（拍板 #3：计时器环形+大字）
+    @State private var restTotal: TimeInterval = 90
     @State private var restOwnerID: Int?
     @State private var restDateKey = ""
     @State private var shareDraft: ShareDraft?
@@ -541,6 +543,7 @@ struct WorkoutView: View {
                     date: selectedDate,
                     expandedID: $expandedExerciseID,
                     restEnd: $restEnd,
+                    restTotal: $restTotal,
                     onAddNew: { showLibrary = true }
                 ).transition(ClubMotion.transition(reduced: reduceMotion))
             }
@@ -572,10 +575,25 @@ struct WorkoutView: View {
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 let remaining = max(0, Int(ceil(end.timeIntervalSince(context.date))))
                 VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                    HStack {
-                        Text(remaining > 0 ? String(format: "%02d:%02d", remaining / 60, remaining % 60) : "休息完成")
-                            .bojiType(.section)
-                        Text("组间恢复").bojiType(.caption).foregroundStyle(.secondary)
+                    HStack(spacing: BojiLayout.rowGap) {
+                        // 拍板 #3：环形进度 + 大字时间（Reduce Motion 下为静态环）
+                        ZStack {
+                            Circle().stroke(BojiColor.brandMist, lineWidth: 5)
+                            Circle()
+                                .trim(from: 0, to: restTotal > 0 ? max(0, min(1, Double(remaining) / restTotal)) : 0)
+                                .stroke(ClubBrand.accent, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                                .rotationEffect(.degrees(-90))
+                                .animation(reduceMotion ? nil : .linear(duration: 0.9), value: remaining)
+                            Text(remaining > 0 ? String(format: "%02d:%02d", remaining / 60, remaining % 60) : "完成")
+                                .bojiFont(.cardTitle, monospacedDigits: true)
+                                .foregroundStyle(BojiColor.textPrimary)
+                        }
+                        .frame(width: 84, height: 84)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("组间恢复").bojiType(.label).foregroundStyle(BojiColor.textPrimary)
+                            Text(remaining > 0 ? "保持呼吸 · 准备下一组" : "可以开始下一组")
+                                .bojiType(.caption).foregroundStyle(BojiColor.textTertiary)
+                        }
                         Spacer()
                     }
                     if restTypeSize.isAccessibilitySize {
@@ -652,12 +670,14 @@ private struct TrainingExerciseCard: View {
     @State private var timedSet: TrainingSet?
     @AppStorage("training.rest.seconds") private var restSeconds = 60
     @Binding var restEnd: Date?
+    @Binding var restTotal: TimeInterval
 
-    init(exercise: Exercise, date: Date, expandedID: Binding<UUID?>, restEnd: Binding<Date?>, onAddNew: @escaping () -> Void) {
+    init(exercise: Exercise, date: Date, expandedID: Binding<UUID?>, restEnd: Binding<Date?>, restTotal: Binding<TimeInterval>, onAddNew: @escaping () -> Void) {
         self.exercise = exercise
         self.date = date
         self._expandedID = expandedID
         self._restEnd = restEnd
+        self._restTotal = restTotal
         self.onAddNew = onAddNew
     }
     private var expanded: Bool { expandedID == exercise.id }
@@ -893,6 +913,7 @@ private struct TrainingExerciseCard: View {
             let day = store.log(for: date).trainingLog
             let restSeconds = exercise.restSeconds ?? self.restSeconds
             if restSeconds > 0 && day.completedSets < day.totalSets && (Calendar.current.isDateInToday(date) || WorkoutTiming.isOngoing(day,on:date)) {
+                restTotal = TimeInterval(restSeconds)
                 restEnd = Date().addingTimeInterval(TimeInterval(restSeconds))
             } else { restEnd = nil }
         }

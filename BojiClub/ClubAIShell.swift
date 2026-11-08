@@ -33,12 +33,9 @@ final class FeatureFlagService: ObservableObject {
         aiFastIntentV1 = remote?.config.aiFastIntentV1 ?? true
         aiRouterV3 = remote?.config.aiRouterV3 ?? true
         streamingV2 = remote?.config.aiStreamingV2 ?? true
-<<<<<<< HEAD
         coachBackendEnabled = remote?.config.coachBackendEnabled ?? false
-=======
         runV2Enabled = remote?.config.aiRunV2Enabled ?? false
         runV2Kinds = remote?.config.aiRunV2Kinds ?? ""
->>>>>>> feature/sse-report
     }
 }
 
@@ -1059,6 +1056,7 @@ struct ClubAIWorkspaceIdleView: View {
     @EnvironmentObject private var health: HealthDataService
     @EnvironmentObject private var clubSeason: ClubSeasonService
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showSeason = false
     @State private var showPresetPlans = false
     @State private var readingDailyReportID: String? = nil
@@ -1071,6 +1069,9 @@ struct ClubAIWorkspaceIdleView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
                 headerArea
+
+                // 核心层级 0: Hero 玻璃流光卡（拍板 #2：保留视频感 + 动效）
+                heroGlassCard
 
                 if isNewUser {
                     newUserDivergenceCard
@@ -1087,6 +1088,32 @@ struct ClubAIWorkspaceIdleView: View {
 
                 // 核心层级 4: 智能分析专区（AI 训练计划 / AI 每日日报 / AI 每周周报）
                 intelligenceHubSection
+
+                // 核心层级 5: 俱乐部成长季入口（复活：原 showSeason 死代码）
+                Button { showSeason = true } label: {
+                    HStack(spacing: BojiLayout.rowGap) {
+                        Image(systemName: "seal.fill")
+                            .font(.system(size: 22))
+                            .foregroundStyle(BojiColor.brandGold)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("俱乐部成长季")
+                                .bojiType(.label)
+                                .foregroundStyle(BojiColor.textPrimary)
+                            Text("赛季任务 · 徽章 · 奖励")
+                                .bojiType(.caption)
+                                .foregroundStyle(BojiColor.textTertiary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.textTertiary)
+                    }
+                    .padding(BojiLayout.cardInset)
+                    .frame(maxWidth: .infinity, minHeight: 56)
+                    .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("v2-home-club-season")
 
                 if isNewUser {
                     Button("设置通知与健康授权", action: onOpenPermissions)
@@ -1110,6 +1137,11 @@ struct ClubAIWorkspaceIdleView: View {
             NavigationStack {
                 ClubSeasonView()
                     .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showSeason = false } } }
+                    .task {
+                        // 复活修复：打开赛季页时主动刷新（此前 refresh 无调用方，页面恒空）
+                        await store.syncNow()
+                        await clubSeason.refresh(account: account)
+                    }
             }
         }
         .sheet(isPresented: $showPresetPlans) {
@@ -1135,6 +1167,42 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     // MARK: - 顶部标题区
+    /// Hero 玻璃流光卡：非循环慢周期光带 + 玻璃材质（iOS 26 Liquid Glass / 降级）。
+    /// 三闸门：Reduce Motion 时静态；「视频资产待补」——拿到 mp4 后替换为 VideoPlayer。
+    private var heroGlassCard: some View {
+        TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion)) { context in
+            let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
+            return heroGlassContent(phase: phase)
+        }
+    }
+
+    private func heroGlassContent(phase: Double) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous)
+                .fill(BojiColor.brandMist.opacity(0.55))
+            LinearGradient(
+                colors: [ClubBrand.accent.opacity(0), ClubBrand.accent.opacity(0.30), ClubBrand.accent.opacity(0)],
+                startPoint: .leading, endPoint: .trailing
+            )
+            .offset(x: -220 + 440 * phase)
+            VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                Text("薄肌俱乐部")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textSecondary)
+                Text("今天的训练，已经为你准备好")
+                    .bojiFont(.cardTitle)
+                    .foregroundStyle(BojiColor.textPrimary)
+                Text("按计划开始 · 组间自动计时 · 训练后自动生成日报")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+            }
+            .padding(BojiLayout.cardInset)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(height: 132)
+        .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))
+    }
+
     private var headerArea: some View {
         HStack(alignment: .center) {
             HStack(spacing: BojiLayout.rowGap) {

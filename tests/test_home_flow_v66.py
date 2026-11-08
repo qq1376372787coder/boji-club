@@ -38,7 +38,7 @@ assert "这一天是计划休息日" in rest_branch
 assert "临时加练 · 从动作库选择" in rest_branch
 assert "AI 制定训练计划" not in rest_branch
 assert "PlanCreationSheet(date: selectedDate)" in workout
-assert "安排重复计划或使用 AI" in workout
+assert "安排重复计划或自动生成" in workout  # 2026-11-08 文案去 AI 味（诗诗替换表）
 assert "return !cycle.plannedDates.contains(key)" in workout
 
 assert "ViewThatFits(in: .horizontal)" in ai

@@ -314,7 +314,8 @@ private struct MembershipPlanOption: View {
                 }
             }
             .padding(BojiSpace.workoutCardInset).frame(maxWidth: .infinity, alignment: .leading)
-            .background(selected ? BojiColor.brandMist.opacity(0.4) : BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
+            // 拍板 #6：会员价格卡用玻璃（iOS 26 Liquid Glass；降级 regularMaterial/cardSurface）
+            .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous)
                     .stroke(selected ? ClubBrand.accent : BojiColor.outline, lineWidth: selected ? 1.5 : 0.5)
