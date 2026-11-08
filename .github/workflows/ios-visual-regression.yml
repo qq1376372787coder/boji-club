@@ -7,12 +7,16 @@ run-name: iOS Visual Regression ${{ github.event.inputs.build_id || github.ref_n
 # 目的：发货前团队自己先看到界面，不再让用户当第一个看的人。
 #
 # 触发方式：
-#   1) push tag `ios-build/*` —— 跟随每批构建，自动出全页面截图（每批归档）；
-#   2) push tag `ios-shots/*` 或 workflow_dispatch —— 单独补跑。
+#   1) workflow_run —— 跟随「iOS Build」完成事件，每批构建成功后自动出图。
+#      builder 走「工作树快照 + workflow_dispatch」，不产 ios-build/* 标签，
+#      所以挂 build 的完成事件，再从 refs/ios-builder/jobs/* 取最新快照来跑。
+#   2) push tag `ios-shots/*` 或 workflow_dispatch —— 手动补跑。
 on:
+  workflow_run:
+    workflows: ["iOS Build"]
+    types: [completed]
   push:
     tags:
-      - 'ios-build/*'
       - 'ios-shots/*'
   workflow_dispatch:
     inputs:
@@ -28,12 +32,28 @@ on:
 
 jobs:
   visual:
+    # 跟随构建触发时，只在构建成功后出图
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: macos-latest
     timeout-minutes: 90
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: 跟随构建快照
+        if: github.event_name == 'workflow_run'
+        run: |
+          set -e
+          # builder 推的快照 ref 形如 refs/ios-builder/jobs/<id>，取最新一个
+          git fetch --depth=1 origin "+refs/ios-builder/jobs/*:refs/remotes/origin/ios-builder/jobs/*"
+          LATEST=$(git for-each-ref --sort=-committerdate --format='%(refname)' refs/remotes/origin/ios-builder/jobs/ | head -1)
+          if [ -z "$LATEST" ]; then
+            echo "::error::没找到构建快照 ref（refs/ios-builder/jobs/*）"
+            exit 1
+          fi
+          echo "使用构建快照: $LATEST"
+          git checkout --force "$LATEST"
 
       - name: Checkout working-tree snapshot
         if: github.event.inputs.snapshot_ref != ''
@@ -228,10 +248,10 @@ jobs:
           # 出图对账：列出实际到图的 R 编号，并标出 R01–R28 里缺的，
           # 缺页=覆盖缺口，不许默默少图（测试验收 按编号对账）。
           cd test-results/shots
-          ls -1 *.png 2>/dev/null | sed -E 's/^(R[0-9]+)-.*/\1/' | sort -u -V > /tmp/have.txt || true
+          ls -1 *.png 2>/dev/null | sed -E 's/^(R[0-9]+[a-z]?)-.*/\1/' | sort -u -V > /tmp/have.txt || true
           MISSING=""
           for i in $(seq -w 1 28); do
-            grep -qx "R$i" /tmp/have.txt 2>/dev/null || MISSING="$MISSING R$i"
+            grep -q "^R$i" /tmp/have.txt 2>/dev/null || MISSING="$MISSING R$i"
           done
           {
             echo "# 截图 R 编号清单"
