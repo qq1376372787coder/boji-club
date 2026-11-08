@@ -322,7 +322,7 @@ enum DomainCommandType {
 
 struct DomainCommandOutcome: Equatable {
     /// URLErrors that mean the request never reached the server: retrying while
-    /// offline must not count against the blocked-after-6-attempts cap.
+    /// offline must not count against the retry schedule.
     static let offlineURLErrorCodes: Set<URLError.Code> = [
         .notConnectedToInternet, .networkConnectionLost, .timedOut, .cannotFindHost,
         .cannotConnectToHost, .dnsLookupFailed, .dataNotAllowed, .internationalRoamingOff,

@@ -304,7 +304,7 @@ struct TrainingSetRowView: View {
             Button(action: {
                 if isLastUncompletedSet { BojiHaptics.heavyDrop() } else { BojiHaptics.latch() }
                 toggleComplete()
-            }) label: {
+            }) {
                 Image(systemName: "circle")
                     .font(.system(size: 28, weight: .semibold))
                     .foregroundStyle(BojiColor.textTertiary.opacity(0.55))

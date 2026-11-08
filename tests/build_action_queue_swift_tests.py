@@ -42,10 +42,10 @@ sendHook={q.pendingDomainCommands.append(queued("B"))};await q.run()
 check(q.pendingDomainCommands.map(\.commandID)==["B"],"awaited command does not delete concurrent enqueue")
 deferred=true
 let retryQueue=QueueFixture();retryQueue.pendingDomainCommands=[queued("R")]
-for _ in 0..<3{await retryQueue.run()}
+for _ in 0..<3{retryQueue.pendingDomainCommands[0].nextAttemptAt=nil;await retryQueue.run()}
 check(retryQueue.pendingDomainCommands.first?.attempts==3 && retryQueue.persists==3,"every retry count persists")
 let retainedQueue=QueueFixture();retainedQueue.pendingDomainCommands=[queued("D",5)];await retainedQueue.run()
-check(retainedQueue.pendingDomainCommands.count==1 && retainedQueue.pendingDomainCommands[0].blocked==true,"attempt limit blocks and retains command")
+check(retainedQueue.pendingDomainCommands.count==1 && retainedQueue.pendingDomainCommands[0].blocked!=true && retainedQueue.pendingDomainCommands[0].nextAttemptAt != nil,"deferred commands back off and stay retryable instead of blocking")
 let switchQueue=QueueFixture();switchQueue.pendingDomainCommands=[queued("old")]
 sendHook={switchQueue.accountChanged=true;switchQueue.pendingDomainCommands=[queued("new")]};await switchQueue.run()
 check(switchQueue.pendingDomainCommands[0].commandID=="new" && switchQueue.persists==0,"old network reply cannot mutate new account queue")

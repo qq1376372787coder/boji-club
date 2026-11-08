@@ -155,12 +155,12 @@ nginx -t
 install -m 0644 deploy/bojiclub-account-deletions.service /etc/systemd/system/bojiclub-account-deletions.service
 install -m 0644 deploy/bojiclub-account-deletions.timer /etc/systemd/system/bojiclub-account-deletions.timer
 php migrate-v2-repair.php --check
-for worker in action-jobs ai-runs ai-run-prune domain-outbox domain-notifications domain-reconcile; do
+for worker in action-jobs ai-runs ai-run-prune domain-outbox domain-notifications domain-reconcile membership-refresh; do
     install -m 0644 "deploy/bojiclub-$worker.service" "/etc/systemd/system/bojiclub-$worker.service"
     install -m 0644 "deploy/bojiclub-$worker.timer" "/etc/systemd/system/bojiclub-$worker.timer"
 done
 systemctl daemon-reload
-for worker in action-jobs ai-runs ai-run-prune domain-outbox domain-notifications domain-reconcile; do systemctl enable --now "bojiclub-$worker.timer"; done
+for worker in action-jobs ai-runs ai-run-prune domain-outbox domain-notifications domain-reconcile membership-refresh; do systemctl enable --now "bojiclub-$worker.timer"; done
 systemctl enable --now bojiclub-account-deletions.timer
 systemctl reload "$php_service"
 systemctl reload nginx

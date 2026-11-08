@@ -7,7 +7,7 @@ import WidgetKit
 import ImageIO
 
 
-struct ClubNotificationRoute: Identifiable {
+struct ClubNotificationRoute: Identifiable, Equatable {
     let id = UUID()
     let kind: String
     let date: String

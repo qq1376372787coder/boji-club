@@ -1177,7 +1177,7 @@ struct ClubAIWorkspaceIdleView: View {
     private var heroGlassCard: some View {
         TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion)) { context in
             let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
-            return heroGlassContent(phase: phase)
+            heroGlassContent(phase: phase)
         }
         .onAppear { setupHeroVideo() }
         .onDisappear { teardownHeroVideo() }
@@ -1203,13 +1203,37 @@ struct ClubAIWorkspaceIdleView: View {
         heroLooper = nil
     }
 
+    /// AVPlayerLayer 宿主视图：系统 VideoPlayer 没有 videoGravity，品牌视频需要 resizeAspectFill 铺满。
+    private final class HeroVideoContainerView: UIView {
+        override class var layerClass: AnyClass { AVPlayerLayer.self }
+        private var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
+        var player: AVQueuePlayer? {
+            get { playerLayer.player as? AVQueuePlayer }
+            set {
+                playerLayer.player = newValue
+                playerLayer.videoGravity = .resizeAspectFill
+            }
+        }
+    }
+
+    private struct HeroVideoSurface: UIViewRepresentable {
+        let player: AVQueuePlayer
+        func makeUIView(context: Context) -> HeroVideoContainerView {
+            let view = HeroVideoContainerView()
+            view.player = player
+            return view
+        }
+        func updateUIView(_ uiView: HeroVideoContainerView, context: Context) {
+            uiView.player = player
+        }
+    }
+
     private func heroGlassContent(phase: Double) -> some View {
         ZStack {
             // z0 视频层：未就绪时用品牌雾蓝底防黑块
             Group {
                 if let heroPlayer {
-                    VideoPlayer(player: heroPlayer)
-                        .videoGravity(.resizeAspectFill)
+                    HeroVideoSurface(player: heroPlayer)
                         .accessibilityHidden(true)
                         .allowsHitTesting(false)
                 } else {
