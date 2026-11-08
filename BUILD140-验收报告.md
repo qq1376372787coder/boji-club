@@ -132,7 +132,29 @@
 
 | 轮次 | 日期 | Chief 判定 | 开出问题单 | 测试验收处置 |
 |---|---|---|---|---|
-| 第 1 轮 | 2026-11-08 | ③④⑤ 通过；①② 有条件通过 | **T-1** BUG-009 强制解包 guard 加固（苹果开发）<br>**T-2** BE-005 AI 完成状态改回调/定时写入 + BE-007 多设备同步排队合并（后端开发） | 待两单修复后补充复验；真机补验清单 7 项 + A 表设备项正式挂起 |
+| 第 1 轮 | 2026-11-08 | ③④⑤ 通过；①② 有条件通过 | **T-1** BUG-009 强制解包 guard 加固（苹果开发）<br>**T-2** BE-005 AI 完成状态改回调/定时写入 + BE-007 多设备同步排队合并（后端开发） | **T-2 复验通过**；**T-1 部分闭环**（6 处重点里 5 处真收口，`ExerciseLibraryView` 仍留 3 处 `components.url!`，见下） |
+
+### 补充复验（第 1 轮问题单）
+
+**T-1（BUG-009 强制解包加固）—— 部分闭环，剩 3 处**
+
+| 重点处 | 复验结论 | 证据 |
+|---|---|---|
+| `AppStore.swift` 饮食记录索引 | ✅ 真收口 | `AppStore.swift:2126` `guard let day = state.days[key], day.meals.indices.contains(index) else {` |
+| `MembershipService` 通知文案 | ✅ 真收口 | `MembershipService.swift:241` `self.state = .failed(self.notice ?? fallback)` |
+| `HealthViews` 品牌链接 | ✅ 真收口 | `HealthViews.swift:206` `if let brandURL = URL(string: brand.2) {` |
+| `ExerciseLibraryView` 三处 | ⚠️ **未真正收口** | `:140/169/181` 只给 `URLComponents(url:...)` 的**初始化**加了 guard，但 `:146/173/185` 仍是 `components.url!`——`URLComponents.url` 本身是 Optional，强制解包仍在。实际风险已大幅降低（base 为常量合法 URL、仅追加 path 与 query），但 BUG-009 点名的这三处字面上仍存在。建议改为 `guard let url = components.url else { throw URLError(.badURL) }` 后 `get(url)` |
+
+**全库复扫**：强制解包命中由 31 处降至 **13 处**，其中 10 处为同一行前置 nil 检查保护（安全）或 UIKit 委托签名（`WKNavigation!`，不可改），**仅 `ExerciseLibraryView` 3 处为真实强制解包**。另有 `ClubAIShell.swift` 自有 `layerClass` 的 `as!`（苹果开发已加注释说明安全性，属 SwiftUI 标准写法）。
+
+**T-2（BE-005 / BE-007）—— 复验通过**
+
+| 单号 | 复验结论 | 证据 |
+|---|---|---|
+| T-2a BE-005 AI 完成状态 | ✅ 通过 | 新增后台 worker `account-server/process-ai-completion-refresh.php` + `deploy/bojiclub-ai-completion-refresh.{service,timer}`，已收录进 `deploy.sh:158/163`；请求路径 `verifiedAICompletion`（`ai-response.php:73`）降级为**兜底**，超时由 1–2 秒放宽到 4 秒并注明「后台定时对账为主路径」，不再因 worker 繁忙误判「处理中」 |
+| T-2b BE-007 多设备同步锁 | ✅ 通过 | `cloud-parts.php:72-87` `cloudCommitLock` 改为**排队等锁**：`$deadline = microtime(true) + $waitSeconds`，`while (!flock(...))` 每 100ms 轮询，**到期才**返回 429 + `Retry-After: 5`。不再是「第二台设备立即 429」 |
+
+**结论**：T-2 通过；T-1 需补 `ExerciseLibraryView` 3 处后再关闭。两单对应编译：T-2 随 `9601226`、T-1 随 `fca7e98`（run 42473601067 → `dist/BojiClub-8c541f4c.ipa`，37.48 MB）均通过。
 
 **问题单登记（详见台账 I-3 遗留项清单）**
 
