@@ -1167,7 +1167,9 @@ jobs:
             fi
 
             echo "Running: $BUILD_CMD"
-            eval $BUILD_CMD
+            # 用 script 把完整输出落到日志文件（保留退出码），失败时 Extract build
+            # errors 一步会抓出 xcodebuild 错误行，不必再下载日志归档。
+            script -q -e -c "$BUILD_CMD" "$RUNNER_TEMP/xcodebuild.log"
           else
             BUILD_CMD="xcodebuild"
             if [ -n "$WORKSPACE" ]; then
@@ -1205,7 +1207,9 @@ jobs:
             fi
 
             echo "Running: $BUILD_CMD"
-            eval $BUILD_CMD
+            # 用 script 把完整输出落到日志文件（保留退出码），失败时 Extract build
+            # errors 一步会抓出 xcodebuild 错误行，不必再下载日志归档。
+            script -q -e -c "$BUILD_CMD" "$RUNNER_TEMP/xcodebuild.log"
           fi
 
           # Create IPA
@@ -1299,6 +1303,41 @@ jobs:
         run: |
           if [ -n "$KEYCHAIN_PATH" ] && [ -f "$KEYCHAIN_PATH" ]; then
             security delete-keychain "$KEYCHAIN_PATH" || true
+          fi
+
+      # xcodebuild 的错误行（.swift:行号: error: ...）在默认日志里要翻很久，
+      # GitHub 的 check-run annotations 只显示退出码。这里把错误行抓出来写进
+      # Build Summary，并逐条 ::error:: 标注，让失败原因在 Actions 页面直接可见。
+      - name: Extract build errors
+        if: always() && failure()
+        env:
+          DERIVED_DATA_PATH: ${{ github.workspace }}/DerivedData
+        run: |
+          set -u
+          LOG_DIR="$RUNNER_TEMP/boji-build-logs"
+          mkdir -p "$LOG_DIR"
+          # Build IPA 一步已把 xcodebuild 完整输出落到这里。
+          if [ -f "$RUNNER_TEMP/xcodebuild.log" ]; then
+            grep -aE "error:|error \(" "$RUNNER_TEMP/xcodebuild.log" | tail -40 > "$LOG_DIR/errors.txt" || true
+          fi
+          # 没有落盘日志时，从 DerivedData 的编译日志里找。
+          if [ ! -s "$LOG_DIR/errors.txt" ] && [ -d "$DERIVED_DATA_PATH/Logs/Build" ]; then
+            find "$DERIVED_DATA_PATH/Logs/Build" -name '*.xcactivitylog' -print -quit 2>/dev/null \
+              | while IFS= read -r log; do
+                  gunzip -c "$log" 2>/dev/null | grep -aE "error:|error \(" | tail -40 > "$LOG_DIR/errors.txt" || true
+                done
+          fi
+          if [ -s "$LOG_DIR/errors.txt" ]; then
+            echo "## Build Errors" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            cat "$LOG_DIR/errors.txt" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            # 逐条标成 GitHub annotation，Actions 页面会直接显示在对应行。
+            while IFS= read -r line; do
+              echo "::error::$line"
+            done < "$LOG_DIR/errors.txt"
+          else
+            echo "未找到 xcodebuild 错误行；完整日志见本 job 的 Log 归档。" >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Build summary
