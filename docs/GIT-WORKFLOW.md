@@ -33,6 +33,57 @@
 5. **禁止改写历史**：不 `git commit --amend` 已合并的提交、不 `reset --hard`
    覆盖工作区、不 `git checkout -- <别人的文件>`。
 
+## 游离头指针（detached HEAD）危害与防护
+
+**事故**：共享工作区已发生 3 次「提交落在游离头上」（苹果开发 ×2、文档管理 ×1）。
+根因是同一条习惯命令：
+
+```sh
+git checkout origin/main    # ❌ 远端跟踪引用一 checkout 就进游离态
+```
+
+此后 `git commit` 不会进入任何分支；等 `git switch main` 切回来后，那些提交就从
+main 上消失（只能靠 reflog / cherry-pick 捞回）。
+
+**只看远端状态，用只读命令**（不动 HEAD）：
+
+```sh
+git fetch origin                 # 更新远端引用
+git log origin/main -5           # 看远端历史
+git diff main origin/main        # 看差异
+```
+
+**已装的本地守卫**（`.git/hooks/`，不入 git；换机或重建 `.git` 后需重装）：
+
+| 钩子 | 作用 |
+|---|---|
+| `pre-commit` | 游离头状态下**拒绝提交**，并打印恢复步骤 |
+| `post-checkout` | 一旦 checkout 进游离态**立即告警**，提示 `git switch main` |
+
+重装内容（分别写入 `.git/hooks/pre-commit` 与 `.git/hooks/post-checkout`）：
+
+```sh
+#!/bin/sh
+# pre-commit
+if [ -z "$(git symbolic-ref -q HEAD)" ]; then
+  echo "已阻止提交：当前是游离头指针状态（detached HEAD）。"
+  echo "恢复：git switch main && git status 确认后再提交。"
+  exit 1
+fi
+```
+
+```sh
+#!/bin/sh
+# post-checkout
+if [ -z "$(git symbolic-ref -q HEAD)" ]; then
+  echo "注意：这次 checkout 已把 HEAD 切到游离状态。看完请 git switch main"
+fi
+```
+
+**builder 与游离头无关**：`logs-builder-*.log` 里的 “Checkout repository /
+Checkout working-tree snapshot” 是 GitHub Actions **云端 runner** 的步骤名，
+不碰本地 HEAD。排查本地 HEAD 变动用 `git reflog`。
+
 ## 提交前自检清单（每次提交过一遍）
 
 ```sh
