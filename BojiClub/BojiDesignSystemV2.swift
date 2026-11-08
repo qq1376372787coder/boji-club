@@ -197,7 +197,7 @@ struct BojiEditorialNumber: View {
         }
         var tracking: CGFloat {
             switch self {
-            case .display: -3
+            case .display: -3.6   // 施工卡 §一：T1 88 heavy 等宽 kerning -3.6
             case .editorial: -3.5
             case .hero: -2
             }

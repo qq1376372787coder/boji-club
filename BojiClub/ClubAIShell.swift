@@ -1115,11 +1115,11 @@ struct ClubAIWorkspaceIdleView: View {
                 startPoint: .leading, endPoint: .trailing
             )
             .offset(x: -220 + 440 * phase)
-            // 底部 60pt 渐隐：视频与页面底色缝合（不再需要压字渐变）
+            // 底部 52pt 渐隐：视频与页面底色缝合（施工卡 §一 权威值；不再需要压字渐变）
             VStack {
                 Spacer(minLength: 0)
                 LinearGradient(colors: [Color.clear, BojiColor.pageBackground], startPoint: .top, endPoint: .bottom)
-                    .frame(height: 60)
+                    .frame(height: 52)
                     .allowsHitTesting(false)
             }
             // 顶栏：左上品牌小字 T5 11（白 0.94 + 1px 黑投影）；右上暂停钮（视觉 30、命中 44×44、玻璃）
@@ -1552,7 +1552,8 @@ struct ClubAIWorkspaceIdleView: View {
                         .overlay(alignment: .bottom) {
                             Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline)
                         }
-                        .bojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: min(index, 5))
+                        // 反向红线：stagger 只做前 6 行，第 7 行起不做动画（多了拖沓）
+                        .modifier(BojiStaggerFirstSix(index: index, revealed: revealed, reduceMotion: reduceMotion))
                     }
                 }
                 .overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
@@ -1947,5 +1948,20 @@ private struct BojiHomeEntrance: ViewModifier {
 extension View {
     func bojiHomeEntrance(revealed: Bool, reduceMotion: Bool, index: Int) -> some View {
         modifier(BojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: index))
+    }
+}
+
+/// 列表 stagger 上限（动效规格反向红线）：只给前 6 行做进场错开，第 7 行起直接显示——
+/// 全列表错开会拖沓，而且第 7 行多在首屏外，看不见却占着动画。
+private struct BojiStaggerFirstSix: ViewModifier {
+    let index: Int
+    let revealed: Bool
+    let reduceMotion: Bool
+    @ViewBuilder func body(content: Content) -> some View {
+        if index < 6 {
+            content.modifier(BojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: index))
+        } else {
+            content
+        }
     }
 }
