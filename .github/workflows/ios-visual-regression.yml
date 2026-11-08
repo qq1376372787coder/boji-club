@@ -222,6 +222,33 @@ jobs:
             echo "没有 xcresult 产物，跳过导出"
           fi
 
+      - name: 生成 R 编号清单
+        if: always() && steps.guard.outputs.skip != 'true'
+        run: |
+          # 出图对账：列出实际到图的 R 编号，并标出 R01–R28 里缺的，
+          # 缺页=覆盖缺口，不许默默少图（测试验收 按编号对账）。
+          cd test-results/shots
+          ls -1 *.png 2>/dev/null | sed -E 's/^(R[0-9]+)-.*/\1/' | sort -u -V > /tmp/have.txt || true
+          {
+            echo "# 截图 R 编号清单"
+            echo ""
+            echo "- 实际导出 PNG: $(ls -1 *.png 2>/dev/null | wc -l | tr -d ' ') 张"
+            echo "- 覆盖 R 编号: $(wc -l < /tmp/have.txt | tr -d ' ') 个"
+            echo ""
+            echo "## 已到编号"
+            echo '```'
+            printf '%s ' $(cat /tmp/have.txt 2>/dev/null); echo
+            echo '```'
+            echo ""
+            echo "## R01–R28 中缺失"
+            echo '```'
+            for i in $(seq -w 1 28); do
+              grep -qx "R$i" /tmp/have.txt 2>/dev/null || echo -n "R$i "
+            done; echo
+            echo '```'
+          } > R-manifest.md
+          cat R-manifest.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload visual regression shots
         if: always() && steps.guard.outputs.skip != 'true'
         uses: actions/upload-artifact@v7
