@@ -328,6 +328,35 @@ final class CrossPageParityTests: XCTestCase {
         XCTAssertEqual(recent.count >= 3, true, "方向阈值：3 次")
     }
 
+    /// **体重趋势阈值统一**：≥2 次给差值，≥3 次才给方向（口径表 §四裁定）。
+    /// 现状：首页与周报各写一套（2 次 / 3 次混用），同一段数据两处判定可能不同。
+    func testWeightTrendThresholdsAreUnified() {
+        let today = Date()
+        let calendar = ClubDates.calendar
+        func key(_ offset: Int) -> String {
+            ClubDates.key(calendar.date(byAdding: .day, value: -offset, to: today) ?? today)
+        }
+        func day(kg: Double, offset: Int) -> DayLog {
+            let date = calendar.date(byAdding: .day, value: -offset, to: today) ?? today
+            return DayLog(bodyWeight: BodyWeightEntry(kilograms: kg, updatedAt: date, recordedAt: date))
+        }
+
+        // 恰好 2 次测量：给差值（-1.0），但不给方向
+        var two: [String: DayLog] = [key(1): day(kg: 70.0, offset: 1), key(0): day(kg: 69.0, offset: 0)]
+        let twoState = makeState(days: two)
+        let twoStart = calendar.date(byAdding: .day, value: -1, to: today) ?? today
+        let twoWeek = WeeklyMetricsCalculator.compute(state: twoState, start: twoStart, end: today)
+        XCTAssertEqual(twoWeek.body?.weight_change_kg, -1.0, accuracy: 0.05, "2 次测量给差值")
+        XCTAssertEqual(twoWeek.body?.weight_trend, "insufficient_data", "2 次测量不给方向（阈值 3）")
+
+        // 只有 1 次测量：差值也不给
+        var one: [String: DayLog] = [key(0): day(kg: 69.0, offset: 0)]
+        let oneState = makeState(days: one)
+        let oneWeek = WeeklyMetricsCalculator.compute(state: oneState, start: today, end: today)
+        XCTAssertNil(oneWeek.body?.weight_change_kg, "1 次测量不给差值")
+        XCTAssertEqual(oneWeek.body?.weight_trend, "insufficient_data")
+    }
+
     /// 缺陷复现：一天里有多条称重记录时，趋势页只认单条 `bodyWeight`，漏掉 `bodyMeasurements`。
     /// 根因：TrendAnalysis.swift:476 用 `day.bodyWeight?.measuredKilograms`，
     /// 而记录页权威来源是 `BodyWeightHistory.points`（DailyExperience.swift:287，取当日全部有效测量）。
@@ -413,6 +442,32 @@ final class CrossPageParityTests: XCTestCase {
             }
         }
         XCTAssertEqual(perDayFlooredMinutes, 7, "旧实现的错值：90 秒 → 1 分钟 × 7 = 7 分钟（用于钉死该缺陷）")
+    }
+
+    /// **契约语义：`duration_minutes` 只表示「场次墙钟时长」，不许拿计时秒数冒充。**
+    ///
+    /// 修复前 `Models.swift:346` 是「有 elapsed 用 elapsed，否则用 timed」——一字段两含义：
+    /// 同一个 `duration_minutes` 在正常数据里是墙钟时长，在遗留数据里却变成计时秒数，
+    /// 日报和周报拿到的是两个意思的数。
+    ///
+    /// 裁定（产品经理）：去掉 timed 兜底分支，`duration_minutes` = `elapsed > 0 ? elapsed/60 : nil`；
+    /// 要显示计时时长时客户端自己从 `confirmedTraining.timedSeconds` 算，不进契约、不欠服务端。
+    func testTimedOnlyWorkoutDoesNotMasqueradeAsTrainingDuration() {
+        let today = Date()
+        var day = DayLog()
+        // 遗留路径：有保存标记、有完成组，但没有场次起止时间 → elapsed == 0
+        day.exercises = [Exercise(name: "平板支撑", muscle: "核心",
+                                  sets: [TrainingSet(weight: 0, reps: 1, completed: true, durationSeconds: 60)],
+                                  libraryID: "0043")]
+        day.workoutSavedAt = today
+        // 故意不设 workoutStartedAt / workoutEndedAt
+
+        XCTAssertEqual(day.confirmedTraining.elapsedSeconds, 0, "夹具前提：elapsed 为 0")
+        XCTAssertGreaterThan(day.confirmedTraining.timedSeconds, 0, "夹具前提：有计时秒数")
+
+        let metrics = day.deterministicMetrics(dateKey: ClubDates.key(today))
+        XCTAssertNil(metrics.training?.duration_minutes,
+                     "duration_minutes 只表示场次墙钟时长；elapsed 为 0 时应为 nil，不许拿计时秒数冒充")
     }
 
     // MARK: - 口径唯一性守卫
