@@ -149,6 +149,25 @@ jobs:
               --path test-results/visual.xcresult \
               --output-path test-results/shots 2>&1 || true
 
+            # 回退：标准导出若没拿到 PNG，直接导出 xcresult 目录树，
+            # 按 PNG 魔数（89 50 4E 47）从原始数据里捞图——保证截图不会悄悄为空。
+            if [ "$(find test-results/shots -type f -name '*.png' 2>/dev/null | wc -l | tr -d ' ')" = "0" ]; then
+              echo "::warning::附件导出未拿到 PNG，改用目录树魔数扫描回退"
+              rm -rf test-results/xcresult-tree
+              mkdir -p test-results/xcresult-tree
+              xcrun xcresulttool export --type directory \
+                --path test-results/visual.xcresult \
+                --output-path test-results/xcresult-tree 2>&1 || true
+              N=0
+              while IFS= read -r f; do
+                sig=$(head -c 4 "$f" 2>/dev/null | od -An -tx1 2>/dev/null | tr -d ' \n')
+                if [ "$sig" = "89504e47" ]; then
+                  N=$((N+1)); cp "$f" "test-results/shots/screenshot-$N.png"
+                fi
+              done < <(find test-results/xcresult-tree -type f 2>/dev/null)
+              echo "回退扫描得到 PNG: $N 张"
+            fi
+
             # 导出文件名默认是 UUID，按 manifest 里的 attachment 名改回可读命名
             # （R{编号}-{页}-{状态}-{亮|暗|AX}.png），方便直接审图。
             if [ -f test-results/shots/manifest.json ]; then
@@ -165,6 +184,9 @@ jobs:
 
             COUNT=$(find test-results/shots -type f \( -name '*.png' -o -name '*.jpg' \) | wc -l | tr -d ' ')
             echo "已导出截图: $COUNT 张"
+            if [ "$COUNT" = "0" ]; then
+              echo "::error::截图导出为空（0 张），请检查用例是否真的挂了截图附件"
+            fi
             echo "截图清单" >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             ls -1 test-results/shots >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
