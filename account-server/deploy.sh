@@ -109,12 +109,26 @@ fi
 # 私钥文件由管理员在部署后放置，check-config.php 只校验配置键齐全与取值合法。
 php check-config.php
 
-chown root:www-data config.php
+# PHP-FPM worker 用户随发行版不同（Debian 系常见 www-data，本机是 nginx）。
+# 缓存目录与 config.php 的属主必须跟它一致，否则 cachedAppleKeys() 会因
+# cache unavailable 让 Apple 登录返回 503，config.php 也会读不到。
+php_user="$(ps -o user= -C php-fpm 2>/dev/null | head -1 | tr -d '[:space:]')"
+if [ -z "$php_user" ]; then
+    php_user="$(awk -F= '/^user[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php/*/fpm/pool.d/www.conf 2>/dev/null | head -1)"
+fi
+if [ -z "$php_user" ]; then
+    echo "无法确定 PHP-FPM worker 用户，请手工指定后重跑。" >&2
+    exit 1
+fi
+php_group="$(id -gn "$php_user" 2>/dev/null || echo "$php_user")"
+echo "PHP-FPM worker: $php_user:$php_group"
+
+chown "root:$php_group" config.php
 chmod 0640 config.php
 # Apple 公钥缓存：目录必须由 PHP-FPM worker 可写，否则 cachedAppleKeys() 会在
 # 读取公钥前因 cache unavailable 失败，Apple 登录返回 503。
-install -d -m 0750 -o root -g www-data cache
-install -d -m 0700 -o www-data -g www-data cache/apple-keys
+install -d -m 0750 -o root -g "$php_group" cache
+install -d -m 0700 -o "$php_user" -g "$php_group" cache/apple-keys
 backup_dir="/root/bojiclub-deploy-backups/$(date -u +%Y%m%dT%H%M%SZ)"
 install -d -m 0700 "$backup_dir"
 mysqldump --single-transaction bojiclub > "$backup_dir/database.sql"
