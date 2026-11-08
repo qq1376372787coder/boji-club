@@ -5,7 +5,13 @@ $config=is_file(__DIR__.'/config.php')?require __DIR__.'/config.php':[];
 if(($dsn=getenv('BOJI_MIGRATION_DSN'))!==false&&$dsn!==''){$config['dsn']=$dsn;$config['db_user']=getenv('BOJI_MIGRATION_USER')?:'root';$config['db_password']=getenv('BOJI_MIGRATION_PASSWORD')?:'';}
 if(getenv('BOJI_MIGRATION_ROOT')==='1'){
  if(!preg_match('/(?:^|;)dbname=([A-Za-z0-9_]+)(?:;|$)/',$config['dsn']??'',$match))throw new RuntimeException('Database name missing');
- $socket=getenv('BOJI_MYSQL_SOCKET')?:'/run/mysqld/mysqld.sock';if(!str_starts_with($socket,'/')||str_contains($socket,';'))throw new RuntimeException('Invalid socket');
+ $socket=getenv('BOJI_MYSQL_SOCKET');
+  if($socket===false||$socket===''){
+   foreach(['/run/mysqld/mysqld.sock','/var/lib/mysql/mysql.sock','/tmp/mysql.sock'] as $candidate){
+    if(is_file($candidate)){$socket=$candidate;break;}
+   }
+  }
+  if(empty($socket))throw new RuntimeException('MySQL socket not found; set BOJI_MYSQL_SOCKET');if(!str_starts_with($socket,'/')||str_contains($socket,';'))throw new RuntimeException('Invalid socket');
  $config=['dsn'=>'mysql:unix_socket='.$socket.';dbname='.$match[1].';charset=utf8mb4','db_user'=>'root','db_password'=>''];
 }
 if(empty($config['dsn']))throw new RuntimeException('Migration database is not configured');

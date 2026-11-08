@@ -166,11 +166,18 @@ Path(f'/etc/php/{version}/fpm/conf.d/99-bojiclub-upload.ini').write_text('upload
 PY
 
 nginx -t
-install -m 0644 deploy/bojiclub-account-deletions.service /etc/systemd/system/bojiclub-account-deletions.service
+# systemd 服务的 User/Group 写死过 www-data，在 PHP-FPM 跑 nginx 用户的主机上
+# 会因「No such process」静默失败（后台任务从不执行）。安装时按实际 worker 用户改写。
+service_file() {
+    local src="$1" dest="$2"
+    sed -e "s/^User=.*/User=$php_user/" -e "s/^Group=.*/Group=$php_group/" "$src" > "$dest"
+    chmod 0644 "$dest"
+}
+service_file deploy/bojiclub-account-deletions.service /etc/systemd/system/bojiclub-account-deletions.service
 install -m 0644 deploy/bojiclub-account-deletions.timer /etc/systemd/system/bojiclub-account-deletions.timer
 php migrate-v2-repair.php --check
 for worker in action-jobs ai-runs ai-run-prune domain-outbox domain-notifications domain-reconcile membership-refresh ai-completion-refresh; do
-    install -m 0644 "deploy/bojiclub-$worker.service" "/etc/systemd/system/bojiclub-$worker.service"
+    service_file "deploy/bojiclub-$worker.service" "/etc/systemd/system/bojiclub-$worker.service"
     install -m 0644 "deploy/bojiclub-$worker.timer" "/etc/systemd/system/bojiclub-$worker.timer"
 done
 systemctl daemon-reload
