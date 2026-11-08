@@ -1188,9 +1188,10 @@ struct ClubAIWorkspaceIdleView: View {
 
     /// 品牌视频单实例：静音、循环、仅页面活跃时播放；离场暂停并回零。
     private func setupHeroVideo() {
-        guard heroPlayer == nil, !reduceMotion,
+        guard heroPlayer == nil, !reduceMotion, !ProcessInfo.processInfo.isLowPowerModeEnabled,
               let url = Bundle.main.url(forResource: "brand-video", withExtension: "mp4") else { return }
         let player = AVQueuePlayer()
+        player.isMuted = true
         heroPlayer = player
         heroLooper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(url: url))
         if scenePhase == .active { player.play() }
@@ -1284,6 +1285,8 @@ struct ClubAIWorkspaceIdleView: View {
                             .frame(width: 30, height: 30)
                     }
                     .clubNativeGlassButton()
+                    .frame(width: 44, height: 44)
+                    .contentShape(Circle())
                 }
                 Spacer()
             }
