@@ -1,0 +1,117 @@
+name: iOS Performance Baseline
+
+run-name: iOS Performance Baseline ${{ inputs.build_id || github.ref_name }}
+
+# 性能基线：在云端 macOS 构建机上跑模拟器性能测试，导出 xcresult + JSON 制品，
+# 供测试验收与 2026-10-24 旧基线（docs/native-ui-20261024/performance/）同口径对比。
+#
+# 触发方式：push tag `ios-perf/<build-id>`，或手动 workflow_dispatch。
+on:
+  push:
+    tags:
+      - 'ios-perf/*'
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: 'Unique run identifier'
+        required: true
+        type: string
+      snapshot_ref:
+        description: 'Ref holding the working-tree snapshot to test (empty tests this branch)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  performance:
+    runs-on: macos-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Checkout working-tree snapshot
+        if: inputs.snapshot_ref != ''
+        env:
+          SNAPSHOT_REF: ${{ inputs.snapshot_ref }}
+        run: |
+          set -e
+          git fetch --depth=1 origin "+$SNAPSHOT_REF:refs/heads/snapshot"
+          git checkout --force snapshot
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Select SE3 simulator
+        id: sim
+        run: |
+          set -e
+          # 与旧基线同口径：iPhone SE（第 3 代）
+          UDID=$(xcrun simctl list devices available --json | jq -r '
+            .devices[]
+            | to_entries[]
+            | .value[]
+            | select(.name | test("iPhone SE .*3|iPhone SE \(3rd|iPhone SE 3"))
+            | .udid' | head -1)
+          if [ -z "$UDID" ]; then
+            echo "::warning::没找到 SE3，退回任意可用的 iPhone"
+            UDID=$(xcrun simctl list devices available --json | jq -r '.devices[] | to_entries[] | .value[] | .udid' | head -1)
+          fi
+          [ -n "$UDID" ] || { echo "::error::没有可用的模拟器"; exit 1; }
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          echo "使用模拟器: $UDID"
+          xcrun simctl boot "$UDID" 2>/dev/null || true
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Run performance tests
+        id: tests
+        env:
+          UDID: ${{ steps.sim.outputs.udid }}
+        run: |
+          set -e
+          mkdir -p test-results
+          # 只跑性能用例：用例少、耗时可控，避免整套 UI 测试拖长流水线。
+          xcodebuild test \
+            -project BojiClub.xcodeproj \
+            -scheme BojiClub \
+            -destination "platform=iOS Simulator,id=$UDID" \
+            -only-testing:BojiClubUITests/BojiClubPerformanceTests \
+            -resultBundlePath test-results/performance.xcresult \
+            -quiet
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Export test results as JSON
+        if: always()
+        run: |
+          set -e
+          if [ -d test-results/performance.xcresult ]; then
+            xcrun xcresulttool get test-results summary --path test-results/performance.xcresult --format json > test-results/performance-summary.json 2>/dev/null || true
+            xcrun xcresulttool get test-results tests --path test-results/performance.xcresult --format json > test-results/performance-tests.json 2>/dev/null || true
+            echo "已导出 JSON"
+          else
+            echo "没有 xcresult 产物，跳过导出"
+          fi
+
+      - name: Upload performance artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: performance-baseline
+          path: test-results/
+          retention-days: 30
+
+      - name: Report
+        if: always()
+        run: |
+          echo "## 性能基线结果" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 模拟器: ${{ steps.sim.outputs.udid }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 结果包: test-results/performance.xcresult（制品已上传）" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f test-results/performance-summary.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat test-results/performance-summary.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
