@@ -908,6 +908,8 @@ struct ClubAIWorkspaceIdleView: View {
     @State private var readingDailyReportID: String? = nil
     @State private var appliedModifierNotice: String? = nil
     @State private var revealed = false
+    @State private var heroScrollY: CGFloat = 0
+    private var heroShrunk: Bool { heroScrollY >= 120 }
     @ObservedObject private var flags = FeatureFlagService.shared
 
     private var today: DayLog { store.log(for: Date()) }
@@ -981,6 +983,7 @@ struct ClubAIWorkspaceIdleView: View {
             .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
+        .clubTrackScrollY { heroScrollY = $0 }
         .task {
             UserDefaults.standard.removeObject(forKey: "v2.homeInsightPinned.v1")
             await ai.refreshHomeInsightIfNeeded()
@@ -1019,18 +1022,49 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     // MARK: - 顶部标题区
-    /// Hero 玻璃卡：品牌视频底层（静音循环）+ 慢周期流光 + 玻璃材质（DES-003）。
-    /// 三闸门：减少动态效果 / 视频未就绪 / 页面非活跃，均回退静态占位。
+    /// Hero 玻璃卡（批次 2 玻璃沉浸）：默认 ~380pt 近整屏；滚动 ≥120pt 收缩成 46pt 玻璃条（iOS 18+ 监听，iOS 17 保持全屏）。
     private var heroGlassCard: some View {
-        TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion)) { context in
+        TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion || heroShrunk)) { context in
             let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
-            heroGlassContent(phase: phase)
+            if heroShrunk {
+                heroCollapsedBar
+            } else {
+                heroGlassContent(phase: phase)
+            }
         }
+        .animation(BojiMotion2.resolved(BojiMotion2.state, reduceMotion: reduceMotion), value: heroShrunk)
         .onAppear { revealed = true; setupHeroVideo() }
         .onDisappear { teardownHeroVideo() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { heroPlayer?.play() } else { heroPlayer?.pause() }
         }
+    }
+
+    /// 收缩态玻璃条：高 46pt，内含唯一主操作「开始」（规格表 §2.1）。
+    private var heroCollapsedBar: some View {
+        HStack(spacing: BojiLayout.inline) {
+            Image(systemName: "figure.strengthtraining.traditional")
+                .bojiType(.label)
+                .foregroundStyle(.white)
+            Text("今天的训练")
+                .bojiType(.label)
+                .foregroundStyle(.white)
+                .lineLimit(1)
+            Spacer(minLength: BojiLayout.inline)
+            Button(action: onStartTraining) {
+                Text("开始")
+                    .bojiType(.label)
+                    .foregroundStyle(BojiColor.pageBackground)
+                    .padding(.horizontal, BojiLayout.rowGap)
+                    .frame(minHeight: 30)
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(BojiButtonStyle(kind: .primary))
+            .accessibilityIdentifier("hero-collapsed-start")
+        }
+        .padding(.horizontal, BojiLayout.rowGap)
+        .frame(height: 46)
+        .clubGlassEffect(in: Capsule())
     }
 
     /// 品牌视频单实例：静音、循环、仅页面活跃时播放；离场暂停并回零。
@@ -1117,9 +1151,9 @@ struct ClubAIWorkspaceIdleView: View {
             }
             // 深色模式压暗，保证玻璃高光可辨
             if colorScheme == .dark { Color.black.opacity(0.2) }
-            // z1 护字渐变（底部最深）
+            // z1 护字渐变（底部最深，规格表 §2.1：透明→黑 58%）
             LinearGradient(
-                colors: [Color.clear, Color.clear, Color.black.opacity(0.52)],
+                colors: [Color.clear, Color.clear, Color.black.opacity(0.58)],
                 startPoint: .top, endPoint: .bottom
             )
             // z2 慢周期流光（非循环）
@@ -1135,7 +1169,7 @@ struct ClubAIWorkspaceIdleView: View {
                     .foregroundStyle(Color.white.opacity(0.85))
                     .shadow(color: .black.opacity(0.45), radius: 1)
                 Text("今天的训练，已经为你准备好")
-                    .bojiFont(.cardTitle)
+                    .font(.system(size: 52, weight: .bold))
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.45), radius: 1)
                 Text("按计划开始 · 组间自动计时 · 训练后自动生成日报")
@@ -1165,7 +1199,8 @@ struct ClubAIWorkspaceIdleView: View {
             }
             .padding(BojiLayout.cardInset)
         }
-        .frame(height: 132)
+        .frame(height: 380)
+        .clipShape(RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))
         .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))
     }
 

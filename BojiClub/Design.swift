@@ -174,6 +174,28 @@ extension View {
     func clubBottomBar<Bar: View>(@ViewBuilder content: () -> Bar) -> some View {
         modifier(ClubBottomBarModifier(bar: content()))
     }
+
+    /// 滚动位移监听（批次 2 玻璃沉浸：Hero 收缩玻璃条等滚动驱动动效的唯一桥接）。
+    /// iOS 18+ 用系统 onScrollGeometryChange；iOS 17 静默不触发——Hero 保持全屏不收缩，功能不减。
+    /// 页面层禁止自行散写 #available 滚动监听，一律经本修饰符。
+    func clubTrackScrollY(_ action: @escaping (CGFloat) -> Void) -> some View {
+        modifier(ClubScrollYTracker(action: action))
+    }
+}
+
+private struct ClubScrollYTracker: ViewModifier {
+    let action: (CGFloat) -> Void
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content.onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.contentOffset.y + geometry.contentInsets.top
+            } action: { _, newValue in
+                action(newValue)
+            }
+        } else {
+            content
+        }
+    }
 }
 
 private struct ClubAdaptivePickerStyle: ViewModifier {
