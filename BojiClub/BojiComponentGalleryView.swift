@@ -339,11 +339,17 @@ struct BojiAuditHost: View {
         case "exercise-detail": LibraryExerciseDetailView(item: BojiAuditFixtures.libraryExercise, date: date, added: nil)
         case "exercise-guide": ExerciseDetailView(guide: ExerciseGuide.samples[0], add: { true })
         case "replace-exercise":
-            guard let exercise = store.log(for: date).exercises.first else { return EmptyView() }
-            return WorkoutAuditFactory.replace(date: date, exercise: exercise)
+            if let exercise = store.log(for: date).exercises.first {
+                WorkoutAuditFactory.replace(date: date, exercise: exercise)
+            } else {
+                EmptyView()
+            }
         case "set-timer":
-            guard let exercise = store.log(for: date).exercises.first else { return EmptyView() }
-            return WorkoutAuditFactory.timer(date: date, exercise: exercise)
+            if let exercise = store.log(for: date).exercises.first {
+                WorkoutAuditFactory.timer(date: date, exercise: exercise)
+            } else {
+                EmptyView()
+            }
         case "daily-report": AIReportReaderView(jobID: "audit-daily-report")
         case "weekly-report": WeeklyReviewHistoryDetail(review: BojiAuditFixtures.review(date: yesterday))
         case "phase-report": PhaseReportView(report: BojiAuditFixtures.phase(date: date))
