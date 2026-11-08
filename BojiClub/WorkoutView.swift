@@ -408,12 +408,14 @@ struct WorkoutView: View {
     /// 开始训练后把进度摘要收成一行，让第一组输入留在首屏，而不是被说明卡挤出屏幕。
     private var startedProgressStrip: some View {
         VStack(alignment: .leading, spacing: BojiLayout.inline) {
+            // 甲-2（动效规格 §3.2）：巨号「0 / N 组」当主角，下方一句换新信息，不再重复「训练进行中」
             HStack(alignment: .firstTextBaseline, spacing: BojiLayout.tight) {
                 BojiEditorialNumber(value: "0", scale: .display, tint: BojiColor.textPrimary)
                 Text("/ \(log.totalSets) 组").bojiType(.title).foregroundStyle(BojiColor.textTertiary)
-                Spacer()
-                Text("训练进行中").bojiType(.bodyStrong).foregroundStyle(BojiColor.textSecondary)
             }
+            Text(log.totalSets > 0 ? "还剩 \(log.totalSets) 组 · 一组一组来" : "就剩最后一组")
+                .bojiType(.body15)
+                .foregroundStyle(BojiColor.textSecondary)
             ProgressView(value: 0, total: Double(max(1, log.totalSets)))
                 .tint(ClubBrand.accent)
                 .accessibilityLabel("训练完成进度")
