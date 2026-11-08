@@ -531,20 +531,56 @@ struct TrainingSetEditPanel: View {
     }
 
     private var isTimed: Bool { original.durationSeconds != nil }
-    /// 2+3 §2.4：当前值巨号当主角——已输入显示输入值，未输入显示本组目标值（真实数据，非示例）。
+    /// 甲-3（Chief 硬点③）：巨号本身就是输入框——点按原地变原生 TextField（同字号同位置，decimalPad），
+    /// 不另开面板；步进器走下面那排，两条路互不抢。
+    @State private var editingPrimary = false
+    @FocusState private var primaryFocused: Bool
+    private var primaryFont: Font { .system(size: 76, weight: .heavy, design: .default) }
+
     @ViewBuilder private var editorialCurrentValue: some View {
         let raw = isTimed ? amount : weight
         let target = isTimed
             ? String(original.durationSeconds ?? original.reps)
             : original.weight.formatted(.number.grouping(.never).precision(.fractionLength(0...1)))
         let display = raw.isEmpty ? target : raw
-        BojiEditorialNumber(
-            value: display,
-            label: raw.isEmpty ? (isTimed ? "目标秒数，下方可改" : "目标重量 kg，下方可改") : (isTimed ? "当前秒数" : "当前重量 kg"),
-            scale: .editorial
-        )
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, BojiLayout.tight)
+        let caption = isTimed ? "秒 · 点按可直接改" : "kg · 点按可直接改"
+        if editingPrimary {
+            TextField(display, text: isTimed ? $amount : $weight)
+                .font(primaryFont)
+                .monospacedDigit()
+                .kerning(-3.5)
+                .foregroundStyle(BojiColor.textPrimary)
+                .keyboardType(.decimalPad)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .focused($primaryFocused)
+                .onChange(of: primaryFocused) { _, hasFocus in
+                    // 键盘收起就回巨号形态（同一位置同一字号，不跳布局）
+                    if !hasFocus { editingPrimary = false }
+                }
+                .frame(maxWidth: .infinity, minHeight: 76, alignment: .leading)
+                .padding(.vertical, BojiLayout.tight)
+                .accessibilityIdentifier("record-primary-value-editing")
+            Text(caption)
+                .bojiType(.caption)
+                .foregroundStyle(BojiColor.textTertiary)
+        } else {
+            BojiEditorialNumber(
+                value: display,
+                label: caption,
+                scale: .editorial
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, BojiLayout.tight)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if raw.isEmpty { if isTimed { amount = target } else { weight = target } }
+                editingPrimary = true
+                primaryFocused = true
+            }
+            .accessibilityIdentifier("record-primary-value")
+            .accessibilityHint("点按可直接修改这个数")
+        }
     }
     private var dirty: Bool {
         weight != (original.hasActualEntry || isPlanTarget ? original.weight.formatted(.number.grouping(.never).precision(.fractionLength(0...1))) : "")
