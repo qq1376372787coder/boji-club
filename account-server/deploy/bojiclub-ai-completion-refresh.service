@@ -1,0 +1,14 @@
+[Unit]
+Description=Boji Club AI completion reconciliation (marks finished ai_user_jobs)
+After=network.target
+ConditionPathExists=/opt/bojiclub-account/config.php
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/php /opt/bojiclub-account/process-ai-completion-refresh.php 100
+TimeoutStartSec=120
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict

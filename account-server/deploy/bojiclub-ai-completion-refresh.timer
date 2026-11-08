@@ -1,0 +1,10 @@
+[Unit]
+Description=Boji Club AI completion reconciliation timer
+
+[Timer]
+OnBootSec=90s
+OnUnitActiveSec=30s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

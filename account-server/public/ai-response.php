@@ -81,7 +81,9 @@ function verifiedAICompletion(PDO $db, int $userId, string $clientId, string $ki
     if (!$job && $kind !== 'weekly_review') return false;
     $serverId = $job['server_job_id'] ?? weeklyAiJobID($userId,$clientId,$config);
     if (strlen((string)($config['ai_proxy_token'] ?? '')) < 24) return false;
-    $context = stream_context_create(['http'=>['header'=>"Authorization: Bearer ".$config['ai_proxy_token']."\r\n",'timeout'=>1,'ignore_errors'=>true,'follow_location'=>0]]);
+    // 后台 ai-completion-refresh 定时对账是主路径；这里只是兜底，超时放宽到 4 秒，
+    // 避免 worker 繁忙时把已完成任务误判成「处理中」。
+    $context = stream_context_create(['http'=>['header'=>"Authorization: Bearer ".$config['ai_proxy_token']."\r\n",'timeout'=>4,'ignore_errors'=>true,'follow_location'=>0]]);
     $raw = @file_get_contents(privateAiBase($config).'/v1/jobs/'.$serverId,false,$context);
     $result = is_string($raw) ? json_decode($raw,true) : null;
     if (($result['status'] ?? '') !== 'succeeded' || ($result['result']['kind'] ?? '') !== $kind) return false;
@@ -121,7 +123,8 @@ function verifiedAICompletions(PDO $db,int $userId,array $refs): array {
     if(strlen($token)<24)return $done;
     foreach(array_chunk(array_keys($byServer),50) as $chunk){
         $payload=json_encode(['ids'=>array_values($chunk)],JSON_THROW_ON_ERROR);
-        $context=stream_context_create(['http'=>['method'=>'POST','header'=>"Content-Type: application/json\r\nAuthorization: Bearer ".$token."\r\n", 'content'=>$payload,'timeout'=>2,'ignore_errors'=>true,'follow_location'=>0]]);
+        // 同上：后台定时对账为主，请求路径只做兜底，超时 4 秒。
+        $context=stream_context_create(['http'=>['method'=>'POST','header'=>"Content-Type: application/json\r\nAuthorization: Bearer ".$token."\r\n", 'content'=>$payload,'timeout'=>4,'ignore_errors'=>true,'follow_location'=>0]]);
         $raw=@file_get_contents(privateAiBase($GLOBALS['config']).'/v1/jobs/metadata',false,$context);
         $result=is_string($raw)?json_decode($raw,true):null;
         if(!is_array($result))continue;

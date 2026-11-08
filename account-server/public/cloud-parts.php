@@ -69,12 +69,20 @@ function cloudPartSplit(array $state): array {
     unset($state['days'],$state['aiJobs'],$state['_partitioned']);$parts['meta']=$state;return $parts;
 }
 function cloudPartMetadata(array $meta): array { return [...$meta,'days'=>(object)[],'aiJobs'=>[],'_partitioned'=>2]; }
-function cloudCommitLock(?int $uid = null): mixed {
+function cloudCommitLock(?int $uid = null, float $waitSeconds = 5.0): mixed {
     $suffix = $uid !== null ? 'user-' . $uid : hash('sha256', (string)($GLOBALS['config']['dsn'] ?? 'default'));
     $lock = fopen(sys_get_temp_dir() . '/bojiclub-cloud-commit-v59-' . $suffix . '.lock', 'c');
-    if (!$lock || !flock($lock, LOCK_EX | LOCK_NB)) {
-        header('Retry-After: 5');
-        respond(429, ['error' => '云端正在整理记录，5秒后自动重试；原记录保留。']);
+    if (!$lock) fail('云端暂不可用，请稍后重试。', 503);
+    // 多设备并发时排队等锁，而不是立即 429：提交临界区很短，等一下通常就能接上，
+    // 比让客户端反复重试更顺（BE-007）。
+    $deadline = microtime(true) + max(0.0, $waitSeconds);
+    while (!flock($lock, LOCK_EX | LOCK_NB)) {
+        if (microtime(true) >= $deadline) {
+            fclose($lock);
+            header('Retry-After: 5');
+            respond(429, ['error' => '云端正在整理记录，5秒后自动重试；原记录保留。']);
+        }
+        usleep(100000);
     }
     return $lock;
 }
