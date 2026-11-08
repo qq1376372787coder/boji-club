@@ -2041,7 +2041,7 @@ private struct ClubSidebarListPolicy: ViewModifier {
     }
 }
 
-/// 首页两拍进场（DES-004）：entrance 0.45s + stagger 0.07s，只动 opacity/offset。
+/// 首页两拍进场（DES-004）：规范 §4.1 浮件进场 spring 0.35/0.85 + stagger 0.05 + scale 0.96→1。
 private struct BojiHomeEntrance: ViewModifier {
     let revealed: Bool
     let reduceMotion: Bool
@@ -2049,8 +2049,9 @@ private struct BojiHomeEntrance: ViewModifier {
     func body(content: Content) -> some View {
         content
             .opacity(revealed || reduceMotion ? 1 : 0)
-            .offset(y: revealed || reduceMotion ? 0 : 8)
-            .animation(reduceMotion ? nil : .easeOut(duration: 0.45).delay(Double(index) * 0.07), value: revealed)
+            .scaleEffect(revealed || reduceMotion ? 1 : 0.96)
+            .animation(BojiMotion2.resolved(BojiMotion2.entrance, reduceMotion: reduceMotion)?
+                .delay(Double(index) * BojiMotion2.stagger), value: revealed)
     }
 }
 

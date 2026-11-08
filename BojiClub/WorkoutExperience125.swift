@@ -308,7 +308,7 @@ private struct BojiRollingFact<Content: View>: View {
     }
 }
 
-/// 事实格进场：opacity + scale，entrance 0.35s + stagger 0.05s（只动 transform/opacity）。
+/// 事实格进场：opacity + scale，规范 §4.1 entrance spring 0.35/0.85 + stagger 0.05（只动 transform/opacity）。
 private struct BojiStaggeredEntrance: ViewModifier {
     let appeared: Bool
     let reduceMotion: Bool
@@ -317,7 +317,8 @@ private struct BojiStaggeredEntrance: ViewModifier {
         content
             .opacity(appeared || reduceMotion ? 1 : 0)
             .scaleEffect(appeared || reduceMotion ? 1 : 0.96)
-            .animation(reduceMotion ? nil : .easeOut(duration: 0.35).delay(Double(index) * 0.05), value: appeared)
+            .animation(BojiMotion2.resolved(BojiMotion2.entrance, reduceMotion: reduceMotion)?
+                .delay(Double(index) * BojiMotion2.stagger), value: appeared)
     }
 }
 

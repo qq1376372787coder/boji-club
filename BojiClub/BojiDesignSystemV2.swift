@@ -414,12 +414,11 @@ enum BojiMotion2 {
     static let progress = Animation.easeOut(duration: 0.32)
     /// 数字滚动 counter：linear 300-450ms（§5.1 数字滚动档，供 RollingNumericCounter 等使用）。
     static let counter = Animation.linear(duration: 0.35)
-    /// 长内容入场 entrance：easeInOut cubicBezier(0.22, 1, 0.36, 1) 350-500ms
-    /// （卡片序列/列表首屏；序列每拍间隔 60-80ms，整串 ≤600ms）。
-    static let entrance = Animation.timingCurve(0.22, 1, 0.36, 1, duration: 0.45)
+    /// 长内容入场 entrance：spring(response 0.35, dampingFraction 0.85)（规范 §4.1 浮件/事实格进场档）。
+    static let entrance = Animation.spring(response: 0.35, dampingFraction: 0.85)
 
-    /// 序列入场拍间隔：60-80ms（§5.1 视频规律 #1）。
-    static let stagger: Double = 0.07
+    /// 序列入场拍间隔：50ms（规范 §4.1；整串总和 ≤600ms）。
+    static let stagger: Double = 0.05
 
     /// Reduce Motion 下把任意层级降为「短交叉淡入」（120ms 纯淡入淡出，§5.1 降级规则）。
     static func resolved(_ level: Animation, reduceMotion: Bool) -> Animation? {
