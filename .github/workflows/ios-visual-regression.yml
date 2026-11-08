@@ -249,6 +249,8 @@ jobs:
           # 缺页=覆盖缺口，不许默默少图（测试验收 按编号对账）。
           cd test-results/shots
           ls -1 *.png 2>/dev/null | sed -E 's/^(R[0-9]+[a-z]?)-.*/\1/' | sort -u -V > /tmp/have.txt || true
+          # 同一 R 编号可能有多张（如 R03 拆滚动 100/200 两态），按张数列出去重编号
+          ls -1 *.png 2>/dev/null | sed -E 's/^(R[0-9]+[a-z]?)-.*/\1/' | sort -V | uniq -c > /tmp/counts.txt || true
           MISSING=""
           for i in $(seq -w 1 28); do
             grep -q "^R$i" /tmp/have.txt 2>/dev/null || MISSING="$MISSING R$i"
@@ -264,9 +266,9 @@ jobs:
               echo "- 缺失 R 编号: 无（0 缺）"
             fi
             echo ""
-            echo "## 已到编号"
+            echo "## 已到编号（括号内为张数，同编号多态会 >1）"
             echo '```'
-            printf '%s ' $(cat /tmp/have.txt 2>/dev/null); echo
+            if [ -s /tmp/counts.txt ]; then cat /tmp/counts.txt; else echo "（无）"; fi
             echo '```'
             echo ""
             echo "## R01–R28 中缺失"
