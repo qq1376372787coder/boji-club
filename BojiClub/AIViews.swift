@@ -65,10 +65,10 @@ struct TrainingFeedbackCard: View {
                 .bojiType(.label).foregroundStyle(value.inkColor)
             DisclosureGroup("颜色怎么看") {
                 VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                    Text("浅绿：原目标组数均已登记完成；计时时长达到原目标的九成。实际秒数照实展示，不补写记录。")
-                    Text("浅黄：训练已确认结束，仍有原目标组数或计时时长没有落实。")
-                    Text("浅红：原目标至少六组而完成不足一半；或纯计时目标至少十分钟而实际不足一半。只在确认结束后评价。")
-                    Text("浅灰：未确认、缺少对照、安排已调整或记录不足，暂不评价。休息日不参加训练评价。")
+                    Text("浅绿：计划里的组都记完了，计时也到九成。")
+                    Text("浅黄：这次练完了，但还有组或时间没达到目标。")
+                    Text("浅红：完成不到一半（目标 6 组以上或计时 10 分钟以上）。")
+                    Text("浅灰：还没确认、没得对比、或安排改过，这次不评价。休息日不评价。")
                     Text("重量大小和饮食是否记全，都不会直接改变训练颜色。")
                 }.bojiType(.label).foregroundStyle(value.inkColor).lineSpacing(4).padding(.top, BojiSpace.tightRow)
             }.bojiType(.secondary).tint(value.inkColor)
@@ -179,7 +179,7 @@ struct AIReportCard: View {
                 analysisActionButton(title: ClubDates.calendar.isDateInToday(date) ? "生成今日复盘" : "生成当日复盘")
             }
             if !store.bodyWeightPoints(through: date).isEmpty {
-                Text("也会参考实际登记的体重及近期测量历史，漏记日期保持缺失。").bojiType(.caption).foregroundStyle(.secondary).allowsHitTesting(false)
+                Text("也会用你实际记的体重和最近的测量。没记的日子空着，不补。").bojiType(.caption).foregroundStyle(.secondary).allowsHitTesting(false)
             }
             if !ClubDates.isFuture(date) && !DailyReportEligibility.hasRecords(log) { Text(DailyReportEligibility.missingMessage).bojiType(.secondary).foregroundStyle(.secondary) }
             if ClubDates.isFuture(date) { Text("未来日期只能安排训练，到了当天再生成复盘。").bojiType(.secondary).foregroundStyle(.secondary) }
@@ -479,7 +479,7 @@ struct AIReportReaderView: View {
                 Label("记录或分析设置已有更新。这份报告保留提交时的分析，可回到当天按最新记录重新分析。", systemImage: "clock.arrow.circlepath")
                     .bojiType(.secondary).lineSpacing(4).foregroundStyle(.secondary)
             } else {
-                Text("基于提交时已经登记的内容分析；未记录的部分不代表没有发生。")
+                Text("AI 只看你已记下的内容；没记的不代表没发生。")
                     .bojiType(.secondary).foregroundStyle(.secondary).lineSpacing(4)
             }
         }

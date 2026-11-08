@@ -165,13 +165,13 @@ enum ClubTrendRules {
             let verdict: String
             let detail: String
             if lastAvg > firstAvg * 1.05 && lastAvg >= highAvg * 0.99 {
-                verdict = "登记表现上升"
+                verdict = "记录表现上升"
                 detail = "\(base.name)\(weightText)：\(metricWord)从 \(firstAvg.formatted(.number.precision(.fractionLength(1)))) 到 \(lastAvg.formatted(.number.precision(.fractionLength(1))))（\(dates.count) 天可比记录，跨度 \(span) 天）\(setsNote)。\(condition)，可以小幅尝试增加难度并留意质量；是否加重由你判断。"
             } else if abs(lastAvg - firstAvg) <= max(0.5, firstAvg * 0.05) {
-                verdict = "登记表现平稳"
+                verdict = "记录表现平稳"
                 detail = "\(base.name)\(weightText)：\(metricWord)在 \(firstAvg.formatted(.number.precision(.fractionLength(1))))–\(highAvg.formatted(.number.precision(.fractionLength(1)))) 之间（\(dates.count) 天可比记录，跨度 \(span) 天）\(setsNote)。平稳不等于停滞；可维持或小幅调整。"
             } else {
-                verdict = "登记表现有波动"
+                verdict = "记录表现有波动"
                 detail = "\(base.name)\(weightText)：最近 \(metricWord) \(lastAvg.formatted(.number.precision(.fractionLength(1))))，此前最高 \(highAvg.formatted(.number.precision(.fractionLength(1))))（\(dates.count) 天可比记录，跨度 \(span) 天）\(setsNote)。\(condition)，可结合当天状态判断；单次下滑不等于退步。"
             }
             return ClubTrendResult(identity: base.identity, name: base.name, unit: base.unit, weight: base.weight,
@@ -289,7 +289,7 @@ enum PhaseReportRules {
         if weightPoints.count < ClubTrendThresholds.bodyPlateauMinSamples {
             notes.append("体重测量 \(weightPoints.count) 次，不足以判断体重趋势。")
         }
-        notes.append("结论基于登记数据；动作质量、主观感受与生活状态未在记录中，不能单独据此断定增肌或减脂效果。")
+        notes.append("结论基于你记录的数据；动作质量、主观感受与生活状态未在记录中，不能单独据此断定增肌或减脂效果。")
         let summary = "阶段小结：完成 \(completed)/\(planned) 个训练日、累计 \(confirmedSets) 个完成组、\(covered)/\(daysTotal) 天有记录。" +
             (trendWindow.contains(where: { $0.verdict != "样本不足" }) ? "有可比训练趋势可查看。" : "可比训练数据还少，暂不作趋势判断。") +
             (plateau != nil ? " 体重进入稳定区间。" : "")

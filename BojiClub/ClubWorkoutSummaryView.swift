@@ -39,7 +39,7 @@ struct ClubWorkoutSummaryView: View {
                                         Spacer()
                                         if set.validCompletion {
                                             Text(set.durationSeconds.map { "\($0) 秒" } ?? "\(set.weight.formatted()) kg × \(set.reps) 次")
-                                        } else { Text("未完成 / 未登记").foregroundStyle(.secondary) }
+                                        } else { Text("没完成 / 没记录").foregroundStyle(.secondary) }
                                     }.bojiType(.secondary)
                                 }
                             }.padding(.vertical, BojiLayout.tight)
@@ -194,11 +194,11 @@ struct ClubWorkoutSummaryView: View {
     private func targetRow(index: Int, set: TrainingSet, exerciseID: UUID, summary: ClubWorkoutSummary) -> some View {
         let original = summary.baseline?.sets.first { $0.id == set.id && $0.exerciseID == exerciseID }
         return VStack(alignment: .leading, spacing: BojiLayout.tight) {
-            Text("第 \(index + 1) 组 · \(set.validCompletion ? "已登记完成" : "未登记完成")")
+            Text("第 \(index + 1) 组 · \(set.validCompletion ? "记完了" : "没记完")")
             if let original {
                 Text("原目标：" + targetLabel(original)).foregroundStyle(.secondary)
             } else { Text("没有这组的开始目标快照").foregroundStyle(.secondary) }
-            Text("当前登记：" + ClubPlanChangeRules.setLabel(AIPlanSet(weight: set.weight, reps: set.reps, durationSeconds: set.durationSeconds)))
+            Text("当前记录：" + ClubPlanChangeRules.setLabel(AIPlanSet(weight: set.weight, reps: set.reps, durationSeconds: set.durationSeconds)))
                 .foregroundStyle(.secondary)
         }.bojiType(.secondary)
     }
@@ -217,7 +217,7 @@ private struct ClubWorkoutComparisonRow: View {
         VStack(alignment: .leading, spacing: BojiLayout.inline) {
             Text(comparison.name).bojiFont(.exerciseName).foregroundStyle(BojiColor.textPrimary)
             if let weight = comparison.weight {
-                Text(weight == 0 ? "相同的 0 kg 登记值（自重或未设置重量）" : "同为 \(weight.formatted()) kg")
+                Text(weight == 0 ? "同为 0 kg（自重或未设置重量）" : "同为 \(weight.formatted()) kg")
                     .bojiType(.secondary).foregroundStyle(.secondary)
             }
             Text("本次 \(comparison.currentSets) 组 · 合计 \(comparison.currentValue) \(unit)").bojiType(.secondary)
@@ -225,7 +225,7 @@ private struct ClubWorkoutComparisonRow: View {
                 .bojiType(.secondary).foregroundStyle(.secondary)
             if comparison.comparable {
                 let change = comparison.currentValue - comparison.priorValue
-                Text("相同登记组数下，合计\(change == 0 ? "持平" : change > 0 ? "多 \(change) \(unit)" : "少 \(-change) \(unit)")")
+                Text("同样组数下，合计\(change == 0 ? "持平" : change > 0 ? "多 \(change) \(unit)" : "少 \(-change) \(unit)")")
                     .bojiType(.secondary)
             } else {
                 Text("两次组数不同，仅陈列记录，不按合计值判断进退。")

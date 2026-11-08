@@ -14,7 +14,7 @@ struct ShareCardView: View {
     var identity: MemberProfile? = nil
     var artwork: UIImage? = nil
     var brandSymbol = "dumbbell.fill"
-    var footerLabel = "所选记录 · 已登记内容"
+    var footerLabel = "所选记录 · 已记录内容"
     var trainingFeedback: TrainingFeedback? = nil
     var summaryPage: ShareCardView {
         let height: CGFloat = (identity == nil ? 640 : 570) - (trainingFeedback == nil ? 0 : 84)

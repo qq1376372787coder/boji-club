@@ -448,7 +448,7 @@ struct WorkoutHealthSyncCard: View {
                 ClubNavigationStack132 {
                     VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
                         Text("加入 iOS 健身记录").bojiType(.section)
-                        Text("本次已登记 \(captured.completedSets) 组。仅同步这场训练的实际时段与完成信息。")
+                        Text("这次记了 \(captured.completedSets) 组。只同步这场训练的时间和完成情况。")
                         Text("如果 Apple Watch 或其他 App 已记录同一场训练，请返回核对并关联，避免重复记录。")
                             .bojiType(.secondary).foregroundStyle(.secondary)
                         Spacer(minLength: 0)

@@ -32,7 +32,7 @@ struct ClubAutomaticReportList: View {
                         ClubCard {
                             Text(job.request.date).bojiFont(.exerciseName, monospacedDigits: true).foregroundStyle(BojiColor.textPrimary)
                             Text((job.result?.coach?.purpose ?? job.request.payload["purpose"]?.string) == "weekly" ? "每周记录成长报告" : "本次训练解读").bojiType(.secondary)
-                            Text(job.result?.coach?.answer ?? "正在核对已登记的记录，可进入查看处理状态").bojiType(.secondary).foregroundStyle(.secondary).lineLimit(2)
+                            Text(job.result?.coach?.answer ?? "正在看你记的内容，可进入查看处理状态").bojiType(.secondary).foregroundStyle(.secondary).lineLimit(2)
                         }
                     }.buttonStyle(ClubMotionButton())
                 }

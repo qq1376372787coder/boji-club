@@ -210,7 +210,7 @@ struct NotificationSettingsView: View {
                         DatePicker("提醒时间", selection: trainingTime, displayedComponents: .hourAndMinute)
                     }
                 }
-                Section("餐次登记提醒") {
+                Section("餐次记录提醒") {
                     Text("提醒补充未记录的餐次；有记录后不再提醒。").bojiType(.caption).foregroundStyle(.secondary)
                     MealReminderSlotEditor(slot: $notifications.mealReminders.breakfast)
                     MealReminderSlotEditor(slot: $notifications.mealReminders.lunch)
@@ -849,7 +849,7 @@ struct ClubUsageGuideView: View {
                 Section("边用边学") {
                     Label("直接提问：在 Club AI 输入框说出你的问题。", systemImage: "bubble.left")
                     Label("引用记录：输入 @ 或点＋，挑一条记录再提问。", systemImage: "at")
-                    Label("登记训练：点重量、次数或秒数，做完一组再完成。", systemImage: "dumbbell")
+                    Label("记训练：点重量、次数或秒数，做完一组再点完成。", systemImage: "dumbbell")
                 }
                 Section {
                     Text("首次使用会显示简短提示。拍照识别需核对后保存。").bojiType(.label).foregroundStyle(.secondary)

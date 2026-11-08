@@ -36,14 +36,14 @@ struct BodyWeightView: View {
                 .navigationTitle("身体记录").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) { AIReferenceEntryButton(reference: .day("body_range", date: selectedDate, title: "身体测量")) }
-                    ToolbarItem(placement: .topBarLeading) { Button("分类登记") { showFactIntake = true } }
+                    ToolbarItem(placement: .topBarLeading) { Button("分类记录") { showFactIntake = true } }
                     ToolbarItem(placement: .cancellationAction) { DismissButton() }
                 }
         }
         .onAppear {
             guard !loaded else { return }; loaded = true
             if ClubDates.isFuture(initialDate) {
-                selectedDate = Date(); dateNotice = "未来日期不可登记，已自动切回今天。"
+                selectedDate = Date(); dateNotice = "未来日期不能记，已自动切回今天。"
             } else { selectedDate = initialDate }
         }
         .onChange(of: rangeKey) { _, _ in rowLimit = 30 }
@@ -57,11 +57,11 @@ struct BodyWeightView: View {
                     ClubCard {
                         if typeSize.isAccessibilitySize {
                             VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                                Text("登记日期").bojiType(.bodyStrong)
-                                DatePicker("登记日期", selection: $selectedDate, in: ...Date(), displayedComponents: .date).labelsHidden()
+                                Text("日期").bojiType(.bodyStrong)
+                                DatePicker("测量日期", selection: $selectedDate, in: ...Date(), displayedComponents: .date).labelsHidden()
                             }
                         } else {
-                            DatePicker("登记日期", selection: $selectedDate, in: ...Date(), displayedComponents: .date)
+                            DatePicker("测量日期", selection: $selectedDate, in: ...Date(), displayedComponents: .date)
                         }
                         if let dateNotice { Text(dateNotice).bojiType(.caption).foregroundStyle(.secondary) }
                         BojiAdaptiveGroup {
@@ -73,11 +73,11 @@ struct BodyWeightView: View {
                                         .bojiFont(.bodyMetric, monospacedDigits: true)
                                         .foregroundStyle(BojiColor.textPrimary)
                                 } else {
-                                    Text("尚未登记").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
+                                    Text("还没记录").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
                                 }
                             }
                             Spacer()
-                            Button(store.log(for: selectedDate).bodyWeight?.kilograms == nil ? "登记" : "再次测量") {
+                            Button(store.log(for: selectedDate).bodyWeight?.kilograms == nil ? "记一次" : "再次测量") {
                                 editor = WeightEditRequest(date: selectedDate)
                             }.buttonStyle(BojiButtonStyle(kind: .primary))
                         }
@@ -141,7 +141,7 @@ struct BodyWeightView: View {
                             }.bojiType(.caption)
                         }
                         if points.isEmpty {
-                            EmptyNote(title: "还没有体重记录", detail: "登记一次，就会在这里留下一个真实的数据点。")
+                            EmptyNote(title: "还没有体重记录", detail: "记一次，就会在这里留下一个真实的数据点。")
                         } else {
                             HStack {
                                 Spacer()

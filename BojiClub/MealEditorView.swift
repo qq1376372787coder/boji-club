@@ -1216,7 +1216,7 @@ struct MealEditorView: View {
         if speech.isRecording { return "请先结束录音，再核对并保存。" }
         if isBusy { return "正在识别，可以等待结果，或停止识别后改为手动记录。" }
         if entryMode == "语音" && multipleMeals {
-            return canUseBottomAction ? nil : "请先识别这段多餐描述，再逐餐核对保存；已保存的餐食不会重复登记。"
+            return canUseBottomAction ? nil : "请先识别这段多餐描述，再逐餐核对保存；已保存的餐食不会重复记。"
         }
         if ai.job(jobID)?.result?.kind == "meal_batch" { return "这次包含多餐，请进入逐餐核对后保存。" }
         if let issue = mealInputProblem { return issue }

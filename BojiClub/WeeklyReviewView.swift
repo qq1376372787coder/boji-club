@@ -481,7 +481,7 @@ struct WeeklyReviewDetail: View {
                 .confirmationDialog("确认生成本周回顾？", isPresented: $confirmSubmit, titleVisibility: .visible) {
                     Button("确认并开始分析") { if saveDraft() { weekly.submit(review.id, account: account, store: store, ai: ai) } }
                 } message: {
-                    Text("将上传本周训练、饮食、实际登记的体重及近期测量历史、已分享健康汇总和问卷。\(review.photos.isEmpty && !compare ? "本次不含照片；将进行云端文字分析。" : "本次包含你选择的身体照片和对比照片，仅交给支持图片分析的服务，失败时尝试备用服务。")按 DeepSeek、MiniMax 顺序尝试，图片只由支持图片的服务分析。照片不进入管理后台，任务完成或最终失败后清除服务端任务中的图片；处理中的照片不能从已送达的模型处撤回。复盘摘要会同步云端。")
+                    Text("将上传本周训练、饮食、实际记的体重及近期测量历史、已分享健康汇总和问卷。\(review.photos.isEmpty && !compare ? "本次不含照片；将进行云端文字分析。" : "本次包含你选择的身体照片和对比照片，仅交给支持图片分析的服务，失败时尝试备用服务。")按 DeepSeek、MiniMax 顺序尝试，图片只由支持图片的服务分析。照片不进入管理后台，任务完成或最终失败后清除服务端任务中的图片；处理中的照片不能从已送达的模型处撤回。复盘摘要会同步云端。")
                 }
                 .confirmationDialog("删除这份复盘的本机照片？", isPresented: $confirmRemovePhotos, titleVisibility: .visible) {
                     Button("删除本机照片", role: .destructive, action: removeLocalPhotos).disabled(weekly.busy)
@@ -527,7 +527,7 @@ struct WeeklyReviewDetail: View {
                             .padding(BojiLayout.inline)
                             .background(BojiColor.inputSurface, in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
                     }
-                    Text("每日已登记的体重会自动用于分析，不必再填。这里仅填写已有测量，不从照片推算。").bojiType(.label).foregroundStyle(.secondary)
+                    Text("每天记的体重会自动用于分析，不用再填。这里仅填写已有测量，不从照片推算。").bojiType(.label).foregroundStyle(.secondary)
                 }
             }
             ClubCard {

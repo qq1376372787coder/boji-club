@@ -63,10 +63,10 @@ struct ClubPlanFollowupView: View {
                 Text("共安排 \(value.plannedDays) 个训练日。")
                     .bojiType(.secondary).foregroundStyle(.secondary)
             } else {
-                Text("这份计划缺少部分安排，仍可查看已登记的训练。")
+                Text("这份计划少了一部分安排，已记的训练还能看。")
                     .bojiType(.secondary).foregroundStyle(.secondary)
             }
-            Text(value.comparableItems == 0 ? "还没有可比较的同动作、同条件记录。" : "找到 \(value.comparableItems) 项与本方案开始前的同条件登记对照，可逐日查看。")
+            Text(value.comparableItems == 0 ? "还没有可比较的同动作、同条件记录。" : "找到 \(value.comparableItems) 项与本方案开始前的同条件记录，可逐日查看。")
                 .bojiType(.secondary)
             if store.state.profile.aiProfile != version.adoptedProfile {
                 Text("你的资料有更新，可以看看计划是否还适合你。")
@@ -85,8 +85,8 @@ private struct ClubPlanFollowupDayCard: View {
                 .bojiType(.secondary)
             Text(day.detail).bojiType(.secondary).foregroundStyle(.secondary)
             if let completed = day.completedOriginalSets, let achieved = day.achievedTargets {
-                Text("原目标 \(day.targetSets) 组 · 原组已登记完成 \(completed) 组").bojiType(.secondary)
-                Text("\(achieved) 组在相同登记重量下达到目标次数，或达到目标秒数。")
+                Text("原计划 \(day.targetSets) 组 · 记完了 \(completed) 组").bojiType(.secondary)
+                Text("\(achieved) 组用同样的重量达到了目标次数或秒数。")
                     .bojiType(.secondary).foregroundStyle(.secondary)
                 if let changed = day.changedLoadOrUnitSets, changed > 0 {
                     Text("\(changed) 组的安排有变化。")
@@ -94,11 +94,11 @@ private struct ClubPlanFollowupDayCard: View {
                 }
             }
             if !day.comparisons.isEmpty {
-                DisclosureGroup("与本方案开始前的登记对照") {
+                DisclosureGroup("与本方案开始前的记录对照") {
                     ForEach(day.comparisons) { comparison in
                         VStack(alignment: .leading, spacing: BojiLayout.tight) {
                             Text(comparison.name).bojiType(.secondary)
-                            if let weight = comparison.weight { Text(weight == 0 ? "登记为自重或未设置重量" : "登记重量 \(weight.formatted()) kg").bojiType(.label) }
+                            if let weight = comparison.weight { Text(weight == 0 ? "记的是自重或未设置重量" : "记的重量 \(weight.formatted()) kg").bojiType(.label) }
                             Text("本次 \(comparison.currentSets) 组，合计 \(comparison.currentValue) \(comparison.unit == "time" ? "秒" : "次")")
                             Text("\(comparison.priorDate) · \(comparison.priorSets) 组，合计 \(comparison.priorValue) \(comparison.unit == "time" ? "秒" : "次")")
                                 .foregroundStyle(.secondary)

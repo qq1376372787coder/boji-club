@@ -1860,7 +1860,7 @@ private struct ClubActiveWorkoutAccessory: View {
                                     .bojiType(.secondary)
                             }
                         }
-                        Text("点击返回训练 · 已登记 \(snapshot.completedSets)/\(snapshot.totalSets) 组").bojiType(.caption).foregroundStyle(BojiColor.textPrimary)
+                        Text("点击返回训练 · 记了 \(snapshot.completedSets)/\(snapshot.totalSets) 组").bojiType(.caption).foregroundStyle(BojiColor.textPrimary)
                     }
                     Spacer(minLength: 0)
                 }.frame(minHeight: 44).contentShape(Rectangle())

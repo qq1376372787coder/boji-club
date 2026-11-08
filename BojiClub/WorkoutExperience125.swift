@@ -210,9 +210,9 @@ struct WorkoutFinishReview125: View {
                 Text("这一练，准备收官？").bojiType(.section)
                 HStack(alignment: .firstTextBaseline, spacing: BojiLayout.tight) {
                     Text("\(completed)").bojiFont(.bodyMetric, monospacedDigits: true)
-                    Text("组已登记").foregroundStyle(.secondary)
+                    Text("组已记录").foregroundStyle(.secondary)
                 }
-                Text(total > completed ? "还有 \(total-completed) 组未登记。保存后它们会保留未完成状态。" : "本次登记已经齐全，可以保存训练记录。")
+                Text(total > completed ? "还有 \(total-completed) 组没记完。保存后它们会保留未完成状态。" : "这次都记完了，可以保存训练记录。")
                     .bojiType(.body).fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
                 Button("结束并保存 \(completed) 组", action: confirm).buttonStyle(PrimaryButton()).disabled(completed == 0)
@@ -255,12 +255,12 @@ struct WorkoutCelebration125: View {
                 .overlay { Circle().stroke(ClubBrand.accent.opacity(0.2), lineWidth: 1) }
                 .scaleEffect(appeared || reduceMotion ? 1 : 0.88)
             Text("辛苦了，训练已完成").bojiType(.section)
-            Text("\(facts.completed) 组已登记，为你保存了本次训练。").bojiType(.secondary).foregroundStyle(.secondary)
+            Text("记了 \(facts.completed) 组，这次训练已保存。").bojiType(.secondary).foregroundStyle(.secondary)
             LazyVGrid(columns: [GridItem(.flexible()),GridItem(.flexible()),GridItem(.flexible())],spacing: BojiLayout.blockGap) {
                 // DES-004：6 格 entrance 0.35s + stagger 0.05s，整串 0.60s
                 rollingFact("完成组", target: Double(facts.completed), unit: "组", index: 0)
                 fact("训练用时", value: duration, unit: "", index: 1)
-                fact("登记动作", value: "\(facts.registeredExercises)", unit: "项", index: 2)
+                fact("练了几个动作", value: "\(facts.registeredExercises)", unit: "项", index: 2)
                 rollingFact("累计次数", target: Double(facts.reps), unit: "次", index: 3)
                 rollingFact("额外负重训练量", target: facts.volume, precision: 1, unit: "kg·次", index: 4)
                 fact("计时动作", value: "\(facts.seconds)", unit: "秒", index: 5)
@@ -363,7 +363,7 @@ struct WorkoutCharts125: View {
                     VStack(alignment: .leading, spacing: BojiLayout.inline) {
                         Text("本次安排 \(facts.planned) 组").bojiType(.bodyStrong)
                         Text("\(max(0, facts.planned - facts.completed)) 组未完成").bojiType(.secondary).foregroundStyle(.secondary)
-                        Text("只统计你已登记完成的组").bojiType(.caption).foregroundStyle(.secondary)
+                        Text("只算你记完的组").bojiType(.caption).foregroundStyle(.secondary)
                     }
                 }.padding(.vertical, BojiLayout.inline)
             }

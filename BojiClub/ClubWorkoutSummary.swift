@@ -122,7 +122,7 @@ enum ClubWorkoutSummaryRules {
                     currentValue: nowSets.reduce(0) { $0 + (metric == "time" ? ($1.durationSeconds ?? 0) : $1.reps) },
                     priorValue: oldSets.reduce(0) { $0 + (metric == "time" ? ($1.durationSeconds ?? 0) : $1.reps) }))
             }
-            if !matched { limitations.append(exercise.displayName + "尚无同动作、同计量方式的已确认对照；计次动作还需相同登记重量。") }
+            if !matched { limitations.append(exercise.displayName + "尚无同动作、同计量方式的已确认对照；计次动作还需相同的记录重量。") }
         }
         let baseline = current.session.executionBaseline.flatMap { $0.version == 1 ? $0 : nil }
         let sets = current.exercises.flatMap(\.sets)
@@ -142,7 +142,7 @@ enum ClubWorkoutSummaryRules {
             limitations.insert("部分旧目标只保存了单位，未保存原重量或次数，不倒填。", at: 0)
         }
         if !changed.isEmpty { limitations.insert("部分原组已移除、更换动作或变更单位，不能按当前总组数判定原计划全部完成。", at: 0) }
-        limitations.append("对比仅反映登记数据；动作幅度、技术质量、余力与器械条件可能不同，不能据此认定力量或肌肉变化。")
+        limitations.append("对比只看你记的数据；动作幅度、技术质量、余力与器械条件可能不同，不能据此认定力量或肌肉变化。")
         return ClubWorkoutSummary(date: key, sessionID: sessionID, completedSets: sets.filter(\.validCompletion).count,
             timedSeconds: sets.filter(\.validCompletion).reduce(0) { $0 + ($1.durationSeconds ?? 0) },
             targetSets: baseline.map { $0.sets.count }, originalCompletedSets: baseline == nil ? nil : completed,

@@ -225,7 +225,7 @@ struct ClubInsightMessageView: View {
         switch action.type {
         case "workout_summary": return "查看本次总结"
         case "training": return "打开当天训练"
-        case "nutrition": return "登记补充饮食"
+        case "nutrition": return "补充记饮食"
         case "schedule_shift": return "调整日程排期"
         default: return "查看身体记录"
         }

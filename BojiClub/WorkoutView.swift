@@ -972,21 +972,21 @@ private struct TimedTrainingSetView: View {
                     let elapsed = Int(stopwatch.elapsed(at: context.date))
                     VStack(spacing: BojiLayout.blockGap) {
                         Text("\(elapsed) 秒").bojiType(.display)
-                        Text(elapsed >= (original.durationSeconds ?? 0) && elapsed > 0 ? "已达到目标，结束后核对并登记。" : "只记录实际坚持的时间，暂停期间不计时。")
+                        Text(elapsed >= (original.durationSeconds ?? 0) && elapsed > 0 ? "已达到目标，结束后核对并记下。" : "只记录实际坚持的时间，暂停期间不计时。")
                             .bojiType(.caption).foregroundStyle(.secondary)
                         Button(stopwatch.isRunning ? "暂停" : elapsed > 0 ? "继续计时" : "开始计时", action: toggleTimer)
                             .buttonStyle(PrimaryButton()).disabled(!unchanged)
-                        Button("结束并登记实际秒数", action: registerTimedSet)
+                        Button("结束，记下秒数", action: registerTimedSet)
                             .buttonStyle(SecondaryButton()).disabled(elapsed < 1 || !unchanged)
                     }
                 }
                 if let error { Text(error).bojiType(.caption).foregroundStyle(.red) }
-                Text("计时结束后请点击登记完成").bojiType(.caption).foregroundStyle(.secondary)
+                Text("计时结束，点一下记下这组").bojiType(.caption).foregroundStyle(.secondary)
             }.padding(ClubUI.pageInset)
             .navigationTitle("动作计时").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { if stopwatch.elapsed() > 0 { stopwatch.pause(); confirmClose = true } else { dismiss() } } } }
             .interactiveDismissDisabled(stopwatch.elapsed() > 0)
-            .confirmationDialog("这次计时尚未登记", isPresented: $confirmClose, titleVisibility: .visible) {
+            .confirmationDialog("这次计时还没记下来", isPresented: $confirmClose, titleVisibility: .visible) {
                 Button("放弃计时，不标记完成", role: .destructive) { dismiss() }
                 Button("继续核对", role: .cancel) { }
             }
@@ -1022,7 +1022,7 @@ private struct TimedTrainingSetView: View {
         stopwatch.pause()
         guard stopwatch.elapsed() >= 1 else { error = "请记录至少 1 秒的实际完成时间。"; return }
         guard stopwatch.elapsed() <= Double(RecordLimits.maximumSeconds) else {
-            error = "单组最多登记 6 小时。这次计时已暂停，不会缩短后保存，请核对后分段记录。"; return
+            error = "单组最多记 6 小时。这次计时已暂停，不会缩短后保存，请核对后分段记录。"; return
         }
         var updated = original
         updated.durationSeconds = max(1, Int(stopwatch.elapsed())); updated.reps = 0; updated.completed = true; updated.actualEntered = true
@@ -1214,7 +1214,7 @@ struct WorkoutCompletionView: View {
             Text("当天已完成 \(day.completedSets) 组训练，记录 \(day.meals.count) 餐。").bojiType(.secondary).foregroundStyle(.secondary)
             Button("记录饮食", systemImage: "fork.knife") { showMeal = true }.buttonStyle(SecondaryButton())
             if day.bodyWeight?.kilograms == nil {
-                Button(ClubDates.calendar.isDateInToday(snapshot.date) ? "今天称过体重？登记一下" : "补记这一天实际称过的体重", systemImage: "scalemass") { showWeight = true }.buttonStyle(SecondaryButton())
+                Button(ClubDates.calendar.isDateInToday(snapshot.date) ? "今天称过体重？记一下" : "补记这一天实际称过的体重", systemImage: "scalemass") { showWeight = true }.buttonStyle(SecondaryButton())
             }
         }
     }

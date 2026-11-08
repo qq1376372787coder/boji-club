@@ -195,7 +195,7 @@ struct PlanView: View {
             Text("仅用于这次计划，不改动个人资料。")
                 .bojiType(.label).foregroundStyle(.secondary)
         } else {
-            Text("本次按资料体重制定。近 30 天没有实测记录，可先登记体重，或在个人资料中修改资料值。")
+            Text("这次按资料里的体重排的。最近 30 天没实测过，可以先记一次体重，或在个人资料里改。")
                 .bojiType(.label).foregroundStyle(.secondary)
         }
         }

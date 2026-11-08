@@ -269,7 +269,7 @@ struct ReviewDashboardView: View {
         ClubCard {
             Text("练到了哪些部位").bojiType(.section)
             if let top = muscleAnalytics.first {
-                Text("\(top.name)登记最多 · \(top.sets) 组").bojiType(.secondary).foregroundStyle(.secondary)
+                Text("\(top.name) 练得最多 · \(top.sets) 组").bojiType(.secondary).foregroundStyle(.secondary)
             }
             if muscleAnalytics.isEmpty {
                 EmptyNote(title: "还没有肌群数据", detail: "确认训练后，这里会展示各部位的实际完成组数。")
@@ -482,7 +482,7 @@ struct ReviewDashboardView: View {
             Text(periodDescription + " · 只统计已确认训练和实际称重。")
                 .bojiType(.caption).foregroundStyle(BojiColor.textSecondary)
             if totals.completedSets > totals.confirmedSets {
-                Text("另有 \(totals.completedSets - totals.confirmedSets) 组已登记待确认。")
+                Text("还有 \(totals.completedSets - totals.confirmedSets) 组记了等确认。")
                     .bojiType(.caption).foregroundStyle(BojiColor.textSecondary)
             }
 
@@ -737,7 +737,7 @@ struct ReviewDashboardView: View {
                         HStack {
                             Text(ClubDates.label(day.date, format: "M月d日 EEE")).bojiType(.secondary)
                             Spacer()
-                            Text("已登记 \(day.log.confirmedTraining.completedSets) 组 · \(day.log.meals.count) 餐").bojiType(.caption).foregroundStyle(.secondary)
+                            Text("记了 \(day.log.confirmedTraining.completedSets) 组 · \(day.log.meals.count) 餐").bojiType(.caption).foregroundStyle(.secondary)
                             Image(systemName: "chevron.right").bojiType(.caption)
                         }.frame(minHeight: 44)
                     }.buttonStyle(ClubMotionButton())

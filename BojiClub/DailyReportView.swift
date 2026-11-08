@@ -208,7 +208,7 @@ struct DailyReportView: View {
                 HStack {
                     Image(systemName: "bed.double")
                         .foregroundStyle(BojiColor.textTertiary)
-                    Text("今日未登记抗阻训练记录（或安排为休息日）")
+                    Text("今天没有力量训练记录（也可能本来就是休息日）")
                         .bojiType(.label)
                         .foregroundStyle(BojiColor.textSecondary)
                 }

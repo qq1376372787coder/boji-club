@@ -567,7 +567,7 @@ private struct NutritionTrendSummary: View {
             let before = previous.reduce(0) { $0 + $1.kilograms } / Double(previous.count)
             let after = recent.reduce(0) { $0 + $1.kilograms } / Double(recent.count)
             Text("最近两周实测均值：\(before.formatted(.number.precision(.fractionLength(1)))) → \(after.formatted(.number.precision(.fractionLength(1)))) kg；分别有 \(previous.count)、\(recent.count) 次记录。").bojiType(.label)
-            Text("这不是脂肪或肌肉变化的结论。结合已记完整的饮食、训练表现和饥饿感，在周复盘中检查是否需要调整。").bojiType(.label).foregroundStyle(.secondary)
+            Text("这还不是脂肪或肌肉变化的结论。把饮食、训练和饥饿感记完整，周回顾时再看要不要调。").bojiType(.label).foregroundStyle(.secondary)
         } else {
             Text("近两周各有至少 3 次体重记录后，将展示双周均值对比。").bojiType(.label).foregroundStyle(.secondary)
         }

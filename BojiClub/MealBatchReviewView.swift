@@ -63,7 +63,7 @@ struct MealBatchReviewView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: BojiLayout.cardInset) {
                     Text("\(meals.count) 餐已分开 · \(remaining) 餐待处理").bojiFont(.cardTitle, monospacedDigits: true).foregroundStyle(BojiColor.textPrimary)
-                    Text("逐餐核对日期、餐别和份量后保存；不需要的可以跳过。关闭后可从饮食页继续，已保存的不会重复登记。")
+                    Text("逐餐核对日期、餐别和份量再保存；不需要的跳过。关掉后从饮食页继续，已保存的不会重复记。")
                         .bojiType(.secondary).foregroundStyle(.secondary)
                     if let description = ai.job(jobID)?.request.payload["description"]?.string, !description.isEmpty {
                         DisclosureGroup("对照原话，检查是否有遗漏") { Text(description).bojiType(.secondary).textSelection(.enabled) }
@@ -97,7 +97,7 @@ struct MealBatchReviewView: View {
                     MealEditorView(date: date, category: item.category, prefilled: MealBatchSeed(item: item, sourceID: token(item), invalidOriginalDate: usable ? nil : item.date)) { editing = nil }
                 }
                 .confirmationDialog("跳过这餐？", isPresented: Binding(get: { skipping != nil }, set: { if !$0 { skipping = nil } }), titleVisibility: .visible) {
-                    Button("跳过，不登记", role: .destructive) {
+                    Button("跳过，不记", role: .destructive) {
                         guard canAct, let item = skipping else { return }
                         if store.handleMealRecognitionIDs([token(item)]) { skipping = nil; finishIfComplete() }
                         else { message = store.takeMessage(fallback: "处理状态未保存，请重试。") }

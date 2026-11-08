@@ -13,7 +13,7 @@ struct ClubCoachAction: Codable, Equatable, Identifiable {
     var label: String {
         switch type {
         case "training": return "查看当天训练"
-        case "nutrition": return "登记饮食"
+        case "nutrition": return "记饮食"
         case "body": return "查看身体记录"
         case "plans": return "预览新的训练方案"
         case "daily": return "查看当天分析"

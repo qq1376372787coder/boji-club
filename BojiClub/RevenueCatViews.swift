@@ -210,7 +210,7 @@ struct MembershipView: View {
         ClubCard {
             VStack(alignment: .leading, spacing: BojiLayout.inline) {
                 Label("专属训练计划与逐组记录", systemImage: "checkmark.circle.fill")
-                Label("拍照、语音饮食登记", systemImage: "checkmark.circle.fill")
+                Label("拍照、语音记饮食", systemImage: "checkmark.circle.fill")
                 Label("日报与每周回顾", systemImage: "checkmark.circle.fill")
                 Label("云端同步与成长记录", systemImage: "checkmark.circle.fill")
             }.bojiType(.secondary)

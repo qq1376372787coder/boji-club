@@ -229,7 +229,7 @@ struct RootView: View {
                     else if route.kind == "body" { BodyWeightView(initialDate: ClubDates.date(fromKey: route.date) ?? Date()) }
                     else if route.kind == "meal" {
                         if let date = ClubDates.date(fromKey: route.date) { MealEditorView(date: date) }
-                        else { EmptyNote(title: "日期不可用", detail: "请从输入框左侧“＋”或侧栏“我的记录 → 饮食”重新打开登记。") }
+                        else { EmptyNote(title: "日期不可用", detail: "请从输入框左侧“＋”或侧栏“我的记录 → 饮食”重新打开记录。") }
                     }
                     else { ReportLibraryView() }
                 }
@@ -261,7 +261,7 @@ struct RootView: View {
         case "report": return "日报"
         case "task", "task_center": return "任务中心"
         case "body": return "身体记录"
-        case "meal": return "饮食登记"
+        case "meal": return "饮食记录"
         case "training": return "训练提醒"
         default: return "提醒"
         }

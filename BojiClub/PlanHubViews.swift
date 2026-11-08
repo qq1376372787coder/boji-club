@@ -468,7 +468,7 @@ struct PlanDaySummaryCard: View {
                             .foregroundStyle(complete ? ClubBrand.accent : BojiColor.textTertiary)
                         Text(exercise.displayName).bojiFont(.body).fixedSize(horizontal: false, vertical: true)
                         Spacer()
-                        Text(ClubDates.isFuture(date) ? "计划 \(exercise.sets.count) 组" : "已登记 \(actual)/\(exercise.sets.count) 组").bojiFont(.label, monospacedDigits: true)
+                        Text(ClubDates.isFuture(date) ? "计划 \(exercise.sets.count) 组" : "记了 \(actual)/\(exercise.sets.count) 组").bojiFont(.label, monospacedDigits: true)
                             .foregroundStyle(BojiColor.textSecondary)
                     }
                 }

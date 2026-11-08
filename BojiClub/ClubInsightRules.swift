@@ -70,10 +70,10 @@ enum ClubInsightRules {
         } else if day.completedSets > 0 {
             result.append(.init(id: key + "/training", kind: .training, title: "训练记录待确认",
                 detail: "已记录 \(day.completedSets) 个有效完成组。结束训练后，请确认保存实际完成的部分。",
-                evidence: "依据：\(key) 已登记组次，仍有未确认的训练。", priority: 90))
+                evidence: "依据：\(key) 已记录的组次，仍有未确认的训练。", priority: 90))
         } else if day.workoutStartedAt != nil && day.workoutSavedAt == nil && day.workoutEndedAt == nil {
             result.append(.init(id: key + "/training", kind: .training, title: "训练已开始，记录待完成",
-                detail: "已保存开始状态，尚无有效完成组。确实完成训练后，可以登记组次并确认保存。",
+                detail: "已保存开始状态，尚无有效完成组。确实完成训练后，可以记下组次并确认保存。",
                 evidence: "依据：这一天的训练开始标记，不据此推断实际完成量。", priority: 85))
         } else if isToday && !day.exercises.isEmpty {
             result.append(.init(id: key + "/training", kind: .training, title: "今天的训练已安排",
@@ -89,7 +89,7 @@ enum ClubInsightRules {
             let protein = known.reduce(0) { $0 + $1.protein }
             let number = String(format: "%.0f", protein)
             let hasUnknown = day.unknownNutritionMeals > 0
-            var detail = "已登记 \(day.meals.count) 条饮食"
+            var detail = "记了 \(day.meals.count) 条饮食"
             detail += known.isEmpty ? "，目前没有可汇总的营养估算。" : "，其中已知蛋白质约 \(number) g。"
             if hasUnknown || !day.mealsComplete {
                 detail += "补齐漏记的餐次，摄入数据会更完整。"
@@ -98,12 +98,12 @@ enum ClubInsightRules {
             } else if context.nutrition.generalGuidanceOnly == true {
                 detail += "当前身体背景需要个别评估，不按通用目标判断缺口。"
             } else if protein < context.nutrition.proteinMin {
-                detail += "你已确认饮食记录完整；已登记蛋白质低于参考下限，可以核对份量与明细。"
+                detail += "你已确认饮食记录完整；记录的蛋白质低于参考下限，可以核对份量与明细。"
             } else {
                 detail += "你已确认饮食记录完整，可以查看全天分析。"
             }
             result.append(.init(id: key + "/nutrition", kind: .nutrition, title: "饮食记录跟进", detail: detail,
-                evidence: "依据：\(key) 已登记饮食及完整性确认。营养值为估算，未记录不等于没吃。", priority: 60))
+                evidence: "依据：\(key) 已记录的饮食及完整性确认。营养值为估算，未记录不等于没吃。", priority: 60))
         }
         // BodyWeightHistory filters dates, invalid values, and takes the most recent
         // entries. Never infer a plateau from a pair of measurements.

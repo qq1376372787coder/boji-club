@@ -119,7 +119,7 @@ struct BodyFactIntakeView: View {
                     }.clubAdaptivePicker()
                 }
                 Section("明确选择要保存到哪里") {
-                    Toggle("登记为一次实测记录", isOn: $saveMeasurement)
+                    Toggle("记为一次实测记录", isOn: $saveMeasurement)
                         .disabled(nature != "measured")
                     Toggle("更新档案资料体重", isOn: $updateProfile)
                     Toggle("设为目标体重", isOn: $updateTarget)

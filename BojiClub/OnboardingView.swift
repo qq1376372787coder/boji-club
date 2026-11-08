@@ -760,7 +760,7 @@ struct OnboardingView: View {
             if weightSource == StartingWeightSource.earlier.rawValue {
                 DatePicker("称重日期", selection: $weightMeasurementDate, in: ...Date(), displayedComponents: .date).id("weight-date")
             }
-            Text(startingWeightDate.map { "会登记为 \(ClubDates.label($0)) 的实测体重；该日已有记录时保留原值。" } ?? "估计值只用于身体资料，不进入体重变化曲线。")
+            Text(startingWeightDate.map { "会记为 \(ClubDates.label($0)) 那天的实测体重；该日已有记录时保留原值。" } ?? "估计值只用于身体资料，不进入体重变化曲线。")
                 .bojiType(.label).foregroundStyle(.secondary)
         }
     }

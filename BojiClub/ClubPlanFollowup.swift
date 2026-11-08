@@ -198,7 +198,7 @@ enum ClubPlanFollowupRules {
             if activeNow.count == 1, activeNow.first?.id != version.id { return row(.superseded, "这一天已有后续确认的方案。未找到可归入旧方案的开始快照，后来的训练不算作旧方案执行。") }
             if activeNow.count > 1 || ambiguous { return row(.unknown, "存在并行方案，或缺少动作标识/原重量次数。无法可靠关联，不按设备时间强行选一份。") }
             if planned.isEmpty {
-                return row(.rest, day.completedSets > 0 ? "休息安排日另有训练登记，可在当天记录查看；不会把加练算成原计划完成。" : "没有训练登记不能证明充分休息，也不能据此认定漏练。")
+                return row(.rest, day.completedSets > 0 ? "休息安排日另有训练记录，可在当天记录查看；不会把加练算成原计划完成。" : "没有训练记录不能证明充分休息，也不能据此认定漏练。")
             }
             if different { return row(.changed, "开始时的动作、计量方式、组数或目标参数已与采用快照不同；实际记录保留，不据此认定原参数调整有效。") }
             if day.completedSets > 0 || day.workoutSavedAt != nil || day.workoutSessions?.contains(where: { $0.startedAt != nil || $0.savedAt != nil }) == true {

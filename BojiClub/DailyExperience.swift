@@ -343,7 +343,7 @@ enum DailyReportEligibility {
     static func hasRecords(_ log: DayLog) -> Bool {
         log.completedSets > 0 || !log.meals.isEmpty || log.bodyWeight?.hasMeasurement == true || log.health?.hasData == true
     }
-    static let missingMessage = "这一天还没有实际记录。先记一餐、完成一组训练、登记体重或确认分享健康数据，再生成复盘。"
+    static let missingMessage = "这一天还没有实际记录。先记一餐、完成一组训练、记一次体重或确认分享健康数据，再生成复盘。"
 }
 
 enum DailyAnalysisReadiness {
@@ -359,7 +359,7 @@ enum DailyAnalysisReadiness {
             }
         }
         if !log.mealsComplete {
-            messages.append(log.meals.isEmpty ? "还没有饮食记录，本次无法评价全天饮食。" : "目前只登记了 \(log.meals.count) 餐，尚未确认全天记录齐全；不会据此判断全天吃多或吃少。")
+            messages.append(log.meals.isEmpty ? "还没有饮食记录，本次无法评价全天饮食。" : "目前只记了 \(log.meals.count) 餐，尚未确认全天记录齐全；不会据此判断全天吃多或吃少。")
         }
         if log.unknownNutritionMeals > 0 {
             messages.append("另有 \(log.unknownNutritionMeals) 餐营养数据未知，会作为缺失说明，不能当作零热量。")

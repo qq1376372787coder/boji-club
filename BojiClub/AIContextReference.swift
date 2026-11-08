@@ -175,10 +175,10 @@ struct AIReferenceSourceCard: View {
             else { result.append(name) }
         }
         for item in fields["exercises"]?.array ?? [] {
-            let e = item.object ?? [:]; result.append((e["name"]?.string ?? "动作") + " · \(e["sets"]?.array?.count ?? 0)组" + (fields["status"]?.string == "planned_targets_not_actual" ? "目标" : "实际登记"))
+            let e = item.object ?? [:]; result.append((e["name"]?.string ?? "动作") + " · \(e["sets"]?.array?.count ?? 0)组" + (fields["status"]?.string == "planned_targets_not_actual" ? "目标" : "实际记录"))
         }
         if let v = fields["plan_version"]?.object { result.append((v["title"]?.string ?? "计划") + " · \(v["sessions"]?.array?.count ?? 0)个训练日"); if v["status"]?.string == "draft" { result.append("计划草稿，尚未保存到日历") } }
-        return result.isEmpty ? ["该范围没有对应的已登记数值。"] : result
+        return result.isEmpty ? ["该范围没有对应的已记录数值。"] : result
     }
 }
 

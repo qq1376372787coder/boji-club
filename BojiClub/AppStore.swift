@@ -1163,7 +1163,7 @@ final class AppStore: ObservableObject {
 
     @discardableResult
     func updateSet(_ set: TrainingSet, exerciseID: UUID, on date: Date) -> Bool {
-        guard RecordLimits.valid(set) else { message = "训练数值超出记录范围，原数据已保留；计时单组最多 6 小时，请分段登记。"; return false }
+        guard RecordLimits.valid(set) else { message = "训练数值超出记录范围，原数据已保留；计时单组最多 6 小时，请分段记录。"; return false }
         guard !set.completed || !ClubDates.isFuture(date) else { message = "未来日期只能安排训练，到了当天才能勾选完成。"; return false }
         guard log(for:date).trainingLog.exercises.contains(where: { $0.id == exerciseID && $0.sets.contains(where: { $0.id == set.id }) }) else { message = "训练组已切换或删除，请重新打开。"; return false }
         let selected = log(for:date).trainingLog

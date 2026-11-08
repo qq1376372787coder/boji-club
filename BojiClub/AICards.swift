@@ -125,7 +125,7 @@ struct AIProposalPreviewPayload: Equatable {
         if preview["compensates"]?.string != nil { lines.append("这是此前变更的纠正预览，请核对列出的日期和动作。") }
         if let date = preview["date"]?.string { lines.append("日期：" + date) }
         if let duration = preview["duration"]?.numberValue { lines.append("周期：\(Int(duration)) 天") }
-        if let remaining = preview["remaining_sets"]?.numberValue { lines.append("还有 \(Int(remaining)) 组未完成。确认将只保存已经登记的实际组，不会把剩余组标成完成。") }
+        if let remaining = preview["remaining_sets"]?.numberValue { lines.append("还有 \(Int(remaining)) 组未完成。确认将只保存已经记录的实际组，不会把剩余组标成完成。") }
         if case .array(let moves)? = preview["moves"] {
             for move in moves { if case .object(let m) = move { lines.append((m["from"]?.string ?? "") + " → " + (m["to"]?.string ?? "")) } }
         }
