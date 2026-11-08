@@ -54,7 +54,7 @@
 | BUG-013 | Hero 卡视频暂停钮触控区不足 | 暂停/播放钮视觉 30×30pt，实际触控区 < 44pt 最小触控标准 | P3 | 苹果开发 | 已验收关闭 | 测试验收第二批复验发现，第三輪复验未修；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1287-1288` 加 `.frame(width: 44, height: 44).contentShape(Circle())`，视觉仍 30pt、命中区 44pt，符合 ACC-06 与 DES §6 |
 | BUG-014 | Hero 品牌视频**没有静音** | `setupHeroVideo()`（`ClubAIShell.swift:1190-1196`）创建 `AVQueuePlayer` 后未设 `isMuted = true` | P1 | 苹果开发 | 已验收关闭 | 测试验收第三批复验发现（界面设计独立核对一致）；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1194` `player.isMuted = true` |
 | BUG-015 | 视频降级缺两项（低电量 / 首帧占位） | DES §5.2 要求「低电量模式 → 静态图」与「未就绪前显示第 0 帧静态图」 | P3 | 苹果开发 | 已修复待验（低电量部分） | **第四輪已修低电量闸门**（commit 54092f1）：`ClubAIShell.swift:1191` guard 增 `!ProcessInfo.processInfo.isLowPowerModeEnabled`。**首帧占位图按 Chief 决定留到阶段 4** 随视频深化一起做，本条保持打开至阶段 4 |
-| BUG-016 | 勾选按钮动效未受「减少动态效果」约束 | `TrainingRegistrationViews.swift:295` `Image(...).symbolEffect(.bounce.up.byLayer, value: true)` 无条件生效；原自绘 `LiquidCheckbox` 的动画是有 `if !reduceMotion` 门控的，换原生后**门控丢失** | P3 | 苹果开发 | 待处理 | 测试验收阶段 3 交互回归（F2/INT-06）发现；违反 DES §0 铁律 3「所有动效尊重减少动态效果」与 ACC-05。修法：把 symbolEffect 包在 `reduceMotion ? nil : ...` 分支里，或改用 `.symbolEffect(..., options: reduceMotion ? [] : .default)` |
+| BUG-016 | 勾选按钮动效未受「减少动态效果」约束 | `TrainingRegistrationViews.swift:295` `Image(...).symbolEffect(.bounce.up.byLayer, value: true)` 无条件生效；原自绘 `LiquidCheckbox` 的动画是有 `if !reduceMotion` 门控的，换原生后**门控丢失** | P3 | 苹果开发 | 已验收关闭 | 测试验收阶段 3 交互回归（F2/INT-06）发现；违反 DES §0 铁律 3「所有动效尊重减少动态效果」与 ACC-05。**已修**（commit 43d66f8）：`TrainingRegistrationViews.swift:298` `if reduceMotion { base } else { base.symbolEffect(...) }` |
 
 > 用户直接在群里反馈的具体 bug 和流程卡壳点，由测试验收转记到此表。
 >
@@ -221,6 +221,27 @@
 
 ---
 
+## G. 阶段 3 批次复验（测试验收，2026-11-08）
+
+复验苹果开发 43d66f8→77883ff 批次（IOS-006~009 动效系统化 + P0 玻璃收口 + BUG-016/CLN-01）。源码级核查，编译 run 42466697711 出包 `dist/BojiClub-1c1d85e0.ipa`（37.41 MB）。
+
+| 编号 | 复验项 | 结论 | 证据 |
+|---|---|---|---|
+| G-01 | IOS-006 手绘 spinner → 原生 ProgressView | ✅ 通过 | `Design.swift:331-339` `ClubActivityMark` 内改为 `ProgressView().progressViewStyle(.circular)`；`:450` `AIProcessingMark` 同；TimelineView 手绘脉冲已删 |
+| G-02 | IOS-006 `ClubWaitBar` 减动效降级 | ✅ 通过 | `Design.swift:484-500` `if active && !reduceMotion { ProgressView().linear } else { 静态 Capsule }` |
+| G-03 | IOS-007 呼吸环 → 原生 Gauge | ✅ 通过 | `DesignTokens.swift:674-700` `Gauge(.accessoryCircularCapacity)` + `symbolEffect(.bounce, value: isUrgent)`，保留触感与无障碍标签/值 |
+| G-04 | IOS-008 激光扫描线 → 系统进度语义 | ✅ 通过 | `DesignTokens.swift:786-805` 改为半透明遮罩 + `ProgressView` +「正在识别餐食…」，未新增玻璃件 |
+| G-05 | IOS-009 彩带粒子 → 系统庆祝 | ✅ 通过 | `ConfettiView` 全库已删（零命中），改 SF Symbols + 一次性 `symbolEffect(.bounce)` |
+| G-06 | BUG-016 勾选动效减动效门控 | ✅ 通过 | `TrainingRegistrationViews.swift:298` `if reduceMotion { base } else { base.symbolEffect(...) }` |
+| G-07 | CLN-01 遗留 Environment 清理 | ✅ 通过 | `JourneyComponents.swift` 已无 `reduceTransparency`/`colorSchemeContrast`（零命中） |
+| G-08 | P0 玻璃滥用收口（内容卡去玻璃） | ⚠️ **未完成** | 界面设计走查列 6 处（ClubAIShell 1426/1609/1720/1812/1888/1946 + ProfileView 奖励卡）。苹果开发报「ClubAIShell 5 处 + ProfileView 1 处」已改；**测试验收按当前源码复扫，ClubAIShell 仍有 2 处内容卡用玻璃**：`ClubAIShell.swift:1812`（智能分析专区 `intelligenceHubSection`）、`:1946`（新用户引导卡 `newUserDivergenceCard`），二者均在首页 ScrollView 内容层，按 DES 铁律 2 应改不透明 `cardSurface`。另 `ProfileView.swift` 仍有 5 处 `clubGlassEffect`（165/486/488/492/497），需界面设计逐处判定是否浮件 |
+| G-09 | `.celebrate` 不可用 | ✅ 已规避 | 苹果开发改用系统 `.bounce`，一次性庆祝语义不变；规范如需 `celebrate` 须先确认 SDK 版本（当前 SDK 的 `DiscreteSymbolEffect` 无此成员） |
+| G-10 | 编译回归 | ✅ 通过 | run 42466697711（head `77883ff`），产物 37.41 MB |
+
+**G 表结论**：IOS-006~009、BUG-016、CLN-01 全部通过，编译通过；**G-08 未完成**——ClubAIShell 仍有 2 处内容卡玻璃违反 DES 铁律 2，另有 ProfileView 5 处待判定。阶段 3 的「23 处材质收口/玻璃红线」验收项**不能判达标**，需苹果开发补 G-08、界面设计补 ProfileView 判定。
+
+---
+
 ## 进度速览（文档管理维护）
 
 ### 阶段进度（5 阶段，Chief 逐阶段验收）
@@ -284,6 +305,7 @@
 - 2026-11-08：`.gitignore` 补 `logs-builder-*.log`（测试验收本机排障日志不入库，Chief 建议）。
 - 2026-11-08：**阶段 2 第四輪返工复验通过**。Chief 判定阶段 2 不通过后返工的三件（BUG-014 静音 / BUG-013 触控区 / BUG-015 低电量闸门）由 Chief 代收口提交 54092f1；测试验收逐处核对源码通过，云端编译 run 42465043363 出包 `dist/BojiClub-f9a471f6.ipa`（37.44 MB）。结果登记为 E-2 表。BUG-003 剩余 IOS-003／004 转阶段 3（苹果开发已推 b1d31c7）。
 - 2026-11-08：**阶段 3 交互回归（源码级）登记为 F 表**。全局四种设置基础设施齐备（动态字体 `@ScaledMetric`、AX 布局降级、reduceMotion、减少透明度/增强对比度分支均通过）；逐项核查发现 **BUG-016**（勾选按钮 `symbolEffect` 丢失 reduceMotion 门控，P3）与清理项 CLN-01（JourneyComponents 遗留未用 `@Environment`）。结论：阶段 3 改造项中 INT-11（IOS-006~010 动效）未开工，其余除 INT-06 外通过；全部结论待真机/模拟器实测复跑。
+- 2026-11-08：**阶段 3 批次复验登记为 G 表**（苹果开发 43d66f8→77883ff）。IOS-006~009 动效系统化、BUG-016 减动效门控、CLN-01 清理均通过，编译 run 42466697711 出包；**G-08 未完成**：ClubAIShell 仍有 2 处内容卡用玻璃（:1812 智能分析专区、:1946 新用户引导卡），违反 DES 铁律 2，另 ProfileView 5 处待界面设计判定。阶段 3 玻璃红线项不能判达标。
 - 2026-11-08：**苹果开发第二批修复完成待提交**：BUG-003 输入串轨（删 ClubNumericKeypad 自绘键盘与 keypadWeight 双轨，ClubNumericField 改原生 TextField+sanitize，LiquidCheckbox 改系统符号按钮）、BUG-005 Hero 视频接入（DES-003 方案 A，brand-video.mp4 已入 bundle 并注册 pbxproj）、BUG-010/011 横幅修正（training 文案如实、带「知道了」关闭、改 safeAreaInset 不压顶栏）、BUG-012 JourneyComponents 三处散写玻璃分支收口 clubNativeGlassButton；台账 A/B1 表状态已同步更新。
 - 2026-11-08：**云端编译恢复通过（后端开发）**：逐次抓取 xcodebuild 错误行，定位并修复 4 处阻塞编译的问题——`AppStore.swift` 的 `ClubNotificationRoute` 补 `Equatable`（`onChange` 需要）、`TrainingRegistrationViews.swift` 的 `Button(action:) label:` 改回 trailing closure、`ClubAIShell.swift` 的 TimelineView 闭包内非法 `return` 去掉、`VideoPlayer` 无 `videoGravity` 改用 `AVPlayerLayer` 封装（`resizeAspectFill` 铺满）。**workflow run 42461169469 编译成功，IPA `dist/BojiClub-ffe4a1ed.ipa`（37.44 MB）**，已提交推送（`7cb0b97`）。BE-001/BE-004 修复保持「已修复待验」，等测试验收复验。
 - 2026-11-08：**阶段 2（P0 修复）Chief 验收通过，阶段 3（UI 原生化改造）开工**。登记：阶段进度表 2→已通过、3→进行中（含完成条件）；C 表第 1 轮验收记录（f9a471f6，首验不通过返工、第四輪通过）；E 节标注已收档归档（后续复验从 E-3 起）；阶段 2 分工表归档，新增阶段 3 分工表（苹果开发 IOS-006~010、界面设计规范走查、测试验收四设置回归、文档管理打勾）；B1 表加打勾进度汇总（14 项：6 待验 / 1 处理中 / 7 待处理）。
