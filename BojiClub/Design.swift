@@ -275,7 +275,9 @@ private struct BojiGlassFallbackButtonStyle: ButtonStyle {
                 configuration.label.buttonStyle(.bordered)
             }
         }
-        .scaleEffect(pressed && !reduceMotion ? BojiPressSpec.scale : 1)
+        .scaleEffect(pressed ? BojiPressSpec.scale : 1)
+        // 动效规格 §二 M7 例外三条：reduceMotion 时按压缩放保留、时长降为 0（瞬时到位）——
+        // 按压是触感的可视化，属功能反馈，不与视差/庆祝一起降；同时不叠加自绘 tint（系统已变暗）
         .shadow(color: .black.opacity(colorScheme == .dark ? 0.5 : 0.16),
                 radius: pressed ? BojiPressSpec.shadowRadiusPressed : BojiPressSpec.shadowRadiusIdle,
                 x: 0, y: pressed ? BojiPressSpec.shadowYPressed : BojiPressSpec.shadowYIdle)
