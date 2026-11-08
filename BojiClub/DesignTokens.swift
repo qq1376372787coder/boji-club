@@ -438,13 +438,13 @@ extension Optional where Wrapped == Animation {
 // MARK: - 触感与微缩回弹按键样式
 
 struct BojiPressableButtonStyle: ButtonStyle {
-    var scale: CGFloat = 0.96
+    var scale: CGFloat = BojiPressSpec.rowScale
     var haptic: () -> Void = { BojiHaptics.tick() }
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed && !reduceMotion ? scale : 1.0)
+            .scaleEffect(configuration.isPressed ? scale : 1.0)   // 减动效保留按压缩放，时长置 0（动效规格 §二 M7 例外三条）
             .animation(reduceMotion ? nil : .bojiSnappy, value: configuration.isPressed)
             .onChange(of: configuration.isPressed) { _, isPressed in
                 if isPressed { haptic() }
@@ -587,7 +587,7 @@ struct BojiToolbarCapsuleButton: View {
             .overlay { Capsule().stroke(BojiColor.outline, lineWidth: 0.5) }
             .contentShape(Rectangle().inset(by: -9))
         }
-        .buttonStyle(BojiPressableButtonStyle(scale: 0.95))
+        .buttonStyle(BojiPressableButtonStyle(scale: BojiPressSpec.scale))
     }
 }
 

@@ -684,7 +684,7 @@ struct BojiPressStyle: ButtonStyle {
         configuration.label
             // 动效规格 §二 M7 例外三条：按压是触感的可视化（功能反馈），减动效时保留缩放、时长置 0 瞬时到位
             .scaleEffect(configuration.isPressed ? scale : 1)
-            .opacity(configuration.isPressed ? 0.92 : 1)
+            // 不叠透明度：M7 反馈轴只有「缩放 + 阴影收紧」（深色下变暗会像禁用）
             .animation(reduceMotion ? nil : BojiMotion2.micro, value: configuration.isPressed)
             .onChange(of: configuration.isPressed) { _, pressed in
                 if pressed, let haptic { BojiFeedback.fire(haptic) }

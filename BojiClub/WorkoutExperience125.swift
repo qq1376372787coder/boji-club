@@ -89,7 +89,7 @@ struct TrainingInlineSetRow125: View {
                         .foregroundStyle(done ? ClubBrand.accent : BojiColor.textTertiary)
                         .frame(width: BojiSetTable.completeColumn, height: 48)
                 }
-                .buttonStyle(BojiPressableButtonStyle(scale: 0.92, haptic: { BojiHaptics.tick() }))
+                .buttonStyle(BojiPressableButtonStyle(scale: BojiPressSpec.rowScale, haptic: { BojiHaptics.tick() }))
                 .accessibilityLabel(plan ? "保存本组目标" : done ? "撤销本组完成" : "保存并完成本组")
                 .accessibilityIdentifier("set-complete-\(original.id)")
             }

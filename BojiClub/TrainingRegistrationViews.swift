@@ -363,7 +363,7 @@ struct TrainingSetRowView: View {
                                 .background(BojiColor.cardSurface, in: Capsule())
                                 .overlay { Capsule().stroke(BojiColor.outline, lineWidth: 0.5) }
                         }
-                        .buttonStyle(BojiPressableButtonStyle(scale: 0.92))
+                        .buttonStyle(BojiPressableButtonStyle(scale: BojiPressSpec.scale))
                     }
                     Spacer(minLength: 4)
                     Text("次数")
@@ -383,7 +383,7 @@ struct TrainingSetRowView: View {
                                 .background(BojiColor.cardSurface, in: Capsule())
                                 .overlay { Capsule().stroke(BojiColor.outline, lineWidth: 0.5) }
                         }
-                        .buttonStyle(BojiPressableButtonStyle(scale: 0.92))
+                        .buttonStyle(BojiPressableButtonStyle(scale: BojiPressSpec.scale))
                     }
                 }
             } else {
@@ -406,7 +406,7 @@ struct TrainingSetRowView: View {
                                 .background(BojiColor.cardSurface, in: Capsule())
                                 .overlay { Capsule().stroke(BojiColor.outline, lineWidth: 0.5) }
                         }
-                        .buttonStyle(BojiPressableButtonStyle(scale: 0.92))
+                        .buttonStyle(BojiPressableButtonStyle(scale: BojiPressSpec.scale))
                     }
                     Spacer()
                 }
