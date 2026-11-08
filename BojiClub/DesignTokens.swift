@@ -668,45 +668,6 @@ struct BojiSectionHeader: View {
     }
 }
 
-// MARK: - 组间休息进度环 (原生 Gauge)
-
-/// 原生 Gauge(.accessoryCircularCapacity) + 系统 symbolEffect；减少动态效果时系统自动降级。
-struct BreathingPulseHalo: View {
-    let remaining: Int
-    var total: Int = 60
-
-    private var fraction: Double {
-        guard total > 0 else { return remaining > 0 ? 1 : 0 }
-        return min(1, max(0, Double(remaining) / Double(total)))
-    }
-    private var isUrgent: Bool { remaining > 0 && remaining <= 3 }
-    private var ringColor: Color { isUrgent ? Color.red : BojiColor.timerAccent }
-
-    var body: some View {
-        Gauge(value: fraction, in: 0...1) {
-            Text("组间休息")
-        } currentValueLabel: {
-            Image(systemName: isUrgent ? "flame.fill" : (remaining == 0 ? "checkmark" : "timer"))
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(ringColor)
-                .symbolEffect(.bounce, value: isUrgent)
-        }
-        .gaugeStyle(.accessoryCircularCapacity)
-        .tint(ringColor)
-        .frame(width: 40, height: 40)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("组间休息剩余 \(remaining) 秒")
-        .accessibilityValue(remaining == 0 ? "休息结束" : "剩余 \(remaining) 秒")
-        .onChange(of: remaining) { _, sec in
-            if sec > 0 && sec <= 3 {
-                BojiHaptics.tick()
-            } else if sec == 0 {
-                BojiHaptics.heavyDrop()
-            }
-        }
-    }
-}
-
 // MARK: - 原生重量步进器 (Smart Weight Stepper)
 
 /// 系统原生 Stepper：步长 2.5 kg，范围 0…RecordLimits.maximumWeight。
