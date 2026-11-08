@@ -175,11 +175,20 @@ jobs:
           # 管道吞退出码会让失败假绿，必须加 pipefail。
           set -o pipefail
           mkdir -p test-results
+          # 优先用只含 UI 测试的专用 scheme；当前代码树没有它时（构建早于该 scheme 入库）
+          # 回退主 scheme——至少能出图，并在 Summary 里标明实际用了哪个。
+          SCHEME="BojiClub-VisualRegression"
+          if ! xcodebuild -project BojiClub.xcodeproj -list 2>/dev/null | grep -q "$SCHEME"; then
+            echo "::warning::当前代码树无 $SCHEME scheme，回退主 scheme BojiClub（BojiClubTests 编译错可能连坐）"
+            SCHEME="BojiClub"
+          fi
+          echo "使用 scheme: $SCHEME" | tee -a "$GITHUB_STEP_SUMMARY"
           echo "=== 构建测试目标 ==="
-          # 用只含 UI 测试的专用 scheme：BojiClubTests 的编译错误不会连坐截图构建。
+          # 只构建截图用例目标：build-for-testing 默认会编整个 scheme 的测试目标，
+          # 只要 BojiClubTests 有编译错（哪怕与截图无关）就会连带挂掉截图构建。
           xcodebuild build-for-testing \
             -project BojiClub.xcodeproj \
-            -scheme BojiClub-VisualRegression \
+            -scheme "$SCHEME" \
             -destination "platform=iOS Simulator,id=$UDID" \
             -only-testing:BojiClubUITests/VisualRegressionShots \
             -quiet 2>&1 | tee test-results/build-for-testing.log || {
@@ -191,7 +200,7 @@ jobs:
           echo "=== 运行视觉用例 ==="
           xcodebuild test-without-building \
             -project BojiClub.xcodeproj \
-            -scheme BojiClub-VisualRegression \
+            -scheme "$SCHEME" \
             -destination "platform=iOS Simulator,id=$UDID" \
             -only-testing:BojiClubUITests/VisualRegressionShots \
             -resultBundlePath test-results/visual.xcresult \
