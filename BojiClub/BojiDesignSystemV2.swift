@@ -69,6 +69,8 @@ enum BojiScript {
 ///  * hero 的 bold 仅用于数字，中文永远不会走到 hero（见 `.bojiType` 内的 CJK 降级）。
 enum BojiTypeRole: String, CaseIterable {
     case hero, display, title, section, body, bodyStrong, secondary, label, caption, eyebrow, data
+    /// T4 正文/说明单行 15pt（规格表 5 档之一；T1 88 在 BojiEditorialNumber，T2=.title 28，T3=.data 17，T5=.caption 11）。
+    case body15
 
     var size: CGFloat {
         switch self {
@@ -81,6 +83,7 @@ enum BojiTypeRole: String, CaseIterable {
         case .label: 13
         case .caption, .eyebrow: 11
         case .data: 17
+        case .body15: 15
         }
     }
 
@@ -97,6 +100,7 @@ enum BojiTypeRole: String, CaseIterable {
         case .caption: 16
         case .eyebrow: 14
         case .data: 22
+        case .body15: 22
         }
     }
 
@@ -104,7 +108,7 @@ enum BojiTypeRole: String, CaseIterable {
         switch self {
         case .hero: .bold
         case .display, .title, .section, .bodyStrong: .semibold
-        case .body, .secondary: .regular
+        case .body, .secondary, .body15: .regular
         case .label, .caption, .data: .medium
         case .eyebrow: .bold
         }
@@ -116,7 +120,7 @@ enum BojiTypeRole: String, CaseIterable {
         case .display: -0.8
         case .title: -0.5
         case .section: -0.2
-        case .body, .bodyStrong, .secondary: 0
+        case .body, .bodyStrong, .secondary, .body15: 0
         case .label: 0.1
         case .caption: 0.3
         case .eyebrow: 1.8
@@ -130,7 +134,7 @@ enum BojiTypeRole: String, CaseIterable {
         case .hero, .display: .largeTitle
         case .title: .title
         case .section: .title3
-        case .body, .bodyStrong, .data: .body
+        case .body, .bodyStrong, .data, .body15: .body
         case .secondary: .subheadline
         case .label: .footnote
         case .caption, .eyebrow: .caption2
@@ -174,6 +178,9 @@ struct BojiEditorialNumber: View {
     /// Dynamic Type 基准：88pt 档跟随 largeTitle 缩放，其余档位按此比例换算。
     @ScaledMetric(relativeTo: .largeTitle) private var displayUnit: CGFloat = 88
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// M8 数字叙事：整数位进场从 0 滚到终值（0.35s），减动效直落终值。
+    @State private var shownValue: String?
 
     enum EditorialScale {
         /// 88pt / 800 / -3pt —— 状态数字、进度大数字。
@@ -204,15 +211,29 @@ struct BojiEditorialNumber: View {
         return typeSize > .accessibility3 ? scaled * 0.75 : scaled
     }
 
+    /// 只有纯整数才做 0→终值滚动（"3/12"、"76.5" 这类不滚，避免读出怪值）。
+    private var rollsFromZero: Bool { Int(value) != nil }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(value)
+            Text(shownValue ?? (rollsFromZero ? "0" : value))
                 .font(.system(size: effectiveSize, weight: .heavy, design: .default))
                 .monospacedDigit()
                 .kerning(scale.tracking * (effectiveSize / scale.size))
                 .foregroundStyle(tint)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
+                .contentTransition(.numericText())
+                .onAppear {
+                    shownValue = reduceMotion ? value : (rollsFromZero ? "0" : value)
+                    if !reduceMotion && rollsFromZero {
+                        withAnimation(.snappy(duration: 0.35)) { shownValue = value }
+                    }
+                }
+                .onChange(of: value) { _, next in
+                    if reduceMotion { shownValue = next }
+                    else { withAnimation(.snappy(duration: 0.35)) { shownValue = next } }
+                }
             if let label, !label.isEmpty {
                 Rectangle()
                     .fill(BojiColor.divider)
@@ -320,6 +341,18 @@ enum BojiLayout {
     static let tight: CGFloat = 4
     /// 发丝线。
     static let hairline: CGFloat = 0.5
+
+    // —— 全局组件规格体系 v1（唯一尺寸来源，表外尺寸一票否决）——
+    /// B1 主操作高度（玻璃胶囊，每屏 1 个）。
+    static let actionHeight: CGFloat = 54
+    /// B2 次操作 / B3 图标按钮 / R1 单行行高。
+    static let controlHeight: CGFloat = 44
+    /// R2 双行行高。
+    static let rowHeight: CGFloat = 56
+    /// 输入框高度（唯一一种）。
+    static let inputHeight: CGFloat = 48
+    /// 列表底部避让：主操作 54 + 24（浮钮不许压最后一行）。
+    static let actionClearance: CGFloat = 78
 
     // —— 纵向节奏（页面骨架专用，减少每个页面各自拍脑袋）——
     enum Rhythm {

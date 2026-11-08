@@ -81,7 +81,7 @@ struct NutritionView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             Button { recorder = MealEntryRequest(date: selectedDate) } label: {
                 Label("记一顿", systemImage: "plus")
-                    .frame(maxWidth: .infinity, minHeight: 54)
+                    .frame(maxWidth: .infinity, minHeight: BojiLayout.actionHeight)
             }
             .clubNativeGlassButton(prominent: true)
             .padding(.horizontal, BojiSpace.pageInset)

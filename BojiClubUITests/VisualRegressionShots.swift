@@ -56,23 +56,26 @@ final class VisualRegressionShots: XCTestCase {
         let scroll: Int
         /// 本屏唯一主操作的可见文案（有就断言同屏只有一个）
         let primary: String?
+        /// 本屏唯一主操作的无障碍标识（比文案稳，页面层登记过的才填）
+        let primaryID: String?
         /// 额外操作（唤起键盘等）
         let action: Action?
 
         enum Action: Equatable { case focusTextField }
 
         init(code: String, page: String, state: String, route: String, seed: String = "1",
-             only: Set<ShotSet>? = nil, scroll: Int = 0, primary: String? = nil, action: Action? = nil) {
+             only: Set<ShotSet>? = nil, scroll: Int = 0, primary: String? = nil, primaryID: String? = nil,
+             action: Action? = nil) {
             self.code = code; self.page = page; self.state = state; self.route = route
             self.seed = seed; self.only = only; self.scroll = scroll; self.primary = primary
-            self.action = action
+            self.primaryID = primaryID; self.action = action
         }
     }
 
     private var screens: [Screen] {
         [
             // —— 主壳：今天 ——
-            Screen(code: "R01", page: "首页", state: "有数据", route: "home", primary: "开始练"),
+            Screen(code: "R01", page: "首页", state: "有数据", route: "home", primaryID: "v2-home-primary"),
             Screen(code: "R02", page: "首页", state: "空态", route: "home", seed: "empty"),
             Screen(code: "R03", page: "首页", state: "滚动后", route: "home", scroll: 1),
             Screen(code: "R04", page: "首页", state: "AX大字号", route: "home", only: [.ax]),
@@ -193,15 +196,26 @@ final class VisualRegressionShots: XCTestCase {
         XCTAssertFalse(labels.contains { $0.contains("…了") || $0.hasSuffix("…") && $0.count < 4 },
                        "\(name) 疑似截断")
 
-        // 4) 每屏唯一主操作（有登记文案的页面才判）
+        // 4) 每屏唯一主操作（有登记文案或标识的页面才判）
         if let primary = screen.primary {
             let count = app.buttons.matching(NSPredicate(format: "label == %@", primary)).count
             XCTAssertEqual(count, 1, "\(name) 主操作「\(primary)」应恰好 1 个，实际 \(count)")
+        }
+        if let primaryID = screen.primaryID {
+            let buttons = app.buttons.matching(identifier: primaryID)
+            XCTAssertEqual(buttons.count, 1, "\(name) 主操作（\(primaryID)）应恰好 1 个，实际 \(buttons.count)")
         }
 
         // 5) 主操作必须完整在屏内（不许被 tab 栏/底边裁掉）
         if let primary = screen.primary {
             let button = app.buttons.matching(NSPredicate(format: "label == %@", primary)).firstMatch
+            if button.exists {
+                let window = app.windows.firstMatch.frame
+                XCTAssertTrue(window.contains(button.frame), "\(name) 主操作出屏：\(button.frame) vs \(window)")
+            }
+        }
+        if let primaryID = screen.primaryID {
+            let button = app.buttons.matching(identifier: primaryID).firstMatch
             if button.exists {
                 let window = app.windows.firstMatch.frame
                 XCTAssertTrue(window.contains(button.frame), "\(name) 主操作出屏：\(button.frame) vs \(window)")
