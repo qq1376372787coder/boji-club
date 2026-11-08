@@ -77,7 +77,7 @@ jobs:
             exit 1
           fi
 
-      - name: Select SE3 simulator
+      - name: Select simulator (iPhone 16 Pro)
         id: sim
         run: |
           set -e
@@ -93,16 +93,16 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-          # 与旧基线同口径：iPhone SE（第 3 代）。名字写法在不同 Xcode 版本间会变，
-          # 所以用宽松匹配；都没有再退回任意 iPhone。
+          # 设备口径写死：iPhone 16 Pro（与 2026-11-08 快照同设备；跨设备对比无效）。
+          # 先按名字精确取现成设备，没有再退回任意 iPhone，最后按 devicetype 手动建一台。
           UDID=$(printf '%s' "$DEVICES_JSON" | jq -r '
             .devices[]
             | to_entries[]
             | .value[]
-            | select(.name | test("iPhone SE"))
+            | select(.name == "PerfTest-iPhone" or (.name | test("iPhone 16 Pro")))
             | .udid' | head -1)
           if [ -z "$UDID" ]; then
-            echo "::warning::没有 iPhone SE，退回任意可用的 iPhone"
+            echo "::warning::没有 iPhone 16 Pro，退回任意可用的 iPhone"
             UDID=$(printf '%s' "$DEVICES_JSON" | jq -r '
               .devices[]
               | to_entries[]
@@ -111,13 +111,17 @@ jobs:
               | .udid' | head -1)
           fi
 
-          # 兜底：runtime 有但一台设备都没建出来，就手动建一台。
+          # 兜底：runtime 有但一台设备都没建出来，就手动建一台（钉死 iPhone 16 Pro）。
           if [ -z "$UDID" ]; then
-            echo "::warning::没有现成设备，尝试手动创建一台 iPhone 模拟器"
+            echo "::warning::没有现成设备，尝试手动创建一台 iPhone 16 Pro 模拟器"
             RUNTIME_ID=$(xcrun simctl list runtimes --json | jq -r '
               .runtimes[] | select(.identifier | test("iOS")) | .identifier' | head -1)
             DEVICE_TYPE=$(xcrun simctl list devicetypes --json | jq -r '
-              .devicetypes[] | select(.name | test("iPhone 16 Pro|iPhone 15 Pro|iPhone 15|iPhone 14")) | .identifier' | head -1)
+              .devicetypes[] | select(.name == "iPhone 16 Pro") | .identifier' | head -1)
+            if [ -z "$DEVICE_TYPE" ]; then
+              DEVICE_TYPE=$(xcrun simctl list devicetypes --json | jq -r '
+                .devicetypes[] | select(.name | test("iPhone 16 Pro|iPhone 15 Pro|iPhone 15|iPhone 14")) | .identifier' | head -1)
+            fi
             if [ -n "$RUNTIME_ID" ] && [ -n "$DEVICE_TYPE" ]; then
               UDID=$(xcrun simctl create "PerfTest-iPhone" "$DEVICE_TYPE" "$RUNTIME_ID" 2>/dev/null || true)
             fi
