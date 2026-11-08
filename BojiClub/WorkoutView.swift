@@ -409,7 +409,7 @@ struct WorkoutView: View {
                 BojiEditorialNumber(value: "0", scale: .display, tint: BojiColor.textPrimary)
                 Text("/ \(log.totalSets) 组").bojiType(.title).foregroundStyle(BojiColor.textTertiary)
                 Spacer()
-                Text("训练进行中").bojiFont(.bodyStrong).foregroundStyle(BojiColor.textSecondary)
+                Text("训练进行中").bojiType(.bodyStrong).foregroundStyle(BojiColor.textSecondary)
             }
             ProgressView(value: 0, total: Double(max(1, log.totalSets)))
                 .tint(ClubBrand.accent)
@@ -432,7 +432,7 @@ struct WorkoutView: View {
                     Text(log.workoutSavedAt != nil ? "训练已保存"
                          : log.workoutEndedAt != nil ? "训练已结束 · 点按确认保存"
                          : log.workoutStartedAt == nil && log.completedSets == 0 ? "先核对动作与目标" : "正在练")
-                        .bojiFont(.bodyStrong).foregroundStyle(BojiColor.textSecondary)
+                        .bojiType(.bodyStrong).foregroundStyle(BojiColor.textSecondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: BojiLayout.tight) {
