@@ -175,9 +175,7 @@ struct BojiEditorialNumber: View {
     var scale: EditorialScale = .display
     /// 数字颜色；默认主文字色。
     var tint: Color = BojiColor.textPrimary
-    /// Dynamic Type 基准：规格表 T1 88 固定不缩放（展示字不走 @ScaledMetric——AX 哨兵判据：
-    /// AX 图里巨号必须与亮色版同尺寸）；仅 AX4/AX5 极端档降 0.75 防炸版。
-    @Environment(\.dynamicTypeSize) private var typeSize
+    /// 展示字任何档位都是 88/76/52（D3 终裁 + 哨兵⑥）；溢出用版式解决，不用字号解决。
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// M8 数字叙事：整数位进场从 0 滚到终值（0.35s），减动效直落终值。
     @State private var shownValue: String?
@@ -207,9 +205,9 @@ struct BojiEditorialNumber: View {
     }
 
     private var effectiveSize: CGFloat {
-        // 固定字号：88/76/52 不随 Dynamic Type 缩放；仅 AX4/AX5 降 0.75 防版式炸裂
-        let base = scale.size
-        return typeSize > .accessibility3 ? base * 0.75 : base
+        // 任何 Dynamic Type 档位都是 88/76/52（D3 终裁：AX 用户最需要大数字，不许缩小）。
+        // 溢出用版式解决（纵排/留白/滚动），不用字号解决。
+        scale.size
     }
 
     /// 只有纯整数才做 0→终值滚动（"3/12"、"76.5" 这类不滚，避免读出怪值）。
@@ -223,7 +221,6 @@ struct BojiEditorialNumber: View {
                 .kerning(scale.tracking * (effectiveSize / scale.size))
                 .foregroundStyle(tint)
                 .lineLimit(1)
-                .minimumScaleFactor(0.5)
                 .contentTransition(.numericText())
                 .onAppear {
                     shownValue = reduceMotion ? value : (rollsFromZero ? "0" : value)
