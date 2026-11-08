@@ -171,7 +171,8 @@ struct BojiEditorialNumber: View {
     var scale: EditorialScale = .display
     /// 数字颜色；默认主文字色。
     var tint: Color = BojiColor.textPrimary
-    @ScaledMetric(relativeTo: .largeTitle) private var scaledSize: CGFloat
+    /// Dynamic Type 基准：88pt 档跟随 largeTitle 缩放，其余档位按此比例换算。
+    @ScaledMetric(relativeTo: .largeTitle) private var displayUnit: CGFloat = 88
     @Environment(\.dynamicTypeSize) private var typeSize
 
     enum EditorialScale {
@@ -198,14 +199,9 @@ struct BojiEditorialNumber: View {
         }
     }
 
-    init(value: String, label: String? = nil, scale: EditorialScale = .display, tint: Color = BojiColor.textPrimary) {
-        self.value = value; self.label = label; self.scale = scale; self.tint = tint
-        // Dynamic Type：跟随 largeTitle 缩放，最大档压到 accessibility3 防版式崩坏。
-        _scaledSize = ScaledMetric(relativeTo: .largeTitle, defaultValue: scale.size)
-    }
-
     private var effectiveSize: CGFloat {
-        typeSize > .accessibility3 ? scaledSize * 0.75 : scaledSize
+        let scaled = displayUnit * (scale.size / 88)
+        return typeSize > .accessibility3 ? scaled * 0.75 : scaled
     }
 
     var body: some View {
