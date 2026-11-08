@@ -288,11 +288,14 @@ class V2CommercialAuditTests(unittest.TestCase):
         self.assertIn("flags.contextualTipsEnabled", continuation_swift)
         self.assertNotIn("as! AVCaptureVideoPreviewLayer", camera_swift)
         self.assertIn("layer.addSublayer(preview)", camera_swift)
-        # 2026-11-08 妙妙修复（CI 红模块分流，智智移交）：「≥3 次才提示」
-        # 崩溃保护已迁 NutritionView.swift（NutritionTrendSummary）；行为契约
-        # 不变——任一窗口不足 3 条即占位提示，不做除法。（与 fix/ios-test-3count-guard 同步）
+        # 2026-11-08 妙妙修复（CI 红模块分流，智智移交）：双周均值对比的「≥3 次
+        # 才提示」崩溃保护已从 ClubAIShell 迁至 NutritionView.swift
+        # （NutritionTrendSummary，`recent.count >= 3 && previous.count >= 3`），
+        # 断言随迁移更新；行为契约不变——任一窗口不足 3 条记录即显示占位提示，
+        # 不做除法、不显示均值。
         nutrition_swift = (ROOT / "BojiClub" / "NutritionView.swift").read_text(encoding="utf-8")
         self.assertIn("recent.count >= 3 && previous.count >= 3", nutrition_swift)
+        self.assertIn("previous.count >= 3", nutrition_swift)
 
     def test_all_php_files_have_php_header_and_valid_utf8(self):
         php_files = list((ROOT / "account-server").rglob("*.php")) + list((ROOT / "tests").rglob("*.php"))
