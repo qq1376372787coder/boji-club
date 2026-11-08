@@ -45,6 +45,19 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Ensure iOS simulator runtime
+        run: |
+          set -e
+          echo "=== 当前 runtime ==="
+          xcrun simctl list runtimes
+          if ! xcrun simctl list runtimes | grep -qi "iOS"; then
+            echo "::warning::没有 iOS 模拟器 runtime，尝试安装"
+            xcodebuild -downloadPlatform iOS || true
+            sleep 10
+          fi
+          echo "=== 安装后 runtime ==="
+          xcrun simctl list runtimes
+
       - name: Select SE3 simulator
         id: sim
         run: |
