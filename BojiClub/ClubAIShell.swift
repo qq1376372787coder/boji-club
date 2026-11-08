@@ -354,7 +354,8 @@ struct ClubAIShellView: View {
 
     private var bottomDock: some View {
         VStack(spacing: BojiLayout.inline) {
-            if trainingRoute == nil, let snapshot = activeWorkout {
+            // 规格表 §1.2：底部玻璃坞只归「训练」tab，今天/记录不设坞（主操作走全宽按钮）。
+            if mode == .training, trainingRoute == nil, let snapshot = activeWorkout {
                 ClubActiveWorkoutAccessory(snapshot: snapshot, open: openActiveWorkout, togglePause: toggleActivePause)
                     .frame(maxWidth: BojiSize.contentWidth)
                     .padding(.horizontal, BojiLayout.rowGap).frame(maxWidth: .infinity)
