@@ -606,6 +606,19 @@
 | 正式基线时点 | 不变 | 批次 1 收尾取样（批次 2 整屏视频的对照组），届时核对设备为 16 Pro 并在报告标注设备口径 |
 | BUG-007 指标口径 | ✅ | CPU Instructions/Cycles 模拟器恒 0 不可用；**BUG-007 对比用 CPU Time**（本快照 0.860s） |
 
+**批次 1 第二批复验（2026-11-09，run 42500109512 / HEAD `059f93e`）—— 通过**
+
+| 项 | 结论 | 证据 |
+|---|---|---|
+| K1-1 编译 | ✅ | run 42500109512，`dist/BojiClub-07925964.ipa` 37.43 MB（含 `bojiFont→bojiType` API 混用修复） |
+| K1-6 一屏一主操作 | ✅ | `ClubHomeSpeedDial`/`SpeedDial`/`expandSpeedDial` **全库零命中**——三键拨号删除干净 |
+| `BojiEditorialNumber` 排印组件 | ✅ | `BojiDesignSystemV2.swift:165-212`：`.display` 88 / `.editorial` 76 / `.hero` 52 与规格表一致；`@ScaledMetric(relativeTo: .largeTitle)` 跟随 Dynamic Type；**AX3 以上压 0.75 防错位**（K1-4 大字号降级）；`monospacedDigit()` 等宽数字 + kerning 字距（-3/-3.5/-2）按档位；封闭组件内不改全局档位（避免波及既有 `.display` 34pt 用量），设计合理。4 处使用点就位（状态卡/训练登记/WorkoutView×2） |
+| 状态卡假数据 | ✅ | `ClubAIShell.swift:1195` `readinessScore` 真实规则评分（睡眠+心率+近 3 天训练），`:1194` 注明「缺数据说缺」，3 处「还没同步到」，无编造 |
+| K1-5 黑话补刀（3 条承诺项） | ✅ **全清** | P2 周报「训练出勤」×2 已清；引导页三句（分秒必争/万事俱备/蜕变）已清；全页面黑话复扫（战备/战术/简报/充能/超量恢复/神经负荷等 10 词）**零命中** |
+| 残留（不阻塞） | 2 处 P3 | ①`ClubAIMemoryView:6` 代码注释「出勤频率」（Chief 批的注释清理余 1 处，非用户可见）；②`BojiComponentGalleryView:150`「本周出勤」（组件画廊=开发预览页，不进产品导航）——随下批顺手清 |
+
+**判定：批次 1 第二批通过。** 批次 1 剩尾巴两处（记录屏 `BodyWeightView` 巨号、训练完成页事实格），收口后即为**正式基线取样点**（运维支付执行，16 Pro 同设备 + Debug 口径）。
+
 ### K-3 阶段 6 整体通过条件（对应 goal）
 
 四条线（界面/交互/文案/流程）全部落地 + 一批一编译全绿 + 测试验收逐批复验通过 + 界面设计按新视觉稿走查达标 → 交 Chief 验收 → 用户真机验收签字。
