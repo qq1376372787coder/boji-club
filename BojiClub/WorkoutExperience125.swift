@@ -231,7 +231,7 @@ struct WorkoutFacts125 {
         exercises = log.exercises.enumerated().map { index, exercise in .init(id:exercise.id, ordinal:index+1, name:exercise.displayName, muscle:exercise.muscle, completed:exercise.sets.filter(\.validCompletion).count, planned:exercise.sets.count) }
         let valid = log.exercises.flatMap(\.sets).filter(\.validCompletion)
         completed = valid.count; planned = log.exercises.reduce(0) { $0 + $1.sets.count }
-        volume = valid.reduce(0) { $0 + $1.volume } // 与 DayLog.volume 唯一口径一致（含 validCompletion，计时组天然为 0）
+        volume = valid.reduce(0) { $0 + $1.volume } // 与 ConfirmedTraining.volume 同算法（含 validCompletion，计时组天然为 0）
         reps = valid.filter { $0.durationSeconds == nil }.reduce(0) { $0 + $1.reps }
         seconds = valid.reduce(0) { $0 + ($1.durationSeconds ?? 0) }
     }
