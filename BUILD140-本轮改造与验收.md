@@ -48,7 +48,7 @@
 | BUG-004 | 组间休息状态 | 暂停/恢复休息并跨午夜或跨时区：`pauseService.state` 与 `restDeadlines` 双源（`ClubAIShell.swift:166-172`），提醒取消与恢复重排边界多，是卡顿高发区 | P2 | 苹果开发 | 已修复待验（单源校正） | **测试验收阶段 3 复验（G-14）**：`ClubAIShell.swift:175-177` 新增 `.onChange(of: activeWorkout?.isPaused)`，任何来源置暂停即 `cancelRestReminder()`；`:187` onAppear 兜底；与既有 `:168-172` pauseService 分支并存形成双保险（IOS-013）。跨午夜/跨时区边界仍需真机复核 |
 | BUG-005 | 品牌视频未融入界面 | 主壳空态 Hero 卡 `heroGlassCard`（`ClubAIShell.swift:1172`）仍是渐变+TimelineView 流光占位，源码注释明写「视频资产待补」；`design-assets/brand-video.mp4` 在工程内无任何引用 | P1 | 苹果开发／界面设计 | 已验收关闭 | 按 DES-003 方案 A 接入：AVQueuePlayer+AVPlayerLooper 循环、仅页面活跃播放、离场 pause+seek(.zero)；减少动态效果/视频未就绪/页面非活跃回退静态占位；底部护字渐变、深色压暗 20%；brand-video.mp4 已入 BojiClub/ 并在 pbxproj 注册（四处引用齐全）。**测试验收阶段 4 复验（H-01/H-02）**：循环/离场暂停/reduceMotion 降级/低电量闸门/静音/深色压暗/护字渐变均到位；首帧占位 `loadHeroPoster()` + z0/z0b 分层消除跳变（commit 5ab6f97） |
 | BUG-006 | 侧栏无障碍审计 | 默认侧栏自动审计仍报 3 个 `element=nil` 对比度失败 + 2 个「大字号可能裁切」预测（`docs/native-ui-20261024/diagnostics/sidebar-ax-triage.md`） | P2 | 苹果开发 | 待处理 | 上一轮未关闭项；草稿标题实测 15.81:1 非误报，但未知项无法定位 |
-| BUG-007 | 滚动性能回归 | 相同 SE3 模拟器 Debug 前后对比：滚动 CPU 0.304→0.448 秒（+47.2%），指令数 +38%（`docs/native-ui-20261024/performance/performance-comparison.md`） | P2 | 苹果开发 | 待处理 | 未做采样归因；影响「华丽动效」的流畅度观感 |
+| BUG-007 | 滚动性能回归 | 相同 SE3 模拟器 Debug 前后对比：滚动 CPU 0.304→0.448 秒（+47.2%），指令数 +38%（`docs/native-ui-20261024/performance/performance-comparison.md`） | P2 | 苹果开发 | 处理中（基线重建） | 未做采样归因。**2026-11-09 口径修正（测试验收）**：①Instructions/Cycles 模拟器恒 0，对比用 **CPU Time**；②11-08 新快照（`docs/performance-baseline-20261108/`）跑在 **iPhone 16 Pro**，与本条 SE3 基线**跨设备不可比**——历史 +47.2% 仅作背景；批次 1 收尾正式基线起统一 16 Pro 同设备对比 |
 | BUG-008 | 顶栏工作区选择器小屏溢出 | iPhone SE（375pt）下 `ClubModeCapsulePicker` 分段选择器 `maxWidth: 300`，加左 44pt 侧栏钮 + 右 44pt 更多钮 = 388pt > 375pt，可能压缩/截断 | P3 | 苹果开发 | 待处理 | 仅大字号走 `.menu` 降级；小屏待复核 |
 | BUG-009 | 强制解包风险点 | 静态扫描 31 处 `!`，多数有前置 guard；风险相对高的：`AppStore.swift:2111`（`state.days[key]!.meals[index]`）、`ExerciseLibraryView.swift:143/168/178`（`components.url!`）、`MembershipService.swift:240`（`self.notice!`）、`HealthViews.swift:206`（`URL(string:)!`） | P3 | 苹果开发 | **已验收关闭** | 测试验收发现后列 P3 建议；Chief 第 1 轮验收开问题单 **T-1**。**已修**（commits fca7e98 → bc9202a → 8e936d2）：6 处重点 + 输入派生解包全部加 guard 安全回退。**测试验收终扫**：全库 31 → 10 处，且 10 处全为「同前置 nil 检查短路保护」或 UIKit 委托签名（`WKNavigation!`），真实强制解包清零；`components.url!`、`URL(string:...)!` 全库零命中。编译 run 42474824704 通过 |
 | BUG-010 | 通知横幅文案与实际行为不符 | training 类通知（`route.kind == "training"`）被 sheet 绑定**永久**屏蔽（`BojiClubApp.swift:219` 的 blocking 条件里含 `route?.kind == "training"`），横幅却写「退出训练或对话后会自动打开」——实际永远不会打开；且 `BojiStatusBanner` 未传 `action`，**没有关闭按钮**，route 未清理前横幅常驻 | P3 | 苹果开发 | 已验收关闭 | 触发路径：训练中收到另一日期的训练提醒 → `ClubAIShell.swift:761-764` 把 `trainingRoute` 置 nil 但保留 route → 横幅常驻。测试验收复验 BUG-001 时发现；**已修**：training 类文案如实写「训练进行中不会自动弹出，请稍后从通知中心重新打开本条通知」，横幅带「知道了」关闭动作（清提示状态），不再常驻。**测试验收第四輪复验通过** |
@@ -484,6 +484,7 @@
 | 运营文案黑话对照表 | **已交付** | 全文 [BUILD140-文案重做对照与三方案样例.md](BUILD140-文案重做对照与三方案样例.md)；规模与关键坑见 J-6 |
 | 界面设计视觉稿 | **进行中** | 三屏主视觉（首页/训练/记录），2+3 混搭：玻璃分层 × 巨号排印；出成浏览器可看的稿子交用户过目 |
 | 后端 prompt 军事腔源头 | **已交付（待复验）** | 后端开发已清三个 prompt 的军事/工程腔，按运营文案第八节唯一口径三层同步：规范 `shared/prompts/`（日报/周报/计划三份 md）、**运行时源头 `backend/ai_core.py`**（COMMON + ANALYSIS_STYLE 才是实际喂给模型的提示词，规范 md 不被运行时代码读取）、计划说明 `plan_explanation.py`/`coach_core.py`。提交 `bf52084`。**同步证据**：`ai_core.py` 内已含禁词表（战备/战术/决策/简报/综合充能/神经负荷/超量恢复/引擎/链路/闭环/赋能/出勤/登记/编排/校验/阈值）、「总重量」替代「容量」、每段 ≤60 字、不用 emoji、正向样本句；全 backend 黑话 grep 仅剩禁词表本身 |
+| 三联动提示文案（音效 ID 对触发点 + 设置页音效开关文案） | **中断待续**（运营文案 2026-11-08 模型限流 429 停机，此项未完成） | 恢复后补：S1 tap／S2 set_done／S3 milestone／S4 workout_done／S5 rest_tick／S6 error 逐个对到触发点文案 + 设置页音效开关文案；批次 1 施工前需要它（苹果开发照表施工） |
 | **用户选定** | **✅ 已定：方案 2+3 混搭**（2026-11-08 用户回「方案2+3 吧」，并确认配方「2 的玻璃 + 3 的巨号排印」） | 记为 **DEC-4**；Chief 复述定案口径：**玻璃旗舰做骨架 + 杂志排印做气质**——影像沉浸分层玻璃打底（滚动收缩、悬浮玻璃件、系统折射高光）+ 巨号数字排印当主角 + 教练式短句文案；界面壳全原生组件、每屏一个主操作、黑话全灭。进入阶段 6 |
 
 ### J-4. 阶段 6 重做批次台账（文档管理逐批登记）
@@ -594,6 +595,17 @@
 4. **执行影响**：现有 `ios-performance.yml` 的 `xcodebuild test` 默认 Debug——选 Release 路线时需 @运维支付 加 `-configuration Release`（测试目标需支持 Release 编译），选 Debug 路线则不动；**路线由 Chief/运维支付定，定后写死在工作流里**，中途不许换配置。
 5. 后端开发提示的口径断层（重做前基线 Debug vs 批次 2 起 Release）已被本铁律覆盖，复验时我按第 4 条核对实际配置再收数据。
 
+**基线管道验证快照复验（2026-11-09，run 42498401537 / HEAD `f8d2c54`）**：
+
+| 项 | 结论 | 证据 |
+|---|---|---|
+| 数据真实性 | ✅ 有效 | 归档 `docs/performance-baseline-20261108/`：`totalTestCount: 2`、`passedTests: 2`、`result: Passed`；两用例各 5 次采样值齐全（滚动 RSD 0.75% 质量好，冷启动 RSD 29.8% 因首采样 4.977s 偏高） |
+| 管道修复 | ✅ | pipefail + `-only-testing` + 空跑守卫三件已落（`f8d2c54`）；死测试 6 行删除（`OnboardingV2ContractTests` 引用已删组件 `ClubSharedComposer`，scheme TestAction 挂双目标导致隐藏编译失败——批次 0 builder 不编测试目标所以此前未暴露） |
+| Debug 路线写死 | ✅ 合理 | 测试钩子（`BOJI_PREVIEW_ACCOUNT`/`BOJI_UI_TEST_SEED`）全在 `#if DEBUG`，Release 驱不动登录态；与铁律「一致性 > 绝对值」一致 |
+| **⚠️ 设备断层（新发现）** | **需修正口径** | **新快照 = iPhone 16 Pro / iOS 26.2；10-24 旧基线 = iPhone SE 3 / iOS 26.5。`measurements.md` 称「同 Debug 可作对照」只对了配置一半——设备不同，跨设备对比同样无效**（铁律精神：一致性包含设备）。影响：①BUG-007 的 +47.2% 历史对比**不能**拿这份新数据再算；②「批次 1 vs 批次 2」对比不受影响（同为 16 Pro，是关键对照）；③根因是 runner 无 SE3、兜底建机挑了 16 Pro |
+| 正式基线时点 | 不变 | 批次 1 收尾取样（批次 2 整屏视频的对照组），届时核对设备为 16 Pro 并在报告标注设备口径 |
+| BUG-007 指标口径 | ✅ | CPU Instructions/Cycles 模拟器恒 0 不可用；**BUG-007 对比用 CPU Time**（本快照 0.860s） |
+
 ### K-3 阶段 6 整体通过条件（对应 goal）
 
 四条线（界面/交互/文案/流程）全部落地 + 一批一编译全绿 + 测试验收逐批复验通过 + 界面设计按新视觉稿走查达标 → 交 Chief 验收 → 用户真机验收签字。
@@ -667,7 +679,7 @@
 | 接口/数据侧问题清单 | 后端开发 | 已完成摸底，8 项入 B3 表 |
 | 视觉与动效规范（含视频融合方案） | 界面设计 | DES-001~004 全部交付并通过验收（规范 + Hero 视觉稿 + 三场景动效方案） |
 | 真机安装链路 | 运维支付 | **✅ 已完成**（DEC-3 选 1 TestFlight）：Build 141 已进测试组，**用户已装机**；真机补验 7 项并入阶段 7 重做后收口 |
-| **体验重做（DEC-4：2+3 混搭 · 全页面）** | Chief 统筹，四成员分线 | **批次 0 开工中**：范围已按用户澄清钉为**全页面一个不漏**（J-4 口径行已加）；苹果开发技术准备交付（导航壳迁移方案 + 黑话精扫修正为可见 9 处+术语 2 处）、运营文案对照扩至全页面、后端改三个 prompt、界面设计交**全页面组件规格表**（三屏稿只定设计语言）、测试验收复验范围=逐页；批次台账 J-4 已按 Chief 三批重排，逐批登记 |
+| **体验重做（DEC-4：2+3 混搭 · 全页面 · 三联动）** | Chief 统筹，四成员分线 | **批次 0 已过（编译绿+复验核心通过），批次 1 开工中**（排印档位 `.display` 88pt/`.editorial` 76pt + 一屏一主按钮 + 文案尾巴）；三联动：素材 6 段就位（DEC-6），批次 2 接线实测；性能基线首跑为空跑假绿，修复重跑后生效；警示与架构事实见 J-4b |
 | 服务器补键（OPS-003） | 运维支付 | **已完成**（2026-11-08）：21 键校验全过、迁移全绿、两个 worker 实测跑通、11 个 worker 用户错配历史坑已修 |
 | 收款回调链路（OPS-005） | 运维支付 | **✅ 正式闭环**：RevenueCat 测试事件实测入库（事件 ID 与报文一致）、来源官方 AWS 网段、全程 200；`ignored` 为 TEST 事件正确处理。遗留：备案后换正式域名 `bojiclub.fun` |
 | 苹果开发模型账号 | — | **余额不足（402）停机**；停机前 T-1 已交付，恢复方式待用户定（充值或换模型） |
