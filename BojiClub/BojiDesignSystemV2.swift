@@ -175,8 +175,8 @@ struct BojiEditorialNumber: View {
     var scale: EditorialScale = .display
     /// 数字颜色；默认主文字色。
     var tint: Color = BojiColor.textPrimary
-    /// Dynamic Type 基准：88pt 档跟随 largeTitle 缩放，其余档位按此比例换算。
-    @ScaledMetric(relativeTo: .largeTitle) private var displayUnit: CGFloat = 88
+    /// Dynamic Type 基准：规格表 T1 88 固定不缩放（展示字不走 @ScaledMetric——AX 哨兵判据：
+    /// AX 图里巨号必须与亮色版同尺寸）；仅 AX4/AX5 极端档降 0.75 防炸版。
     @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// M8 数字叙事：整数位进场从 0 滚到终值（0.35s），减动效直落终值。
@@ -207,8 +207,9 @@ struct BojiEditorialNumber: View {
     }
 
     private var effectiveSize: CGFloat {
-        let scaled = displayUnit * (scale.size / 88)
-        return typeSize > .accessibility3 ? scaled * 0.75 : scaled
+        // 固定字号：88/76/52 不随 Dynamic Type 缩放；仅 AX4/AX5 降 0.75 防版式炸裂
+        let base = scale.size
+        return typeSize > .accessibility3 ? base * 0.75 : base
     }
 
     /// 只有纯整数才做 0→终值滚动（"3/12"、"76.5" 这类不滚，避免读出怪值）。
@@ -268,7 +269,7 @@ struct MetricValue: View {
                     .foregroundStyle(BojiColor.textTertiary)
                 HStack(alignment: .firstTextBaseline, spacing: 2) {
                     Text(value)
-                        .bojiType(.title, monospacedDigits: true)
+                        .bojiTypeFixed(.title, monospacedDigits: true)
                         .fontWeight(.semibold)
                         .kerning(-1)
                         .foregroundStyle(tint)
@@ -293,27 +294,45 @@ struct MetricValue: View {
 }
 
 /// 横排一组指标（§2.6 横排式）：外层上下各一条发丝线，块间一条竖发丝线——不叠双线。
+/// AX 下（accessibility2 起）改纵向单列（D3 补充裁决：字不动、版重排）。
 struct MetricRowGroup: View {
     let metrics: [MetricValue]
+    @Environment(\.dynamicTypeSize) private var typeSize
+
     var body: some View {
         let shown = metrics.filter(\.hasValue)
         if !shown.isEmpty {
-            HStack(spacing: 0) {
-                ForEach(Array(shown.enumerated()), id: \.offset) { index, metric in
-                    metric
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 13)
-                        .padding(.leading, index == 0 ? 0 : 14)
-                        .overlay(alignment: .leading) {
-                            if index > 0 {
-                                Rectangle().fill(BojiColor.divider).frame(width: BojiLayout.hairline)
+            if typeSize >= .accessibility2 {
+                VStack(alignment: .leading, spacing: 0) {
+                    Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline)
+                    ForEach(Array(shown.enumerated()), id: \.offset) { _, metric in
+                        metric
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 13)
+                            .overlay(alignment: .bottom) {
+                                Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline)
                             }
-                        }
+                    }
                 }
+                .accessibilityElement(children: .contain)
+            } else {
+                HStack(spacing: 0) {
+                    ForEach(Array(shown.enumerated()), id: \.offset) { index, metric in
+                        metric
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 13)
+                            .padding(.leading, index == 0 ? 0 : 14)
+                            .overlay(alignment: .leading) {
+                                if index > 0 {
+                                    Rectangle().fill(BojiColor.divider).frame(width: BojiLayout.hairline)
+                                }
+                            }
+                    }
+                }
+                .overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+                .overlay(alignment: .bottom) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+                .accessibilityElement(children: .contain)
             }
-            .overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
-            .overlay(alignment: .bottom) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
-            .accessibilityElement(children: .contain)
         }
     }
 }
@@ -355,6 +374,8 @@ private struct BojiTypeModifier: ViewModifier {
     let role: BojiTypeRole
     var monospacedDigits: Bool?
     var cjkText: Bool
+    /// true = 展示字（T1/T2 数值位）：字号固定不随 Dynamic Type 放大（哨兵⑥：AX 图必须与亮色同尺寸）
+    var fixedSize: Bool = false
     @ScaledMetric(relativeTo: .body) private var scale: CGFloat = 1
 
     func body(content: Content) -> some View {
@@ -364,7 +385,7 @@ private struct BojiTypeModifier: ViewModifier {
         if cjkText, role.demotesBoldForCJK, weight == .bold {
             weight = .bojiCJKStrong
         }
-        let font = Font.system(size: role.size * scale, weight: weight, design: role.eyebrowDesign)
+        let font = Font.system(size: role.size * (fixedSize ? 1 : scale), weight: weight, design: role.eyebrowDesign)
         return content
             .font(useMono ? font.monospacedDigit() : font)
             .tracking(role.tracking)
@@ -389,6 +410,11 @@ extension View {
         modifier(BojiTypeModifier(role: role,
                                   monospacedDigits: monospacedDigits,
                                   cjkText: BojiScript.containsCJK(text)))
+    }
+
+    /// 展示字专用（T1/T2 数值位）：字号固定，AX 下与亮色版同尺寸（哨兵⑥判据），不随 Dynamic Type 放大。
+    func bojiTypeFixed(_ role: BojiTypeRole, monospacedDigits: Bool? = nil) -> some View {
+        modifier(BojiTypeModifier(role: role, monospacedDigits: monospacedDigits, cjkText: false, fixedSize: true))
     }
 }
 

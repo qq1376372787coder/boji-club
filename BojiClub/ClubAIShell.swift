@@ -1462,7 +1462,7 @@ struct ClubAIWorkspaceIdleView: View {
                     .foregroundStyle(BojiColor.textTertiary)
             } else {
                 Text("\(value)/\(of)")
-                    .bojiType(.title, monospacedDigits: true)
+                    .bojiTypeFixed(.title, monospacedDigits: true)
                     .foregroundStyle(BojiColor.textPrimary)
             }
         }
