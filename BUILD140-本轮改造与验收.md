@@ -252,9 +252,21 @@
 | G-15 | 自绘控件全量复扫 | ✅ 通过 | `LiquidCheckbox`／`ClubNumericKeypad`／`ConfettiView` 全库零命中；`TrainingNumericInput125`／`SmartWeightStepper` 保留同名薄封装但内部已是原生 `TextField`／系统 `Stepper`；`ClubActivityMark`／`AIProcessingMark`／`ClubWaitBar`／`BreathingPulseHalo`／`LaserScanBeamOverlay` 内部均已换原生 ProgressView／Gauge |
 | G-16 | 材质与玻璃分支全量复扫 | ✅ 通过 | `.regularMaterial`/`.ultraThinMaterial` 直写仅剩 `Design.swift:200`（桥接自身降级分支，正确）；`if #available(iOS 26` 仅剩 `Design.swift:160/197/211`（桥接自身，正确）；全库 `clubGlassEffect` 42 处均经逐处判定 |
 | G-17 | 编译回归 | ✅ 通过 | run 42467773417（head `0b638da`），产物 `dist/BojiClub-53aedefe.ipa`（37.43 MB） |
-| G-18 | P1 `RevenueCatViews.swift:318` 会员价格卡去玻璃（Chief 已拍板，不给豁免） | ⏳ 待苹果开发提交后复扫 | 拍板内容：①`:318` `clubGlassEffect` → 不透明 `cardSurface` 背景；②`selected` 描边 1.5pt 保留；③选中卡阴影 y3 → y5/blur18（对齐 L1 内容卡）；④`:317` 旧注释改为「2026-11-08 Chief 拍板改不透明，废止玻璃豁免」。复扫口径：`RevenueCatViews.swift` 内 `clubGlassEffect` 应**零命中** |
+| G-18 | P1 `RevenueCatViews.swift:318` 会员价格卡去玻璃（Chief 已拍板，不给豁免） | ✅ **通过**（commit d837df6） | 复扫：`:318` 已改 `.background(BojiColor.cardSurface, ...)`，`clubGlassEffect` 在该文件**零命中**；`:319` 选中态阴影 `radius: selected ? 18 : 0, y: selected ? 5 : 0` 对齐 L1 内容卡标准；`:317` 注释已改为「2026-11-08 Chief 拍板：价格卡改不透明 cardSurface，废止『拍板 #6』玻璃豁免」，无矛盾线索 |
 
 **阶段 3 客户端完成条件清点**：①4 个自绘控件全换原生 ✅；②23 处材质收口 ✅；③自绘动效换系统动效（IOS-006~010）✅；④流程断点改造（IOS-012/013）✅；⑤界面设计走查达标（G-08/G-11）✅；⑥云端编译通过 ✅。**待 Chief 过目认可**；P1 `RevenueCatViews.swift:318` 待拍板，CLN-02 建议清理。
+
+### G-4. 阶段 3 最终全量复扫（测试验收，head `d837df6`）
+
+| 编号 | 复验项 | 结论 | 证据 |
+|---|---|---|---|
+| G-19 | P1 价格卡去玻璃（Chief 拍板项） | ✅ 通过 | `RevenueCatViews.swift` 内 `clubGlassEffect` **零命中**；改 `cardSurface` + 选中态 y5/blur18 阴影 + 注释已注明拍板（详见 G-18） |
+| G-20 | 全库玻璃件总量与分布 | ✅ 通过 | 全库 `clubGlassEffect` **41 处 / 22 文件**；逐文件计数已登记。原 P0 六处与 P1 一处已全部处置（内容卡改不透明，浮件保留） |
+| G-21 | 材质直写全库复扫 | ✅ 通过 | `.regularMaterial`/`.ultraThinMaterial` 仅剩 `Design.swift:200`（桥接自身降级分支） |
+| G-22 | 玻璃系统版本分支全库复扫 | ✅ 通过 | `if #available(iOS 26` 仅剩 `Design.swift:160/197/211`（桥接自身），页面层零散写 |
+| G-23 | 编译回归 | ⏳ 进行中 | run 42468330096（head `cfaa0d5`，含 d837df6 的价格卡改动） |
+
+**阶段 3 结论**：客户端六项完成条件全部满足（G-13~G-22），P1 拍板项已闭环（G-19）；**仅剩 G-23 编译回归待出结果**，以及 P3 清理项 CLN-02（`BreathingPulseHalo` 死代码）。
 
 ---
 
