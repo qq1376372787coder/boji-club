@@ -210,7 +210,7 @@ struct ShareCardPreview: View {
                 if image != nil && !files.isEmpty {
                     Button { preparedShare = PreparedShare(files:files) } label: {
                         Label(files.count > 1 ? "分享全部 \(files.count) 张" : "选择分享方式", systemImage: "square.and.arrow.up")
-                    }.buttonStyle(PrimaryButton()).padding().background(.regularMaterial)
+                    }.buttonStyle(PrimaryButton()).padding().clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
                 }
             }
             .task(id: attempt) {

@@ -387,7 +387,7 @@ struct HealthShareReviewView: View {
                 }
                 .buttonStyle(PrimaryButton()).disabled(submitting || needsSelection || validationIssue != nil)
                 }
-                .padding(.horizontal, ClubUI.pageInset).padding(.vertical, BojiLayout.rowGap).background(.regularMaterial)
+                .padding(.horizontal, ClubUI.pageInset).padding(.vertical, BojiLayout.rowGap).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
             }
             .onAppear {
                 guard store.editingAccountID == request.ownerID else { dismiss(); return }

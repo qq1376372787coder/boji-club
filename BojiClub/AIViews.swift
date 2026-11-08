@@ -136,7 +136,7 @@ private struct ReportCardSurface<Content: View>: View {
         if embedded {
             RoundedRectangle(cornerRadius: radius, style: .continuous).fill(ClubUI.insetSurface)
         } else {
-            RoundedRectangle(cornerRadius: radius, style: .continuous).fill(.regularMaterial)
+            RoundedRectangle(cornerRadius: radius, style: .continuous).fill(BojiColor.cardSurface)
         }
     }
 }

@@ -524,7 +524,7 @@ struct ClubRewardArtwork: View {
         }
         .overlay(alignment: .topLeading) {
             if showingOlderCache, artwork != nil {
-                Button { retry += 1 } label: { Text(loading ? "更新图片中…" : "缓存图片 · 重试更新").bojiType(.caption).padding(BojiLayout.tight).background(.regularMaterial,in:Capsule()) }.buttonStyle(ClubIconButtonStyle()).disabled(loading).tint(.primary)
+                Button { retry += 1 } label: { Text(loading ? "更新图片中…" : "缓存图片 · 重试更新").bojiType(.caption).padding(BojiLayout.tight).clubGlassEffect(in: Capsule()) }.buttonStyle(ClubIconButtonStyle()).disabled(loading).tint(.primary)
             }
         }
         .onChange(of: artwork) { _, image in onArtworkChange?(image) }

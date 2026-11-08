@@ -162,7 +162,7 @@ struct MembershipGateView: View {
                         accessibilityLabel: "先退出，稍后再来，返回登录页"
                     )
                 }
-                .frame(maxWidth: .infinity).padding(ClubUI.pageInset).background(.regularMaterial)
+                .frame(maxWidth: .infinity).padding(ClubUI.pageInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
             }
             .sheet(isPresented: $showingAccount) { AccountSettings132() }
     }
@@ -483,18 +483,18 @@ struct ProfileEditor: View {
                 })
             }
             .safeAreaInset(edge:.bottom) {
-                if saving { ClubLoadingCard(title: "正在保存资料与目标…").padding(BojiSpace.workoutCardInset).background(.regularMaterial) }
+                if saving { ClubLoadingCard(title: "正在保存资料与目标…").padding(BojiSpace.workoutCardInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous)) }
                 else if let saveError {
-                    Text(saveError).bojiType(.secondary).foregroundStyle(.red).frame(maxWidth: .infinity, alignment: .leading).padding(BojiSpace.workoutCardInset).background(.regularMaterial)
+                    Text(saveError).bojiType(.secondary).foregroundStyle(.red).frame(maxWidth: .infinity, alignment: .leading).padding(BojiSpace.workoutCardInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
                         .accessibilityIdentifier("profile-save-error")
                 }
                 else if let saveMessage {
-                    Text(saveMessage).bojiType(.secondary).frame(maxWidth: .infinity, alignment: .leading).padding(BojiSpace.workoutCardInset).background(.regularMaterial)
+                    Text(saveMessage).bojiType(.secondary).frame(maxWidth: .infinity, alignment: .leading).padding(BojiSpace.workoutCardInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
                         .accessibilityIdentifier("profile-save-result")
                 }
                 else if !validationIssues.isEmpty {
                     Text(validationIssues.map{$0.text}.joined(separator:" ")).bojiType(.caption).foregroundStyle(showValidation ? Color.red : Color.secondary)
-                        .frame(maxWidth:.infinity,alignment:.leading).padding(BojiSpace.workoutCardInset).background(.regularMaterial)
+                        .frame(maxWidth:.infinity,alignment:.leading).padding(BojiSpace.workoutCardInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
                 }
             }
             }

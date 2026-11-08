@@ -108,6 +108,7 @@ struct RootView: View {
     @EnvironmentObject private var notifications: AppNotificationService
     @Environment(\.scenePhase) private var scenePhase
     @State private var showRecordRepair = false
+    @State private var pendingRouteNotice = false
     @State private var defaultsSyncTask: Task<Void, Never>?
     @AppStorage("remoteConfig.dismissedVersion") private var dismissedConfigVersion = -1
     var body: some View { foregroundContent }
@@ -234,6 +235,32 @@ struct RootView: View {
                 }
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { notifications.route = nil } } }
             }
+        }
+        .onChange(of: notifications.route) { _, route in
+            let blocked = activeMemberAccountID == nil || walkthroughPresented || route?.kind == "training" || store.trainingInterfacePresented || store.clubAIInterfacePresented
+            pendingRouteNotice = route != nil && blocked
+        }
+        .overlay(alignment: .top) {
+            if pendingRouteNotice, let kind = notifications.route?.kind {
+                BojiStatusBanner(icon: "bell.badge", title: "「\(RootView.routeDisplayName(kind))」已保留", detail: "当前界面不适合弹出，退出训练或对话后会自动打开。", tint: ClubBrand.accent)
+                    .padding(.horizontal, ClubUI.pageInset)
+                    .padding(.top, BojiSpace.general)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .animation(BojiMotion2.state, value: pendingRouteNotice)
+    }
+
+    private static func routeDisplayName(_ kind: String) -> String {
+        switch kind {
+        case "club_weekly", "club_workout": return "俱乐部报告"
+        case "weekly_center", "weekly_review": return "每周回顾"
+        case "report": return "日报"
+        case "task", "task_center": return "任务中心"
+        case "body": return "身体记录"
+        case "meal": return "饮食登记"
+        case "training": return "训练提醒"
+        default: return "提醒"
         }
     }
 
@@ -365,7 +392,7 @@ private struct RemoteConfigNoticeView: View {
         }
         .padding(.horizontal, BojiLayout.cardInset)
         .padding(.vertical, BojiLayout.inline)
-        .background(.regularMaterial)
+        .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
         .overlay(alignment: .bottom) { Divider() }
     }
 }

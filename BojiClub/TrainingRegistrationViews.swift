@@ -628,7 +628,7 @@ struct TrainingSetEditPanel: View {
                         Button("清空") { if keypadWeight { weight = "" } else { amount = "" } }.bojiType(.caption)
                     }
                     ClubNumericKeypad(value: keypadWeight ? $weight : $amount, decimal: keypadWeight, next: keypadWeight && !isTimed ? { keypadWeight = false } : nil)
-                }.padding(.horizontal, BojiLayout.pageInset).background(.regularMaterial)
+                }.padding(.horizontal, BojiLayout.pageInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
             }
             .interactiveDismissDisabled(dirty)
             .confirmationDialog("放弃这组未保存的输入？", isPresented: $confirmDiscard, titleVisibility: .visible) {
@@ -773,7 +773,7 @@ struct MiniWorkoutBar: View {
         }
         .padding(.horizontal, BojiSpace.workoutCardInset)
         .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 96 : 78)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .clubGlassEffect(in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .bojiSpecularBorder(cornerRadius: 20)
         .shadow(color: .black.opacity(0.14), radius: 18, y: 6)
         .sheet(isPresented: $showAICoach) {

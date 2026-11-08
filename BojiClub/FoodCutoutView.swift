@@ -75,7 +75,7 @@ struct FoodCutoutView: View {
             }
         }.frame(height: 250).clipShape(RoundedRectangle(cornerRadius: BojiRadius.card))
             .overlay(alignment: .bottomTrailing) {
-                if !finished { ClubCompactWait(title: "正在处理餐食照片…").padding(BojiSpace.general).background(.regularMaterial, in: RoundedRectangle(cornerRadius: BojiRadius.inner)).padding(BojiSpace.general) }
+                if !finished { ClubCompactWait(title: "正在处理餐食照片…").padding(BojiSpace.general).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous)).padding(BojiSpace.general) }
             }
             .task(id: data) {
                 cutout = nil; finished = false

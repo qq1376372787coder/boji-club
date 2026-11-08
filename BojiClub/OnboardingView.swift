@@ -281,7 +281,7 @@ struct LegalDocumentView: View {
                         if loading {
                             ProgressView("正在载入协议")
                                 .padding(BojiLayout.cardInset)
-                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
+                                .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
                         } else if loadFailed {
                             VStack(spacing: BojiLayout.rowGap) {
                                 Text("协议页面暂时打不开")
@@ -293,7 +293,7 @@ struct LegalDocumentView: View {
                             }
                             .padding(BojiLayout.Rhythm.headerToContent)
                             .frame(maxWidth: 300)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: BojiRadius.cardSmall, style: .continuous))
+                            .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.cardSmall, style: .continuous))
                         }
                     }
                 } else {
@@ -460,7 +460,7 @@ private struct OnboardingNavigation: View {
             }
         }
         .padding(.horizontal, ClubUI.pageInset).padding(.vertical, BojiLayout.inline).frame(maxWidth: ClubUI.contentWidth)
-        .frame(maxWidth: .infinity).background(.regularMaterial)
+        .frame(maxWidth: .infinity).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
     }
 }
 

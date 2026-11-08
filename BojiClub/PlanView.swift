@@ -611,7 +611,7 @@ struct PlanView: View {
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("返回核对") { adoptionPreview = nil }.disabled(applying) } }
                 .safeAreaInset(edge: .bottom) {
                     Button(applying ? "正在保存…" : "保存这些安排") { apply(value) }
-                        .buttonStyle(PrimaryButton()).disabled(applying || preparingAction || !blocked.isEmpty || (job?.request.payload["action_draft_id"]?.string != nil && actionProposal == nil)).padding(BojiSpace.pageInset).background(.regularMaterial)
+                        .buttonStyle(PrimaryButton()).disabled(applying || preparingAction || !blocked.isEmpty || (job?.request.payload["action_draft_id"]?.string != nil && actionProposal == nil)).padding(BojiSpace.pageInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
                 }
         }.interactiveDismissDisabled(applying)
             .task(id: value.id) { await prepareActionPlan(value) }

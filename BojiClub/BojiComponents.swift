@@ -285,7 +285,7 @@ struct BojiHeroBanner<Background: View, Action: View>: View {
                         .bojiType(.caption)
                         .padding(.horizontal, BojiSpace.tightRow)
                         .padding(.vertical, BojiLayout.tight)
-                        .background(.ultraThinMaterial, in: Capsule())
+                        .clubGlassEffect(in: Capsule())
                         .foregroundStyle(.white)
                 }
                 VStack(alignment: .leading, spacing: BojiLayout.tight) {

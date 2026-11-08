@@ -67,7 +67,7 @@ struct ManualPlanView: View {
                     Button("保存并关闭") { if !loaded || saveDraft() { dismiss() } }
                 } }
                 .safeAreaInset(edge: .bottom) {
-                    if loaded { Button(singleDay ? "保存当天安排" : "保存计划", action: saveOrPreview).buttonStyle(PrimaryButton()).padding(BojiSpace.pageInset).background(.regularMaterial) }
+                    if loaded { Button(singleDay ? "保存当天安排" : "保存计划", action: saveOrPreview).buttonStyle(PrimaryButton()).padding(BojiSpace.pageInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous)) }
                 }
                 .onAppear { if owner == nil { load(); if openTemplates { refreshTemplates(); showTemplates = true } } }
                 .task(id: draft) { guard loaded else { return }; do { try await Task.sleep(for: .milliseconds(450)); _ = saveDraft() } catch { } }
@@ -347,7 +347,7 @@ struct ManualPlanView: View {
                 .toolbar { ToolbarItem(placement: .cancellationAction) { DismissButton() } }
                 .safeAreaInset(edge: .bottom) {
                     Button("添加 \(batchSelection.count) 个动作") { addSelectedMovements() }
-                        .buttonStyle(PrimaryButton()).disabled(batchSelection.isEmpty).padding(BojiSpace.pageInset).background(.regularMaterial)
+                        .buttonStyle(PrimaryButton()).disabled(batchSelection.isEmpty).padding(BojiSpace.pageInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
                 }
         }
     }
@@ -402,7 +402,7 @@ struct ManualPlanView: View {
             }.background { ClubBackground() }.navigationTitle("确认计划")
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("返回编辑") { preview = nil } } }
                 .safeAreaInset(edge: .bottom) {
-                    Button("保存到训练日历", action: { apply(value) }).buttonStyle(PrimaryButton()).padding(BojiSpace.pageInset).background(.regularMaterial)
+                    Button("保存到训练日历", action: { apply(value) }).buttonStyle(PrimaryButton()).padding(BojiSpace.pageInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
                 }
         }
     }

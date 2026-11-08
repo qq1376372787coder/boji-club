@@ -334,7 +334,7 @@ struct WeeklyPlanCreator130: View {
             .navigationTitle(initialTemplate == nil ? "创建每周计划" : "修改每周安排")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { dismiss() } } }
-            .safeAreaInset(edge: .bottom) { Button("保存计划") { prepare() }.buttonStyle(.borderedProminent).frame(maxWidth: .infinity).padding().background(.regularMaterial) }
+            .safeAreaInset(edge: .bottom) { Button("保存计划") { prepare() }.buttonStyle(.borderedProminent).frame(maxWidth: .infinity).padding().clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous)) }
             .onAppear {
                 guard !loaded else { return }; loaded = true; owner = store.editingAccountID
                 start = max(ClubDates.calendar.startOfDay(for: Date()), startDate)

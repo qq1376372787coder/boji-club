@@ -23,6 +23,9 @@ account-server/config.php
 account-server/runtime/
 account-server/media/
 account-server/private-cache/
+# 部署时生成的密钥文件（webhook 密钥、Apple 令牌加密密钥、API v2 key）
+account-server/private/
+account-server/cache/apple-keys/
 
 # Audit-fix local verification (never packaged)
 env/
@@ -30,3 +33,6 @@ evidence/
 audit-probes/
 deliverables/
 *.sqlite3
+
+dist/
+
