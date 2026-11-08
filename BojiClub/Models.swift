@@ -326,7 +326,8 @@ struct DayLog: Codable {
     }
     var hasConfirmedTraining: Bool { confirmedTraining.hasTraining }
     var confirmedCompletedSets: Int { confirmedTraining.completedSets }
-    var volume: Double { exercises.flatMap(\.sets).reduce(0) { $0 + $1.volume } }
+    /// 训练量唯一口径：只算记完的组（validCompletion），与 confirmedTraining.volume 一致。
+    var volume: Double { exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0) { $0 + $1.volume } }
     var completedSets: Int { exercises.flatMap(\.sets).filter(\.validCompletion).count }
     var totalSets: Int { exercises.reduce(0) { $0 + $1.sets.count } }
     var timedSeconds: Int { exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0) { $0 + ($1.durationSeconds ?? 0) } }
@@ -353,10 +354,11 @@ struct DayLog: Codable {
         )
 
         let nutritionMetrics = AIDailyNutritionMetrics(
-            calories: hasMealRecords ? calories : nil,
-            protein: hasMealRecords ? protein : nil,
-            carbs: hasMealRecords ? carbs : nil,
-            fat: hasMealRecords ? fat : nil,
+            // 口径唯一：有餐但营养全未知 ≠ 摄入了 0。空值一律 nil，读出层显示「还没记」。
+            calories: knownMeals.isEmpty ? nil : calories,
+            protein: knownMeals.isEmpty ? nil : protein,
+            carbs: knownMeals.isEmpty ? nil : carbs,
+            fat: knownMeals.isEmpty ? nil : fat,
             data_complete: mealsComplete,
             unknown_meals: unknownNutritionMeals
         )

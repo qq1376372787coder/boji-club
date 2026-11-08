@@ -188,7 +188,7 @@ struct DailyReportView: View {
                     .foregroundStyle(BojiColor.textPrimary)
                 Spacer()
                 if let vol = metrics.training?.total_volume_kg, vol > 0 {
-                    Text("总容量 \(Int(vol)) kg")
+                    Text("训练量 \(Int(vol)) kg·次")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.brandGold)
                 }

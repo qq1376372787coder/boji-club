@@ -562,12 +562,13 @@ struct ClubRecordsExecutiveDashboard: View {
             }
             Spacer()
             HStack(spacing: BojiLayout.tight) {
+                // 红线：不许无限闪动——状态点只做一次性亮入
                 Circle()
                     .fill(Color.green)
                     .frame(width: 7, height: 7)
-                    .scaleEffect(isTelemetryPulsing ? 1.25 : 0.85)
-                    .opacity(isTelemetryPulsing ? 1.0 : 0.5)
-                    .animation(reduceMotion ? nil : BojiMotion2.celebrate.repeatForever(autoreverses: true), value: isTelemetryPulsing)
+                    .scaleEffect(isTelemetryPulsing ? 1.0 : 0.6)
+                    .opacity(isTelemetryPulsing ? 1.0 : 0.4)
+                    .animation(reduceMotion ? nil : BojiMotion2.entrance, value: isTelemetryPulsing)
                 Text("本机记录概览")
                     .bojiType(.caption)
                     .foregroundStyle(BojiColor.textSecondary)
@@ -600,7 +601,7 @@ struct ClubRecordsExecutiveDashboard: View {
                     }
                     Spacer()
                     HStack(spacing: BojiLayout.tight) {
-                        Text(todayConfirmed.hasTraining ? "今日已确认" : (todayLog.workoutStartedAt != nil ? "训练进行中" : (!todayLog.exercises.isEmpty ? "待开始" : "暂无训练记录")))
+                        Text(todayConfirmed.hasTraining ? "今天练完了" : (todayLog.workoutStartedAt != nil ? "训练进行中" : (!todayLog.exercises.isEmpty ? "待开始" : "暂无训练记录")))
                             .bojiType(.caption)
                             .foregroundStyle(todayConfirmed.hasTraining ? Color.green : BojiColor.brandAccent)
                         Image(systemName: "chevron.right")
@@ -609,33 +610,44 @@ struct ClubRecordsExecutiveDashboard: View {
                     }
                 }
 
-                HStack(spacing: BojiLayout.inline) {
-                    telemetryMetric(
-                        title: "完成组数",
-                        value: "\(todayConfirmed.completedSets)",
-                        unit: "组",
-                        icon: "checkmark.circle.fill",
-                        color: Color.green
-                    )
-                    telemetryMetric(
-                        title: "额外负重",
-                        value: todayConfirmed.volume > 0 ? "\(Int(todayConfirmed.volume))" : "0",
-                        unit: "kg·次",
-                        icon: "scalemass.fill",
-                        color: BojiColor.brandMist
-                    )
-                    telemetryMetric(
-                        title: "已确认动作",
-                        value: "\(todayConfirmed.exercises.count)",
-                        unit: "项",
-                        icon: "dumbbell.fill",
-                        color: BojiColor.brandAccent
-                    )
+                // 空值不摆 0：没练就没这排数字，改一句话说明（口径表 §八）
+                if todayConfirmed.hasTraining {
+                    HStack(spacing: BojiLayout.inline) {
+                        telemetryMetric(
+                            title: "完成组数",
+                            value: "\(todayConfirmed.completedSets)",
+                            unit: "组",
+                            icon: "checkmark.circle.fill",
+                            color: Color.green
+                        )
+                        if todayConfirmed.volume > 0 {
+                            telemetryMetric(
+                                title: "训练量",
+                                value: "\(Int(todayConfirmed.volume))",
+                                unit: "kg·次",
+                                icon: "scalemass.fill",
+                                color: BojiColor.brandMist
+                            )
+                        }
+                        telemetryMetric(
+                            title: "练完动作",
+                            value: "\(todayConfirmed.exercises.count)",
+                            unit: "项",
+                            icon: "dumbbell.fill",
+                            color: BojiColor.brandAccent
+                        )
+                    }
+                } else {
+                    Text(todayLog.exercises.isEmpty ? "今天还没记训练" : "今天还没练完，记完组就有数")
+                        .bojiType(.caption)
+                        .foregroundStyle(BojiColor.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, BojiLayout.tight)
                 }
 
                 if let firstEx = todayConfirmed.exercises.first ?? todayLog.exercises.first {
                     HStack(spacing: BojiLayout.tight) {
-                        Text((todayConfirmed.exercises.isEmpty ? "计划动作 · " : "已确认动作 · ") + firstEx.displayName)
+                        Text((todayConfirmed.exercises.isEmpty ? "计划动作 · " : "练完的 · ") + firstEx.displayName)
                             .bojiType(.caption)
                             .foregroundStyle(BojiColor.textSecondary)
                         Spacer()

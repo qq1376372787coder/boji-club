@@ -368,7 +368,7 @@ enum ReviewTrendMetric: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .confirmedSets: return "确认完成组"
-        case .volume: return "负重训练量"
+        case .volume: return "训练量"
         case .timedMinutes: return "计时训练"
         case .trainingDays: return "训练天数"
         case .mealDays: return "饮食记录天数"

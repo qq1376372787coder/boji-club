@@ -2292,7 +2292,7 @@ final class AppStore: ObservableObject {
                 self.mediaSyncMessage = remaining == 0 ? nil : "记录已保留 · \(remaining) 张照片等待联网或重试"
             } catch {
                 guard self.generation == ticket, self.activeAccountID == userID else { return }
-                self.mediaSyncMessage = "照片暂未同步，原照片保留在本机；联网后继续。"
+                self.mediaSyncMessage = "照片还没同步到，原照片留在本机；联网后继续。"
             }
         }
     }

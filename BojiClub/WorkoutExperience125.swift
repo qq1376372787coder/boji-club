@@ -25,7 +25,7 @@ struct TrainingSetDraft125: Equatable {
             } else {
                 guard text.range(of: "^[0-9]+(?:\\.[0-9]{1,2})?$", options: .regularExpression) != nil,
                       let parsed = Double(text), parsed.isFinite, parsed >= 0, parsed <= RecordLimits.maximumWeight else {
-                    throw EntryError.message("请填写重量；自重或无额外负重可留空或填 0，支持 1.25、2.5 等小数。")
+                    throw EntryError.message("请填写重量；自重或不加重量可以留空，支持 1.25、2.5 这样的小数。")
                 }
                 kg = parsed
             }
@@ -231,7 +231,7 @@ struct WorkoutFacts125 {
         exercises = log.exercises.enumerated().map { index, exercise in .init(id:exercise.id, ordinal:index+1, name:exercise.displayName, muscle:exercise.muscle, completed:exercise.sets.filter(\.validCompletion).count, planned:exercise.sets.count) }
         let valid = log.exercises.flatMap(\.sets).filter(\.validCompletion)
         completed = valid.count; planned = log.exercises.reduce(0) { $0 + $1.sets.count }
-        volume = valid.filter { $0.durationSeconds == nil }.reduce(0) { $0 + $1.weight * Double($1.reps) }
+        volume = valid.reduce(0) { $0 + $1.volume } // 与 DayLog.volume 唯一口径一致（含 validCompletion，计时组天然为 0）
         reps = valid.filter { $0.durationSeconds == nil }.reduce(0) { $0 + $1.reps }
         seconds = valid.reduce(0) { $0 + ($1.durationSeconds ?? 0) }
     }
@@ -256,7 +256,7 @@ struct WorkoutCelebration125: View {
                 fact("训练用时", value: duration, unit: "", index: 1)
                 fact("练了几个动作", value: "\(facts.registeredExercises)", unit: "项", index: 2)
                 rollingFact("累计次数", target: Double(facts.reps), unit: "次", index: 3)
-                rollingFact("额外负重训练量", target: facts.volume, precision: 1, unit: "kg·次", index: 4)
+                rollingFact("训练量", target: facts.volume, precision: 1, unit: "kg·次", index: 4)
                 fact("计时动作", value: "\(facts.seconds)", unit: "秒", index: 5)
             }.padding(.top, BojiLayout.inline)
         }.frame(maxWidth:.infinity).padding(.vertical, BojiLayout.cardInset)

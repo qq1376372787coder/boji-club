@@ -916,7 +916,7 @@ private func equipmentName(_ value: String) -> String {
      "rope": "训练绳", "skierg machine": "滑雪训练机", "sled machine": "雪橇训练器械",
      "stability ball": "健身球", "stationary bike": "健身车", "stepmill machine": "登阶机",
      "tire": "轮胎", "trap bar": "六角杠铃", "upper body ergometer": "上肢功率训练器",
-     "weighted": "额外负重", "wheel roller": "健腹轮"][value.lowercased()] ?? value
+     "weighted": "加重", "wheel roller": "健腹轮"][value.lowercased()] ?? value
 }
 
 

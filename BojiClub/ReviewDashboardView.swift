@@ -330,7 +330,7 @@ struct ReviewDashboardView: View {
                                     Text("估算 1RM \(estimate.formatted(.number.precision(.fractionLength(0...1))))")
                                 }
                             }.bojiType(.caption).foregroundStyle(BojiColor.textTertiary).lineLimit(1).minimumScaleFactor(0.8)
-                            Text("负重训练量 \(exercise.volume.formatted(.number.precision(.fractionLength(0...1)))) kg·次 · \(exercise.history.count) 条训练记录")
+                            Text("训练量 \(exercise.volume.formatted(.number.precision(.fractionLength(0...1)))) kg·次 · \(exercise.history.count) 条训练记录")
                                 .bojiType(.caption).foregroundStyle(BojiColor.textSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -474,7 +474,7 @@ struct ReviewDashboardView: View {
             }
 
             HStack(spacing: BojiLayout.inline) {
-                summaryTile(title: "负荷总量", value: totals.confirmedVolume >= 1000 ? (totals.confirmedVolume / 1000).formatted(.number.precision(.fractionLength(1))) : totals.confirmedVolume.formatted(.number.precision(.fractionLength(0))), unit: totals.confirmedVolume >= 1000 ? "千 kg·次" : "kg·次", icon: "scalemass.fill")
+                summaryTile(title: "训练量", value: totals.confirmedVolume >= 1000 ? (totals.confirmedVolume / 1000).formatted(.number.precision(.fractionLength(1))) : totals.confirmedVolume.formatted(.number.precision(.fractionLength(0))), unit: totals.confirmedVolume >= 1000 ? "千 kg·次" : "kg·次", icon: "scalemass.fill")
                 summaryTile(title: "完成组数", value: "\(totals.confirmedSets)", unit: "组", icon: "checkmark.circle.fill")
                 summaryTile(title: "训练天数", value: "\(totals.confirmedTrainingDays)", unit: "天", icon: "calendar")
             }
@@ -789,7 +789,7 @@ private struct ReviewExerciseHistoryView: View {
                         }
                         HStack(spacing: BojiLayout.inline) {
                             Metric(title: "本期最高外加重量", value: exercise.bestWeight > 0 ? exercise.bestWeight.formatted(.number.precision(.fractionLength(0...1))) : "—", unit: exercise.bestWeight > 0 ? "kg" : "无记录")
-                            Metric(title: "本期负重训练量", value: exercise.volume.formatted(.number.precision(.fractionLength(0...1))), unit: "kg·次")
+                            Metric(title: "本期训练量", value: exercise.volume.formatted(.number.precision(.fractionLength(0...1))), unit: "kg·次")
                         }
                         if let estimate = exercise.estimatedOneRepMax {
                             Text("本期估算 1RM：\(estimate.formatted(.number.precision(.fractionLength(0...1)))) kg")
@@ -812,12 +812,12 @@ private struct ReviewExerciseHistoryView: View {
                                     .bojiType(.secondary)
                                 Text("\(entry.sets) 组 · \(entry.repetitions) 次 · " + (entry.bestWeight > 0 ? "最高外加重量 \(entry.bestWeight.formatted(.number.precision(.fractionLength(0...1)))) kg" : "无已记录外加重量"))
                                     .bojiType(.caption).foregroundStyle(.secondary)
-                                Text("负重训练量 \(entry.volume.formatted(.number.precision(.fractionLength(0...1)))) kg·次" + (entry.estimatedOneRepMax.map { " · 估算 1RM \($0.formatted(.number.precision(.fractionLength(0...1)))) kg" } ?? ""))
+                                Text("训练量 \(entry.volume.formatted(.number.precision(.fractionLength(0...1)))) kg·次" + (entry.estimatedOneRepMax.map { " · 估算 1RM \($0.formatted(.number.precision(.fractionLength(0...1)))) kg" } ?? ""))
                                     .bojiType(.caption).foregroundStyle(.secondary)
                             }
                             if entry.id != exercise.history.sorted(by: { $0.date > $1.date }).last?.id { Divider() }
                         }
-                        Text("只纳入已确认的真实完成组。重量训练量 = 额外负重 × 次数；未记录重量、自重与计时动作不混入。估算 1RM 是趋势参考，不代表实测最大重量。")
+                        Text("只算记完的组。训练量 = 重量 × 次数；没记重量的、自重做的和计时的都不混进来。估算 1RM 只是趋势参考，不是实测最大重量。")
                             .bojiType(.label).foregroundStyle(.secondary)
                     }
                 }.padding(ClubUI.pageInset)

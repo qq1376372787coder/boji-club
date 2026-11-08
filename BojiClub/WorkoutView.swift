@@ -51,7 +51,7 @@ struct WorkoutView: View {
             let saved = store.log(for: selectedDate)
             completion = WorkoutCompletionSnapshot(ownerID: owner, date: selectedDate, sessionID: saved.activeWorkoutSessionID)
 
-            // 练完即出：后台静默生成今日日报（3秒静默生成，免用户繁琐等待）
+            // 练完即出：后台静默生成今日日报（3 秒后台生成，不用用户干等）
             let targetDate = selectedDate
             Task {
                 guard ai.routingConsentGranted else { return }

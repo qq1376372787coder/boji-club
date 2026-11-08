@@ -162,8 +162,8 @@ struct WeeklyReportView: View {
                 )
 
                 metricTile(
-                    title: "力量总容量",
-                    value: "\(Int(t?.total_volume_kg ?? 0)) kg",
+                    title: "训练量",
+                    value: "\(Int(t?.total_volume_kg ?? 0)) kg·次",
                     subtext: formatChangePct(t?.volume_change_pct),
                     symbol: "chart.line.uptrend.xyaxis"
                 )
@@ -520,8 +520,9 @@ struct WeeklyReportView: View {
         var trainingDays = 0
         var totalSets = 0
         var totalVolume = 0.0
-        var totalDuration = 0
+        var totalDurationSeconds = 0
         var daysWithMeals = 0
+        var daysWithKnownMeals = 0
         var completeDays = 0
         var totalCal = 0.0
         var totalProt = 0.0
@@ -541,9 +542,8 @@ struct WeeklyReportView: View {
                 trainingDays += 1
                 totalSets += confirmed.completedSets
                 totalVolume += confirmed.volume
-                if confirmed.elapsedSeconds > 0 {
-                    totalDuration += confirmed.elapsedSeconds / 60
-                }
+                // 口径：先累加秒，最后一次性换算分钟（逐日整除会把 7 次 90 秒算成 7 分钟）
+                totalDurationSeconds += confirmed.elapsedSeconds
             }
 
             if !log.meals.isEmpty {
@@ -552,6 +552,7 @@ struct WeeklyReportView: View {
                 totalCal += log.calories
                 totalProt += log.protein
             }
+            if !log.knownMeals.isEmpty { daysWithKnownMeals += 1 }
 
             if let w = log.bodyWeight?.kilograms, w > 0 {
                 weights.append((key, w))
@@ -579,14 +580,15 @@ struct WeeklyReportView: View {
             training: AIWeeklyTrainingMetrics(
                 training_days: trainingDays,
                 total_sessions: trainingDays,
-                total_duration_minutes: totalDuration > 0 ? totalDuration : nil,
+                total_duration_minutes: totalDurationSeconds > 0 ? Int(totalDurationSeconds / 60) : nil,
                 total_completed_sets: totalSets,
                 total_volume_kg: totalVolume,
                 volume_change_pct: nil
             ),
             nutrition: AIWeeklyNutritionMetrics(
-                average_calories: daysWithMeals > 0 ? totalCal / Double(daysWithMeals) : nil,
-                average_protein: daysWithMeals > 0 ? totalProt / Double(daysWithMeals) : nil,
+                // 分母口径与日报/趋势页一致：只按「有营养数据的天」求日均
+                average_calories: daysWithKnownMeals > 0 ? totalCal / Double(daysWithKnownMeals) : nil,
+                average_protein: daysWithKnownMeals > 0 ? totalProt / Double(daysWithKnownMeals) : nil,
                 days_with_records: daysWithMeals,
                 complete_days_count: completeDays
             ),

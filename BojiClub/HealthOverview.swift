@@ -490,7 +490,7 @@ struct BodyOverviewView: View {
                                 }
                             }
                         } else {
-                            Text("睡眠暂未同步")
+                            Text("睡眠还没同步到")
                                 .bojiType(.secondary)
                                 .foregroundStyle(BojiColor.textSecondary)
                         }

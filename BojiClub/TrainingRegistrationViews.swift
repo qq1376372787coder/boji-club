@@ -586,7 +586,7 @@ struct TrainingSetEditPanel: View {
                     HStack(spacing: BojiSpace.general) {
                         if !isTimed {
                             stepButton(symbol: "minus") { adjust(isWeight: true, positive: false) }
-                            ClubNumericField(value: $weight, placeholder: "无额外负重填 0", decimal: true)
+                            ClubNumericField(value: $weight, placeholder: "不加重量就留空", decimal: true)
                             stepButton(symbol: "plus") { adjust(isWeight: true, positive: true) }
                         } else {
                             stepButton(symbol: "minus") { adjust(isWeight: false, positive: false, timed: true) }

@@ -162,7 +162,7 @@ struct ClubWorkoutSummaryView: View {
         if let ownerID { ClubCard { WorkoutHealthSyncCard(date: date, sessionID: sessionID, ownerID: ownerID) } }
     }
     private func heading(_ summary: ClubWorkoutSummary) -> some View {
-        let totalVolume = summary.exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0.0) { $0 + $1.weight * Double($1.reps) }
+        let totalVolume = summary.exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0.0) { $0 + $1.volume }
         return ClubCard {
             BojiBrandSignature(size:24)
             Text("本次训练总结").bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
@@ -174,7 +174,7 @@ struct ClubWorkoutSummaryView: View {
                 if totalVolume > 0 {
                     Divider().frame(height: 28)
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("累计负重训练量").bojiType(.caption).foregroundStyle(BojiColor.textSecondary)
+                        Text("累计训练量").bojiType(.caption).foregroundStyle(BojiColor.textSecondary)
                         RollingNumericCounter(targetValue: totalVolume, unit: "kg·次", precision: 1)
                     }
                 }

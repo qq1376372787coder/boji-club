@@ -713,7 +713,7 @@ enum TrainingRecordText {
     }
     static func measurements(_ log: DayLog) -> [String] {
         var values: [String]=[]
-        if log.volume > 0 { values.append("负重训练量 \(log.volume.formatted(.number.precision(.fractionLength(0)))) kg·次") }
+        if log.volume > 0 { values.append("训练量 \(log.volume.formatted(.number.precision(.fractionLength(0)))) kg·次") }
         if log.timedSeconds > 0 {
             let minutes=log.timedSeconds/60;let seconds=log.timedSeconds%60
             let duration=minutes == 0 ? "\(seconds) 秒" : seconds == 0 ? "\(minutes) 分钟" : "\(minutes) 分 \(seconds) 秒"
