@@ -366,8 +366,9 @@ struct DayLog: Codable {
         )
 
         let bodyMetrics = AIDailyBodyMetrics(
-            // 口径：只报有效的实测体重（与记录页一致），非法值（如 500kg）不给日报当数
-            weight_kg: bodyWeight?.measuredKilograms,
+            // 口径：体重走唯一读法 BodyWeightReading（多条测量取最后一次，非法值为 nil），
+            // 体脂/腰围同批只在整条记录有效时报出
+            weight_kg: BodyWeightReading.latest(self),
             body_fat_pct: bodyWeight?.isValid == true ? bodyWeight?.bodyFatPercentage : nil,
             waist_cm: bodyWeight?.isValid == true ? bodyWeight?.waistCircumferenceCM : nil
         )

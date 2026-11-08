@@ -279,11 +279,13 @@ struct BodyWeightPoint: Identifiable {
     var id: String { measurementID ?? ClubDates.key(date) }
 }
 
+/// 体重的**唯一读入口径**（Chief 拍板 选①，口径表 §四「唯一实现」）：
+/// `bodyMeasurements == nil` → 回落旧格式单条 `bodyWeight`；`= []` → 视为「没有测量」，**不回落**；
+/// 剔除删除墓碑、剔除非法值（measuredKilograms），按记录时间升序。
+/// 趋势 / 阶段报告 / 平台期 / 周报 / 记录历史（BodyWeightHistory）全部走这里，不许再有第二条读路。
 enum BodyWeightReading {
-    /// 当日全部有效称重（口径表 §八第 11 条：bodyMeasurements 多条优先，回落单条 bodyWeight，剔除已删除墓碑）。
-    /// 趋势/阶段报告/平台期判断三处必须走这里，否则「同一天记了两次体重」会被漏掉一条。
     static func rows(of day: DayLog) -> [BodyWeightEntry] {
-        let base = (day.bodyMeasurements?.isEmpty == false) ? (day.bodyMeasurements ?? []) : [day.bodyWeight].compactMap { $0 }
+        let base = day.bodyMeasurements ?? [day.bodyWeight].compactMap { $0 }
         let deleted = Set((day.deletedBodyMeasurementIDs ?? []).map { $0.lowercased() })
         return base
             .filter { row in !(row.id.map { deleted.contains($0.uuidString.lowercased()) } ?? false) }
@@ -295,18 +297,17 @@ enum BodyWeightReading {
 }
 
 enum BodyWeightHistory {
+    /// 历史点序列：读法委托给 BodyWeightReading.rows，本处只做「点」的包装与截断。
     static func points(days: [String: DayLog], through date: Date, limit: Int = 30) -> [BodyWeightPoint] {
         let end = ClubDates.key(date)
         return days.keys.sorted().filter { $0 <= end }.flatMap { key -> [BodyWeightPoint] in
             guard let day = days[key], let date = ClubDates.date(fromKey: key) else { return [] }
-            let rows = day.bodyMeasurements ?? [day.bodyWeight].compactMap { $0 }
-            let deleted = Set(day.deletedBodyMeasurementIDs ?? [])
-            return rows.filter { !($0.id.map { deleted.contains($0.uuidString.lowercased()) } ?? false) }.compactMap { row in
+            return BodyWeightReading.rows(of: day).compactMap { row in
                 guard let kg = row.measuredKilograms else { return nil }
-                return BodyWeightPoint(date: row.recordedAt ?? date, kilograms: kg, dayKey: key, measurementID: (row.id ?? BodyMeasurementIdentity.legacy(row, date: key)).uuidString)
+                return BodyWeightPoint(date: row.recordedAt ?? date, kilograms: kg, dayKey: key,
+                                       measurementID: (row.id ?? BodyMeasurementIdentity.legacy(row, date: key)).uuidString)
             }
         }.sorted { $0.date < $1.date }.suffix(max(0, limit)).map { $0 }
-
     }
 }
 
