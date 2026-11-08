@@ -113,8 +113,8 @@ final class VisualRegressionShots: XCTestCase {
             Screen(code: "R25", page: "错误", state: "样例", route: "meal-batch", only: [.light]),
             Screen(code: "R26", page: "弹层", state: "sheet", route: "plan-move", only: [.light]),
             // —— R27 状态分分项卡（测试验收 补拍，亮色两张）：三行两列 + 缺项「未同步」——
-            Screen(code: "R27", page: "状态分", state: "有数据", route: "home", action: .openScoreSheet, only: [.light]),
-            Screen(code: "R27", page: "状态分", state: "缺一项", route: "home", health: "heart-only", action: .openScoreSheet, only: [.light])
+            Screen(code: "R27", page: "状态分", state: "有数据", route: "home", only: [.light], action: .openScoreSheet),
+            Screen(code: "R27", page: "状态分", state: "缺一项", route: "home", only: [.light], health: "heart-only", action: .openScoreSheet)
         ]
     }
 
