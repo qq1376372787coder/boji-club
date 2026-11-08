@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 import Charts
 
 /// Drafts never count as actual training until the member explicitly saves the row.
@@ -79,13 +78,11 @@ struct TrainingInlineSetRow125: View {
                         label: "第\(number)组重量，千克", identifier: "set-weight-\(original.id)", focusRequest: weightFocusRequest)
                         .frame(height: 48).contentShape(Rectangle())
                         .onTapGesture { weightFocusRequest += 1 }
-                        .modifier(TrainingNumberStyle125())
                 }
                 TrainingNumericInput125(text: $draft.amount, placeholder: original.durationSeconds == nil ? "次数" : "秒数",
                     label: "第\(number)组\(original.durationSeconds == nil ? "次数" : "秒数")", identifier: "set-amount-\(original.id)", focusRequest: amountFocusRequest)
                     .frame(height: 48).contentShape(Rectangle())
                     .onTapGesture { amountFocusRequest += 1 }
-                    .modifier(TrainingNumberStyle125())
                 Button { commit() } label: {
                     Image(systemName: done ? "checkmark.circle.fill" : "circle")
                         .bojiType(.title)
@@ -166,57 +163,38 @@ struct TrainingInlineSetRow125: View {
         } catch { message = error.localizedDescription; if draft.weight.isEmpty && original.durationSeconds == nil { weightFocusRequest += 1 } else { amountFocusRequest += 1 } }
     }
 }
-private struct TrainingNumericInput125: UIViewRepresentable {
+/// 原生数字输入：SwiftUI TextField + decimalPad + 键盘工具条「收起」。
+/// 保留 label/identifier/focusRequest 供无障碍与 UI 测试，删除自绘 UITextField 包装。
+private struct TrainingNumericInput125: View {
     @Binding var text: String
     let placeholder: String
     let label: String
     let identifier: String
     var focusRequest = 0
-    func makeCoordinator() -> Coordinator { Coordinator(self) }
-    func makeUIView(context: Context) -> UITextField {
-        let field = UITextField()
-        field.keyboardType = .decimalPad; field.textAlignment = .center
-        field.font = .monospacedDigitSystemFont(ofSize: 19, weight: .medium)
-        field.adjustsFontForContentSizeCategory = true; field.textColor = .label
-        field.autocorrectionType = .no; field.spellCheckingType = .no
-        field.accessibilityLabel = label; field.accessibilityIdentifier = identifier
-        field.placeholder = placeholder; field.text = text
-        field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        field.delegate = context.coordinator
-        field.addTarget(context.coordinator, action: #selector(Coordinator.changed(_:)), for: .editingChanged)
-        context.coordinator.field = field
-        let bar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 320, height: 44))
-        bar.items = [UIBarButtonItem(systemItem: .flexibleSpace), UIBarButtonItem(title: "收起", style: .done, target: context.coordinator, action: #selector(Coordinator.done))]
-        field.inputAccessoryView = bar
-        return field
-    }
-    func updateUIView(_ field: UITextField, context: Context) {
-        context.coordinator.parent = self
-        if field.text != text { field.text = text }
-        if context.coordinator.lastFocus != focusRequest {
-            context.coordinator.lastFocus = focusRequest
-            DispatchQueue.main.async { [weak field] in if field?.window != nil { field?.becomeFirstResponder() } }
-        }
-    }
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        var parent: TrainingNumericInput125
-        weak var field: UITextField?
-        var lastFocus = 0
-        init(_ parent: TrainingNumericInput125) { self.parent = parent }
-        @objc func changed(_ field: UITextField) { parent.text = field.text ?? "" }
-        func textFieldDidBeginEditing(_ field: UITextField) { field.selectAll(nil) }
-        func textFieldDidEndEditing(_ field: UITextField) { parent.text = field.text ?? "" }
-        @objc func done() { field?.resignFirstResponder() }
-    }
-}
+    @FocusState private var focused: Bool
 
-private struct TrainingNumberStyle125: ViewModifier {
-    func body(content: Content) -> some View {
-        content.bojiType(.section)
-            .multilineTextAlignment(.center).textFieldStyle(.plain)
-            .padding(.horizontal, BojiLayout.tight).frame(maxWidth: .infinity, minHeight: 46)
-            .background(BojiColor.inputSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .bojiType(.section)
+            .keyboardType(.decimalPad)
+            .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity, minHeight: 46)
+            .padding(.horizontal, BojiLayout.tight)
+            .background(BojiColor.inputSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
+            .focused($focused)
+            .accessibilityLabel(label)
+            .accessibilityIdentifier(identifier)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("收起") { focused = false }
+                }
+            }
+            .onChange(of: focusRequest) { _, value in
+                if value > 0 { focused = true }
+            }
     }
 }
 

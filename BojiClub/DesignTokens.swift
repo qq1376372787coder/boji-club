@@ -736,35 +736,35 @@ struct BreathingPulseHalo: View {
     }
 }
 
-// MARK: - 单手盲操智能磁吸步进胶囊 (Smart Weight Stepper)
+// MARK: - 原生重量步进器 (Smart Weight Stepper)
 
+/// 系统原生 Stepper：步长 2.5 kg，范围 0…RecordLimits.maximumWeight。
+/// 保持既有 API（currentWeight + onAdjust(delta)）兼容调用点，内部不再自绘胶囊。
 struct SmartWeightStepper: View {
     let currentWeight: Double
     let onAdjust: (Double) -> Void
 
-    private let steps: [Double] = [-5, -2.5, 2.5, 5]
-
     var body: some View {
-        HStack(spacing: BojiLayout.inline) {
-            ForEach(steps, id: \.self) { step in
-                Button {
-                    BojiHaptics.tick()
-                    onAdjust(step)
-                } label: {
-                    Text(step > 0 ? "+\(step.formatted())" : "\(step.formatted())")
-                        .bojiType(.label)
-                        .foregroundStyle(step > 0 ? BojiColor.textPrimary : BojiColor.textSecondary)
-                        .padding(.horizontal, BojiLayout.rowGap)
-                        .padding(.vertical, BojiLayout.inline)
-                        .background(BojiColor.inputSurface, in: Capsule())
-                        .overlay {
-                            Capsule().stroke(BojiColor.outline, lineWidth: 0.5)
-                        }
-                        .contentShape(Rectangle().inset(by: -7))
-                }
-                .buttonStyle(BojiPressableButtonStyle(scale: 0.92))
+        Stepper(
+            value: Binding(
+                get: { currentWeight },
+                set: { newValue in onAdjust(newValue - currentWeight) }
+            ),
+            in: 0...RecordLimits.maximumWeight,
+            step: 2.5
+        ) {
+            HStack(spacing: BojiLayout.tight) {
+                Text("重量")
+                    .bojiType(.label)
+                    .foregroundStyle(BojiColor.textSecondary)
+                Spacer(minLength: 0)
+                Text(currentWeight.formatted(.number.grouping(.never).precision(.fractionLength(0...1))))
+                    .bojiType(.label)
+                    .foregroundStyle(BojiColor.textPrimary)
             }
         }
+        .accessibilityLabel("重量")
+        .accessibilityValue(currentWeight.formatted(.number.grouping(.never).precision(.fractionLength(0...1))))
     }
 }
 

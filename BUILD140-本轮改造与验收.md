@@ -67,8 +67,8 @@
 |---|---|---|---|---|---|
 | IOS-001 | LiquidCheckbox 自绘圆+波纹勾选 | 系统符号按钮（checkmark.circle.fill/circle）+ symbolEffect(.bounce.up.byLayer) + 触感 | TrainingRegistrationViews.swift completeControl | 已修复待验 | 自绘定义已删（DesignTokens.swift:673 段）；完成/撤销分支保留 heavyDrop/latch/tick 触感与 accessibilityLabel/Hint |
 | IOS-002 | ClubNumericKeypad 自绘数字键盘 | 系统键盘 decimalPad/numberPad + 原生 TextField | Experience123.swift ClubNumericField、TrainingRegistrationViews.swift:542/546/564 | 已修复待验 | 自绘键盘定义与 keypadWeight 双轨已删，底部键盘条删除；TextField 带 sanitize 过滤（数字、一个小数点、最长 8 位），VoiceOver 走系统键盘语义 |
-| IOS-003 | TrainingNumericInput125 包 UITextField | 原生 TextField + formatted 数值约束 | WorkoutExperience125.swift:169/78/84 | 待处理 |  |
-| IOS-004 | SmartWeightStepper 自绘磁吸步进胶囊 | 原生 Stepper/Menu + 系统材质 | DesignTokens.swift:814 | 待处理 |  |
+| IOS-003 | TrainingNumericInput125 包 UITextField（自绘 inputAccessoryView 工具条） | 原生 TextField + decimalPad + 键盘工具条「收起」（ToolbarItemGroup placement: .keyboard） | WorkoutExperience125.swift | 已修复待验 | 自绘 UIViewRepresentable 与 Coordinator 已删，保留 label/identifier/focusRequest；键盘工具条走系统 ToolbarItemGroup；同步删除重复的 TrainingNumberStyle125 modifier 与未用 UIKit import |
+| IOS-004 | SmartWeightStepper 自绘磁吸步进胶囊 | 系统原生 Stepper（步长 2.5kg，范围 0…2000） | DesignTokens.swift SmartWeightStepper | 已修复待验 | 保留既有 API（currentWeight + onAdjust(delta)）兼容调用点，内部改系统 Stepper + accessibilityLabel/Value |
 | IOS-005 | 23 处直写 .regularMaterial/.ultraThinMaterial | 收口 clubGlassEffect（iOS 26 自动 glassEffect） | 见摸底文档 C 节 | 已修复待验 | 17 处浮件收口 clubGlassEffect、2 处内容卡改不透明 cardSurface；全库复扫仅剩 Design.swift:200 桥接自身降级分支（预期）；含 BUG-012（JourneyComponents 散写玻璃分支收口） |
 | IOS-006 | ClubActivityMark/ClubWaitBar/AIWaitProgress 手绘 TimelineView | 原生 ProgressView（不确定态） | Design.swift:331/509/540 | 待处理 |  |
 | IOS-007 | BreathingPulseHalo 手绘呼吸环 | 原生 Gauge(.accessoryCircularCapacity) + symbolEffect | DesignTokens.swift:746 | 待处理 |  |

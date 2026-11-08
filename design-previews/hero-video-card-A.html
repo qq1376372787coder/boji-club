@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首页 Hero 视频玻璃卡 · 视觉稿 A · BOJI_CLUB</title>
+<style>
+  :root{
+    --ink:#191A1E; --ink2:#62646C; --ink3:#767982;
+    --page:#FFFFFF; --card:#FFFFFF; --mist:#E3E7F0;
+    --accent:#414D63; --line:rgba(0,0,0,.10);
+    --shadow-card:0 5px 18px rgba(0,0,0,.035);
+    --shadow-glass:0 8px 24px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,"SF Pro Text","PingFang SC",sans-serif;
+    background:#EDEDF2;color:var(--ink);padding:32px 16px 64px;
+  }
+  h1{font-size:22px;margin-bottom:4px}
+  .sub{color:#62646C;font-size:13px;margin-bottom:28px}
+  .board{display:flex;flex-wrap:wrap;gap:28px;justify-content:center}
+  .frame{width:340px}
+  .frame h2{font-size:14px;font-weight:600;margin-bottom:10px;color:#3A3C44}
+  .frame h2 span{font-weight:400;color:#8A8D96;font-size:12px;margin-left:6px}
+  .phone{
+    position:relative;width:340px;height:660px;border-radius:44px;overflow:hidden;
+    background:var(--page);box-shadow:0 18px 48px rgba(0,0,0,.16);
+    border:8px solid #17181C;
+  }
+  .dark{--page:#0E0F12;--card:#1A1C20;--ink:#F5F6F8;--ink2:#A9ADB5;--ink3:#858A93;
+        --mist:#1C2430;--line:rgba(255,255,255,.16);--shadow-card:0 5px 18px rgba(0,0,0,.4)}
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+         width:110px;height:26px;background:#17181C;border-radius:14px;z-index:9}
+  .status{display:flex;justify-content:space-between;padding:16px 22px 4px;font-size:12px;font-weight:600;color:var(--ink)}
+  /* 顶栏 */
+  .header{display:flex;align-items:center;gap:8px;padding:10px 18px 6px}
+  .mark{width:34px;height:34px;border-radius:9px;background:
+        radial-gradient(circle at 30% 30%, #DEC18A, #C9B8A4 60%, #8A79C8);
+        display:flex;align-items:center;justify-content:center;
+        font-size:13px;font-weight:800;color:#191A1E;letter-spacing:-.5px}
+  .htitle .t1{font-size:11px;color:var(--ink3)}
+  .htitle .t2{font-size:16px;font-weight:700;color:var(--ink);line-height:1.15}
+  .datechip{margin-left:auto;font-size:11px;color:var(--ink3);
+            background:rgba(120,124,134,.14);padding:5px 10px;border-radius:999px}
+  /* Hero 卡 */
+  .hero{position:relative;margin:10px 18px 0;height:150px;border-radius:28px;overflow:hidden;
+        box-shadow:var(--shadow-glass)}
+  .hero video,.hero .still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .hero .still{background:
+      linear-gradient(135deg,#3A4658 0%,#6B7A93 45%,#C9B8A4 100%);}
+  .hero .scrim{position:absolute;inset:0;
+      background:linear-gradient(180deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.18) 45%, rgba(0,0,0,.52) 100%)}
+  /* 玻璃层：iOS 26 glassEffect 的网页近似（backdrop 模糊 + 高光边 + 内阴影） */
+  .glass{
+    position:absolute;inset:0;border-radius:28px;
+    backdrop-filter:blur(14px) saturate(1.5);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+    background:linear-gradient(160deg, rgba(255,255,255,.20), rgba(255,255,255,.06) 45%, rgba(255,255,255,.12));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 0 0 .5px rgba(255,255,255,.28);
+  }
+  .hero .content{position:absolute;inset:0;padding:16px 18px;display:flex;flex-direction:column;justify-content:flex-end;gap:3px}
+  .eyebrow{font-size:11px;color:rgba(255,255,255,.82);letter-spacing:.4px}
+  .headline{font-size:19px;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+  .caption{font-size:11.5px;color:rgba(255,255,255,.85);text-shadow:0 1px 6px rgba(0,0,0,.4)}
+  .playbadge{position:absolute;top:12px;right:14px;width:30px;height:30px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      background:rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+      color:#fff;font-size:11px}
+  /* 下方内容示意 */
+  .sec{display:flex;justify-content:space-between;align-items:center;padding:20px 18px 6px}
+  .sec .st{font-size:15px;font-weight:700}
+  .sec .more{font-size:12px;color:var(--ink2)}
+  .rowcard{margin:8px 18px 0;background:var(--card);border-radius:24px;padding:14px 16px;
+           box-shadow:var(--shadow-card);display:flex;gap:12px;align-items:center}
+  .thumb{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#E3E7F0,#C9B8A4);flex:none}
+  .rl{flex:1}
+  .rl .a{font-size:14px;font-weight:600}
+  .rl .b{font-size:11.5px;color:var(--ink3);margin-top:2px}
+  .go{font-size:16px;color:var(--ink3)}
+  .pill{margin:14px 18px 0;height:50px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+        font-size:15px;font-weight:600;color:#191A1E;background:#fff;
+        box-shadow:var(--shadow-glass), inset 0 1px 0 rgba(255,255,255,.7)}
+  .dark .pill{color:#0E0F12}
+  /* 标注 */
+  .notes{margin-top:14px;font-size:12px;line-height:1.75;color:#4A4C55;background:#fff;
+         border-radius:14px;padding:14px 16px;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+  .notes b{color:#191A1E}
+  .notes code{background:#F0F0F5;padding:1px 5px;border-radius:5px;font-size:11px}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;margin-bottom:8px}
+  .tag.a{background:#E8EDFB;color:#3457C6}
+  .tag.s{background:#E7F6EE;color:#10A36C}
+  .tag.m{background:#FFF3DC;color:#B87A10}
+</style>
+</head>
+<body>
+  <h1>首页 Hero 卡 · 方案 A 视觉稿</h1>
+  <p class="sub">视频底层（静音循环）→ 渐变护字 → 玻璃层（clubGlassEffect）→ 文字内容 · 对应 BUG-005 / DES-003 · 2026-11-08</p>
+
+  <div class="board">
+
+    <!-- 状态 1：浅色 · 视频播放 -->
+    <div class="frame">
+      <h2>① 浅色 · 视频播放态<span>iOS 26 玻璃</span></h2>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="status"><span>9:41</span><span>●●●● ⌁ ▮</span></div>
+        <div class="header">
+          <div class="mark">B</div>
+          <div class="htitle"><div class="t1">薄肌俱乐部</div><div class="t2">战备决策舱</div></div>
+          <div class="datechip">11月8日 星期日</div>
+        </div>
+        <div class="hero">
+          <video src="../design-assets/brand-video.mp4" autoplay muted loop playsinline></video>
+          <div class="scrim"></div>
+          <div class="glass"></div>
+          <div class="playbadge">▮▮</div>
+          <div class="content">
+            <div class="eyebrow">薄肌俱乐部</div>
+            <div class="headline">今天的训练，已经为你准备好</div>
+            <div class="caption">按计划开始 · 组间自动计时 · 训练后自动生成日报</div>
+          </div>
+        </div>
+        <div class="sec"><div class="st">今日计划</div><div class="more">全部 ›</div></div>
+        <div class="rowcard">
+          <div class="thumb"></div>
+          <div class="rl"><div class="a">胸大肌 · 中束</div><div class="b">4 组 × 8–12 次 · 组间休息 90 秒</div></div>
+          <div class="go">›</div>
+        </div>
+        <div class="rowcard">
+          <div class="thumb"></div>
+          <div class="rl"><div class="a">三角肌 · 前束</div><div class="b">3 组 × 10–15 次 · 组间休息 60 秒</div></div>
+          <div class="go">›</div>
+        </div>
+        <div class="pill">开始训练</div>
+      </div>
+      <div class="notes">
+        <span class="tag a">主状态</span><br>
+        <b>分层：</b>视频（z0）→ 全幅渐变护字（黑 10%→52%，底部最深）→ 玻璃高光层 → 文字。<br>
+        <b>玻璃：</b><code>clubGlassEffect(in: 圆角28 continuous)</code>，网页用 backdrop-blur 近似真机折射。<br>
+        <b>文字：</b>全白 + 1px 投影，压在护字最深处，对比度 ≥ 4.5:1。
+      </div>
+    </div>
+
+    <!-- 状态 2：深色模式 -->
+    <div class="frame">
+      <h2>② 深色模式<span>视频上叠黑 20%</span></h2>
+      <div class="phone dark">
+        <div class="notch"></div>
+        <div class="status"><span>9:41</span><span>●●●● ⌁ ▮</span></div>
+        <div class="header">
+          <div class="mark">B</div>
+          <div class="htitle"><div class="t1">薄肌俱乐部</div><div class="t2">战备决策舱</div></div>
+          <div class="datechip">11月8日 星期日</div>
+        </div>
+        <div class="hero">
+          <video src="../design-assets/brand-video.mp4" autoplay muted loop playsinline></video>
+          <div class="scrim" style="background:linear-gradient(180deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,.40) 45%, rgba(0,0,0,.62) 100%)"></div>
+          <div class="glass" style="background:linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.04) 45%, rgba(255,255,255,.08))"></div>
+          <div class="playbadge">▮▮</div>
+          <div class="content">
+            <div class="eyebrow">薄肌俱乐部</div>
+            <div class="headline">今天的训练，已经为你准备好</div>
+            <div class="caption">按计划开始 · 组间自动计时 · 训练后自动生成日报</div>
+          </div>
+        </div>
+        <div class="sec"><div class="st">今日计划</div><div class="more">全部 ›</div></div>
+        <div class="rowcard">
+          <div class="thumb"></div>
+          <div class="rl"><div class="a">胸大肌 · 中束</div><div class="b">4 组 × 8–12 次 · 组间休息 90 秒</div></div>
+          <div class="go">›</div>
+        </div>
+        <div class="pill">开始训练</div>
+      </div>
+      <div class="notes">
+        <span class="tag a">深色</span><br>
+        视频整体亮度偏亮，深色下先叠 <b>黑 20%</b> 再压护字渐变，玻璃高光才可辨；<br>
+        卡外一切走现有深色 Token（<code>pageBackground #0E0F12</code>），不新增颜色。
+      </div>
+    </div>
+
+    <!-- 状态 3：减少动态效果 / 低电量 -->
+    <div class="frame">
+      <h2>③ 减少动态效果 · 静态帧<span>不播放视频</span></h2>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="status"><span>9:41</span><span>●●●● ⌁ ▮</span></div>
+        <div class="header">
+          <div class="mark">B</div>
+          <div class="htitle"><div class="t1">薄肌俱乐部</div><div class="t2">战备决策舱</div></div>
+          <div class="datechip">11月8日 星期日</div>
+        </div>
+        <div class="hero">
+          <!-- 静态帧：不挂 video，用首帧占位图（工程内为品牌视频第 0 帧导出的 jpg） -->
+          <div class="still"></div>
+          <div class="scrim"></div>
+          <div class="glass"></div>
+          <div class="content">
+            <div class="eyebrow">薄肌俱乐部</div>
+            <div class="headline">今天的训练，已经为你准备好</div>
+            <div class="caption">按计划开始 · 组间自动计时 · 训练后自动生成日报</div>
+          </div>
+        </div>
+        <div class="sec"><div class="st">今日计划</div><div class="more">全部 ›</div></div>
+        <div class="rowcard">
+          <div class="thumb"></div>
+          <div class="rl"><div class="a">胸大肌 · 中束</div><div class="b">4 组 × 8–12 次 · 组间休息 90 秒</div></div>
+          <div class="go">›</div>
+        </div>
+        <div class="pill">开始训练</div>
+      </div>
+      <div class="notes">
+        <span class="tag s">降级</span> <span class="tag m">闸门</span><br>
+        触发：<code>reduceMotion</code> / 低电量模式 / 视频未就绪 / 页面离场。<br>
+        表现：<b>同一构图</b>，视频换首帧静态图，流光停止，其余（玻璃、护字、文字）完全一致——用户感知为"同一张卡变安静了"，不是换了个页面。<br>
+        流光沿用现有 14s 慢周期，叠加在视频之上，仅活跃时跑。
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
