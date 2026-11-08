@@ -45,15 +45,19 @@ jobs:
         if: github.event_name == 'workflow_run'
         run: |
           set -e
-          # builder 推的快照 ref 形如 refs/ios-builder/jobs/<id>，取最新一个
-          git fetch --depth=1 origin "+refs/ios-builder/jobs/*:refs/remotes/origin/ios-builder/jobs/*"
-          LATEST=$(git for-each-ref --sort=-committerdate --format='%(refname)' refs/remotes/origin/ios-builder/jobs/ | head -1)
-          if [ -z "$LATEST" ]; then
-            echo "::error::没找到构建快照 ref（refs/ios-builder/jobs/*）"
-            exit 1
-          fi
-          echo "使用构建快照: $LATEST"
-          git checkout --force "$LATEST"
+          # 目标代码版本：优先取「父提交 == 本次构建 main 头」的那个 builder 快照
+          # （快照 ref 会被 builder 清理，只按 ref 存在与否取「最新」会拿到残留旧快照）；
+          # 取不到就退回构建对应的 main 头——团队出包前都已提交，main 与快照内容一致。
+          TARGET="${{ github.event.workflow_run.head_sha }}"
+          git fetch --depth=2 origin "+refs/ios-builder/jobs/*:refs/remotes/origin/ios-builder/jobs/*" 2>/dev/null || true
+          for ref in $(git for-each-ref --format='%(refname)' refs/remotes/origin/ios-builder/jobs/ 2>/dev/null); do
+            PARENT=$(git rev-parse --verify "$ref^" 2>/dev/null || true)
+            if [ -n "$PARENT" ] && [ "$PARENT" = "$TARGET" ]; then
+              TARGET="$ref"; break
+            fi
+          done
+          echo "使用代码版本: $TARGET"
+          git checkout --force "$TARGET"
 
       - name: Checkout working-tree snapshot
         if: github.event.inputs.snapshot_ref != ''
@@ -66,11 +70,17 @@ jobs:
 
       - name: 用例守卫
         id: guard
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           # 按类名识别（不死磕文件名），用例还没建时本轮跳过、不误报红。
           if grep -rq "VisualRegressionShots" BojiClubUITests/ 2>/dev/null; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "截图用例已在位"
+          elif [ "$EVENT_NAME" = "workflow_run" ]; then
+            # 自动跟随构建时找不到用例 = 快照取错了，红线：本轮不算出图
+            echo "::error::自动跟随构建时找不到截图用例，快照可能取错——本轮不算出图"
+            exit 1
           else
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "::notice::VisualRegressionShots 用例尚未创建，本轮跳过截图（不影响构建）"
