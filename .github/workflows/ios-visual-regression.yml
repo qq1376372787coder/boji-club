@@ -1,6 +1,6 @@
 name: iOS Visual Regression
 
-run-name: iOS Visual Regression ${{ inputs.build_id || github.ref_name }}
+run-name: iOS Visual Regression ${{ github.event.inputs.build_id || github.ref_name }}
 
 # 视觉回归：在云端模拟器上跑 BojiClubUITests/VisualRegressionShots，
 # 把 xcresult 里的截图导出成 PNG 并上传制品，供用户 / 设计 / Chief 直接看界面。
@@ -36,9 +36,9 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Checkout working-tree snapshot
-        if: inputs.snapshot_ref != ''
+        if: github.event.inputs.snapshot_ref != ''
         env:
-          SNAPSHOT_REF: ${{ inputs.snapshot_ref }}
+          SNAPSHOT_REF: ${{ github.event.inputs.snapshot_ref }}
         run: |
           set -e
           git fetch --depth=1 origin "+$SNAPSHOT_REF:refs/heads/snapshot"
