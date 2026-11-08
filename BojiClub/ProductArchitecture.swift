@@ -527,6 +527,8 @@ struct ClubRecordsExecutiveDashboard: View {
         guard weightHistory.count >= 2, let first = weightHistory.first?.weight, let last = weightHistory.last?.weight else { return nil }
         return last - first
     }
+    /// 口径表 §四：≥2 次给差值，**≥3 次才给方向**（箭头）。样本不足 3 次时只给数字，不给方向。
+    private var hasWeightDirection: Bool { weightHistory.count >= 3 }
     private var trainingStreakWeeks: Int { ClubDashboardFacts.trainingStreak(days: store.state.days, through: today) }
 
     var body: some View {
@@ -745,9 +747,16 @@ struct ClubRecordsExecutiveDashboard: View {
                     Spacer()
                     HStack(spacing: BojiLayout.tight) {
                         if let delta = weightDelta {
-                            HStack(spacing: 0) {
-                                Image(systemName: delta <= 0 ? "arrow.down.right" : "arrow.up.right")
-                                Text(String(format: "%.1f kg", abs(delta)))
+                            HStack(spacing: BojiLayout.tight) {
+                                // 口径表 §4.4：变化量必须标明窗口，且与同屏图表（近 14 天）说同一个窗口
+                                Text("近14天")
+                                if hasWeightDirection {
+                                    Image(systemName: delta <= 0 ? "arrow.down.right" : "arrow.up.right")
+                                    Text(String(format: "%.1f kg", abs(delta)))
+                                } else {
+                                    // 样本 < 3 次不给方向（口径表 §四），只给带符号的差值
+                                    Text(String(format: "%+.1f kg", delta))
+                                }
                             }
                             .bojiType(.caption)
                             .foregroundStyle(BojiColor.textSecondary)
