@@ -1,0 +1,78 @@
+{
+  "sample_rate": 48000,
+  "peak_dbfs": -6,
+  "sounds": [
+    {
+      "file": "boji_tap.caf",
+      "sample_rate": 48000,
+      "format": "lpcm",
+      "flags": 2,
+      "channels": 1,
+      "bits": 16,
+      "seconds": 0.07,
+      "peak_dbfs": -6.0,
+      "rms_dbfs": -22.91,
+      "bytes": 6792
+    },
+    {
+      "file": "boji_set_done.caf",
+      "sample_rate": 48000,
+      "format": "lpcm",
+      "flags": 2,
+      "channels": 1,
+      "bits": 16,
+      "seconds": 0.15,
+      "peak_dbfs": -6.0,
+      "rms_dbfs": -21.08,
+      "bytes": 14472
+    },
+    {
+      "file": "boji_milestone.caf",
+      "sample_rate": 48000,
+      "format": "lpcm",
+      "flags": 2,
+      "channels": 1,
+      "bits": 16,
+      "seconds": 0.28,
+      "peak_dbfs": -6.0,
+      "rms_dbfs": -18.83,
+      "bytes": 26952
+    },
+    {
+      "file": "boji_workout_done.caf",
+      "sample_rate": 48000,
+      "format": "lpcm",
+      "flags": 2,
+      "channels": 1,
+      "bits": 16,
+      "seconds": 0.55,
+      "peak_dbfs": -6.0,
+      "rms_dbfs": -18.85,
+      "bytes": 52872
+    },
+    {
+      "file": "boji_rest_tick.caf",
+      "sample_rate": 48000,
+      "format": "lpcm",
+      "flags": 2,
+      "channels": 1,
+      "bits": 16,
+      "seconds": 0.05,
+      "peak_dbfs": -6.0,
+      "rms_dbfs": -21.09,
+      "bytes": 4872
+    },
+    {
+      "file": "boji_error.caf",
+      "sample_rate": 48000,
+      "format": "lpcm",
+      "flags": 2,
+      "channels": 1,
+      "bits": 16,
+      "seconds": 0.22,
+      "peak_dbfs": -6.0,
+      "rms_dbfs": -15.9,
+      "bytes": 21192
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 """Insights stay actionable after removing the old dashboard and nested cards."""
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,7 +24,14 @@ assert "ai.refreshHomeInsightIfNeeded()" in idle
 # 已并入 heroMissionCard/fuelBalanceCard；行为契约不变——训练入口（heroMissionCard
 # 随 activeWorkout 自适应）与餐食入口（onRecordMeal）在 idle 均可达。
 assert "private var heroMissionCard" in idle
-assert 'Label(activeWorkout == nil ? "今日战术任务" : "进行中的训练"' in idle
+# 训练入口的标题文案随重做批次调整，这里不锁具体措辞：只锁结构与「无黑话」。
+hero_label = re.search(
+    r'Label\(activeWorkout == nil \? "([^"]+)" : "([^"]+)", systemImage: "figure\.strengthtraining\.traditional"\)',
+    idle,
+)
+assert hero_label, "训练入口 Label（双分支标题 + 图标）结构丢失"
+for title in hero_label.groups():
+    assert not any(word in title for word in ("战术", "战备", "简报", "决策", "充能")), f"训练入口标题含黑话：{title}"
 workspace = shell[shell.index("private var aiWorkspace:"):shell.index("private var bottomDock:")]
 assert "onStartTraining:" in workspace
 assert "if activeWorkout != nil { openActiveWorkout() }" in workspace
