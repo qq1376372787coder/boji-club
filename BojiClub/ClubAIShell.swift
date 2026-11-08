@@ -1,5 +1,6 @@
 import SwiftUI
 import AVKit
+import AVFoundation
 
 /// Feature availability can change remotely; the AI-first app shell is permanent.
 @MainActor
@@ -1067,6 +1068,7 @@ struct ClubAIWorkspaceIdleView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var heroPlayer: AVQueuePlayer?
     @State private var heroLooper: AVPlayerLooper?
+    @State private var heroPoster: UIImage?
     @State private var showSeason = false
     @State private var showPresetPlans = false
     @State private var readingDailyReportID: String? = nil
@@ -1193,6 +1195,7 @@ struct ClubAIWorkspaceIdleView: View {
 
     /// 品牌视频单实例：静音、循环、仅页面活跃时播放；离场暂停并回零。
     private func setupHeroVideo() {
+        loadHeroPoster()
         guard heroPlayer == nil, !reduceMotion, !ProcessInfo.processInfo.isLowPowerModeEnabled,
               let url = Bundle.main.url(forResource: "brand-video", withExtension: "mp4") else { return }
         let player = AVQueuePlayer()
@@ -1200,6 +1203,22 @@ struct ClubAIWorkspaceIdleView: View {
         heroPlayer = player
         heroLooper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(url: url))
         if scenePhase == .active { player.play() }
+    }
+
+    /// 首帧静态图：视频未就绪/减少动态效果/低电量时显示，避免纯色块跳变（DES-003 §5.2）。
+    private func loadHeroPoster() {
+        guard heroPoster == nil, let url = Bundle.main.url(forResource: "brand-video", withExtension: "mp4") else { return }
+        Task.detached(priority: .utility) {
+            let asset = AVURLAsset(url: url)
+            let generator = AVAssetImageGenerator(asset: asset)
+            generator.appliesPreferredTrackTransform = true
+            generator.maximumSize = CGSize(width: 960, height: 960)
+            do {
+                let cg = try await generator.image(at: .zero).image
+                let image = UIImage(cgImage: cg)
+                await MainActor.run { heroPoster = image }
+            } catch { }
+        }
     }
 
     private func teardownHeroVideo() {
@@ -1236,16 +1255,25 @@ struct ClubAIWorkspaceIdleView: View {
 
     private func heroGlassContent(phase: Double) -> some View {
         ZStack {
-            // z0 视频层：未就绪时用品牌雾蓝底防黑块
+            // z0 首帧占位（未就绪/减少动态效果/低电量时持续显示，视频就绪后叠在其上无缝切换）
             Group {
-                if let heroPlayer {
-                    HeroVideoSurface(player: heroPlayer)
-                        .accessibilityHidden(true)
-                        .allowsHitTesting(false)
+                if let heroPoster {
+                    Image(uiImage: heroPoster)
+                        .resizable()
+                        .scaledToFill()
                 } else {
                     RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous)
                         .fill(BojiColor.brandMist.opacity(0.55))
                 }
+            }
+            .clipped()
+            .accessibilityHidden(true)
+            .allowsHitTesting(false)
+            // z0b 视频层（就绪后叠加）
+            if let heroPlayer {
+                HeroVideoSurface(player: heroPlayer)
+                    .accessibilityHidden(true)
+                    .allowsHitTesting(false)
             }
             // 深色模式压暗，保证玻璃高光可辨
             if colorScheme == .dark { Color.black.opacity(0.2) }
