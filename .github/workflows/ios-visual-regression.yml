@@ -172,11 +172,14 @@ jobs:
           set -o pipefail
           mkdir -p test-results
           echo "=== 构建测试目标 ==="
+          # 只构建截图用例目标：build-for-testing 默认会编整个 scheme 的测试目标，
+          # 只要 BojiClubTests 有编译错（哪怕与截图无关）就会连带挂掉截图构建。
           xcodebuild build-for-testing \
             -project BojiClub.xcodeproj \
             -scheme BojiClub \
             -destination "platform=iOS Simulator,id=$UDID" \
             -only-testing:BojiClubUITests/VisualRegressionShots \
+            -skip-testing:BojiClubTests/CrossPageParityTests \
             -quiet 2>&1 | tee test-results/build-for-testing.log || {
               echo "::error::build-for-testing 失败，见日志尾部"
               tail -40 test-results/build-for-testing.log >> "$GITHUB_STEP_SUMMARY"
