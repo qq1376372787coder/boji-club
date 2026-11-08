@@ -26,7 +26,7 @@ bojiTestSchema($db, __DIR__ . '/../account-server');
 $db->prepare("INSERT INTO users(phone,status,created_at,updated_at) VALUES('13910000021','active',UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute();
 $uid = (int)$db->lastInsertId();
 $user = ['id' => $uid, 'status' => 'active'];
-$published = appConfigDefaults(); $published['ai_enabled']=true; $published['ai_streaming_v2']=true; $published['action_system_enabled']=true;
+$published = appConfigDefaults(); $published['ai_enabled']=true; $published['ai_streaming_v2']=true; $published['action_system_enabled']=true; $published['coach_enabled']=true;
 $db->prepare("INSERT INTO app_config(config_key,draft_json,published_json,draft_version,published_version,updated_at,published_at) VALUES('app',?,?,1,1,UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute([json_encode($published),json_encode($published)]);
 $db->prepare("INSERT INTO app_states(user_id,revision,state_json,updated_at) VALUES(?,1,?,UTC_TIMESTAMP()) ON DUPLICATE KEY UPDATE state_json=VALUES(state_json)")->execute([$uid,json_encode(['days'=>[]])]);
 $config = ['otp_secret'=>str_repeat('x',64),'membership_enforcement'=>false,'ai_max_active_runs'=>4];

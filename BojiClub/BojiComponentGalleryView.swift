@@ -295,7 +295,6 @@ struct BojiAuditHost: View {
         case "ai": ClubAIHomeView()
         case "ai-hub": ClubAIHubView(initialSection: "动态")
         case "ai-timeline": ClubInsightTimelineView()
-        case "ai-chat": ClubCoachView()
         case "ai-settings": ClubAISettingsView()
         case "ai-evidence": ClubInsightTimelineView()
         case "daily-report": DailyReportView()

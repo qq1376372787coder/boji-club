@@ -87,4 +87,21 @@ $db->beginTransaction();
 $locked=appConfigLockedState($db);
 check($locked['draft_version']===1,'locked read uses committed version');
 $db->rollBack();
+
+// P2 coach 休眠开关：默认关闭（fail-closed），发布 true 即整体回退，再改回 false 复眠。
+$coachBody = json_decode((string)($db->query("SELECT published_json FROM app_config WHERE config_key='app'")->fetchColumn() ?: ''), true) ?: [];
+check(($coachBody['coach_enabled'] ?? false) === false, 'stored config carries coach_enabled=false by default');
+check(appConfigPublished($db)['config']['coach_enabled'] === false, 'coach gate publishes false by default');
+appConfigFeatureSnapshot($db, true);
+check(coachEnabled($db) === false, 'coach dormant while flag is false');
+$coachOn = $coachBody; $coachOn['coach_enabled'] = true;
+$db->prepare("UPDATE app_config SET published_json=?,published_version=4,published_at=UTC_TIMESTAMP() WHERE config_key='app'")
+    ->execute([json_encode($coachOn, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)]);
+appConfigFeatureSnapshot($db, true);
+check(coachEnabled($db) === true, 'coach re-enabled after publishing true');
+$coachOff = $coachOn; $coachOff['coach_enabled'] = false;
+$db->prepare("UPDATE app_config SET published_json=?,published_version=5 WHERE config_key='app'")
+    ->execute([json_encode($coachOff, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)]);
+appConfigFeatureSnapshot($db, true);
+check(coachEnabled($db) === false, 'coach returns to dormant when the flag is set back');
 echo "app config rules passed\n";

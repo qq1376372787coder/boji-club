@@ -7,7 +7,7 @@ $db=bojiTestDatabase(getenv('BOJI_TEST_DB') ?: 'bojiclub_repair_v17_test_2026100
 function verify17(bool $ok, string $label): void { if (!$ok) throw new RuntimeException($label); echo "PASS $label\n"; }
 $db->exec("DELETE FROM users WHERE id IN(917001,917002); INSERT INTO users(id,status,created_at,updated_at) VALUES(917001,'active',UTC_TIMESTAMP(),UTC_TIMESTAMP()),(917002,'active',UTC_TIMESTAMP(),UTC_TIMESTAMP())");
 $now = (int)(microtime(true)*1000);
-$purchase=['id'=>'v17-fixture-purchase','type'=>'INITIAL_PURCHASE','app_user_id'=>'boji-917001','app_id'=>'app_fixture','environment'=>'PRODUCTION','product_id'=>'bojiclub_yearly_4290','original_transaction_id'=>'v17-fixture-tx','transaction_id'=>'v17-fixture-tx','purchased_at_ms'=>$now,'expiration_at_ms'=>$now+86400000,'event_timestamp_ms'=>$now];
+$purchase=['id'=>'v17-fixture-purchase','type'=>'INITIAL_PURCHASE','app_user_id'=>'boji-917001','app_id'=>'app_fixture','environment'=>'PRODUCTION','product_id'=>'nianfu','entitlement_ids'=>['薄肌俱乐部_pro'],'original_transaction_id'=>'v17-fixture-tx','transaction_id'=>'v17-fixture-tx','purchased_at_ms'=>$now,'expiration_at_ms'=>$now+86400000,'event_timestamp_ms'=>$now];
 $config=['revenuecat_app_id'=>'app_fixture','revenuecat_environment'=>'PRODUCTION'];
 processRevenueCatEvent($db,$config,$purchase);
 $transfer=['id'=>'v17-fixture-transfer','type'=>'TRANSFER','app_id'=>'app_fixture','transferred_from'=>['boji-917001'],'transferred_to'=>['boji-917002'],'event_timestamp_ms'=>$now+1];

@@ -28,7 +28,7 @@ foreach (['ai_run_events','ai_runs','ai_action_messages','ai_messages','ai_conve
 $db->exec('SET FOREIGN_KEY_CHECKS=1');
 $db->prepare("INSERT INTO users(phone,status,created_at,updated_at) VALUES('13910000011','active',UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute();
 $uid = (int)$db->lastInsertId();
-$published = appConfigDefaults(); $published['ai_enabled']=true; $published['ai_streaming_v2']=true; $published['action_system_enabled']=true;
+$published = appConfigDefaults(); $published['ai_enabled']=true; $published['ai_streaming_v2']=true; $published['action_system_enabled']=true; $published['coach_enabled']=true;
 $db->prepare("INSERT INTO app_config(config_key,draft_json,published_json,draft_version,published_version,updated_at,published_at) VALUES('app',?,?,1,1,UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute([json_encode($published),json_encode($published)]);
 $memory = [
  ['preference','我更喜欢早上训练','pref-1',80],

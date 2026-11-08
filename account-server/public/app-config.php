@@ -17,6 +17,10 @@ function appConfigDefinitions(): array {
         'ai_fast_intent_v1'=>['type'=>'bool','default'=>true],
         'ai_router_v3'=>['type'=>'bool','default'=>true],
         'ai_streaming_v2'=>['type'=>'bool','default'=>false],
+        // P2：coach（AI 对话）链路休眠开关。默认 false = 休眠：提交/重试/轮询/SSE/
+        // 对话读取/能力执行全部拒绝（503 + error_code=coach_disabled），数据与代码
+        // 全部保留；后台发布 coach_enabled=true 即整体回退，无需发版。
+        'coach_enabled'=>['type'=>'bool','default'=>false],
         'club_enabled' => ['type' => 'bool', 'default' => true],
         // Phase 1 rollout gates. Default false until device acceptance passes;
         // when off, clients keep the legacy full-state sync write path and the
@@ -178,4 +182,16 @@ function appConfigFeatureSnapshot(PDO $db, bool $refresh = false): array {
 function appFeatureEnabled(PDO $db, string $key): bool {
     $published = appConfigFeatureSnapshot($db);
     return (bool)($published['config'][$key] ?? false);
+}
+
+/**
+ * Coach 对话链路是否可用（P2 休眠开关）。
+ *
+ * 默认（未发布 / 发布值为 false）= 休眠。所有 coach 专属入口都必须先问这一句；
+ * 非 coach 的 4 项（生成计划 / 解析计划 / 饮食识别 / 日报 / 周报）不经过任何
+ * coach 闸门，因此不受影响。HTTP 调用点用 fail(...,503,'coach_disabled') 拒绝，
+ * CLI 调用点（自动跟进 cron、Run worker）用 continue / rejected 结果跳过。
+ */
+function coachEnabled(PDO $db): bool {
+    return appFeatureEnabled($db, 'coach_enabled');
 }

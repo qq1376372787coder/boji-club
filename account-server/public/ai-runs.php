@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__ . '/app-config.php';
 require_once __DIR__ . '/chat-input.php';
 require_once __DIR__.'/ai-context.php';
 
@@ -193,6 +194,9 @@ function aiRunEvents(PDO $db, string $runId, int $afterSeq, int $limit = 100): a
 /** POST /me/ai/conversations/{id}/runs — idempotent durable run creation. */
 function aiRunCreate(PDO $db, array $user, array $config, string $conversationId, array $body, ?string $idempotencyKey = null): array {
     $uid = (int)$user['id'];
+    // P2 休眠：coach 开关放在最前，休眠时统一回 coach_disabled（而不是先被
+    // ai_enabled / ai_streaming_v2 的文案盖住），便于客户端识别唯一原因。
+    if (!coachEnabled($db)) fail('AI 对话功能暂未开放，请稍后再试。', 503, 'coach_disabled');
     if (!appFeatureEnabled($db, 'ai_enabled')) fail('AI 分析暂未开放，请稍后再试。', 503);
     if (!appFeatureEnabled($db, 'ai_streaming_v2')) fail('流式对话暂未开放，请稍后再试。', 503);
     $clientId = strtolower(trim((string)($body['client_message_id'] ?? '')));
@@ -370,6 +374,7 @@ function aiRunCreate(PDO $db, array $user, array $config, string $conversationId
 
 /** GET /me/ai/runs/{id} — final snapshot for resync (never replays tool writes). */
 function aiRunSnapshot(PDO $db, int $userId, string $runId): array {
+    if (!coachEnabled($db)) fail('AI 对话功能暂未开放，请稍后再试。', 503, 'coach_disabled');
     $row = aiRunFetch($db, $userId, $runId);
     if (!$row) fail('对话任务不存在。', 404);
     $run = [
@@ -412,6 +417,7 @@ function aiRunSnapshot(PDO $db, int $userId, string $runId): array {
 
 /** POST /me/ai/runs/{id}/cancel — stops uncommitted work only. */
 function aiRunCancel(PDO $db, int $userId, string $runId): array {
+    if (!coachEnabled($db)) fail('AI 对话功能暂未开放，请稍后再试。', 503, 'coach_disabled');
     $db->beginTransaction();
     try {
         lockActiveUser($db, $userId);
@@ -446,6 +452,7 @@ function aiRunCancel(PDO $db, int $userId, string $runId): array {
 
 /** GET /me/ai/runs/{id}/events — SSE. Polls the durable log; safe to reconnect. */
 function aiRunStream(PDO $db, int $userId, string $runId, int $afterSeq): never {
+    if (!coachEnabled($db)) fail('AI 对话功能暂未开放，请稍后再试。', 503, 'coach_disabled');
     $row = aiRunFetch($db, $userId, $runId);
     if (!$row) fail('对话任务不存在。', 404);
     if ($afterSeq < (int)($row['event_floor'] ?? 1) - 1) {

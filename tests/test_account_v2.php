@@ -20,7 +20,7 @@ checkV2(strlen(appleES256Signature($signature))===64,'Apple ES256 signature JOSE
 checkV2(appleAuthorizationTokens([],[], 'synthetic')===null,'Unconfigured old Apple accounts retain manual deletion flow');
 $db->exec("DELETE FROM users WHERE id IN (900001,900002);DELETE FROM revenuecat_events WHERE event_id LIKE 'v2-crypto-%';INSERT INTO users(id,status,created_at,updated_at) VALUES(900001,'active',UTC_TIMESTAMP(),UTC_TIMESTAMP()),(900002,'active',UTC_TIMESTAMP(),UTC_TIMESTAMP())");
 $cfg=['revenuecat_environment'=>'PRODUCTION'];$now=(int)(microtime(true)*1000);
-$event=['id'=>'v2-crypto-initial','type'=>'INITIAL_PURCHASE','app_user_id'=>'boji-900001','environment'=>'PRODUCTION','product_id'=>'bojiclub_yearly_4290','original_transaction_id'=>'v2-crypto-sub','transaction_id'=>'v2-crypto-tx','purchased_at_ms'=>$now,'expiration_at_ms'=>$now+86400000,'event_timestamp_ms'=>$now];
+$event=['id'=>'v2-crypto-initial','type'=>'INITIAL_PURCHASE','app_user_id'=>'boji-900001','environment'=>'PRODUCTION','product_id'=>'nianfu','entitlement_ids'=>['薄肌俱乐部_pro'],'original_transaction_id'=>'v2-crypto-sub','transaction_id'=>'v2-crypto-tx','purchased_at_ms'=>$now,'expiration_at_ms'=>$now+86400000,'event_timestamp_ms'=>$now];
 processRevenueCatEvent($db,$cfg,$event);
 $db->exec("INSERT INTO membership_admin_grants(user_id,status,starts_at,expires_at,updated_at) VALUES(900001,'active',UTC_TIMESTAMP(),DATE_ADD(UTC_TIMESTAMP(),INTERVAL 30 DAY),UTC_TIMESTAMP())");
 $renew=$event;$renew['id']='v2-crypto-renew';$renew['type']='RENEWAL';$renew['event_timestamp_ms']=$now+1;$renew['expiration_at_ms']=$now+2*86400000;

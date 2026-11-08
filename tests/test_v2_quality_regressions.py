@@ -274,17 +274,25 @@ class V2CommercialAuditTests(unittest.TestCase):
     def test_ios_feature_flags_and_crash_safety_guards(self):
         account_swift = (ROOT / "BojiClub" / "AccountService.swift").read_text(encoding="utf-8")
         shell_swift = (ROOT / "BojiClub" / "ClubAIShell.swift").read_text(encoding="utf-8")
-        coach_swift = (ROOT / "BojiClub" / "ClubCoachView.swift").read_text(encoding="utf-8")
         continuation_swift = (ROOT / "BojiClub" / "ContextContinuation.swift").read_text(encoding="utf-8")
         camera_swift = (ROOT / "BojiClub" / "MealCamera.swift").read_text(encoding="utf-8")
         for field in ["actionSystemEnabled", "onboardingV2Enabled", "contextualTipsEnabled", "aiFastIntentV1", "aiRouterV3"]:
             self.assertIn(field, account_swift)
             self.assertIn(field, shell_swift)
-        self.assertIn("FeatureFlagService.shared.actionSystemEnabled", coach_swift)
+        # 2026-11-08 妙妙修复（P2 对话砍除连带）：原断言
+        # `FeatureFlagService.shared.actionSystemEnabled` 的消费代码在
+        # ClubCoachView 对话 UI（孤儿代码）删除时一并移除。行为契约收窄为
+        # 「flag 接线成立」：定义在 FeatureFlagService + 从远程 config 合并；
+        # 命令通道消费门禁随 P2c 接线后此断言将加强到消费点。
+        self.assertIn("actionSystemEnabled = remote?.config.actionSystemEnabled ?? true", shell_swift)
         self.assertIn("flags.contextualTipsEnabled", continuation_swift)
         self.assertNotIn("as! AVCaptureVideoPreviewLayer", camera_swift)
         self.assertIn("layer.addSublayer(preview)", camera_swift)
-        self.assertIn("previous.count >= 3", shell_swift)
+        # 2026-11-08 妙妙修复（CI 红模块分流，智智移交）：「≥3 次才提示」
+        # 崩溃保护已迁 NutritionView.swift（NutritionTrendSummary）；行为契约
+        # 不变——任一窗口不足 3 条即占位提示，不做除法。（与 fix/ios-test-3count-guard 同步）
+        nutrition_swift = (ROOT / "BojiClub" / "NutritionView.swift").read_text(encoding="utf-8")
+        self.assertIn("recent.count >= 3 && previous.count >= 3", nutrition_swift)
 
     def test_all_php_files_have_php_header_and_valid_utf8(self):
         php_files = list((ROOT / "account-server").rglob("*.php")) + list((ROOT / "tests").rglob("*.php"))

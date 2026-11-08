@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/action-support.php';
+require_once __DIR__.'/app-config.php';
 
 /** Stable operation identity belongs to a message/call, not to its numeric contents. */
 function actionCallIdentity(int $uid,string $message,int $index,string $capability): string {
@@ -99,6 +100,9 @@ function actionResolveCompletedMessageFenced(PDO $db,array $user,string $id,arra
  if(($response['status']??'')!=='succeeded')return $empty;
  $calls=$response['result']['coach']['capability_calls']??[];if(!$calls)return $empty;
  if(!appFeatureEnabled($db,'action_system_enabled'))return ['results'=>array_map(fn($c)=>['capability'=>$c['capability']??null,'status'=>'rejected','error'=>'AI 行动已暂停，未执行操作。'],$calls)];
+ // P2 休眠：coach 消息的能力执行同样停用。已提交的对话结果保留，但不再产生
+ // 任何业务写入；开关打开后（coach_enabled=true）恢复原执行路径。
+ if(!coachEnabled($db))return ['results'=>array_map(fn($c)=>['capability'=>$c['capability']??null,'status'=>'rejected','error'=>'AI 对话功能暂未开放，未执行操作。'],$calls)];
  $parent=$db->prepare("SELECT status FROM ai_runs WHERE user_id=? AND message_id=? ORDER BY created_at DESC LIMIT 1");
  $parent->execute([(int)$user['id'],$id]);$parentStatus=(string)($parent->fetchColumn()?:'');
  if(in_array($parentStatus,['cancelled','failed'],true))return $empty;
