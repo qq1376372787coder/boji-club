@@ -62,11 +62,16 @@ class AdaptiveTests(unittest.TestCase):
             day['payload']['workout_sessions'][0]['executionBaseline']={'version':1,'capturedAt':STAMP-auto.APPLE_EPOCH-600,'sets':[{'id':SET,'exerciseID':EX,'unit':'reps','targetReps':10,'targetWeight':20}]}
         request['payload']['days']=days;return request
     def test_small_increase_requires_two_confirmed_comparable_days(self):
+        # progression.policy.v1：20kg 的加重上限 = min(2.5kg, 5%) = 1.0kg。
+        # 统一前本用例用 22.5（+12.5%，旧的 max(2.5,5%) 口径），与
+        # progression_advisory 的 ≤10% 方向相反；现按"取两者更严者"收到 21.0。
+        # 注意：下面的**拒绝**类用例也必须用上限内的值，否则会被上限先行拒绝、
+        # 测不到"证据不足"这件事。
         request=self.supported()
-        value=adaptive.clean_proposal(request,{'changes':[self.change(field='weight',value=22.5)]},(text,sequence,iso_date))
-        self.assertEqual(value['changes'][0]['value'],22.5)
+        value=adaptive.clean_proposal(request,{'changes':[self.change(field='weight',value=21.0)]},(text,sequence,iso_date))
+        self.assertEqual(value['changes'][0]['value'],21.0)
         request['payload']['days']=request['payload']['days'][:1]
-        with self.assertRaises(ValueError):adaptive.clean_proposal(request,{'changes':[self.change(field='weight',value=22.5)]},(text,sequence,iso_date))
+        with self.assertRaises(ValueError):adaptive.clean_proposal(request,{'changes':[self.change(field='weight',value=21.0)]},(text,sequence,iso_date))
     def test_duplicate_day_or_changed_load_is_not_progression_evidence(self):
         for mutation in ['date','weight','confirmed','duplicate']:
             request=self.supported();day=request['payload']['days'][0]
@@ -74,9 +79,10 @@ class AdaptiveTests(unittest.TestCase):
             if mutation=='weight':day['payload']['exercises'][0]['sets'][0]['weight']=15
             if mutation=='confirmed':day['payload']['workout_sessions'][0]['confirmed']=False
             if mutation=='duplicate':day['payload']['exercises']*=2
-            with self.subTest(mutation=mutation),self.assertRaises(ValueError):adaptive.clean_proposal(request,{'changes':[self.change(field='weight',value=22.5)]},(text,sequence,iso_date))
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):adaptive.clean_proposal(request,{'changes':[self.change(field='weight',value=21.0)]},(text,sequence,iso_date))
     def test_excessive_increase_still_rejected_with_evidence(self):
-        with self.assertRaises(ValueError):adaptive.clean_proposal(self.supported(),{'changes':[self.change(field='weight',value=25)]},(text,sequence,iso_date))
+        # 21.5 > 上限 1.0（20kg），证据齐备也必须拒——这是"过量"的新边界。
+        with self.assertRaises(ValueError):adaptive.clean_proposal(self.supported(),{'changes':[self.change(field='weight',value=21.5)]},(text,sequence,iso_date))
     def test_custom_movement_identity_is_canonical(self):
         from ai_core import number
         rows=upcoming();rows[0]['exercises'][0].update(custom_id='AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA',custom_unit='次');rows[0]['exercises'][0].pop('library_id')

@@ -17,6 +17,16 @@ function appConfigDefinitions(): array {
         'ai_fast_intent_v1'=>['type'=>'bool','default'=>true],
         'ai_router_v3'=>['type'=>'bool','default'=>true],
         'ai_streaming_v2'=>['type'=>'bool','default'=>false],
+        // P2：coach（AI 对话）链路休眠开关。默认 false = 休眠：提交/重试/轮询/SSE/
+        // 对话读取/能力执行全部拒绝（503 + error_code=coach_disabled），数据与代码
+        // 全部保留；后台发布 coach_enabled=true 即整体回退，无需发版。
+        'coach_enabled'=>['type'=>'bool','default'=>false],
+        // P2：durable Run + SSE 推广开关（对齐 coach_enabled 的休眠/回退口径）。
+        // 默认 false = 全部 kind 走 legacy 轮询；后台发布 true 即整体启用。
+        'ai_run_v2_enabled'=>['type'=>'bool','default'=>false],
+        // 按 kind 灰度，逗号分隔（report,weekly_review,generate_plan,parse_plan,food）；
+        // 空 = 该开关打开后全部允许。
+        'ai_run_v2_kinds'=>['type'=>'string','default'=>''],
         'club_enabled' => ['type' => 'bool', 'default' => true],
         // Phase 1 rollout gates. Default false until device acceptance passes;
         // when off, clients keep the legacy full-state sync write path and the
@@ -68,6 +78,11 @@ function appConfigNormalize(mixed $input): array {
         } elseif ($definition['type'] === 'int') {
             if (!is_int($value) || $value < 0 || $value > 1000000) throw new RuntimeException($key . ' 必须是 0—1000000 的整数。');
             $out[$key] = $value;
+        } elseif ($definition['type'] === 'string') {
+            // Comma-separated allowlists (e.g. ai_run_v2_kinds). Bounded and
+            // trimmed so a published draft can never carry an unbounded value.
+            if (!is_string($value)) throw new RuntimeException($key . ' 必须是字符串。');
+            $out[$key] = mb_substr(trim($value), 0, 200);
         } elseif ($definition['type'] === 'onboarding_content') {
             if (!is_array($value)) throw new RuntimeException('引导内容格式不正确。');
             $allowed = ['welcome_title', 'welcome_body', 'task_labels', 'tips'];
@@ -178,4 +193,39 @@ function appConfigFeatureSnapshot(PDO $db, bool $refresh = false): array {
 function appFeatureEnabled(PDO $db, string $key): bool {
     $published = appConfigFeatureSnapshot($db);
     return (bool)($published['config'][$key] ?? false);
+}
+
+/**
+ * Coach 对话链路是否可用（P2 休眠开关）。
+ *
+ * 默认（未发布 / 发布值为 false）= 休眠。所有 coach 专属入口都必须先问这一句；
+ * 非 coach 的 4 项（生成计划 / 解析计划 / 饮食识别 / 日报 / 周报）不经过任何
+ * coach 闸门，因此不受影响。HTTP 调用点用 fail(...,503,'coach_disabled') 拒绝，
+ * CLI 调用点（自动跟进 cron、Run worker）用 continue / rejected 结果跳过。
+ */
+function coachEnabled(PDO $db): bool {
+    return appFeatureEnabled($db, 'coach_enabled');
+}
+
+/** Published string value; empty string when the key is absent or not a string. */
+function appFeatureString(PDO $db, string $key): string {
+    $published = appConfigFeatureSnapshot($db);
+    $value = $published['config'][$key] ?? '';
+    return is_string($value) ? $value : '';
+}
+
+/**
+ * durable Run + SSE 推广开关（对齐 coach_enabled 的口径）。
+ * 默认（未发布 / false）= 全部 kind 走 legacy 轮询；后台发布 true 即整体启用。
+ */
+function aiRunV2Enabled(PDO $db): bool {
+    return appFeatureEnabled($db, 'ai_run_v2_enabled');
+}
+
+/** 按 kind 灰度：白名单为空表示不额外限制。 */
+function aiRunV2KindAllowed(PDO $db, string $kind): bool {
+    $list = trim(appFeatureString($db, 'ai_run_v2_kinds'));
+    if ($list === '') return true;
+    $allowed = array_filter(array_map('trim', explode(',', $list)), static fn($item) => $item !== '');
+    return in_array($kind, $allowed, true);
 }

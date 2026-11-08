@@ -752,7 +752,7 @@ struct ReviewDashboardView: View {
         if let top {
             ClubCard {
                 HStack {
-                    Label("AI 周期诊断与建议", systemImage: "sparkles")
+                    Label("周期总结", systemImage: "sparkles")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.brandAccent)
                     Spacer()
@@ -891,7 +891,7 @@ private struct ReviewDayDetailView: View {
                         }
                     }
                     ClubCard {
-                        SectionTitle(title: "健康与 AI", symbol: "heart")
+                        SectionTitle(title: "健康与分析", symbol: "heart")
                         Text(day.log.health?.hasData == true ? "健康数据已同步到这一天。" : "这一天没有确认分享的健康数据。")
                             .bojiType(.caption).foregroundStyle(.secondary)
                         if let job = completedReport {
@@ -903,7 +903,7 @@ private struct ReviewDayDetailView: View {
                                 ReportSectionText(title: "饮食", text: result.nutrition)
                                 ReportSectionText(title: "恢复与下一步", text: result.recovery)
                                 ForEach(Array(result.notes.enumerated()), id: \.offset) { _, note in Text(note).bojiType(.caption).foregroundStyle(.secondary) }
-                            } else { Text(job.error ?? "每日复盘正在处理。").bojiType(.caption).foregroundStyle(.secondary) }
+                            } else { Text(job.error ?? "日报正在处理。").bojiType(.caption).foregroundStyle(.secondary) }
                         }
                         if let latest = pendingReport {
                             Text("另有一次生成：\(latest.error ?? (latest.isTerminal ? "未完成，可在下方日报入口重试" : "正在处理，旧版仍可阅读"))").bojiType(.caption).foregroundStyle(.secondary)

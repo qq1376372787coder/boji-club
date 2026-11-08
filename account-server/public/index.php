@@ -561,7 +561,13 @@ try {
     }
     if ($method === 'GET' && $path === '/me/export') {
         $user = authenticated($db);
-        respond(200, accountDataExport($db, (int)$user['id']));
+        // PIPL 阶段4（言言①）：memory_offset 是分页游标，不是权利上限。
+        // 客户端按 memory_export.has_more 连续拉取直至导完。
+        $memoryOffset = filter_var($_GET['memory_offset'] ?? 0, FILTER_VALIDATE_INT);
+        $memoryLimit = filter_var($_GET['memory_limit'] ?? 500, FILTER_VALIDATE_INT);
+        respond(200, accountDataExport($db, (int)$user['id'],
+            $memoryOffset === false ? 0 : max(0, (int)$memoryOffset),
+            $memoryLimit === false ? 500 : (int)$memoryLimit));
     }
 
     require __DIR__ . '/weekly.php';
@@ -577,6 +583,8 @@ try {
     if ($method === 'POST' && $path === '/me/ai/context/resolve') {
         $user=authenticated($db);
         if(!appFeatureEnabled($db,'ai_context_references_v1'))fail('引用功能暂未开放。',503);
+        // P2 休眠：上下文引用只为 coach 组装输入，随对话链路一起停用。
+        if(!coachEnabled($db))fail('AI 对话功能暂未开放，请稍后再试。',503,'coach_disabled');
         try { respond(200,aiContextResolve($db,(int)$user['id'],body(524288),$config)); }
         catch(RuntimeException $e){fail($e->getMessage(),in_array($e->getCode(),[403,409,410,413,422,429,503],true)?$e->getCode():422);}
     }
@@ -584,6 +592,17 @@ try {
         $user = authenticated($db);
         if (function_exists('revenueCatRefreshIfDue')) revenueCatRefreshIfDue($db, $user, $config);
         $created = aiRunCreate($db, $user, $config, (string)$runMatch[1], body(5900000), $_SERVER['HTTP_IDEMPOTENCY_KEY'] ?? null);
+        respond(202, $created);
+    }
+    if ($method === 'POST' && $path === '/me/ai/jobs/runs') {
+        // Durable Run creation for report / weekly_review (phase 1). Shares the
+        // Python job identity with the legacy /me/ai/jobs path, so a client that
+        // falls back to polling never double-submits.
+        $user = authenticated($db);
+        if (function_exists('revenueCatRefreshIfDue')) revenueCatRefreshIfDue($db, $user, $config);
+        $payload = body(5900000);
+        $kind = (string)($payload['kind'] ?? '');
+        $created = aiRunCreateForKind($db, $user, $config, $kind, $payload, $_SERVER['HTTP_IDEMPOTENCY_KEY'] ?? null);
         respond(202, $created);
     }
     if ($method === 'GET' && preg_match('#^/me/ai/runs/([0-9a-f-]{36})$#i', $path, $runMatch)) {
@@ -620,12 +639,14 @@ try {
     if($method==='POST' && preg_match('#^/me/ai/actions/([0-9a-f-]{36})/undo$#i',$path,$m)){$user=authenticated($db);$r=businessScoped(fn()=>aiRouterUndo($db,$user,['command_id'=>strtolower($m[1])]));respond(200,['status'=>'completed','data'=>$r['result']]);}
     if($path==='/me/ai/action-preferences'){
       $user=authenticated($db);$uid=(int)$user['id'];
-      if($method==='GET'){$p=actionPreferences($db,$uid);$p['fast_records']=(bool)$p['fast_records'];$p['proactive_learning']=(bool)($p['proactive_learning']??true);respond(200,$p);}
+      if($method==='GET'){$p=actionPreferences($db,$uid);$p['fast_records']=(bool)$p['fast_records'];$p['proactive_learning']=(bool)($p['proactive_learning']??true);$p['personalization_enabled']=(bool)($p['personalization_enabled']??true);respond(200,$p);}
       if($method==='PUT'){
         $p=body(4096);
         if(!array_key_exists('proactive_learning',$p))$p['proactive_learning']=(bool)(actionPreferences($db,$uid)['proactive_learning']??true);
-        if(!is_bool($p['fast_records']??null)||!is_bool($p['proactive_learning']??null)||!in_array($p['weight_unit']??null,['kg','lb'],true)||!in_array($p['time_zone']??null,DateTimeZone::listIdentifiers(),true))fail('偏好格式不正确。',422);
-        $db->prepare('INSERT INTO user_action_preferences(user_id,fast_records,time_zone,weight_unit,proactive_learning,updated_at) VALUES(?,?,?,?,?,UTC_TIMESTAMP()) ON DUPLICATE KEY UPDATE fast_records=VALUES(fast_records),time_zone=VALUES(time_zone),weight_unit=VALUES(weight_unit),proactive_learning=VALUES(proactive_learning),updated_at=UTC_TIMESTAMP()')->execute([$uid,(int)$p['fast_records'],$p['time_zone'],$p['weight_unit'],(int)$p['proactive_learning']]);respond(200,$p);
+        // 缺省沿用当前值：老客户端只改一个开关时，另一个不被静默重置。
+        if(!array_key_exists('personalization_enabled',$p))$p['personalization_enabled']=(bool)(actionPreferences($db,$uid)['personalization_enabled']??true);
+        if(!is_bool($p['fast_records']??null)||!is_bool($p['proactive_learning']??null)||!is_bool($p['personalization_enabled']??null)||!in_array($p['weight_unit']??null,['kg','lb'],true)||!in_array($p['time_zone']??null,DateTimeZone::listIdentifiers(),true))fail('偏好格式不正确。',422);
+        $db->prepare('INSERT INTO user_action_preferences(user_id,fast_records,time_zone,weight_unit,proactive_learning,personalization_enabled,updated_at) VALUES(?,?,?,?,?,?,UTC_TIMESTAMP()) ON DUPLICATE KEY UPDATE fast_records=VALUES(fast_records),time_zone=VALUES(time_zone),weight_unit=VALUES(weight_unit),proactive_learning=VALUES(proactive_learning),personalization_enabled=VALUES(personalization_enabled),updated_at=UTC_TIMESTAMP()')->execute([$uid,(int)$p['fast_records'],$p['time_zone'],$p['weight_unit'],(int)$p['proactive_learning'],(int)$p['personalization_enabled']]);respond(200,$p);
       }
     }
     if($method==='POST' && preg_match('#^/me/ai/drafts/([0-9a-f-]{36})/preview$#i',$path,$m)){

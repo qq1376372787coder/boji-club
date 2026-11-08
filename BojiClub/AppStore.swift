@@ -56,7 +56,7 @@ final class AppNotificationService: NSObject, ObservableObject, UNUserNotificati
                   [.authorized, .provisional, .ephemeral].contains(settings.authorizationStatus), end > Date() else { return }
             let content = UNMutableNotificationContent()
             content.title = "组间休息结束"
-            content.body = "按身体状态继续下一组，准备好了再开始。"
+            content.body = "休息结束，继续下一组。"
             content.sound = .default
             content.userInfo = ["boji_kind": "training", "boji_date": ClubDates.key(date), "boji_account": owner]
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, end.timeIntervalSinceNow), repeats: false)
@@ -193,8 +193,8 @@ final class AppNotificationService: NSObject, ObservableObject, UNUserNotificati
             for (index, date) in dates.prefix(28).enumerated() {
                 guard ticket == reminderGeneration else { return }
                 let id = "boji.training.gen.\(ticket.uuidString).\(index)"
-                let content = UNMutableNotificationContent(); content.title = "今天有训练安排"
-                content.body = "打开月历查看今天的动作与组数，按身体状态安排训练。"; content.sound = .default
+                let content = UNMutableNotificationContent(); content.title = "今天有训练"
+                content.body = "打开月历查看今天的动作与组数。"; content.sound = .default
                 if let owner { content.userInfo = ["boji_kind": "training", "boji_date": ClubDates.key(date), "boji_account": owner] }
                 let components = calendar.dateComponents([.year,.month,.day,.hour,.minute], from: date)
                 do { try await center.add(UNNotificationRequest(identifier: id, content: content, trigger: UNCalendarNotificationTrigger(dateMatching: components, repeats: false))) }
@@ -239,8 +239,8 @@ final class AppNotificationService: NSObject, ObservableObject, UNUserNotificati
                 guard ticket == mealReminderGeneration else { return }
                 let id = "boji.meal.gen.\(ticket.uuidString).\(index)"
                 let content = UNMutableNotificationContent()
-                content.title = "\(entry.0)登记提醒"
-                content.body = "尚未看到你今天的\(entry.0)记录，需要现在补充登记吗？"
+                content.title = "\(entry.0)提醒"
+                content.body = "今天还没有\(entry.0)记录，现在补充吗？"
                 content.sound = .default
                 if let owner { content.userInfo = ["boji_kind": "meal", "boji_date": ClubDates.key(entry.1), "boji_account": owner] }
                 let components = calendar.dateComponents([.year,.month,.day,.hour,.minute], from: entry.1)
@@ -282,15 +282,15 @@ final class AppNotificationService: NSObject, ObservableObject, UNUserNotificati
         }
     }
     static func notifyClubFollowupReady(date: Date, weekly: Bool, jobID: String, accountID: Int?) {
-        deliverAnalysis(title: weekly ? "每周记录成长报告已准备好" : "本次训练解读已准备好", body: "查看已登记记录的依据与下一步建议。", kind: weekly ? "club_weekly" : "club_workout", date: date, accountID: accountID, jobID: jobID)
+        deliverAnalysis(title: weekly ? "周报已生成" : "训练总结已生成", body: "查看依据与下一步建议。", kind: weekly ? "club_weekly" : "club_workout", date: date, accountID: accountID, jobID: jobID)
     }
     static func notifyDailyReportReady(date: Date, accountID: Int?) {
-        deliverAnalysis(title: "\(ClubDates.label(date, format: "M月d日")) 每日分析已生成", body: "查看这一天的训练、饮食和恢复情况。", kind: "report", date: date, accountID: accountID)
+        deliverAnalysis(title: "\(ClubDates.label(date, format: "M月d日")) 日报已生成", body: "查看这一天的训练与饮食。", kind: "report", date: date, accountID: accountID)
     }
     func notifyDailyReportReady(date: Date) { Self.notifyDailyReportReady(date: date, accountID: accountID) }
     static func notifyWeeklyReviewReady(date: Date, accountID: Int?) {
         guard !ClubPushService.shared.ready else { return }
-        deliverAnalysis(title: "截至 \(ClubDates.label(date, format: "M月d日")) 的每周成长报告已准备好", body: "回看对应日期的记录和分析。", kind: "weekly_review", date: date, accountID: accountID)
+        deliverAnalysis(title: "截至 \(ClubDates.label(date, format: "M月d日")) 的周报已生成", body: "回看对应日期的记录。", kind: "weekly_review", date: date, accountID: accountID)
     }
     func notifyWeeklyReviewReady(date: Date) { Self.notifyWeeklyReviewReady(date: date, accountID: accountID) }
 

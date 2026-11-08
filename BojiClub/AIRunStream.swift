@@ -177,6 +177,9 @@ struct AIRunSnapshot: Decodable {
     var run: Run
     var message: Message?
     var cards: [AICardEnvelope]?
+    /// Authoritative result object for non-coach runs (report / weekly_review).
+    /// Coach runs keep using `message.coach`; this stays nil for them.
+    var result: JSONValue?
 }
 
 enum AIRunStreamError: Error, LocalizedError {
@@ -757,4 +760,194 @@ final class AIRunStreamStore: ObservableObject {
 @MainActor private final class AIRunConnectionState {
     var ended = false
     var error: Error?
+}
+
+// MARK: - Phase 3: non-coach kinds (report / weekly_review)
+
+/// Phase 3: durable Run + SSE client for the non-coach analysis kinds
+/// (report / weekly_review).
+///
+/// Deliberately self-contained: it reuses `SSEFrameParser` from AIRunStream but
+/// owns a separate reducer, because these results are structured JSON rather
+/// than chat text. The server owns the durable run; this client only renders
+/// validated snapshots and never treats a transport error as cancellation.
+///
+/// Fallback contract:
+/// - `disabled` / `rejected`  → the caller may retry through the legacy polling
+///   path with the same `client_job_id` (the server maps both to one Python job).
+/// - `uncertain`              → the create POST may have been accepted. The
+///   caller must NOT start a second job; it resumes by snapshot instead.
+
+enum AIRunKindError: Error, LocalizedError {
+    case disabled(String)
+    case rejected(String)
+    case uncertain(String)
+    case failed(String)
+    case resyncUnavailable
+
+    var errorDescription: String? {
+        switch self {
+        case .disabled(let text), .rejected(let text), .uncertain(let text), .failed(let text): return text
+        case .resyncUnavailable: return "流式连接中断，暂时无法恢复这次分析。"
+        }
+    }
+}
+
+/// Raw result payload plus trace identity. Callers decode `result` into the
+/// type their view model already uses (`AIResult` for report, `WeeklyResult`
+/// for weekly_review) so nothing is lost for either kind.
+struct AIRunKindOutcome {
+    var result: JSONValue
+    var traceID: String
+    var runID: String
+
+    func aiResult() throws -> AIResult {
+        let raw = try JSONEncoder().encode(result)
+        return try JSONDecoder().decode(AIResult.self, from: raw)
+    }
+
+    func weeklyResult() throws -> WeeklyResult {
+        let raw = try JSONEncoder().encode(result)
+        return try JSONDecoder().decode(WeeklyResult.self, from: raw)
+    }
+}
+
+/// Wire event envelope emitted by `aiRunStream` / the durable run worker.
+struct AIRunKindEvent: Decodable {
+    var run_id: String
+    var seq: Int
+    var event_id: String
+    var type: String
+    var ts: String?
+    var data: JSONValue
+}
+
+@MainActor
+enum AIRunKindRunner {
+
+    // MARK: - Create
+
+    private struct CreateBody: Encodable {
+        var client_job_id: String
+        var kind: String
+        var request: AIRequest
+        var client_timezone: String
+    }
+
+    private static func create(input: AIInput, clientJobID: String, owner: Int,
+                               account: AccountService) async throws -> AIRunCreateResponse {
+        try await account.syncAIConsentDecision(owner: owner)
+        var payload = input.payload
+        payload["_routing_version"] = .number(Double(CloudAnalysisConsent.routerVersion(accountID: owner)))
+        let request = AIRequest(id: clientJobID, kind: input.kind, date: input.date, payload: payload)
+        let body = CreateBody(client_job_id: clientJobID, kind: input.kind, request: request,
+                              client_timezone: TimeZone.current.identifier)
+        let response = try await account.cloudRequest(
+            path: "/me/ai/jobs/runs", method: "POST",
+            body: try JSONEncoder().encode(body), expectedUserID: owner,
+            headers: ["Idempotency-Key": clientJobID])
+        if response.statusCode == 200 || response.statusCode == 202 {
+            return try JSONDecoder().decode(AIRunCreateResponse.self, from: response.data)
+        }
+        let object = (try? JSONSerialization.jsonObject(with: response.data)) as? [String: Any]
+        let message = (object?["error"] as? String) ?? "分析未被接受（\(response.statusCode)）。"
+        let code = object?["error_code"] as? String
+        // Not enabled, kind not in the allowlist, or the route is gone: fall back.
+        if response.statusCode == 404 || response.statusCode == 503 || code == "run_v2_disabled" || code == "run_v2_kind_disabled" {
+            throw AIRunKindError.disabled(message)
+        }
+        // The server may already be working on this client_job_id. Never resubmit.
+        if response.statusCode >= 500 { throw AIRunKindError.uncertain(message) }
+        throw AIRunKindError.rejected(message)
+    }
+
+    // MARK: - Run
+
+    /// Runs one analysis to a terminal state. `deadline` bounds the whole attempt
+    /// so a silently broken stream cannot spin forever.
+    static func run(input: AIInput, clientJobID: String, owner: Int, account: AccountService,
+                    deadline: Date = Date().addingTimeInterval(600)) async throws -> AIRunKindOutcome {
+        let created = try await create(input: input, clientJobID: clientJobID, owner: owner, account: account)
+        let runID = created.run_id
+        var afterSeq = created.last_event_seq
+
+        while Date() < deadline {
+            if Task.isCancelled { throw CancellationError() }
+            do {
+                let (bytes, response) = try await account.cloudStream(
+                    path: "/me/ai/runs/" + runID + "/events?after_seq=\(afterSeq)",
+                    expectedUserID: owner, afterSeq: afterSeq, traceID: created.trace_id)
+                if response.statusCode == 410 {
+                    // Event log pruned: resync from the authoritative snapshot.
+                    let snapshot = try await snapshot(runID: runID, owner: owner, account: account)
+                    if let result = snapshot.result { return AIRunKindOutcome(result: result, traceID: created.trace_id, runID: runID) }
+                    if snapshot.run.terminal {
+                        throw AIRunKindError.failed(snapshot.run.error_code.map(AIRunFailureText125.message) ?? "这次分析未能完成。")
+                    }
+                    afterSeq = snapshot.run.last_event_seq
+                    continue
+                }
+                guard (200..<300).contains(response.statusCode) else {
+                    if response.statusCode >= 500 { throw AIRunKindError.uncertain("流式服务暂时不可用。") }
+                    throw AIRunKindError.disabled("流式服务暂不可用。")
+                }
+                let reduced = try await consume(bytes: bytes, startSeq: afterSeq)
+                afterSeq = reduced.lastSeq
+                if let result = reduced.result { return AIRunKindOutcome(result: result, traceID: created.trace_id, runID: runID) }
+                if let failure = reduced.failure { throw AIRunKindError.failed(failure) }
+                if reduced.cancelled { throw AIRunKindError.failed("这次分析已取消。") }
+            } catch let error as AIRunKindError {
+                throw error
+            } catch is CancellationError {
+                throw CancellationError()
+            } catch {
+                // Transport dropped without a terminal frame: reconnect by cursor.
+            }
+            try? await Task.sleep(nanoseconds: 400_000_000)
+        }
+        throw AIRunKindError.failed("分析耗时较久，已保留输入，可稍后继续查看。")
+    }
+
+    private struct Reduced {
+        var lastSeq: Int
+        var result: JSONValue?
+        var failure: String?
+        var cancelled = false
+    }
+
+    private static func consume(bytes: URLSession.AsyncBytes, startSeq: Int) async throws -> Reduced {
+        var parser = SSEFrameParser()
+        var state = Reduced(lastSeq: startSeq)
+        for try await line in bytes.lines {
+            if Task.isCancelled { throw CancellationError() }
+            guard let frame = parser.consume(line: line) else { continue }
+            let seq = frame.id ?? state.lastSeq
+            guard seq > state.lastSeq else { continue }   // dedupe by cursor
+            guard let data = frame.data.data(using: .utf8),
+                  let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let payload = try? JSONSerialization.data(withJSONObject: object),
+                  let event = try? JSONDecoder().decode(AIRunKindEvent.self, from: payload) else { continue }
+            state.lastSeq = seq
+            switch event.type {
+            case "result.snapshot":
+                state.result = event.data["result"] ?? .null
+            case "run.failed":
+                state.failure = event.data["message"]?.string ?? "这次分析未能完成。"
+            case "run.cancelled":
+                state.cancelled = true
+            default:
+                break   // run.created / run.status / progress / usage.summary / tool.*
+            }
+        }
+        return state
+    }
+
+    private static func snapshot(runID: String, owner: Int, account: AccountService) async throws -> AIRunSnapshot {
+        let response = try await account.cloudRequest(path: "/me/ai/runs/" + runID, expectedUserID: owner)
+        guard (200..<300).contains(response.statusCode),
+              let snapshot = try? JSONDecoder().decode(AIRunSnapshot.self, from: response.data) else {
+            throw AIRunKindError.resyncUnavailable
+        }
+        return snapshot
+    }
 }

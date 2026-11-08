@@ -402,22 +402,28 @@ private extension View {
 ///   - 只动 transform / opacity / 颜色；不动 frame / padding（避免布局抖动）。
 ///   - 每层只允许一个曲线，禁止页面自定义时长。
 enum BojiMotion2 {
-    /// L1 微反馈 120ms：按下、勾选、步进、切页签。
-    static let micro = Animation.spring(response: 0.22, dampingFraction: 0.72)
-    /// L2 状态变化 220ms：展开/收起、开关、进度、数字滚动。
-    static let state = Animation.spring(response: 0.30, dampingFraction: 0.86)
+    /// L1 微反馈 160ms：按下、勾选、步进、切页签（微交互档 120-200ms，2026-11-07 参数对齐）。
+    static let micro = Animation.spring(response: 0.16, dampingFraction: 0.78)
+    /// L2 状态变化 220ms：展开/收起、开关、进度（默认档 response 0.40-0.50 / damping 0.75-0.85）。
+    static let state = Animation.spring(response: 0.40, dampingFraction: 0.85)
     /// L3 转场 320ms：sheet、页面推入、卡片重组。
-    static let transition = Animation.spring(response: 0.38, dampingFraction: 0.86)
-    /// L4 庆典 560ms：PR、训练完成、徽章解锁。
+    static let transition = Animation.spring(response: 0.42, dampingFraction: 0.85)
+    /// L4 庆典 560ms：PR、训练完成、徽章解锁（发力感档 damping 0.70-0.78，现行 0.74 合规不改）。
     static let celebrate = Animation.spring(response: 0.52, dampingFraction: 0.74)
     /// 进度条 / 环形：线性更诚实，避免弹簧制造的假进度。
     static let progress = Animation.easeOut(duration: 0.32)
+    /// 数字滚动 counter：linear 300-450ms（§5.1 数字滚动档，供 RollingNumericCounter 等使用）。
+    static let counter = Animation.linear(duration: 0.35)
+    /// 长内容入场 entrance：easeInOut cubicBezier(0.22, 1, 0.36, 1) 350-500ms
+    /// （卡片序列/列表首屏；序列每拍间隔 60-80ms，整串 ≤600ms）。
+    static let entrance = Animation.timingCurve(0.22, 1, 0.36, 1, duration: 0.45)
 
-    static let stagger: Double = 0.04
+    /// 序列入场拍间隔：60-80ms（§5.1 视频规律 #1）。
+    static let stagger: Double = 0.07
 
-    /// Reduce Motion 下把任意层级降为「短交叉淡入」。
+    /// Reduce Motion 下把任意层级降为「短交叉淡入」（120ms 纯淡入淡出，§5.1 降级规则）。
     static func resolved(_ level: Animation, reduceMotion: Bool) -> Animation? {
-        reduceMotion ? .easeOut(duration: 0.18) : level
+        reduceMotion ? .easeOut(duration: 0.12) : level
     }
 
     /// 统一入口：自动读 reduceMotion，避免每处手写三元表达式。

@@ -78,7 +78,7 @@ struct UserTask: Codable, Equatable, Identifiable {
         case "generate_plan": return "第一份训练计划"
         case "parse_plan": return "导入训练计划"
         case "coach": return "Club AI 对话"
-        case "report": return "每日复盘"
+        case "report": return "日报"
         case "weekly_review": return "每周回顾"
         case "food": return "饮食识别"
         case "meal_draft": return "饮食草稿"

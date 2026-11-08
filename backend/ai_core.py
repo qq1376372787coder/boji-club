@@ -42,6 +42,7 @@ def output_reason(error):
         'wrong training frequency': 'plan_frequency', 'frequency': 'plan_frequency',
         'movement outside recommended catalog': 'plan_catalog',
         'unavailable home movement or equipment': 'plan_equipment',
+        'movement limited by body profile': 'plan_body_limits',
         'static hold requires durationSeconds': 'plan_timed_sets',
         'untranslated or technical plan prose': 'plan_language', 'plan prose must be Chinese': 'plan_language',
         'coaching report lacks substantive detail': 'report_detail',
@@ -88,6 +89,7 @@ OUTPUT_REPAIR_HINTS = {
     'plan_frequency': '训练堂数必须严格等于用户要求的频次。',
     'plan_catalog': '每个动作都必须使用提供的动作库编号，禁止自行创造编号。',
     'plan_equipment': '居家日期只能选用户实际拥有器械支持的动作。',
+    'plan_body_limits': '不要安排与用户填写的身体情况不匹配的动作；如确认已排除，请改用其他动作。',
     'plan_timed_sets': '计时动作填写 durationSeconds，不能以次数替代秒数。',
     'report_detail': '训练至少140字、恢复至少100字，日报全文至少650字、周报至少900字；详细展开已有证据，禁止编造。',
     'report_nutrition_reference': '没有个人营养参考时只描述记录，不能评价个人摄入达标、足够、偏高或偏低。',
@@ -782,9 +784,33 @@ OUTPUT_LATIN = re.compile(r'[A-Za-z]')
 
 
 def validate_output_prose(value):
-    """Shared guard for user-visible report/coach/weekly prose."""
+    """Shared guard for user-visible report/coach/weekly prose.
+
+    Enforces the rules the prompts already demand and that OUTPUT_REPAIR_HINTS
+    still teach the model: no links, no markup/code, no internal field names,
+    Simplified Chinese prose, no control or replacement characters. Without
+    these checks the repair-hint loop can never fire and a model URL or a
+    ``session_id`` leaks straight to the UI.
+
+    Empty text is left to each caller's own length rule (``text(..., allow_empty)`),
+    exactly as before; a non-empty value must be real Chinese prose. Latin
+    units and acronyms (kg, RPE, BMI) are allowed - only the absence of any
+    Chinese character is rejected, so normal bilingual prose keeps working.
+    """
     if not isinstance(value, str):
         raise ValueError('invalid output text')
+    if not value.strip():
+        return value
+    if any(ord(char) < 32 and char not in '\n\t' for char in value) or '\ufffd' in value:
+        raise ValueError('invalid output characters')
+    if OUTPUT_URL.search(value):
+        raise ValueError('output contains a URL')
+    if OUTPUT_MARKUP.search(value) or OUTPUT_CODE.search(value):
+        raise ValueError('output contains markup or code')
+    if OUTPUT_INTERNAL_FIELDS.search(value):
+        raise ValueError('output includes internal fields')
+    if not OUTPUT_CJK.search(value):
+        raise ValueError('output is not Chinese prose')
     return value
 
 
@@ -937,7 +963,10 @@ def messages_for(request):
             system = system[:system.index('\n输出结构：')] + '\n输出结构（仅演示一堂课的格式，必须覆盖全部允许日期）：' + canonical(example)
             home_ids = {recommended_reference(q)['id'] for q in home_movements(payload['profile'])}
             only_home = all(item['venue'] == '在家' for item in schedule)
-            system += '\n' + candidate_prompt(home_ids if only_home else None)
+            # P0 动作禁忌拦截：按用户 limitations 剔除池内 avoid 动作（无 limitations 时为空，逐字节不变）。
+            import exercise_risk
+            system += '\n' + candidate_prompt(home_ids if only_home else None,
+                                              exclude_ids=exercise_risk.excluded_for(payload['profile'].get('limitations', '')))
             system += "\ntrainingDays 是 ISO 星期编号，1=周一、7=周日，只能在所选日期生成，每天3—5个动作。居家动作的 library_query 必须从此列表精确选取，不能自行增加器械：" + canonical(home_movements(payload['profile']))
             system += '\n最终日期清单以 allowed_training_sessions 为准，今天如果在清单里也必须包含；每堂课只能使用该堂指定地点可用的器械。只生成这一轮7天，不安排清单以外的日期。'
             system += '\n居家课堂仅允许这些动作编号：' + canonical(sorted(home_ids))
@@ -1137,6 +1166,12 @@ def validate_result(request, result):
                         library_query = recommended['name']
                         cleaned['library_query'] = library_query
                         cleaned['name'] = recommended['name_zh']
+                        # P0 动作禁忌拦截兜底：模型违规输出 avoid 动作直接拒绝。
+                        # 只在 generate_plan 分支；parse_plan 导入不进此块，保留用户既有安排。
+                        import exercise_risk
+                        if exercise_risk.is_avoid(cleaned.get('library_id'),
+                                                  exercise_risk.limited_regions(request['payload']['profile'].get('limitations', ''))):
+                            raise ValueError('movement limited by body profile')
                     if requires_duration(library_query, cleaned["name"]) and any(s.get("durationSeconds") is None for s in sets):
                         raise ValueError("static hold requires durationSeconds")
                     # Generated queries now come from the validated catalog row.
@@ -1483,13 +1518,12 @@ class Router:
                 break
             if remaining <= 0:
                 raise AIError('task_timeout', '本次分析等待较久，输入已保留，可以稍后重试。')
-            # Existing consent names MiMo for photos and MiMo/DeepSeek for health.
-            # Fail closed: never expand the recipient list during fallback.
-            photo = ((request['kind'] == 'food' and request['payload'].get('source') != 'text') or
-                     (request['kind'] == 'weekly_review' and request['payload'].get('photos')) or
-                     (request['kind'] == 'coach' and request['payload'].get('images')))
-            health = request['payload'].get('health') or (request['kind'] == 'weekly_review' and any(day.get('health') for day in request['payload'].get('days', []))) or (request['kind'] == 'coach' and any(day['payload'].get('health') for day in request['payload'].get('days', [])))
-            # Allow all configured and enabled providers without arbitrary version lockouts
+            # 收件方范围 = 同意开关之后的"已配置供应商集合"。同意（_routing_version）
+            # 是二元的"是否允许上云分析"，不是按数据类型的供应商白名单；当前已同意
+            # 集合由 PROVIDER_DEFAULTS 硬限定为 deepseek/minimax（admin 端点拒绝其它
+            # 名字），与同意文案 2026-10-26.deepseek-minimax-v1 一致。
+            # 是否把照片/健康数据进一步收窄到其中一家仍未决（见评估报告决策①）；
+            # 落地时必须同步 test_chat121/test_backend_offline/test_backend_v2 三处。
             if ((request['kind'] == 'food' and request['payload'].get('source') != 'text') or
                     (request['kind'] == 'weekly_review' and request['payload'].get('photos')) or
                     (request['kind'] == 'coach' and request['payload'].get('images'))) and not provider.supports_images:

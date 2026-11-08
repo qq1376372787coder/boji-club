@@ -162,7 +162,7 @@ struct BodyWeightView: View {
                                 }
                             }
                         }
-                        Text("仅展示实际测量点，AI 会结合训练与饮食综合分析趋势。")
+                        Text("仅展示实际测量点，结合训练与饮食综合分析趋势。")
                             .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
                         if let target = store.state.profile.targetWeightKg {
                             Text("目标体重 \(target.formatted(.number.precision(.fractionLength(1)))) kg")

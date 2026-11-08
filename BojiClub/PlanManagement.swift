@@ -20,12 +20,12 @@ struct PlanCreationSheet: View {
                         choice("补记", detail: "选择当天实际做过的动作，再填写完成的组次", symbol: "square.and.pencil", target: .history)
                     } else {
                         choice("自己安排", detail: "只安排这一天，选择动作和基础组次", symbol: "slider.horizontal.3", target: .day)
-                        choice("AI 帮我安排", detail: "根据资料生成建议，确认后才加入日程", symbol: "sparkles", target: .ai)
+                        choice("帮我安排", detail: "根据资料生成建议，确认后才加入日程", symbol: "sparkles", target: .ai)
                         DisclosureGroup("重复计划、模板与导入") {
                             VStack(spacing: BojiLayout.rowGap) {
                                 choice("创建重复计划", detail: "搭好一周，再选择是否重复", symbol: "repeat", target: .repeated)
                                 choice("使用我的模板", detail: "复用动作，重新确认日期", symbol: "square.on.square", target: .templates)
-                                choice("AI 整理文字计划", detail: "粘贴你已有的计划，识别后由你核对", symbol: "doc.text", target: .imported)
+                                choice("整理文字计划", detail: "粘贴你已有的计划，识别后由你核对", symbol: "doc.text", target: .imported)
                             }.padding(.top, BojiSpace.general)
                         }
                     }
@@ -69,7 +69,7 @@ struct ManagedPlan: Identifiable {
     var dates: [String] { (liveDates ?? version.scopeDates).sorted() }
     var range: String { (dates.first ?? version.start) + " — " + (dates.last ?? version.start) }
     var sourceLabel: String {
-        switch version.source { case "manual": return "自己安排"; case "continuation": return "沿用计划"; case "weekly_review": return "复盘调整"; default: return "AI 制定" }
+        switch version.source { case "manual": return "自己安排"; case "continuation": return "沿用计划"; case "weekly_review": return "复盘调整"; default: return "制定" }
     }
 }
 
@@ -126,7 +126,7 @@ struct ManagedPlanDetail132: View {
                            let cycle = TrainingCycle.covering(last, in: store.state.days) {
                             TrainingHandoffCard(cycle: cycle)
                         }
-                    } else { EmptyNote(title: "还没有训练计划", detail: "可以自己安排，也可以请 AI 帮忙。") }
+                    } else { EmptyNote(title: "还没有训练计划", detail: "可以自己安排，也可以自动生成。") }
                     if let error { FlowError(message: error) }
                     Button("创建新安排") { creation = true }.buttonStyle(PrimaryButton())
                     Toggle("显示已结束和归档的计划", isOn: $showArchived).bojiType(.secondary)
@@ -175,7 +175,7 @@ struct ManagedPlanDetail132: View {
             }
             if !store.planIsEnded(plan.id), !store.cancellableDates(for: plan).isEmpty {
                 Button("编辑计划") { editRoute = .init(plan: plan, date: nil) }.buttonStyle(PrimaryButton()).accessibilityIdentifier("edit-managed-plan")
-                Button("让 AI 调整这份计划") { openAI(plan) }.buttonStyle(SecondaryButton())
+                Button("调整这份计划") { openAI(plan) }.buttonStyle(SecondaryButton())
             }
         }
     }

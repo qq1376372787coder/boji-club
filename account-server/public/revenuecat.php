@@ -26,10 +26,33 @@ function requireActiveMembership(PDO $db, array $user, array $config): void {
     revenueCatRefreshIfDue($db, $user, $config);
     if (!membershipHasActiveEntitlement($db, (int)$user['id'])) fail('请先加入薄肌俱乐部后使用此功能。', 403, 'membership_required');
 }
-function revenueCatSupportedProduct(array $config, string $productID): bool {
-    $products = $config['revenuecat_product_ids'] ?? ['yuefu', 'nianfu', 'yongjiu', 'monthly', 'six_month', 'lifetime', 'bojiclub_halfyear_2990', 'bojiclub_yearly_4290'];
+/**
+ * 当前唯一在售商品档位（2026-10 起）：月 ¥12 / 年 ¥28 / 永久 ¥38。
+ * 这是发放权益的唯一白名单；配置缺失时也只认这一套。
+ */
+function revenueCatProductIDs(array $config): array {
+    $products = $config['revenuecat_product_ids'] ?? ['yuefu', 'nianfu', 'yongjiu'];
     if (is_string($products)) $products = [$products];
-    return is_array($products) && in_array($productID, array_filter($products, 'is_string'), true);
+    return is_array($products) ? array_values(array_filter($products, 'is_string')) : [];
+}
+
+/**
+ * 已下架的旧档商品（两档 ¥29.9/¥42.9 及更早的 monthly/six_month/lifetime）。
+ *
+ * 只服务于「已经买过这些商品的老订阅」的续订、过期与退款，绝不发放新权益：
+ * revenueCatDecision() 仅在该 original_transaction_id 已存在于
+ * revenuecat_subscriptions 时才接受这些商品的事件。清理旧 ID 指的是把它们
+ * 移出发放白名单，而不是让老付费用户的权益凭空失效。
+ */
+function revenueCatLegacyProductIDs(array $config): array {
+    $legacy = $config['revenuecat_legacy_product_ids'] ?? ['monthly', 'six_month', 'lifetime', 'bojiclub_halfyear_2990', 'bojiclub_yearly_4290'];
+    if (is_string($legacy)) $legacy = [$legacy];
+    return is_array($legacy) ? array_values(array_filter($legacy, 'is_string')) : [];
+}
+
+function revenueCatSupportedProduct(array $config, string $productID): bool {
+    return in_array($productID, revenueCatProductIDs($config), true)
+        || in_array($productID, revenueCatLegacyProductIDs($config), true);
 }
 require_once __DIR__ . '/revenuecat-policy.php';
 require_once __DIR__ . '/revenuecat-verify.php';
@@ -41,7 +64,19 @@ function processRevenueCatEvent(PDO $db, array $config, array $event): array {
     if (($event['type'] ?? '') === 'TRANSFER') return processRevenueCatTransfer($db, $config, $event);
     $appUserID = (string)($event['app_user_id'] ?? '');
     $userID = revenueCatMemberUserID($appUserID);
-    $decision = revenueCatDecision($event, $config);
+    // 旧档商品只允许续订/过期已存在的订阅；只有这些事件才需要一次额外查询。
+    $knownOriginal = false;
+    $eventProduct = (string)($event['product_id'] ?? '');
+    if ($eventProduct !== '' && !in_array($eventProduct, revenueCatProductIDs($config), true)
+        && in_array($eventProduct, revenueCatLegacyProductIDs($config), true)) {
+        $originalID = (string)($event['original_transaction_id'] ?? '');
+        if ($originalID !== '') {
+            $knownRow = $db->prepare('SELECT 1 FROM revenuecat_subscriptions WHERE original_transaction_id=? LIMIT 1');
+            $knownRow->execute([$originalID]);
+            $knownOriginal = (bool)$knownRow->fetchColumn();
+        }
+    }
+    $decision = revenueCatDecision($event, $config, $knownOriginal);
     $db->beginTransaction();
     try {
         // This common lock serializes all subscriptions of one account, including deletion.

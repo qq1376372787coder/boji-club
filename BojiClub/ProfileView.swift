@@ -109,7 +109,9 @@ struct ProfileView: View {
                 }.buttonStyle(.plain).accessibilityLabel("编辑头像与昵称")
             }
             Section {
-                NavigationLink { ClubAIMemoryView().clubPushDestination132() } label: { Label("AI 对我的了解", systemImage: "person.text.rectangle") }
+                // 拍板 #5：原「AI 对我的了解」（记忆页浏览入口）下线，
+                // 偏好数据改在「AI 记录与授权」内展示，此处收敛到该页。
+                NavigationLink { ClubActionPreferencesView().clubPushDestination132() } label: { Label("个人资料", systemImage: "person.text.rectangle") }
                 NavigationLink { ManagedPlanList(focusDate: Date(), initialCycleStart: nil).clubPushDestination132() } label: { Label("我的计划", systemImage: "calendar") }
                 NavigationLink { MembershipView().clubPushDestination132() } label: { Label("会员与订阅", systemImage: "crown") }
                 NavigationLink { SettingsHub130().clubPushDestination132() } label: { Label("设置", systemImage: "gearshape") }
@@ -140,13 +142,25 @@ struct ProfileView: View {
 
 struct MembershipGateView: View {
     @State private var showingAccount = false
+    /// 付费墙退出确认文案（果果/知知定稿 4 句，缺一不可；不承诺一键重登）。
+    private static let exitMessage = [
+        "记录保留在本机，重新登录同一 Apple 账号后继续同步",
+        "请用同一 Apple 账号登录，更换账号无法查看原记录",
+        "退出不影响你的会员与购买",
+        "本机记录换设备或删 App 会丢失，建议先同步再退出"
+    ].joined(separator: "\n")
     var body: some View {
         MembershipView(isMandatory: true)
             .safeAreaInset(edge: .bottom) {
                 HStack(spacing: BojiLayout.rowGap) {
                     Button("账号管理") { showingAccount = true }
                         .buttonStyle(SecondaryButton()).accessibilityIdentifier("membership-account-settings")
-                    ClubLogoutButton()
+                    ClubLogoutButton(
+                        title: "先退出，稍后再来",
+                        message: Self.exitMessage,
+                        cancelTitle: "留在本页",
+                        accessibilityLabel: "先退出，稍后再来，返回登录页"
+                    )
                 }
                 .frame(maxWidth: .infinity).padding(ClubUI.pageInset).background(.regularMaterial)
             }
@@ -184,7 +198,7 @@ struct NotificationSettingsView: View {
                     MealReminderSlotEditor(slot: $notifications.mealReminders.lunch)
                     MealReminderSlotEditor(slot: $notifications.mealReminders.dinner)
                 }
-                Section("AI 总结提醒") {
+                Section("日报提醒") {
                     Toggle("日总结完成", isOn: $notifications.dailyReportEnabled)
                     Toggle("周总结完成", isOn: $notifications.weeklyReviewEnabled)
                 }
@@ -392,8 +406,8 @@ struct ProfileEditor: View {
                     Section("接下来一周的训练") {
                         Picker("更新安排", selection: $planChoice) {
                             Text("保留现有计划").tag("保留")
-                            Text("我想用 AI 从明天重新安排").tag("明天")
-                            Text("我想用 AI 从下周一重新安排").tag("下周")
+                            Text("我想从明天重新安排").tag("明天")
+                            Text("我想从下周一重新安排").tag("下周")
                         }
                         Text("保存资料后预览新方案，确认后才更新所选 7 天。已开始或已确认的训练日完整保留；其余日期按新训练日安排，旧的休息日安排也会一并清理。")
                             .bojiType(.caption).foregroundStyle(.secondary)
@@ -693,7 +707,7 @@ struct RecordArchiveView: View {
             List {
                 Section {
                     DisclosureGroup("了解备份内容") {
-                    Text("导出包含所选月份的训练、饮食、健康摘要、已完成 AI 结果和已下载的饮食照片。本机身体照片与健康来源缓存不包含在内。文件含个人信息，请保存在你信任的位置。")
+                    Text("导出包含所选月份的训练、饮食、健康摘要、已完成的结果和已下载的饮食照片。本机身体照片与健康来源缓存不包含在内。文件含个人信息，请保存在你信任的位置。")
                     Text("导出不会删除本机或云端记录。恢复只补回缺失的日期，不覆盖已有日期或手动删除的内容。旧版文件没有账号标记，请只导入你自己的备份。暂不提供删除式归档。")
                     }
                     Text("备份文件包含个人记录，请妥善保管。").bojiType(.label).foregroundStyle(.secondary)
@@ -816,7 +830,7 @@ struct ClubUsageGuideView: View {
                     Label("登记训练：点重量、次数或秒数，做完一组再完成。", systemImage: "dumbbell")
                 }
                 Section {
-                    Text("首次使用时，相关位置会显示简短操作提示；不需要先读完说明书。拍照识别与 AI 建议都需要你核对后保存。").bojiType(.label).foregroundStyle(.secondary)
+                    Text("首次使用会显示简短提示。拍照识别需核对后保存。").bojiType(.label).foregroundStyle(.secondary)
                     Button("重新显示操作提示") {
                         if let id = firstVisitAccountID {
                             for step in ["chat", "first_set"] { UserDefaults.standard.removeObject(forKey: "club.guide123.\(id).\(step)") }
@@ -1056,16 +1070,41 @@ enum ProfileAuditFactory {
 #endif
 
 
+/// 拍板 #5：偏好数据（目标 / 训练限制 / 装备排除 / 每周天数 / 明确偏好）并入
+/// 「AI 记录与授权」展示。这里**直读 `user_profile_documents`（profileFacts）**，
+/// 不经过 `user_memory_items`——记忆表里的资料条目只是派生投影，走同一条链路会留下
+/// 第二份可变副本（见《AI记忆迁移方案-v1》§2）。
+/// `memory_display_version` 是**展示层**独立版本号，不动 `PROFILE_FACTS_SCHEMA_VERSION`
+/// （=1），避免连带影响资料契约与后端校验。
+private enum MemoryDisplayPreference {
+    static let version = 1
+    struct Row: Identifiable {
+        let field: OnboardingFieldSpec
+        let label: String
+        var id: String { field.apiKey }
+    }
+    /// 只列拍板 #5 点名的偏好类事实；行为习惯（habit）随对话下线，不在此展示。
+    static let rows: [Row] = [
+        Row(field: .goal, label: "主要目标"),
+        Row(field: .limitations, label: "训练限制"),
+        Row(field: .equipmentExclusions, label: "装备排除"),
+        Row(field: .daysPerWeek, label: "每周训练天数"),
+        Row(field: .personalPreferences, label: "我明确填写的偏好"),
+    ]
+}
+
 struct ClubActionPreferencesView: View {
     var pendingOnly132 = false
     @EnvironmentObject private var account: AccountService
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var health: HealthDataService
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var facts = ProfileFactsEditor()
     @State private var fast = false
     @State private var unit = "kg"
     @State private var zone = TimeZone.current.identifier
     @State private var proactive = true
+    @State private var personalization = true
     @State private var loaded = false
     @State private var busy = false
     @State private var error: String?
@@ -1074,11 +1113,18 @@ struct ClubActionPreferencesView: View {
         ClubNavigationStack132 {
             Form {
                 if !pendingOnly132 {
-                Section("主动学习") {
-                    Toggle("允许从我的记录中学习偏好并生成主动建议", isOn: $proactive)
-                    Text("关闭后不再提取新的长期记忆或生成首页主动洞察；已确认的记忆仍可用于回答，训练与记录功能不受影响。").bojiType(.label).foregroundStyle(.secondary)
+                // PIPL 阶段4（言言③）：学习与使用拆成**两个独立开关**，不是一个。
+                // 每个回执都写明「已停止什么 / 仍保留什么 / 已发出的请求可能已完成」，
+                // 两者关闭均前瞻即时生效，且不得因关闭而拒绝核心记录功能（第16条）。
+                Section("AI 记忆") {
+                    Toggle("停止归纳：不再从记录中生成新记忆", isOn: $proactive)
+                    Text("已停止：写入新的长期记忆、生成首页洞察。仍保留：已保存的记忆，可查看、纠正或撤回。不受影响：训练、记录、计划与报告。关闭前已发出并完成的 AI 分析仍保留在历史结果中。")
+                        .bojiType(.label).foregroundStyle(.secondary)
+                    Toggle("停用记忆用于 AI：不让已保存的记忆进入 AI 回答与建议", isOn: $personalization)
+                    Text("已停止：将记忆用于模型生成个性化回答与建议。仍保留：记忆本身，以及纠正、撤回入口。不受影响：训练、记录与日报。关闭前已发出并完成的 AI 分析仍保留。")
+                        .bojiType(.label).foregroundStyle(.secondary)
                 }
-                Section("AI 记录授权") {
+                Section("数据授权") {
                     Toggle("明确的体重和饮食记录可快速保存", isOn: $fast)
                     Text("默认先预览。开启后，仅明确的低风险记录可以直存，并保留撤销入口；改期和换计划仍须确认。").bojiType(.label).foregroundStyle(.secondary)
                     Picker("未说明单位时使用", selection: $unit) { Text("公斤 kg").tag("kg"); Text("磅 lb").tag("lb") }
@@ -1092,6 +1138,34 @@ struct ClubActionPreferencesView: View {
                 Section("Apple 健康") {
                     Toggle("手动称重后写入 Apple 健康", isOn: Binding(get: { health.writeWeightsEnabled }, set: { value in Task { await health.setWeightWritingEnabled(value) } }))
                     Text("此选项单独申请系统写入权限。读取到的健康样本仍需在健康确认页明确分享后才保存到云端。").bojiType(.label).foregroundStyle(.secondary)
+                }
+                Section {
+                    if facts.facts == nil {
+                        Text(account.isPreviewAccount ? "预览账号没有云端偏好数据。" : "偏好数据暂未取得，稍后会自动重试。")
+                            .bojiType(.label).foregroundStyle(.secondary)
+                    } else {
+                        ForEach(MemoryDisplayPreference.rows) { row in
+                            let summary = facts.facts?.facts[row.field.apiKey]
+                            HStack(alignment: .firstTextBaseline) {
+                                Text(row.label).bojiType(.body)
+                                Spacer(minLength: BojiLayout.inline)
+                                Text(summary?.value.displayText ?? "未填写")
+                                    .bojiType(.body)
+                                    .foregroundStyle(summary == nil ? Color.secondary : Color.primary)
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                    }
+                    // 行权入口恒在，不随偏好数据是否加载而消失：
+                    // 记忆页保留这唯一一处用于纠正 / 撤回 / 暂停（PIPL 更正权、撤回权），
+                    // 其余浏览型入口已按拍板 #5 全部下线。
+                    NavigationLink { ClubAIMemoryView().clubPushDestination132() } label: {
+                        Label("管理 AI 记忆（纠正 / 撤回）", systemImage: "list.clipboard")
+                    }
+                } header: {
+                    Text("我的偏好数据 v\(MemoryDisplayPreference.version)")
+                } footer: {
+                    Text("以上直接读取你的个人资料，与资料页同源，修改资料后此处立即变化；AI 从记录中归纳的习惯与推断不再在此展示。")
                 }
                 }
                 if pendingOnly132 {
@@ -1109,7 +1183,7 @@ struct ClubActionPreferencesView: View {
                 }
                 }
                 if let error { Section { Text(error).foregroundStyle(.secondary) } }
-            }.clubManagementList132().navigationTitle(pendingOnly132 ? "待同步项目" : "AI 记录与授权")
+            }.clubManagementList132().navigationTitle(pendingOnly132 ? "待同步项目" : "个人资料与授权")
                 .toolbar { ToolbarItem(placement: .confirmationAction) { DismissButton() } }
                 .task { if !pendingOnly132 { await load() } }
                 .confirmationDialog("改用该日云端记录？", isPresented: Binding(get: { cloudChoice != nil }, set: { if !$0 { cloudChoice = nil } }), titleVisibility: .visible) {
@@ -1119,6 +1193,8 @@ struct ClubActionPreferencesView: View {
         }
     }
     private func load() async {
+        // 偏好数据区块与授权设置同源加载；preview 账号由编辑器自行置空。
+        await facts.load(account: account)
         guard let owner = account.user?.id, !account.isPreviewAccount else { error = "真实账号登录后可以管理行动授权。"; return }
         do {
             let response = try await account.proposalRequest(path: "/me/ai/action-preferences", method: "GET", body: nil, expectedUserID: owner)
@@ -1127,17 +1203,18 @@ struct ClubActionPreferencesView: View {
             guard account.user?.id == owner else { return }
             fast = p.fast_records; unit = p.weight_unit
             zone = p.time_zone.isEmpty ? TimeZone.current.identifier : p.time_zone
-            proactive = p.proactive_learning ?? true; loaded = true
+            proactive = p.proactive_learning ?? true
+            personalization = p.personalization_enabled ?? true; loaded = true
         } catch { self.error = AppErrorText.message(error) }
     }
     private func save() async {
         guard let owner = account.user?.id else { return }; busy = true; defer { busy = false }
         do {
-            let body = try JSONEncoder().encode(ActionPreferences(fast_records: fast, time_zone: zone, weight_unit: unit, proactive_learning: proactive))
+            let body = try JSONEncoder().encode(ActionPreferences(fast_records: fast, time_zone: zone, weight_unit: unit, proactive_learning: proactive, personalization_enabled: personalization))
             let response = try await account.proposalRequest(path: "/me/ai/action-preferences", method: "PUT", body: body, expectedUserID: owner)
             guard response.statusCode == 200 else { throw AIClientError.message("设置未保存，请重试。") }
             error = "设置已保存。"
         } catch { self.error = AppErrorText.message(error) }
     }
-    private struct ActionPreferences: Codable { var fast_records: Bool; var time_zone: String; var weight_unit: String; var proactive_learning: Bool? }
+    private struct ActionPreferences: Codable { var fast_records: Bool; var time_zone: String; var weight_unit: String; var proactive_learning: Bool?; var personalization_enabled: Bool? }
 }

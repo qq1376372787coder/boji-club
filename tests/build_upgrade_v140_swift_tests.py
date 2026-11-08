@@ -24,11 +24,17 @@ parts.append(read('ManualPlan.swift').split('enum ManualPlanDraftStorage {')[0])
 parts.append(block(read('Experience130.swift'),'struct WeeklyRecurrence130:'))
 parts.append('''
 struct FoodComponent: Codable {}
-struct HealthDay: Codable {}
+struct HealthMetric: Codable { var value: Double? = nil }
+struct HealthDay: Codable { var steps: HealthMetric? = nil; var activeEnergy: HealthMetric? = nil }
 struct WeeklyReview: Codable { var result: String? = nil }
 enum ExerciseNames { static func display(_ name:String,id:String?,query:String?)->String { name } }
 ''')
 ai=read('AIService.swift')
+# Models.deterministicMetrics 引用的 AIService 类型族必须在链根注入，
+# 否则整条链（manual_plan→history→training_commands→…）全部 compile_FAIL。
+for marker in ['struct AIDailyTrainingMetrics:','struct AIDailyNutritionMetrics:',
+               'struct AIDailyBodyMetrics:','struct AIDailyActivityMetrics:','struct AIDailyMetrics:']:
+    parts.append(block(ai,marker))
 for marker in ['struct AIPlanSet:','struct AIPlanExercise:','struct AIPlanSession:']:
     parts.append(block(ai,marker))
 parts.append(block(ai,'extension AIPlanExercise {'))

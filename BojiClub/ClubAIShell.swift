@@ -15,7 +15,14 @@ final class FeatureFlagService: ObservableObject {
     @Published private(set) var aiRouterV3 = true
     /// Phase 2 SSE. Enabled by default for instant streaming replies.
     @Published private(set) var streamingV2 = true
+    /// Phase 3: durable Run + SSE for report / weekly_review.
+    /// Server-authoritative and default-off, matching the coach_enabled pattern:
+    /// the client only uses this path once the backend publishes the flag.
+    @Published private(set) var runV2Enabled = false
+    @Published private(set) var runV2Kinds = ""
     @Published private(set) var referencesEnabled = false
+    /// coach 后端休眠开关（拍板 #7）：默认休眠；远程可拉起回退（coach_backend_enabled）。
+    @Published private(set) var coachBackendEnabled = false
     func apply(remote: ClubRemoteConfig?) {
         referencesEnabled = remote?.config.aiContextReferencesV1 ?? false
         aiEnabled = remote?.config.aiEnabled ?? true
@@ -26,13 +33,18 @@ final class FeatureFlagService: ObservableObject {
         aiFastIntentV1 = remote?.config.aiFastIntentV1 ?? true
         aiRouterV3 = remote?.config.aiRouterV3 ?? true
         streamingV2 = remote?.config.aiStreamingV2 ?? true
+        coachBackendEnabled = remote?.config.coachBackendEnabled ?? false
+        runV2Enabled = remote?.config.aiRunV2Enabled ?? false
+        runV2Kinds = remote?.config.aiRunV2Kinds ?? ""
     }
 }
 
 enum ClubShellMode: Hashable { case clubAI, training, records }
 private enum ClubShellPage: Hashable { case clubAI, training, records(String) }
 enum ClubSidebarRoute: String, Identifiable {
-    case records, aiMemory, settings
+    // 拍板 #5：`aiMemory`（记忆页浏览入口）随对话下线，收敛为偏好数据所在的
+    // 「AI 记录与授权」；记忆页仅保留该页内一处行权入口。
+    case records, preferences, settings
     var id: String { rawValue }
 }
 
@@ -309,7 +321,7 @@ struct ClubAIShellView: View {
             if mode == .clubAI {
                 Menu {
                     Button("挑选经典方案", systemImage: "rectangle.stack.badge.play") { showTrainingPlans = true }
-                    Button("AI 定制训练计划", systemImage: "wand.and.stars") { showPlanWizard = true }
+                    Button("定制训练计划", systemImage: "wand.and.stars") { showPlanWizard = true }
                     Button("身体档案与报告", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
                 } label: { Image(systemName: "ellipsis") }
                 .accessibilityLabel("更多操作").accessibilityIdentifier("v2-context-action")
@@ -320,7 +332,7 @@ struct ClubAIShellView: View {
                 Menu {
                     Button("记录饮食") { openMeal("手动") }
                     Button("记录身体数据") { bodyEntryRoute = ClubDateRoute(date: Date()) }
-                    Button("AI 解读档案", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
+                    Button("解读记录", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
                 } label: { Image(systemName: "ellipsis") }.accessibilityLabel("记录更多操作").accessibilityIdentifier("v2-context-action")
             }
         }
@@ -388,7 +400,7 @@ struct ClubAIShellView: View {
                         onRecordMeal: { date, mode in showLegacyOnboarding135 = false; mealEntryRoute = ClubComposerMealRoute(date: date, mode: mode) },
                         onRecordTraining: { date in showLegacyOnboarding135 = false; selectedDate = date; trainingRoute = ClubTrainingRoute(date: date) },
                         onOpenMembership: { showLegacyOnboarding135 = false; showMembership = true },
-                        onOpenKnowledge: { showLegacyOnboarding135 = false; sidebarRoute = .aiMemory })
+                        onOpenKnowledge: { showLegacyOnboarding135 = false; sidebarRoute = .preferences })
                         .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showLegacyOnboarding135 = false } } }
                 }
             }
@@ -561,8 +573,8 @@ struct ClubAIShellView: View {
         case .records:
             NavigationStack { ClubRecordsHub(category: $recordsCategory)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
-        case .aiMemory:
-            NavigationStack { ClubAIMemoryView().toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
+        case .preferences:
+            NavigationStack { ClubActionPreferencesView().toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
         case .settings:
             NavigationStack { V2SettingsMenuView()
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
@@ -1044,6 +1056,7 @@ struct ClubAIWorkspaceIdleView: View {
     @EnvironmentObject private var health: HealthDataService
     @EnvironmentObject private var clubSeason: ClubSeasonService
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showSeason = false
     @State private var showPresetPlans = false
     @State private var readingDailyReportID: String? = nil
@@ -1056,6 +1069,9 @@ struct ClubAIWorkspaceIdleView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
                 headerArea
+
+                // 核心层级 0: Hero 玻璃流光卡（拍板 #2：保留视频感 + 动效）
+                heroGlassCard
 
                 if isNewUser {
                     newUserDivergenceCard
@@ -1072,6 +1088,32 @@ struct ClubAIWorkspaceIdleView: View {
 
                 // 核心层级 4: 智能分析专区（AI 训练计划 / AI 每日日报 / AI 每周周报）
                 intelligenceHubSection
+
+                // 核心层级 5: 俱乐部成长季入口（复活：原 showSeason 死代码）
+                Button { showSeason = true } label: {
+                    HStack(spacing: BojiLayout.rowGap) {
+                        Image(systemName: "seal.fill")
+                            .font(.system(size: 22))
+                            .foregroundStyle(BojiColor.brandGold)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("俱乐部成长季")
+                                .bojiType(.label)
+                                .foregroundStyle(BojiColor.textPrimary)
+                            Text("赛季任务 · 徽章 · 奖励")
+                                .bojiType(.caption)
+                                .foregroundStyle(BojiColor.textTertiary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.textTertiary)
+                    }
+                    .padding(BojiLayout.cardInset)
+                    .frame(maxWidth: .infinity, minHeight: 56)
+                    .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("v2-home-club-season")
 
                 if isNewUser {
                     Button("设置通知与健康授权", action: onOpenPermissions)
@@ -1095,6 +1137,11 @@ struct ClubAIWorkspaceIdleView: View {
             NavigationStack {
                 ClubSeasonView()
                     .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showSeason = false } } }
+                    .task {
+                        // 复活修复：打开赛季页时主动刷新（此前 refresh 无调用方，页面恒空）
+                        await store.syncNow()
+                        await clubSeason.refresh(account: account)
+                    }
             }
         }
         .sheet(isPresented: $showPresetPlans) {
@@ -1120,6 +1167,42 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     // MARK: - 顶部标题区
+    /// Hero 玻璃流光卡：非循环慢周期光带 + 玻璃材质（iOS 26 Liquid Glass / 降级）。
+    /// 三闸门：Reduce Motion 时静态；「视频资产待补」——拿到 mp4 后替换为 VideoPlayer。
+    private var heroGlassCard: some View {
+        TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion)) { context in
+            let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
+            return heroGlassContent(phase: phase)
+        }
+    }
+
+    private func heroGlassContent(phase: Double) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous)
+                .fill(BojiColor.brandMist.opacity(0.55))
+            LinearGradient(
+                colors: [ClubBrand.accent.opacity(0), ClubBrand.accent.opacity(0.30), ClubBrand.accent.opacity(0)],
+                startPoint: .leading, endPoint: .trailing
+            )
+            .offset(x: -220 + 440 * phase)
+            VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                Text("薄肌俱乐部")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textSecondary)
+                Text("今天的训练，已经为你准备好")
+                    .bojiFont(.cardTitle)
+                    .foregroundStyle(BojiColor.textPrimary)
+                Text("按计划开始 · 组间自动计时 · 训练后自动生成日报")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+            }
+            .padding(BojiLayout.cardInset)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(height: 132)
+        .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))
+    }
+
     private var headerArea: some View {
         HStack(alignment: .center) {
             HStack(spacing: BojiLayout.rowGap) {
@@ -1423,7 +1506,7 @@ struct ClubAIWorkspaceIdleView: View {
                 HStack(spacing: BojiLayout.rowGap) {
                     Button("挑选经典方案") { showPresetPlans = true }
                         .buttonStyle(BojiButtonStyle(kind: .secondary))
-                    Button("AI 制定计划", action: onArrangePlan131)
+                    Button("制定计划", action: onArrangePlan131)
                         .buttonStyle(BojiButtonStyle(kind: .primary))
                 }
             }
@@ -1581,7 +1664,7 @@ struct ClubAIWorkspaceIdleView: View {
     private var intelligenceHubSection: some View {
         VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
             HStack {
-                Label("智能分析", systemImage: "sparkles")
+                Label("分析", systemImage: "sparkles")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textPrimary)
                 Spacer()
@@ -1594,7 +1677,7 @@ struct ClubAIWorkspaceIdleView: View {
                 // 1. AI 训练计划
                 Button(action: onArrangePlan131) {
                     intelligenceFeatureRow(
-                        title: "AI 训练计划",
+                        title: "训练计划",
                         roleTag: "规划未来",
                         detail: "个性化周期定制 · 动作库与器械校验",
                         symbol: "calendar.badge.clock",
@@ -1609,7 +1692,7 @@ struct ClubAIWorkspaceIdleView: View {
                 Button(action: onOpenDailyReport) {
                     let hasConfirmed = today.trainingLog.hasConfirmedTraining
                     intelligenceFeatureRow(
-                        title: "AI 每日日报",
+                        title: "日报",
                         roleTag: "总结当下",
                         detail: hasConfirmed ? "今日训练已确认 · 查看客观数据与建议" : "今日出勤核算、餐食营养与明日恢复",
                         symbol: "sun.max",
@@ -1623,7 +1706,7 @@ struct ClubAIWorkspaceIdleView: View {
                 // 3. AI 每周周报
                 Button(action: onOpenWeeklyReport) {
                     intelligenceFeatureRow(
-                        title: "AI 每周周报",
+                        title: "周报",
                         roleTag: "长期进步",
                         detail: "7天出勤、总容量变化对比与体型趋势复盘",
                         symbol: "chart.xyaxis.line",

@@ -4,4 +4,6 @@
 <key>OperatorName</key><string></string>
 <key>SupportContact</key><string></string>
 <key>LegalReviewed</key><false/>
+<key>PrivacyPolicyURL</key><string>https://bojiclub.fun/doc/privacy</string>
+<key>TermsURL</key><string>https://bojiclub.fun/doc/terms</string>
 </dict></plist>

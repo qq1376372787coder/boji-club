@@ -17,7 +17,7 @@ parts=['import Foundation',block(models,'enum ClubDates {'),block(read('RecordRe
 limits=read('DailyExperience.swift')
 parts.append('enum RecordLimits { '+limits[limits.index('static let maximumWeight'):limits.index('static func valid(_ meal:')].strip()+' }')
 for marker in ['struct AIPlanSet:','struct AIPlanExercise:','struct AIPlanSession:']:parts.append(block(ai,marker))
-for marker in ['struct WeeklySurvey:','struct ReviewPhoto:','struct WeeklyResult:','struct WeeklyReview:']:parts.append(block(weekly,marker))
+for marker in ['struct AIWeeklyTrainingMetrics:','struct AIWeeklyNutritionMetrics:','struct AIWeeklyBodyMetrics:','struct AIWeeklyMetrics:','struct WeeklySurvey:','struct ReviewPhoto:','struct WeeklyResult:','struct WeeklyReview:']:parts.append(block(weekly,marker))
 parts.append('enum ExerciseNames { static func display(_ value:String,id:String?,query:String?)->String { value } }')
 parts.append('enum WorkoutEditing { '+block(models,'static func isProtected(')+' }')
 parts.append(r'''

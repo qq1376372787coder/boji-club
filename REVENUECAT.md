@@ -2,16 +2,19 @@
 
 2026-10-02 第二轮修复版。
 
-App 以 `boji-<内部用户 ID>` 登录 RevenueCat，会员权益 ID 为 `club_member`。服务端是最终授权依据；缺少 SDK Key 时，App 会显示配置问题并保持会员门禁。
+App 以 `boji-<内部用户 ID>` 登录 RevenueCat，会员权益 ID 为 `薄肌俱乐部_pro`（服务端 `revenuecat_entitlement_id`、iOS `RevenueCatMemberEntitlementID`、`SUBSCRIPTION-LOCALIZATIONS-20261013.json` 三处必须一致；未配置时服务端也回落到这个唯一 ID）。服务端是最终授权依据；缺少 SDK Key 时，App 会显示配置问题并保持会员门禁。
 
-## 两个商品
+## 三个商品（当前唯一在售档位，2026-10-13 起）
 
-| Product ID | 订阅周期 | 产品目标价格 |
+| Product ID | 订阅周期 | 价格 |
 | --- | --- | --- |
-| bojiclub_halfyear_2990 | 6 个月 | ¥29.9 |
-| bojiclub_yearly_4290 | 12 个月 | ¥42.9 |
+| yuefu | P1M 月度 | ¥12 |
+| nianfu | P1Y 年度 | ¥28 |
+| yongjiu | 非消耗品 永久 | ¥38 |
 
-实际展示价格采用 App Store 返回的本地化价格。App Store Connect 必须建立对应产品；RevenueCat current Offering 同时绑定 sixMonth / annual Package，并关联 `club_member`。
+实际展示价格采用 App Store 返回的本地化价格。App Store Connect 必须建立对应产品；RevenueCat current Offering 绑定 monthly / annual / lifetime Package，三个产品都关联 `薄肌俱乐部_pro`。
+
+> **旧档已下架**：`bojiclub_halfyear_2990`（¥29.9）、`bojiclub_yearly_4290`（¥42.9）以及更早的 `monthly` / `six_month` / `lifetime` 已从发放白名单移除（`revenueCatProductIDs()` 只认上面三个）。它们只保留在 `revenuecat_legacy_product_ids` 中，用于**已经买过这些商品的老订阅**的续订、过期与退款：`revenueCatDecision()` 仅当该 `original_transaction_id` 已存在于 `revenuecat_subscriptions` 时才接受这些事件，任何未知的新交易一律拒绝。这样既统一了商品口径，也不会让老付费用户的权益凭空失效或永远不过期。
 
 ## 正式配置
 
@@ -22,7 +25,9 @@ App 以 `boji-<内部用户 ID>` 登录 RevenueCat，会员权益 ID 为 `club_m
 5. 将 RevenueCat App ID 填入服务器 `revenuecat_app_id`；当前此项为空，产品与环境过滤已启用，精确 App ID 过滤待完成。
 
 ```php
-'revenuecat_product_ids' => ['bojiclub_halfyear_2990', 'bojiclub_yearly_4290'],
+'revenuecat_product_ids' => ['yuefu', 'nianfu', 'yongjiu'],
+'revenuecat_lifetime_product_ids' => ['yongjiu'],
+'revenuecat_entitlement_id' => '薄肌俱乐部_pro',
 'revenuecat_environment' => 'PRODUCTION',
 'revenuecat_app_id' => '填写 RevenueCat 后台实际 App ID',
 'membership_enforcement' => true,

@@ -85,6 +85,12 @@ function rcount(string $sql): int {
 $db->exec("DELETE FROM users WHERE phone LIKE '139%'");
 $userA = ruser($db, '11');
 $userB = ruser($db, '22');
+// Build139 起 actionQueuePlan 有会员门（action-jobs.php:7）；router 测试的
+// membership_enforcement 开关在生产代码零消费（死配置），故直接给夹具账号
+// 播种有效权益，让路由测试聚焦路由本身。
+$ent = $db->prepare("INSERT INTO membership_entitlements(user_id,status,source,starts_at,expires_at,created_at,updated_at) VALUES(?,'active','admin',UTC_TIMESTAMP(),'2099-12-31 23:59:59',UTC_TIMESTAMP(),UTC_TIMESTAMP())");
+$ent->execute([$userA]);
+$ent->execute([$userB]);
 $today = (new DateTimeImmutable('today', new DateTimeZone('Asia/Shanghai')))->format('Y-m-d');
 $future = (new DateTimeImmutable('today', new DateTimeZone('Asia/Shanghai')))->modify('+2 days')->format('Y-m-d');
 $future2 = (new DateTimeImmutable('today', new DateTimeZone('Asia/Shanghai')))->modify('+3 days')->format('Y-m-d');

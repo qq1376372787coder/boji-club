@@ -34,6 +34,31 @@ WORKER_JOBS = {}
 def sql(command):
     return subprocess.check_output(['mysql', '-N', DB, '-e', command], text=True).strip()
 
+def publish_app_config(mutate):
+    """Upsert published app_config keys in the isolated test DB.
+
+    Returns (existed, original_published_json) so the caller can restore them.
+    """
+    existed = sql("SELECT COUNT(*) FROM app_config WHERE config_key='app'") != '0'
+    original = sql("SELECT COALESCE(published_json,'{}') FROM app_config WHERE config_key='app'")
+    current = json.loads(original or '{}')
+    current.update(mutate)
+    payload = json.dumps(current, ensure_ascii=False).replace("'", "''")
+    if existed:
+        sql("UPDATE app_config SET published_json='" + payload +
+            "',published_version=published_version+1,published_at=UTC_TIMESTAMP() WHERE config_key='app'")
+    else:
+        sql("INSERT INTO app_config(config_key,draft_json,published_json,draft_version,published_version,updated_at,published_at) "
+            "VALUES('app','" + payload + "','" + payload + "',1,1,UTC_TIMESTAMP(),UTC_TIMESTAMP())")
+    return existed, original
+
+def restore_app_config(existed, original):
+    if existed:
+        payload = (original or '{}').replace("'", "''")
+        sql("UPDATE app_config SET published_json='" + payload + "' WHERE config_key='app'")
+    else:
+        sql("DELETE FROM app_config WHERE config_key='app'")
+
 def api(path, method='GET', body=None, content_type='application/json', token=TOKEN):
     data = body if isinstance(body, bytes) else json.dumps(body).encode() if body is not None else None
     request = urllib.request.Request(BASE+path, data=data, method=method,
@@ -194,6 +219,52 @@ class AccountHTTPTests(unittest.TestCase):
         self.assertEqual(api('/me/state','PUT',{'base_revision':envelope['revision'],'state':state})[0],200)
         _,season=api('/club/current');counts={task['metric']:task['current'] for task in season['tasks']}
         self.assertEqual(counts['training_days'],1)
+
+    def test_04z_coach_dormancy_flag_keeps_other_ai_kinds(self):
+        """P2：coach 链路按 app_config.coach_enabled 休眠（默认关），其余 4 项不受影响。
+
+        覆盖 提交 / 轮询 / SSE / 对话读取 四类入口，以及开关打开后的整体回退。
+        """
+        COACH_ID='a4a4a4a4-a4a4-a4a4-a4a4-a4a4a4a4a4a4'
+        SERVER_ID='b5b5b5b5-b5b5-b5b5-b5b5-b5b5b5b5b5b5'
+        POLL_COACH='c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6'
+        POLL_REPORT='d7d7d7d7-d7d7-d7d7-d7d7-d7d7d7d7d7d7'
+        PLAN_ID='e8e8e8e8-e8e8-e8e8-e8e8-e8e8e8e8e8e8'
+        FOOD_ID='f9f9f9f9-f9f9-f9f9-f9f9-f9f9f9f9f9f9'
+        REPORT_ID='1a2b3c4d-1a2b-1a2b-1a2b-1a2b3c4d1a2b'
+        WEEKLY_ID='2b3c4d5e-2b3c-2b3c-2b3c-2b3c4d5e2b3c'
+        def error_code(value): return value.get('error_code') if isinstance(value, dict) else None
+        def assert_dormant(status, value, label):
+            self.assertEqual((status, error_code(value)), (503, 'coach_disabled'), label+' 应被 coach 闸门拦截')
+        def assert_not_dormant(status, value, label):
+            self.assertFalse(status == 503 and error_code(value) == 'coach_disabled', label+' 不应被 coach 闸门拦截：'+str((status, value)))
+        existed, original = publish_app_config({'coach_enabled': False})
+        try:
+            # 1) 休眠：提交 / 对话读取 / SSE 创建 一律 503 + coach_disabled
+            assert_dormant(*api('/me/ai/jobs','POST',{'id':COACH_ID,'kind':'coach','date':TODAY,'payload':{}}), 'coach 提交')
+            assert_dormant(*api('/me/ai/conversations'), '对话列表')
+            assert_dormant(*api('/me/ai/conversations/fixtureconv/runs','POST',{'client_message_id':COACH_ID}), 'SSE Run 创建')
+            # 2) 轮询只拦 coach 任务，report 任务照常
+            sql("INSERT INTO ai_user_jobs(user_id,client_job_id,server_job_id,kind,created_at) "
+                "VALUES(900010,'"+POLL_COACH+"','"+SERVER_ID+"','coach',UTC_TIMESTAMP()),"
+                "(900010,'"+POLL_REPORT+"','"+SERVER_ID+"','report',UTC_TIMESTAMP())")
+            assert_dormant(*api('/me/ai/jobs/'+POLL_COACH), 'coach 轮询')
+            self.assertEqual(api('/me/ai/jobs/'+POLL_REPORT)[0], 200, 'report 轮询不受影响')
+            # 3) 其余 4 项（生成计划 / 饮食识别 / 日报 / 周报）全部通过闸门
+            for job_id, kind in ((PLAN_ID,'generate_plan'), (FOOD_ID,'food'), (REPORT_ID,'report')):
+                status, value = api('/me/ai/jobs','POST',{'id':job_id,'kind':kind,'date':TODAY,'payload':{},'fixture_completed':True})
+                assert_not_dormant(status, value, kind+' 提交')
+            self.assertEqual(api('/me/ai/jobs/'+REPORT_ID)[0], 200, 'report 提交后可轮询')
+            status, value = api('/me/weekly/jobs/'+WEEKLY_ID,'POST',{'kind':'weekly_review'})
+            assert_not_dormant(status, value, 'weekly_review 提交')
+            # 4) 打开 flag：整体回退，无需发版
+            publish_app_config({'coach_enabled': True})
+            self.assertEqual(api('/me/ai/conversations')[0], 200, 'flag 打开后对话读取恢复')
+            status, value = api('/me/ai/jobs','POST',{'id':COACH_ID,'kind':'coach','date':TODAY,'payload':{}})
+            assert_not_dormant(status, value, 'flag 打开后的 coach 提交')
+        finally:
+            restore_app_config(existed, original)
+            sql("DELETE FROM ai_user_jobs WHERE user_id=900010 AND client_job_id IN ('"+POLL_COACH+"','"+POLL_REPORT+"')")
 
     def test_05_weekly_mapping_and_account_delete_cleanup(self):
         global DELETE_FAILURE

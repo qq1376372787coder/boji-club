@@ -34,7 +34,7 @@ struct NutritionView: View {
                 if !log.meals.isEmpty { AIReferenceEntryButton(reference: .day("meal_day", date: selectedDate, title: ClubDates.key(selectedDate) + " · 当天饮食")) }
                 if !pendingBatches.isEmpty {
                     ClubCard {
-                        Text("继续未完成的分餐").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
+                        Text("继续分餐").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
                         ForEach(pendingBatches) { job in
                             Button { pendingBatch = job } label: {
                                 HStack {
@@ -67,7 +67,7 @@ struct NutritionView: View {
                 if !log.meals.isEmpty {
                     ClubCard {
                         Toggle("标记今日餐食已记全", isOn: Binding(get: { log.mealsComplete }, set: { _ = store.confirmMeals(on: selectedDate, complete: $0) }))
-                        if log.unknownNutritionMeals > 0 { Text("有未估算热量的餐食，补填后可纳入周复盘。").bojiType(.label).foregroundStyle(BojiColor.textSecondary) }
+                        if log.unknownNutritionMeals > 0 { Text("有餐食未估算热量，补填后计入本周总结。").bojiType(.label).foregroundStyle(BojiColor.textSecondary) }
                     }
                 }
                 DisclosureGroup("目标与营养策略") {
@@ -87,7 +87,7 @@ struct NutritionView: View {
             .padding(.horizontal, BojiSpace.pageInset)
             .padding(.bottom, BojiLayout.tight)
         }
-        .clubSuccessFeedback("这一餐已保存到本机", trigger: saveFeedback)
+        .clubSuccessFeedback("已保存到本机", trigger: saveFeedback)
         .sensoryFeedback(.success, trigger: saveFeedback)
         .background { ClubBackground() }
         .navigationTitle("饮食").navigationBarTitleDisplayMode(.inline)
@@ -101,7 +101,7 @@ struct NutritionView: View {
                 BojiHaptics.warning()
                 if let request = deleting { store.removeMeal(request.meal.id, on: request.date) }; deleting = nil
             }
-        } message: { Text("当天营养汇总会随之更新，联网后同步到云端。") }
+        } message: { Text("营养汇总已更新，联网后同步。") }
     }
     @ViewBuilder private var dateNavigation: some View {
         if dynamicTypeSize.isAccessibilitySize {
@@ -160,11 +160,11 @@ HStack {
                         .bojiType(.label)
                         .foregroundStyle(remaining >= 0 ? BojiColor.textSecondary : BojiColor.timerAccent)
                     if !log.mealsComplete {
-                        Text("当前为已记录实时进度 · 今日尚未标记记全")
+                        Text("已记录 · 今日未标记记全")
                             .bojiType(.caption)
                             .foregroundStyle(BojiColor.textTertiary)
                     } else {
-                        Text("今日餐食已标记记全")
+                        Text("今日已记全")
                             .bojiType(.caption)
                             .foregroundStyle(BojiColor.textTertiary)
                     }
@@ -184,7 +184,7 @@ HStack {
                     Image(systemName: "exclamationmark.circle.fill")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.timerAccent)
-                    Text("有 \(log.unknownNutritionMeals) 餐待补营养数据，暂未计入总摄入")
+                    Text("有 \(log.unknownNutritionMeals) 餐未估算营养，未计入总摄入")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.textSecondary)
                 }
@@ -361,7 +361,7 @@ private struct MealPlacementReviewCard: View {
     var body: some View {
         ClubCard {
             Text("核对跨设备餐食日期").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
-            Text("同一次识别在不同设备记到了不同日期，当前只计入一餐。选对日期后，其他设备也会同步这个选择。")
+            Text("识别结果在不同设备记到了不同日期，目前只计入一餐。选择日期后，其他设备会同步。")
                 .bojiType(.label).foregroundStyle(.secondary)
             ForEach(store.mealPlacementIssues) { issue in
                 VStack(alignment: .leading, spacing: BojiLayout.inline) {
@@ -528,6 +528,7 @@ struct NutritionStrategyCard: View {
     @State private var reviewingTarget = false
     let date: Date
     @EnvironmentObject private var store: AppStore
+    @EnvironmentObject private var account: AccountService
     var body: some View {
         if let target = store.log(for: date).nutritionTarget ?? store.state.nutritionTarget {
             ClubCard {
@@ -546,7 +547,12 @@ struct NutritionStrategyCard: View {
                     NutritionTrendSummary(through: date)
                 }
                 Button("更新资料与饮食参考") { reviewingTarget = true }.buttonStyle(SecondaryButton())
-            }.sheet(isPresented: $reviewingTarget) { NavigationStack { ClubAIMemoryView() } }
+            // 拍板 #5：原入口指向记忆页（ClubAIMemoryView），与按钮文案「更新资料」不符，
+            // 且记忆页浏览入口已下线。改为直开资料表单——饮食参考由
+            // 身体资料 + 活动量 + 营养背景三项决定，正是 nutrition_goal 任务字段。
+            }.sheet(isPresented: $reviewingTarget) {
+                ProfileFactsForm133(title: "更新资料与饮食参考", fields: ProfileFields133.task(.nutritionGoal))
+            }
         }
     }
 }

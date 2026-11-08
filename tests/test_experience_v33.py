@@ -60,7 +60,15 @@ class ExperienceRouting(unittest.TestCase):
             seen.append((p.name,p.timeout));time[0]+=p.timeout
             raise AIError('upstream_timeout','fixture',True,True)
         with self.assertRaises(AIError) as caught:self.ordered_router(transport,clock=lambda:time[0]).run(value)
-        self.assertEqual(seen,[('deepseek',10),('minimax',10)])
+        # 2026-11-08 智智修复（CI 红模块分流）：路由总预算已从 20s 调整为 45s
+        # （backend/model_router.py:21 的 task_policy：chat/其他 45、report/vision 60、
+        # plan 90）。行为契约不变——预算仍按顺序收缩给后续供应商：
+        # 首次尝试 min(provider.timeout=60, remaining=45, 首试上限 30) = 30s；
+        # 第二次尝试 min(60, 45-30=15, 60) = 15s。
+        # 旧断言 10/10 只在总预算 20s 下成立，而 20s 会让第二次尝试剩余为 0，
+        # 直接 task_timeout，故障转移根本不发生（与 ai_core.py:1503-1506 的
+        # “供应商恢复后应重试而非终态失败”设计相悖），故 45s 是有意为之。
+        self.assertEqual(seen,[('deepseek',30),('minimax',15)])
         # Every provider timed out transiently: the job must be retried with
         # backoff instead of being terminally failed on the first logical pass.
         self.assertEqual(caught.exception.code,'all_unavailable')

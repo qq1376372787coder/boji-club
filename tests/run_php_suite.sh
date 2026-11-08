@@ -10,6 +10,10 @@ if [ -f account-server/config.php ]; then echo "Use an unconfigured isolated che
 PHP="${PHP:-php}"
 : "${BOJI_TEST_DSN_BASE:?set BOJI_TEST_DSN_BASE, e.g. mysql:host=127.0.0.1;port=13306}"
 export BOJI_TEST_DSN_BASE
+# migrate-ai-context.php 通过 BOJI_MIGRATION_* 取凭据；本地 QA 走免密 socket
+# 从未暴露，CI 是 TCP + fixture-only 密码 → Access denied（首跑静默 exit 1 根因）。
+export BOJI_MIGRATION_USER="${BOJI_TEST_DB_USER:-root}"
+export BOJI_MIGRATION_PASSWORD="${BOJI_TEST_DB_PASSWORD:-}"
 OUT="${BOJI_TEST_LOG_DIR:-/tmp/boji-php-suite}"
 mkdir -p "$OUT"
 # Own this deterministic-only service; do not silently use an unrelated listener.
@@ -41,7 +45,9 @@ foreach (["bojiclub_repair_v2_test","bojiclub_repair_v4_test_20261002","bojiclub
   bojiTestSchema(bojiTestDatabase($db),"account-server");
 }
 ' || exit 1
-TMPCFG="$(mktemp -t boji-php-config.XXXXXX.php)"
+TMPCFG="$(mktemp -t boji-php-config.XXXXXX.php)" || { echo "php-suite stage FAIL: mktemp TMPCFG" >&2; exit 1; }
+[ -n "$TMPCFG" ] && [ -f "$TMPCFG" ] || { echo "php-suite stage FAIL: TMPCFG empty" >&2; exit 1; }
+echo "== php-suite stage: config fixture ok =="
 cat >"$TMPCFG" <<PHP
 <?php
 return ['dsn'=>'$BASE;dbname=bojiclub_it;charset=utf8mb4','db_user'=>getenv('BOJI_TEST_DB_USER')?:'root','db_password'=>getenv('BOJI_TEST_DB_PASSWORD')?:'','otp_secret'=>'test-only-otp-secret-0123456789abcdef'];
@@ -49,10 +55,20 @@ PHP
 : >"$OUT/results.tsv"
 fail=0
 # Prepare the dedicated audit fixture through its real CLI, not a blank schema.
-"$PHP" -r '$db=new PDO(getenv("BOJI_TEST_DSN_BASE"),getenv("BOJI_TEST_DB_USER")?:"root",getenv("BOJI_TEST_DB_PASSWORD")?:"");$db->exec("DROP DATABASE IF EXISTS boji_audit129_test");'
-BOJI_MIGRATION_DSN="$BASE;dbname=bojiclub_it" "$PHP" account-server/migrate-ai-context.php --apply >"$OUT/context-prepare.log" 2>&1 || exit 1
-BOJI_MIGRATION_DSN="$BASE;dbname=boji_build122_check" "$PHP" account-server/migrate-ai-context.php --apply >>"$OUT/context-prepare.log" 2>&1 || exit 1
-"$PHP" tests/test_audit129_sql.php prepare >"$OUT/audit129-prepare.log" 2>&1 || exit 1
+"$PHP" -r '$db=new PDO(getenv("BOJI_TEST_DSN_BASE"),getenv("BOJI_TEST_DB_USER")?:"root",getenv("BOJI_TEST_DB_PASSWORD")?:"");$db->exec("DROP DATABASE IF EXISTS boji_audit129_test");' \
+  || { echo "php-suite stage FAIL: audit129 drop" >&2; exit 1; }
+# CI 首跑在以下三步静默 exit 1（输出全进日志文件，runner 没了日志就没了）：
+# 现在每步打 stage 标记，失败即把日志回灌 stderr。
+echo "== php-suite stage: migrate ai-context (bojiclub_it) =="
+BOJI_MIGRATION_DSN="$BASE;dbname=bojiclub_it" "$PHP" account-server/migrate-ai-context.php --apply >"$OUT/context-prepare.log" 2>&1 \
+  || { echo "--- context-prepare.log (bojiclub_it) ---" >&2; cat "$OUT/context-prepare.log" >&2; echo "php-suite stage FAIL: migrate ai-context bojiclub_it" >&2; exit 1; }
+echo "== php-suite stage: migrate ai-context (boji_build122_check) =="
+BOJI_MIGRATION_DSN="$BASE;dbname=boji_build122_check" "$PHP" account-server/migrate-ai-context.php --apply >>"$OUT/context-prepare.log" 2>&1 \
+  || { echo "--- context-prepare.log (boji_build122_check) ---" >&2; tail -50 "$OUT/context-prepare.log" >&2; echo "php-suite stage FAIL: migrate ai-context boji_build122_check" >&2; exit 1; }
+echo "== php-suite stage: audit129 prepare =="
+"$PHP" tests/test_audit129_sql.php prepare >"$OUT/audit129-prepare.log" 2>&1 \
+  || { echo "--- audit129-prepare.log ---" >&2; cat "$OUT/audit129-prepare.log" >&2; echo "php-suite stage FAIL: audit129 prepare" >&2; exit 1; }
+echo "== php-suite stage: fixtures ready, running suites =="
 for file in "$ROOT"/tests/test_*.php; do
   name="$(basename "$file" .php)"
   args=()
@@ -77,4 +93,14 @@ for file in "$ROOT"/tests/test_*.php; do
   if [ $status -eq 0 ]; then echo -e "$name\tPASS" >>"$OUT/results.tsv"; else echo -e "$name\tFAIL:$status" >>"$OUT/results.tsv"; fail=$((fail+1)); fi
 done
 echo "PHP suites: $(grep -c PASS "$OUT/results.tsv") passed, $fail failed. Logs: $OUT"
+if [ "$fail" -gt 0 ]; then
+  # CI 回收 runner 后日志丢失——失败套件名与错误尾部必须直接进 job 输出。
+  echo "--- failed suites ---"
+  grep -F "FAIL" "$OUT/results.tsv" || true
+  echo "--- failure tails ---"
+  grep -F "FAIL" "$OUT/results.tsv" | cut -f1 | while read -r name; do
+    echo "### $name"
+    tail -n 8 "$OUT/$name.log" 2>/dev/null || true
+  done
+fi
 exit $([ $fail -eq 0 ] && echo 0 || echo 1)

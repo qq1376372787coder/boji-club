@@ -9,7 +9,7 @@ function lockActiveUser(PDO $db,int $id): void {
 function verifyDB70(bool $ok,string $label): void {global $count;if(!$ok)throw new RuntimeException($label);$count++;}
 $dsn=getenv('BOJI_V70_TEST_DSN');
 if(!$dsn || !str_contains($dsn,'dbname=boji_membership_v70_test')) throw new RuntimeException('An isolated test database is required');
-$db=new PDO($dsn,getenv('BOJI_V70_TEST_USER')?:'root',getenv('BOJI_V70_TEST_PASSWORD')?:'',[
+$db=new PDO($dsn,getenv('BOJI_V70_TEST_USER')?:getenv('BOJI_TEST_DB_USER')?:'root',getenv('BOJI_V70_TEST_PASSWORD')?:getenv('BOJI_TEST_DB_PASSWORD')?:'',[
     PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);
 bojiTestSchema($db, dirname(__DIR__).'/account-server');
 $uid=970001;$count=0;$config=require dirname(__DIR__).'/account-server/revenuecat-config.example.php';

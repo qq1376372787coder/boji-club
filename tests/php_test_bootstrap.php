@@ -60,3 +60,28 @@ function bojiTestRunMigration(string $database, array $args = ['--check'], strin
     $stderr = stream_get_contents($pipes[2]); fclose($pipes[2]);
     return [proc_close($process), (string)$stdout, (string)$stderr];
 }
+
+/**
+ * Publish app_config overrides in an isolated test database.
+ *
+ * 默认关闭的开关（P2 coach 休眠的 coach_enabled 等）在测其功能时必须显式打开，
+ * 这与生产后台发布配置等价；不改默认值，只改这一个测试库的 published_json。
+ * 覆盖后立即刷新该连接的配置快照，后续请求即时生效。
+ */
+function bojiPublishAppConfig(PDO $db, array $overrides): void {
+    $row = $db->query("SELECT published_json FROM app_config WHERE config_key='app'")->fetch(PDO::FETCH_ASSOC);
+    $current = [];
+    if ($row && is_string($row['published_json'])) {
+        $decoded = json_decode($row['published_json'], true);
+        if (is_array($decoded)) $current = $decoded;
+    }
+    // 只合并给定键；缺失的其余键由 appConfigNormalize 补默认值。
+    $published = array_replace($current, $overrides);
+    $json = json_encode($published, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    if ($row) {
+        $db->prepare("UPDATE app_config SET published_json=?,published_version=published_version+1,published_at=UTC_TIMESTAMP() WHERE config_key='app'")->execute([$json]);
+    } else {
+        $db->prepare("INSERT INTO app_config(config_key,draft_json,published_json,draft_version,published_version,updated_at,published_at) VALUES('app',?,?,1,1,UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute([$json, $json]);
+    }
+    if (function_exists('appConfigFeatureSnapshot')) appConfigFeatureSnapshot($db, true);
+}

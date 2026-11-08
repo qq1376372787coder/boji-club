@@ -4,6 +4,8 @@ return [
     'revenuecat_webhook_authorization' => '', // Generate a strong random value; configure the same Authorization in RevenueCat.
     'revenuecat_product_ids' => ['yuefu', 'nianfu', 'yongjiu'],
     'revenuecat_lifetime_product_ids' => ['yongjiu'],
+    // 已下架旧档（¥29.9/¥42.9 及更早）：只为已购订阅续订/过期，不发放新权益。
+    'revenuecat_legacy_product_ids' => ['monthly', 'six_month', 'lifetime', 'bojiclub_halfyear_2990', 'bojiclub_yearly_4290'],
     'revenuecat_entitlement_id' => '薄肌俱乐部_pro',
     'revenuecat_environment' => 'SANDBOX', // Current TestFlight server. Review separately before switching to PRODUCTION.
     'revenuecat_store' => 'APP_STORE',

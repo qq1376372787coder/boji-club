@@ -178,8 +178,16 @@ struct ClubRemoteConfig: Codable, Equatable {
         var aiFastIntentV1: Bool?
         var aiRouterV3: Bool?
         var aiStreamingV2: Bool?
+        /// durable Run + SSE 推广开关（服务端权威；默认 false = 走 legacy 轮询）。
+        /// 与 coach_enabled 同口径：后台发布 true 即启用，无需发版。
+        var aiRunV2Enabled: Bool?
+        /// 按 kind 灰度白名单，逗号分隔；空 = 全部允许。
+        var aiRunV2Kinds: String?
         var onboardingV2Enabled: Bool?
         var contextualTipsEnabled: Bool?
+        /// coach 后端休眠开关（拍板 #7，键名与绵绵口径一致）：false=对话链路休眠不发请求；
+        /// 服务端 app_config `coach_enabled` 为权威，远程覆盖本地；回退=后台置 true。
+        var coachBackendEnabled: Bool?
         enum CodingKeys: String, CodingKey {
             case aiEnabled = "ai_enabled", clubEnabled = "club_enabled", aiNativeHome = "ai_native_home"
             case actionSystemEnabled = "action_system_enabled"
@@ -189,8 +197,11 @@ struct ClubRemoteConfig: Codable, Equatable {
             case aiFastIntentV1 = "ai_fast_intent_v1"
             case aiRouterV3 = "ai_router_v3"
             case aiStreamingV2 = "ai_streaming_v2"
+            case aiRunV2Enabled = "ai_run_v2_enabled"
+            case aiRunV2Kinds = "ai_run_v2_kinds"
             case onboardingV2Enabled = "onboarding_v2_enabled"
             case contextualTipsEnabled = "contextual_tips_enabled"
+            case coachBackendEnabled = "coach_enabled"
         }
     }
     var version: Int

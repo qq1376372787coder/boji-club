@@ -337,7 +337,7 @@ final class WeeklyReviewService: ObservableObject {
         guard ticket == reminderGeneration, accountTicket == generation else { return }
         center.removePendingNotificationRequests(withIdentifiers: reminderIDs + pending.map(\.identifier).filter { $0.hasPrefix("boji.weekly.gen.") })
         guard reminder, let owner = accountID else { return }
-        let content = UNMutableNotificationContent(); content.title = "留一点时间给自己"; content.body = "本周训练、饮食和身体感受，来做一次复盘吧。"; content.sound = .default
+        let content = UNMutableNotificationContent(); content.title = "本周总结"; content.body = "本周训练、饮食和身体感受可生成总结。"; content.sound = .default
         content.userInfo = ["boji_kind": "weekly_center", "boji_account": owner]
         var components = DateComponents(); components.calendar = Calendar.current; components.weekday = weekday; components.hour = 19; components.minute = 0; components.second = 0
         var occurrences: [(DateComponents, Bool)] = []
@@ -439,6 +439,12 @@ final class WeeklyReviewService: ObservableObject {
             task = Task {
                 defer { if ticket == self.generation { self.busy = false } }
                 do {
+                    // Phase 3: durable Run + SSE. Tried first when the server has
+                    // published the flag; any refusal falls back to the legacy
+                    // POST + polling path with the same deterministic job id, so
+                    // the server maps both to one analysis.
+                    if await self.runKindPath(jobID: jobID, request: request, account: account, user: user,
+                                              store: store, ticket: ticket, id: id) { return }
                     _ = try await self.call(jobID, method: "POST", body: body, account: account, user: user)
                     try await self.poll(id, account: account, store: store, user: user, ticket: ticket)
                 } catch {
@@ -499,6 +505,50 @@ final class WeeklyReviewService: ObservableObject {
             catch { if ticket == self.generation, !Task.isCancelled { self.handleSubmissionError(error, id: id) } }
         }
     }
+    /// Phase 3: durable Run + SSE for weekly_review. Returns true when the run
+    /// reached a terminal state; false means the caller keeps the legacy path.
+    private func runKindPath(jobID: String, request: AIRequest, account: AccountService, user: Int,
+                             store: AppStore, ticket: UUID, id: UUID) async -> Bool {
+        guard ticket == generation, !Task.isCancelled,
+              FeatureFlagService.shared.runV2Enabled,
+              AIService.runV2KindAllowed(request.kind) else { return false }
+        let input = AIInput(kind: request.kind, date: request.date, payload: request.payload)
+        do {
+            let outcome = try await AIRunKindRunner.run(input: input, clientJobID: jobID, owner: user, account: account,
+                                                         deadline: Date().addingTimeInterval(450))
+            guard ticket == generation, !Task.isCancelled else { return true }
+            let result = try outcome.weeklyResult()
+            guard let i = reviews.firstIndex(where: { $0.id == id }) else { return true }
+            let previous = reviews[i]
+            reviews[i].result = result
+            reviews[i].status = "succeeded"
+            reviews[i].updatedAt = Date()
+            do { try persist() } catch { reviews[i] = previous; message = AppErrorText.message(error) }
+            if !store.saveWeeklyReview(reviews[i]) {
+                message = "回顾结果已保存在这台手机，暂时没有同步成功。可在结果页重新同步。"
+            }
+            return true
+        } catch let error as AIRunKindError {
+            switch error {
+            case .uncertain:
+                // The create may have been accepted: never resubmit, resume by polling.
+                return false
+            case .disabled, .rejected:
+                return false
+            case .failed, .resyncUnavailable:
+                guard ticket == generation, !Task.isCancelled else { return true }
+                guard let i = reviews.firstIndex(where: { $0.id == id }) else { return true }
+                let previous = reviews[i]
+                reviews[i].status = "failed"
+                do { try persist() } catch { reviews[i] = previous }
+                message = error.localizedDescription + " 问卷和本机照片已保留，可以确认后重新提交。"
+                return true
+            }
+        } catch {
+            return false
+        }
+    }
+
     private func handleSubmissionError(_ error: Error, id: UUID) {
         if case AIClientError.http(let status, _, _) = error, [400, 403, 404, 409, 413, 422, 429].contains(status),
            let index = reviews.firstIndex(where: { $0.id == id }) {

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/app-config.php';
 require_once __DIR__ . '/chat-input.php';
 require_once __DIR__ . '/ai-response.php';
 require_once __DIR__ . '/ai-conversations.php';
@@ -196,6 +197,8 @@ if ($path === '/me/ai/jobs' || preg_match('#^/me/ai/jobs/([a-f0-9-]{36})(/retry)
         $clientId = strtolower((string)($requestBody['id'] ?? ''));
         $kind = (string)($requestBody['kind'] ?? '');
         if (!preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/D', $clientId) || !in_array($kind, ['generate_plan','parse_plan','food','report','coach'], true)) fail('AI 任务格式不正确。');
+        // P2 休眠：只有 kind=coach 被拦下，其余 4 项继续走原路径。
+        if ($kind === 'coach' && !coachEnabled($db)) fail('AI 对话功能暂未开放，请稍后再试。', 503, 'coach_disabled');
         $serverId = aiJobID($user, $clientId, $config);
         $clientPurpose = (string)($requestBody['payload']['purpose'] ?? 'dialogue');
         if (!in_array($clientPurpose, ['dialogue','workout','weekly'], true)) { $clientPurpose = 'dialogue'; }
@@ -380,10 +383,13 @@ if ($path === '/me/ai/jobs' || preg_match('#^/me/ai/jobs/([a-f0-9-]{36})(/retry)
     }
     $clientId = strtolower($match[1]);
     if (!preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/D', $clientId)) fail('任务编号不正确。');
-    $statement = $db->prepare('SELECT server_job_id FROM ai_user_jobs WHERE user_id=? AND client_job_id=?');
+    $statement = $db->prepare('SELECT server_job_id,kind FROM ai_user_jobs WHERE user_id=? AND client_job_id=?');
     $statement->execute([(int)$user['id'], $clientId]);
-    $serverId = $statement->fetchColumn();
-    if (!is_string($serverId)) fail('任务不存在。', 404);
+    $jobRow = $statement->fetch(PDO::FETCH_ASSOC);
+    if (!$jobRow || !is_string($jobRow['server_job_id'])) fail('任务不存在。', 404);
+    $serverId = $jobRow['server_job_id'];
+    // P2 休眠：coach 任务的轮询与重试一并停用（其余 kind 不受影响）。
+    if ($jobRow['kind'] === 'coach' && !coachEnabled($db)) fail('AI 对话功能暂未开放，请稍后再试。', 503, 'coach_disabled');
     if (!empty($match[2])) {
         if ($method !== 'POST') fail('不支持此操作。', 405);
         if (!appFeatureEnabled($db, 'ai_enabled')) fail('AI 分析暂未开放，请稍后再试。', 503);
@@ -410,12 +416,15 @@ if ($path === '/me/ai/jobs' || preg_match('#^/me/ai/jobs/([a-f0-9-]{36})(/retry)
 // M-1 §2.3 read path: the member's own conversation list and paged messages.
 // Every query filters by the authenticated user id (cross-account reads return
 // empty, never another member's rows).
+// P2 休眠：对话读取接口与提交接口同一开关；历史数据保留，开关打开即恢复。
 if ($method === 'GET' && $path === '/me/ai/conversations') {
     $user = authenticated($db);
+    if (!coachEnabled($db)) fail('AI 对话功能暂未开放，请稍后再试。', 503, 'coach_disabled');
     respond(200, ['conversations' => aiConversationList($db, (int)$user['id'])]);
 }
 if ($method === 'GET' && preg_match('#^/me/ai/conversations/([0-9a-f-]{8,64})/messages$#', $path, $convMatch)) {
     $user = authenticated($db);
+    if (!coachEnabled($db)) fail('AI 对话功能暂未开放，请稍后再试。', 503, 'coach_disabled');
     $before = isset($_GET['before']) ? filter_var($_GET['before'], FILTER_VALIDATE_INT) : null;
     if ($before !== null && $before !== false && $before < 1) fail('分页参数不正确。');
     $limit = isset($_GET['limit']) ? filter_var($_GET['limit'], FILTER_VALIDATE_INT) : 30;
@@ -552,4 +561,16 @@ if ($method === 'POST' && preg_match('#^/me/ai/memory/([0-9a-f-]{36})/(correct|s
     $changed = aiMemorySetStatus($db, (int)$user['id'], $memoryId,
         $action === 'suspend' ? 'suspended' : ($action === 'resume' ? 'active' : 'withdrawn'));
     respond(200, ['changed' => $changed]);
+}
+
+
+// PIPL 阶段4（言言②）：物理删除 + 墓碑防复活。实现与可测逻辑在 aiMemoryPurge()，
+// 这里只做 HTTP 适配（鉴权 / 入参 / 响应），便于单测直接覆盖业务函数。
+if ($method === 'POST' && $path === '/me/ai/memory/purge') {
+    $user = authenticated($db);
+    $input = body(4096);
+    $scope = (string)($input['scope'] ?? 'withdrawn');
+    // 事务由 aiMemoryPurge 自己管理（墓碑与删除必须原子），这里不再套一层，
+    // 否则 PDO 会因嵌套 beginTransaction 抛错。
+    respond(200, aiMemoryPurge($db, (int)$user['id'], $scope));
 }

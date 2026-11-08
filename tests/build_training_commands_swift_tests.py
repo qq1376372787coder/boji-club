@@ -19,6 +19,12 @@ coach=(root/'BojiClub/ClubCoach.swift').read_text('utf-8')
 store=(root/'BojiClub/AppStore.swift').read_text('utf-8')
 extra=[]
 if 'enum JSONValue:' not in content: extra.append(block(ai,'enum JSONValue:'))
+# Build139 起 Models.deterministicMetrics 返回 AIService 的类型族，链上却从未
+# 放入这些 struct → 提交态整条 Swift 规则链 compile_FAIL（CI ios-suite 首跑暴露）。
+for _marker in ('struct AIDailyTrainingMetrics:', 'struct AIDailyNutritionMetrics:',
+                'struct AIDailyBodyMetrics:', 'struct AIDailyActivityMetrics:',
+                'struct AIDailyMetrics:'):
+    if _marker not in content: extra.append(block(ai, _marker))
 extra.append('enum ClubProposalSync {\n'+block(sync,'static func operationIdentity(')+'\n}')
 extra.append(block(sync,'enum DomainCommandType {'))
 extra.append(block(sync,'struct DomainCommandOutcome'))

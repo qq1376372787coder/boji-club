@@ -21,6 +21,8 @@ struct WorkoutView: View {
     @State private var showLibrary = false
     @State private var restEnd: Date?
     @State private var restPausedRemaining: TimeInterval?
+    /// 本次组间休息总时长（秒），用于环形进度（拍板 #3：计时器环形+大字）
+    @State private var restTotal: TimeInterval = 90
     @State private var restOwnerID: Int?
     @State private var restDateKey = ""
     @State private var shareDraft: ShareDraft?
@@ -155,7 +157,7 @@ struct WorkoutView: View {
             }
             Button("继续训练", role: .cancel) {}
         } message: {
-            Text("当前尚未记录任何完成组。退出后将重置开始时间，原有动作与计划安排完整保留。")
+            Text("还没有完成的组。退出会重置开始时间，动作与计划会保留。")
         }
         .sheet(isPresented: $showPlan) { PlanCreationSheet(date: selectedDate) }
         .sheet(isPresented: $showMyPlans) { TrainingPlansView(focusDate: selectedDate) }
@@ -294,9 +296,9 @@ struct WorkoutView: View {
                     Button {
                         let card = ShareCardView(
                             title: "\(ClubDates.label(selectedDate)) \(log.totalSets > 0 && log.completedSets >= log.totalSets ? "训练完成" : "训练记录")",
-                            headline: "已完成 \(log.completedSets) / \(log.totalSets) 组，每一组都有记录。",
+                            headline: "已完成 \(log.completedSets) / \(log.totalSets) 组",
                             stats: TrainingRecordText.summary(log),
-                            tagline: "把进步交给时间。"
+                            tagline: ""
                         )
                         shareDraft = ShareDraft(card: card)
                     } label: { Label("分享训练记录卡", systemImage: "square.and.arrow.up") }
@@ -336,7 +338,7 @@ struct WorkoutView: View {
             ClubCard {
                 VStack(alignment: .leading, spacing: BojiLayout.inline) {
                     HStack {
-                        Label("欢迎回来训练", systemImage: "sparkles")
+                        Label("今日训练", systemImage: "sparkles")
                             .bojiType(.secondary)
                             .foregroundStyle(BojiColor.brandAccent)
                         Spacer()
@@ -347,7 +349,7 @@ struct WorkoutView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    Text("距上次训练已有 \(days) 天。体能需要循序渐进地唤醒，建议今日适度降低负荷或多做热身组找找节奏，避免突然大重量引起过度酸痛。")
+                    Text("距上次训练已有 \(days) 天。建议先做热身组，再逐步加量。")
                         .bojiType(.label)
                         .foregroundStyle(BojiColor.textSecondary)
                     HStack(spacing: BojiLayout.inline) {
@@ -391,7 +393,7 @@ struct WorkoutView: View {
             }
             trainingStartControls
             if log.workoutStartedAt == nil {
-                ClubInlineGuide(step: "first_set", message: "点重量或次数填写实际数值，做完一组再点完成。")
+                ClubInlineGuide(step: "first_set", message: "填写重量与次数，完成后点「完成」。")
             }
 
             emptyTrainingContent
@@ -406,7 +408,7 @@ struct WorkoutView: View {
             HStack {
                 Text("已完成 0 / \(log.totalSets) 组").bojiFont(.cardTitle)
                 Spacer()
-                Text("训练进行中 · 记录第一组").bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
+                Text("训练进行中").bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
             }
             ProgressView(value: 0, total: Double(max(1, log.totalSets)))
                 .tint(ClubBrand.accent)
@@ -422,9 +424,9 @@ struct WorkoutView: View {
                 VStack(alignment: .leading, spacing: BojiLayout.tight) {
                     Text("已完成 \(log.completedSets) / \(log.totalSets) 组")
                         .bojiFont(.cardTitle)
-                    Text(log.workoutSavedAt != nil ? "本次训练记录已确认，汗水已入账"
-                         : log.workoutEndedAt != nil ? "训练已结束 · 点击右上角确认保存"
-                         : log.workoutStartedAt == nil && log.completedSets == 0 ? "训练准备 · 核对动作与目标" : "训练进行中 · 记录每一次突破")
+                    Text(log.workoutSavedAt != nil ? "训练已保存"
+                         : log.workoutEndedAt != nil ? "训练已结束 · 点按确认保存"
+                         : log.workoutStartedAt == nil && log.completedSets == 0 ? "训练准备 · 核对动作与目标" : "训练进行中")
                         .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
                 }
                 Spacer()
@@ -444,7 +446,7 @@ struct WorkoutView: View {
                     .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
             }
             if log.completedSets == 0 && !hasFinished {
-                Text("完成首组后即可保存本堂训练。")
+                Text("完成第一组后可保存。")
                     .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
             }
         }
@@ -517,7 +519,7 @@ struct WorkoutView: View {
                     if let target = day.plannedMoveDestination {
                         EmptyNote(title: "这次训练已提前", detail: "已移到 \(target)，这一天留给恢复；可在我的计划查看。")
                     } else if isPlannedRestDay {
-                        EmptyNote(title: "这一天是计划休息日", detail: "恢复已经包含在本周期计划中，不需要再次让 AI 制定计划。身体状态允许时，也可以临时加练。")
+                        EmptyNote(title: "这一天是计划休息日", detail: "恢复已经包含在本周期计划中，不需要再次生成计划。身体状态允许时，也可以临时加练。")
                         if ClubDates.calendar.isDateInToday(selectedDate) {
                             Button("提前练下一次训练") { showAdvance = true }.buttonStyle(PrimaryButton())
                         }
@@ -528,7 +530,7 @@ struct WorkoutView: View {
                     } else {
                         EmptyNote(title: "这一天还没有训练计划", detail: "先选择动作。记录自重动作时，外加重量可以保留为 0。")
                         Button("从动作库添加") { showLibrary = true }.buttonStyle(PrimaryButton())
-                        Button("安排重复计划或使用 AI") { showPlan = true }.buttonStyle(SecondaryButton())
+                        Button("安排重复计划或自动生成") { showPlan = true }.buttonStyle(SecondaryButton())
                     }
                 }
             }
@@ -541,6 +543,7 @@ struct WorkoutView: View {
                     date: selectedDate,
                     expandedID: $expandedExerciseID,
                     restEnd: $restEnd,
+                    restTotal: $restTotal,
                     onAddNew: { showLibrary = true }
                 ).transition(ClubMotion.transition(reduced: reduceMotion))
             }
@@ -572,10 +575,25 @@ struct WorkoutView: View {
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 let remaining = max(0, Int(ceil(end.timeIntervalSince(context.date))))
                 VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                    HStack {
-                        Text(remaining > 0 ? String(format: "%02d:%02d", remaining / 60, remaining % 60) : "休息完成")
-                            .bojiType(.section)
-                        Text("组间恢复").bojiType(.caption).foregroundStyle(.secondary)
+                    HStack(spacing: BojiLayout.rowGap) {
+                        // 拍板 #3：环形进度 + 大字时间（Reduce Motion 下为静态环）
+                        ZStack {
+                            Circle().stroke(BojiColor.brandMist, lineWidth: 5)
+                            Circle()
+                                .trim(from: 0, to: restTotal > 0 ? max(0, min(1, Double(remaining) / restTotal)) : 0)
+                                .stroke(ClubBrand.accent, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                                .rotationEffect(.degrees(-90))
+                                .animation(reduceMotion ? nil : .linear(duration: 0.9), value: remaining)
+                            Text(remaining > 0 ? String(format: "%02d:%02d", remaining / 60, remaining % 60) : "完成")
+                                .bojiFont(.cardTitle, monospacedDigits: true)
+                                .foregroundStyle(BojiColor.textPrimary)
+                        }
+                        .frame(width: 84, height: 84)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("组间恢复").bojiType(.label).foregroundStyle(BojiColor.textPrimary)
+                            Text(remaining > 0 ? "保持呼吸 · 准备下一组" : "可以开始下一组")
+                                .bojiType(.caption).foregroundStyle(BojiColor.textTertiary)
+                        }
                         Spacer()
                     }
                     if restTypeSize.isAccessibilitySize {
@@ -652,12 +670,14 @@ private struct TrainingExerciseCard: View {
     @State private var timedSet: TrainingSet?
     @AppStorage("training.rest.seconds") private var restSeconds = 60
     @Binding var restEnd: Date?
+    @Binding var restTotal: TimeInterval
 
-    init(exercise: Exercise, date: Date, expandedID: Binding<UUID?>, restEnd: Binding<Date?>, onAddNew: @escaping () -> Void) {
+    init(exercise: Exercise, date: Date, expandedID: Binding<UUID?>, restEnd: Binding<Date?>, restTotal: Binding<TimeInterval>, onAddNew: @escaping () -> Void) {
         self.exercise = exercise
         self.date = date
         self._expandedID = expandedID
         self._restEnd = restEnd
+        self._restTotal = restTotal
         self.onAddNew = onAddNew
     }
     private var expanded: Bool { expandedID == exercise.id }
@@ -893,6 +913,7 @@ private struct TrainingExerciseCard: View {
             let day = store.log(for: date).trainingLog
             let restSeconds = exercise.restSeconds ?? self.restSeconds
             if restSeconds > 0 && day.completedSets < day.totalSets && (Calendar.current.isDateInToday(date) || WorkoutTiming.isOngoing(day,on:date)) {
+                restTotal = TimeInterval(restSeconds)
                 restEnd = Date().addingTimeInterval(TimeInterval(restSeconds))
             } else { restEnd = nil }
         }
@@ -1085,7 +1106,7 @@ struct WorkoutCompletionView: View {
                 VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
                     completionHeading
                     if let saved = completedSnapshot {
-                        Button("AI 复盘本次训练", systemImage: "bubble.left.and.text.bubble.right") {
+                        Button("训练总结", systemImage: "bubble.left.and.text.bubble.right") {
                             ClubAIEntryContext.open(owner: snapshot.ownerID, date: snapshot.date, sessionID: saved.sessionID)
                         }.buttonStyle(.bordered).buttonBorderShape(.capsule).controlSize(.regular)
                             .tint(ClubBrand.accent).frame(maxWidth: .infinity).frame(minHeight: 44)

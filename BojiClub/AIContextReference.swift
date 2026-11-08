@@ -98,7 +98,7 @@ struct AIReferencePicker: View {
         }
         if category == "整套计划" {
             rows += ai.jobs.filter { ["generate_plan", "parse_plan"].contains($0.request.kind) && $0.status == "succeeded" && $0.replacementID == nil && !(store.state.deletedAIJobIDs ?? []).contains($0.id) }.map {
-                .init(kind: "plan_version", resourceID: "ai:" + $0.id, from: $0.request.date, to: $0.request.date, title: $0.request.date + " · AI候选计划（未必已采用）")
+                .init(kind: "plan_version", resourceID: "ai:" + $0.id, from: $0.request.date, to: $0.request.date, title: $0.request.date + " · 候选计划（未必已采用）")
             }
         }
         var seen = Set<String>()

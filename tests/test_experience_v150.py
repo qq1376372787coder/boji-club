@@ -63,7 +63,10 @@ class ExperienceV150Contracts(unittest.TestCase):
 
     def test_club_ai_single_navigation_and_records_scales(self):
         coach = (BOJI / "ClubCoachView.swift").read_text(encoding="utf-8")
-        hub = coach[coach.index("struct ClubAIHubView"):coach.index("private struct ClubCoachOpen")]
+        # 2026-11-08 妙妙修复（P2 对话砍除连带）：切片右锚点 ClubCoachOpen 是对话 UI
+        # 私有件，随孤儿对话线程删除；新右锚点取 ClubCoachSession（壳仍用的状态机）。
+        # 行为契约不变：Hub 区含 Home 入口，且不出现旧三 Tab ForEach。
+        hub = coach[coach.index("struct ClubAIHubView"):coach.index("final class ClubCoachSession")]
         self.assertIn("ClubAIHomeView", hub)
         self.assertNotIn('ForEach(["动态", "报告", "对话"]', hub)
         self.assertIn("struct ClubAIHomeView", coach)

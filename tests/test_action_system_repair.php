@@ -16,6 +16,9 @@ function command(int $u,string $type,array $payload):array{global $db;return bus
 function exercise():array{$catalog=json_decode(file_get_contents(__DIR__.'/../account-server/resources/action-exercise-catalog.json'),true);$e=$catalog[0];return ['id'=>strtoupper(businessUUID()),'name'=>$e['name_zh'],'muscle'=>$e['category_zh'],'libraryID'=>$e['id'],'sets'=>[['id'=>strtoupper(businessUUID()),'weight'=>0,'reps'=>10,'completed'=>false]]];}
 $db->exec("DELETE FROM users WHERE phone LIKE '1365439%'");$today=(new DateTimeImmutable('now',new DateTimeZone('Asia/Shanghai')))->format('Y-m-d');$future=(new DateTimeImmutable($today))->modify('+2 days')->format('Y-m-d');$future2=(new DateTimeImmutable($today))->modify('+4 days')->format('Y-m-d');
 $u=user();fixture($u,[$today=>['exercises'=>[exercise()],'meals'=>[]],$future=>['exercises'=>[exercise()],'meals'=>[]]]);
+// 仅主用户播种会员：plan.generate_draft 正向用例需付费；$w 必须保持未付费，
+// line81 的 enforcement=true + 未付费 → 403 负向断言依赖这一点。
+$db->prepare("INSERT INTO membership_entitlements(user_id,status,source,starts_at,expires_at,created_at,updated_at) VALUES(?,'active','admin',UTC_TIMESTAMP(),'2099-12-31 23:59:59',UTC_TIMESTAMP(),UTC_TIMESTAMP())")->execute([$u]);
 // Independent intents and network retries are different identities.
 $a=call($u,'body.record_weight',['date'=>$today,'kilograms'=>70.5]);$b=call($u,'body.record_weight',['date'=>$today,'kilograms'=>71]);$c=call($u,'body.record_weight',['date'=>$today,'kilograms'=>70.5]);
 ok(count(state($u)['days'][$today]['bodyMeasurements'])===3,'three true samples remain');ok((float)state($u)['days'][$today]['bodyWeight']['kilograms']===70.5,'A B A is a new operation');

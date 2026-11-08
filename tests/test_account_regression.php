@@ -31,7 +31,7 @@ check($rejected,'Apple rejects tampered signature');
 $db->exec("DELETE FROM users WHERE id=900001; INSERT INTO users(id,status,created_at,updated_at) VALUES(900001,'active',UTC_TIMESTAMP(),UTC_TIMESTAMP())");
 $config=['revenuecat_environment'=>'PRODUCTION','revenuecat_app_id'=>'app_fixture'];
 $time=(int)(microtime(true)*1000); $expiry=$time+86400000*365;
-$event=['id'=>'fixture-initial','type'=>'INITIAL_PURCHASE','app_user_id'=>'boji-900001','app_id'=>'app_fixture','environment'=>'PRODUCTION','product_id'=>'bojiclub_halfyear_2990','original_transaction_id'=>'sub-fixture-a','transaction_id'=>'tx-fixture-a','purchased_at_ms'=>$time,'expiration_at_ms'=>$expiry,'event_timestamp_ms'=>$time];
+$event=['id'=>'fixture-initial','type'=>'INITIAL_PURCHASE','app_user_id'=>'boji-900001','app_id'=>'app_fixture','environment'=>'PRODUCTION','product_id'=>'yuefu','entitlement_ids'=>['薄肌俱乐部_pro'],'original_transaction_id'=>'sub-fixture-a','transaction_id'=>'tx-fixture-a','purchased_at_ms'=>$time,'expiration_at_ms'=>$expiry,'event_timestamp_ms'=>$time];
 $db->exec("DELETE FROM revenuecat_events WHERE event_id LIKE 'fixture-%'");
 function member(): array { global $db;return $db->query('SELECT * FROM membership_entitlements WHERE user_id=900001')->fetch(); }
 processRevenueCatEvent($db,$config,$event);check(member()['status']==='active' && member()['last_transaction_id']==='tx-fixture-a','Purchase grants access and stores transaction');
@@ -40,7 +40,7 @@ $renew=$event; $renew['id']='fixture-renewal';$renew['type']='RENEWAL';$renew['e
 $old=$event;$old['id']='fixture-old-expiration';$old['type']='EXPIRATION';$old['event_timestamp_ms']=$time+50;check(!empty(processRevenueCatEvent($db,$config,$old)['stale']) && member()['status']==='active','Old expiration cannot revoke newer renewal');
 $cancel=$renew;$cancel['id']='fixture-unsubscribe';$cancel['type']='CANCELLATION';$cancel['cancel_reason']='UNSUBSCRIBE';$cancel['event_timestamp_ms']=$time+200;processRevenueCatEvent($db,$config,$cancel);check(member()['status']==='active','Normal cancellation retains paid access');
 $refund=$cancel;$refund['id']='fixture-refund';$refund['cancel_reason']='CUSTOMER_SUPPORT';processRevenueCatEvent($db,$config,$refund);check(member()['status']==='revoked','Customer support refund revokes access');
-$other=$renew;$other['id']='fixture-other-sub';$other['original_transaction_id']='sub-fixture-b';$other['transaction_id']='tx-fixture-b';$other['product_id']='bojiclub_yearly_4290';processRevenueCatEvent($db,$config,$other);check(member()['status']==='active','Different active subscription survives refund');
+$other=$renew;$other['id']='fixture-other-sub';$other['original_transaction_id']='sub-fixture-b';$other['transaction_id']='tx-fixture-b';$other['product_id']='nianfu';processRevenueCatEvent($db,$config,$other);check(member()['status']==='active','Different active subscription survives refund');
 $refund['id']='fixture-refund-again';$refund['event_timestamp_ms']=$time+300;processRevenueCatEvent($db,$config,$refund);check(member()['status']==='active','Old product refund does not revoke other active product');
 $tie=$other;$tie['id']='fixture-same-time-refund';$tie['type']='CANCELLATION';$tie['cancel_reason']='CUSTOMER_SUPPORT';processRevenueCatEvent($db,$config,$tie);check(member()['status']==='revoked','Refund wins over purchase at equal timestamp');
 $tie=$other;$tie['id']='fixture-same-time-reactivation';check(!empty(processRevenueCatEvent($db,$config,$tie)['stale']) && member()['status']==='revoked','Equal timestamp purchase cannot undo refund');

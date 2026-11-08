@@ -17,7 +17,7 @@ struct ClubCoachAction: Codable, Equatable, Identifiable {
         case "body": return "查看身体记录"
         case "plans": return "预览新的训练方案"
         case "daily": return "查看当天分析"
-        case "weekly": return "进入每周复盘"
+        case "weekly": return "进入每周回顾"
         case "schedule_shift": return "预览日程调整"
         default: return "暂不支持的操作"
         }

@@ -712,6 +712,17 @@ CREATE TABLE IF NOT EXISTS user_memory_items (
  CONSTRAINT user_memory_items_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- PIPL 阶段4（2026-11-08，言言定性 ②）：删除权要求"本体+派生全链路物理清除"。
+-- 只 DELETE user_memory_items 会让下一次抽取按同一 idempotency_key 把条目**复活**，
+-- 删除权形同虚设。墓碑表只存哈希键（非个人内容），删除本身不留存任何正文/证据，
+-- 但永久阻止同一来源被重新学习。无向量/嵌入存储，派生物均为活读，删本体即清派生。
+CREATE TABLE IF NOT EXISTS user_memory_tombstones (
+ user_id BIGINT UNSIGNED NOT NULL, idempotency_key CHAR(64) NOT NULL, kind VARCHAR(16) NOT NULL,
+ deleted_at DATETIME NOT NULL,
+ PRIMARY KEY (user_id, idempotency_key), INDEX user_memory_tombstones_user (user_id, deleted_at),
+ CONSTRAINT user_memory_tombstones_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Phase 4 §5.5 / Phase 5 §6.2-3 (2026-10-25): feedback loop + metrics events
 -- (曝光→接受→执行→结果 chain; client metric events use the same table) + the
 -- per-request AI usage ledger (latency now; token counts nullable for the
@@ -789,6 +800,7 @@ CREATE TABLE IF NOT EXISTS user_action_preferences (
  user_id BIGINT UNSIGNED PRIMARY KEY, fast_records BOOLEAN NOT NULL DEFAULT FALSE,
  time_zone VARCHAR(80) NOT NULL DEFAULT 'Asia/Shanghai', weight_unit VARCHAR(8) NOT NULL DEFAULT 'kg',
  proactive_learning BOOLEAN NOT NULL DEFAULT TRUE,
+ personalization_enabled BOOLEAN NOT NULL DEFAULT TRUE,
  updated_at DATETIME NOT NULL, CONSTRAINT action_preferences_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS ai_action_calls (
@@ -881,6 +893,10 @@ ALTER TABLE ai_runs ADD COLUMN IF NOT EXISTS event_floor INT UNSIGNED NOT NULL D
 ALTER TABLE ai_runs ADD KEY IF NOT EXISTS ai_runs_cleanup (status, updated_at);
 
 ALTER TABLE user_action_preferences ADD COLUMN IF NOT EXISTS proactive_learning BOOLEAN NOT NULL DEFAULT TRUE AFTER weight_unit;
+-- PIPL 阶段4（2026-11-08）：把"学习"与"使用"拆成两个独立开关。
+-- proactive_learning      = 停止学习（不再写入新记忆，存量保留）
+-- personalization_enabled = 停用 AI 记忆处理（存量保留，但不再喂给模型做个性化）
+ALTER TABLE user_action_preferences ADD COLUMN IF NOT EXISTS personalization_enabled BOOLEAN NOT NULL DEFAULT TRUE AFTER proactive_learning;
 
 -- AI onboarding V2 (2026-10-26): server-derived purpose on jobs makes the
 -- polling and SSE paths agree; old rows stay NULL.
