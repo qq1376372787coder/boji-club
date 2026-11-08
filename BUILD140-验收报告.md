@@ -134,35 +134,48 @@
 |---|---|---|---|---|
 | 第 1 轮 | 2026-11-08 | ③④⑤ 通过；①② 有条件通过 | **T-1** BUG-009 强制解包 guard 加固（苹果开发）<br>**T-2** BE-005 AI 完成状态改回调/定时写入 + BE-007 多设备同步排队合并（后端开发） | **T-2 复验通过**；**T-1 部分闭环**（6 处重点里 5 处真收口，`ExerciseLibraryView` 仍留 3 处 `components.url!`，见下） |
 
-### 补充复验（第 1 轮问题单）
+### 补充复验（第 1 轮问题单）—— 最终结论：T-1、T-2 双双通过
 
-**T-1（BUG-009 强制解包加固）—— 部分闭环，剩 3 处**
+**T-1（BUG-009 强制解包加固）—— 复验通过（commit bc9202a + 8e936d2）**
 
-| 重点处 | 复验结论 | 证据 |
+| 检查项 | 结论 | 证据 |
 |---|---|---|
-| `AppStore.swift` 饮食记录索引 | ✅ 真收口 | `AppStore.swift:2126` `guard let day = state.days[key], day.meals.indices.contains(index) else {` |
-| `MembershipService` 通知文案 | ✅ 真收口 | `MembershipService.swift:241` `self.state = .failed(self.notice ?? fallback)` |
-| `HealthViews` 品牌链接 | ✅ 真收口 | `HealthViews.swift:206` `if let brandURL = URL(string: brand.2) {` |
-| `ExerciseLibraryView` 三处 | ⚠️ **未真正收口** | `:140/169/181` 只给 `URLComponents(url:...)` 的**初始化**加了 guard，但 `:146/173/185` 仍是 `components.url!`——`URLComponents.url` 本身是 Optional，强制解包仍在。实际风险已大幅降低（base 为常量合法 URL、仅追加 path 与 query），但 BUG-009 点名的这三处字面上仍存在。建议改为 `guard let url = components.url else { throw URLError(.badURL) }` 后 `get(url)` |
+| `ExerciseLibraryView` 三处 | ✅ 已收口 | `:146/:174/:187` 均改为 `guard let url = components.url else { throw URLError(.badURL) }`；`components.url!` 全库**零命中** |
+| `OnboardingView` URL 强制解包 | ✅ 已收口 | commit 8e936d2 同类加固；全库 `URL(string:...)!` 零命中 |
+| 6 处重点（AppStore 饮食索引、MembershipService notice、HealthViews 品牌链接等） | ✅ 已收口 | 见上一轮复验证据（`AppStore.swift:2126` `day.meals.indices.contains(index)`、`MembershipService.swift:241` `?? fallback`、`HealthViews.swift:206` `if let`） |
 
-**全库复扫**：强制解包命中由 31 处降至 **13 处**，其中 10 处为同一行前置 nil 检查保护（安全）或 UIKit 委托签名（`WKNavigation!`，不可改），**仅 `ExerciseLibraryView` 3 处为真实强制解包**。另有 `ClubAIShell.swift` 自有 `layerClass` 的 `as!`（苹果开发已加注释说明安全性，属 SwiftUI 标准写法）。
+**全库强制解包终扫：31 处 → 10 处，且 10 处全部为安全模式，无真实风险：**
 
-**T-2（BE-005 / BE-007）—— 复验通过**
+| 文件:行 | 模式 | 安全性 |
+|---|---|---|
+| `AppStore.swift:2914` | `day.workoutSessions?.isEmpty == false && day.workoutSessions!` | 前置非空检查短路保护 |
+| `ClubSeason.swift:146` | `claimDeadline == nil \|\| ... <= claimDeadline!` | 短路保护 |
+| `MealEditorView.swift:285` | `correctionJobID != nil, ai.job(correctionJobID!)` | 前置检查 |
+| `OnboardingView.swift:355` | `didFinish navigation: WKNavigation!` | UIKit 委托签名，不可改 |
+| `ReportLibraryView.swift:303` | `weightFirstKg != nil && weightLastKg != nil ? ...!` | 短路保护 |
+| `WeeklyReportView.swift:173/305/318/562` | `xxx != nil ? ...!` 三元 | 短路保护 |
+| `WeeklyReviewView.swift:45` | `existingJob != nil && !existingJob!` | 前置检查 |
+
+**结论**：BUG-009 全库真实强制解包清零（31 → 0 风险点）。**T-1 关单。**
+
+**T-2（BE-005 / BE-007）—— 复验通过（commit 9601226）**
 
 | 单号 | 复验结论 | 证据 |
 |---|---|---|
-| T-2a BE-005 AI 完成状态 | ✅ 通过 | 新增后台 worker `account-server/process-ai-completion-refresh.php` + `deploy/bojiclub-ai-completion-refresh.{service,timer}`，已收录进 `deploy.sh:158/163`；请求路径 `verifiedAICompletion`（`ai-response.php:73`）降级为**兜底**，超时由 1–2 秒放宽到 4 秒并注明「后台定时对账为主路径」，不再因 worker 繁忙误判「处理中」 |
-| T-2b BE-007 多设备同步锁 | ✅ 通过 | `cloud-parts.php:72-87` `cloudCommitLock` 改为**排队等锁**：`$deadline = microtime(true) + $waitSeconds`，`while (!flock(...))` 每 100ms 轮询，**到期才**返回 429 + `Retry-After: 5`。不再是「第二台设备立即 429」 |
+| T-2a BE-005 AI 完成状态 | ✅ 通过 | 新增后台 worker `account-server/process-ai-completion-refresh.php`（每 30 秒对账 `ai_user_jobs` 与 worker metadata，写 `completed_at`）+ `deploy/bojiclub-ai-completion-refresh.{service,timer}`，已收录 `deploy.sh:158/163`；请求路径 `verifiedAICompletion`（`ai-response.php:73`）降级为**兜底**，超时 1–2s → 4s，注释写明「后台定时对账为主路径」 |
+| T-2b BE-007 多设备同步锁 | ✅ 通过 | 服务端 `cloud-parts.php:72-87` `cloudCommitLock` 改**排队等锁最多 5 秒**（每 100ms 轮询，到期才 429 + `Retry-After: 5`），不再「第二台设备立即 429」；客户端 `AppStore.swift` 同步重试 3 次 → 6 次、每次 0.4s，仍不收敛则保留本机记录 + 置 `waitingService` 自动续同步，不再硬报「其他设备正在更新」 |
 
-**结论**：T-2 通过；T-1 需补 `ExerciseLibraryView` 3 处后再关闭。两单对应编译：T-2 随 `9601226`、T-1 随 `fca7e98`（run 42473601067 → `dist/BojiClub-8c541f4c.ipa`，37.48 MB）均通过。
+**编译证据**：T-1 收尾 run 42474824704（head `bc9202a`）→ `dist/BojiClub-ea843320.ipa`（37.48 MB）✅；T-2 随 run 42474004694 → `dist/BojiClub-2433bb2a.ipa`（37.48 MB）✅。
+
+**第 1 轮问题单 T-1 / T-2 全部关闭。代码层面五条标准不再有未决问题单，可交 Chief 签最终验收。**
 
 **问题单登记（详见台账 I-3 遗留项清单）**
 
 | 单号 | 内容 | 负责人 | 严重度 | 状态 |
 |---|---|---|---|---|
-| T-1 | BUG-009 强制解包加固：重点 6 处（`AppStore.swift:2111`、`ExerciseLibraryView:143/168/178`、`MembershipService:240`、`HealthViews:206`）加 guard 安全回退，其余 25 处顺手过一遍 | 苹果开发 | P3（加固） | 待修复 |
-| T-2a | BE-005 AI 完成状态改为 worker 回调/定时写入，不再用 1–2 秒同步超时误判 | 后端开发 | P2 | 待修复 |
-| T-2b | BE-007 多设备同步提交锁排队合并或延长客户端重试窗口，不再 3 次冲突即中止 | 后端开发 | P2 | 待修复 |
+| T-1 | BUG-009 强制解包加固：重点 6 处（`AppStore.swift:2111`、`ExerciseLibraryView:143/168/178`、`MembershipService:240`、`HealthViews:206`）加 guard 安全回退，其余 25 处顺手过一遍 | 苹果开发 | P3（加固） | **已验收关闭**（复验：31 → 10 处且全为安全模式，真实风险清零） |
+| T-2a | BE-005 AI 完成状态改为 worker 回调/定时写入，不再用 1–2 秒同步超时误判 | 后端开发 | P2 | **已验收关闭** |
+| T-2b | BE-007 多设备同步提交锁排队合并或延长客户端重试窗口，不再 3 次冲突即中止 | 后端开发 | P2 | **已验收关闭** |
 
 **记遗留清单不开单**：BE-006（旧账号大迁移，边缘场景）、BE-008（AI worker 无 Key，属部署配置，随服务器补键一并处理）。
 
