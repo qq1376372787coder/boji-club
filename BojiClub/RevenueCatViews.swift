@@ -169,7 +169,7 @@ struct MembershipView: View {
         case .loading:
             ClubLoadingCard(title: "正在连接会员服务…", detail: "获取账号权益与会员方案。")
         case .purchasing:
-            ClubLoadingCard(title: "正在确认购买…", detail: "请完成购买窗口中的操作。")
+            ClubLoadingCard(title: "正在确认购买…", detail: "请在购买页完成操作。")
         case .unavailable(let message), .failed(let message):
             ClubCard {
                 Text(message).bojiType(.secondary)

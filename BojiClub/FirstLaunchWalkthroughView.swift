@@ -175,7 +175,7 @@ struct FirstLaunchWalkthroughView: View {
                     finishWalkthrough()
                 } label: {
                     HStack(spacing: BojiLayout.inline) {
-                        Text("开启薄肌之旅")
+                        Text("开始")
                             .bojiType(.body)
                         Image(systemName: "sparkles")
                             .bojiType(.secondary)
@@ -283,11 +283,11 @@ private struct WalkthroughAICoachSlide: View {
 
             // Text presentation
             VStack(spacing: BojiLayout.inline) {
-                Text("因你而动。")
+                Text("按你的身体来")
                     .bojiType(.display)
                     .foregroundStyle(BojiColor.textPrimary)
 
-                Text("训练建议 · 根据已确认记录给出")
+                Text("建议只看你真记下来的")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textSecondary)
                     .multilineTextAlignment(.center)
@@ -424,11 +424,11 @@ private struct WalkthroughWorkoutSetsSlide: View {
 
             // Text presentation
             VStack(spacing: BojiLayout.inline) {
-                Text("分秒必争。")
+                Text("休息你说了算")
                     .bojiType(.display)
                     .foregroundStyle(BojiColor.textPrimary)
 
-                Text("自主控制组间休息 · 完成后逐组确认")
+                Text("组间休息随时调，每组练完自己确认")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textSecondary)
                     .multilineTextAlignment(.center)
@@ -555,11 +555,11 @@ private struct WalkthroughNutritionEvolutionSlide: View {
 
             // Text presentation
             VStack(spacing: BojiLayout.inline) {
-                Text("蜕变，历历在目。")
+                Text("变化看得见")
                     .bojiType(.display)
                     .foregroundStyle(BojiColor.textPrimary)
 
-                Text("宏量营养聚焦 · 滤除杂音，洞悉真实进化")
+                Text("只看蛋白质、碳水和脂肪")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textSecondary)
                     .multilineTextAlignment(.center)
@@ -608,11 +608,11 @@ private struct WalkthroughReadinessSlide: View {
 
             // Header
             VStack(spacing: BojiLayout.inline) {
-                Text("万事俱备。")
+                Text("都好了")
                     .bojiType(.display)
                     .foregroundStyle(BojiColor.textPrimary)
 
-                Text("轻触指尖 · 唤醒专属俱乐部体验")
+                Text("点一下就进去")
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textSecondary)
                     .multilineTextAlignment(.center)
@@ -643,7 +643,7 @@ private struct WalkthroughReadinessSlide: View {
                 if let message = health.message {
                     Text(message).bojiType(.caption).foregroundStyle(BojiColor.textSecondary)
                 }
-                Text("完成健康设置不代表已授予读取权限；只展示系统实际允许读取的数据，稍后可在设置中调整。")
+                Text("设好了不等于给了权限。这里只显示系统真的允许我们读的数据，之后在设置里还能调。")
                     .bojiType(.caption).foregroundStyle(BojiColor.textSecondary)
 
                 // Card 2: Push Notifications

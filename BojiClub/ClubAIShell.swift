@@ -331,38 +331,25 @@ struct ClubAIShellView: View {
     }
 
     @ViewBuilder private var aiWorkspace: some View {
-        ZStack(alignment: .bottomTrailing) {
-            ClubAIWorkspaceIdleView(
-                activeWorkout: activeWorkout,
-                isNewUser: account.user?.onboardingCompleted == false,
-                onOpenProfile: { showProfileBasics135 = true },
-                onOpenPermissions: { showPermissions135 = true },
-                onArrangePlan131: {
-                    showPlanWizard = true
-                },
-                onOpenDailyReport: { showDailyReport = true },
-                onOpenWeeklyReport: { showWeeklyReport = true },
-                onOpenHub: { if $0 == "训练计划" { mode = .training } else { showHubSection = $0 } },
-                onStartTraining: {
-                    if activeWorkout != nil { openActiveWorkout() }
-                    else { selectedDate = Date(); startTrainingFromPlan() }
-                },
-                onRecordMeal: { openMeal("手动") },
-                onRecordBody: { bodyEntryRoute = ClubDateRoute(date: Date()) }
-            )
-
-            ClubHomeSpeedDial(
-                hasActiveWorkout: activeWorkout != nil,
-                onStartTraining: {
-                    if activeWorkout != nil { openActiveWorkout() }
-                    else { selectedDate = Date(); startTrainingFromPlan() }
-                },
-                onRecordMeal: { openMeal("手动") },
-                onRecordBody: { bodyEntryRoute = ClubDateRoute(date: Date()) }
-            )
-            .padding(.trailing, BojiLayout.blockGap)
-            .padding(.bottom, activeWorkout != nil ? 76 : 24)
-        }
+        // 2+3 批次 1：三键悬浮拨号退役（每屏一主操作）——记录入口在记录 tab 与营养卡「记录餐食」。
+        ClubAIWorkspaceIdleView(
+            activeWorkout: activeWorkout,
+            isNewUser: account.user?.onboardingCompleted == false,
+            onOpenProfile: { showProfileBasics135 = true },
+            onOpenPermissions: { showPermissions135 = true },
+            onArrangePlan131: {
+                showPlanWizard = true
+            },
+            onOpenDailyReport: { showDailyReport = true },
+            onOpenWeeklyReport: { showWeeklyReport = true },
+            onOpenHub: { if $0 == "训练计划" { mode = .training } else { showHubSection = $0 } },
+            onStartTraining: {
+                if activeWorkout != nil { openActiveWorkout() }
+                else { selectedDate = Date(); startTrainingFromPlan() }
+            },
+            onRecordMeal: { openMeal("手动") },
+            onRecordBody: { bodyEntryRoute = ClubDateRoute(date: Date()) }
+        )
     }
 
     private var bottomDock: some View {
@@ -643,7 +630,8 @@ struct ClubAIShellView: View {
         } else if url.host == "plan" {
             showPlanWizard = true
         } else if url.host == "speed-dial" {
-            NotificationCenter.default.post(name: Notification.Name("expandSpeedDial"), object: nil)
+            // 三键拨号退役后，快捷记录深链落到记录 tab。
+            mode = .records
         }
     }
 
@@ -880,128 +868,6 @@ struct SidebarHostView: View {
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
         .accessibilityIdentifier(id)
-    }
-}
-
-struct ClubHomeSpeedDial: View {
-    let hasActiveWorkout: Bool
-    let onStartTraining: () -> Void
-    let onRecordMeal: () -> Void
-    let onRecordBody: () -> Void
-
-    @State private var isExpanded = ProcessInfo.processInfo.environment["BOJI_EXPAND_SPEED_DIAL"] == "1"
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            if isExpanded {
-                Color.black.opacity(0.18)
-                    .ignoresSafeArea()
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation(reduceMotion ? nil : BojiMotion.smoothSpring()) {
-                            isExpanded = false
-                        }
-                    }
-                    .transition(.opacity)
-            }
-
-            VStack(alignment: .trailing, spacing: BojiLayout.rowGap) {
-                if isExpanded {
-                    VStack(alignment: .trailing, spacing: BojiLayout.rowGap) {
-                        speedDialItem(
-                            title: hasActiveWorkout ? "继续训练" : "开始训练",
-                            systemImage: "figure.strengthtraining.traditional",
-                            action: onStartTraining
-                        )
-                        speedDialItem(
-                            title: "记录饮食",
-                            systemImage: "fork.knife",
-                            action: onRecordMeal
-                        )
-                        speedDialItem(
-                            title: "记录体重",
-                            systemImage: "scalemass.fill",
-                            action: onRecordBody
-                        )
-                    }
-                    .transition(.asymmetric(
-                        insertion: .opacity.combined(with: .scale(scale: 0.85, anchor: .bottomTrailing)).combined(with: .offset(y: 16)),
-                        removal: .opacity.combined(with: .scale(scale: 0.85, anchor: .bottomTrailing))
-                    ))
-                }
-
-                Button {
-                    BojiHaptics.pressDown()
-                    withAnimation(reduceMotion ? nil : BojiMotion2.state) {
-                        isExpanded.toggle()
-                    }
-                    if isExpanded {
-                        BojiHaptics.latch()
-                    } else {
-                        BojiHaptics.pressRelease()
-                    }
-                } label: {
-                    Image(systemName: "plus")
-                        .bojiType(.section)
-                        .foregroundStyle(isExpanded ? BojiColor.brandAccent : BojiColor.textPrimary)
-                        .rotationEffect(.degrees(isExpanded ? 45 : 0))
-                        .frame(width: 56, height: 56)
-                        .clubGlassEffect(in: Circle())
-                        .overlay {
-                            Circle()
-                                .stroke(isExpanded ? BojiColor.brandAccent.opacity(0.5) : BojiColor.outline, lineWidth: 0.8)
-                        }
-                        .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 5)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(isExpanded ? "收起操作菜单" : "展开快捷记录")
-            }
-            .clubGlassGroup(spacing: BojiLayout.rowGap)
-        }
-        .onAppear {
-            if ProcessInfo.processInfo.arguments.contains("-expandSpeedDial") || ProcessInfo.processInfo.environment["BOJI_EXPAND_SPEED_DIAL"] == "1" {
-                isExpanded = true
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("expandSpeedDial"))) { _ in
-            withAnimation(BojiMotion2.state) {
-                isExpanded = true
-            }
-        }
-    }
-
-    private func speedDialItem(title: String, systemImage: String, action: @escaping () -> Void) -> some View {
-        Button {
-            BojiHaptics.tick()
-            withAnimation(reduceMotion ? nil : BojiMotion.smoothSpring()) {
-                isExpanded = false
-            }
-            action()
-        } label: {
-            HStack(spacing: BojiLayout.inline) {
-                Text(title)
-                    .bojiType(.secondary)
-                    .foregroundStyle(BojiColor.textPrimary)
-                    .padding(.horizontal, BojiLayout.rowGap)
-                    .padding(.vertical, BojiLayout.inline)
-                    .clubGlassEffect(in: Capsule())
-                    .overlay {
-                        Capsule().stroke(BojiColor.outline, lineWidth: 0.5)
-                    }
-
-                Image(systemName: systemImage)
-                    .bojiType(.body)
-                    .foregroundStyle(BojiColor.brandAccent)
-                    .frame(width: 44, height: 44)
-                    .clubGlassEffect(in: Circle())
-                    .overlay {
-                        Circle().stroke(BojiColor.outline, lineWidth: 0.5)
-                    }
-            }
-            .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
-        }
-        .buttonStyle(.plain)
     }
 }
 
@@ -1323,7 +1189,28 @@ struct ClubAIWorkspaceIdleView: View {
         .padding(.vertical, BojiLayout.tight)
     }
 
-    // MARK: - 身体状态卡（批次 0：假数据清零——88 分/固定简报/上肢推类占位全部移除，建议绑定真实洞察）
+    // MARK: - 身体状态卡（批次 1：巨号排印当主角；评分=睡眠+心率+近 3 天训练的真实规则，缺数据说缺）
+    /// 状态评分（0…100）：睡眠 50 分（7.5h 满）、静息心率 30 分（越低越好，65/80 断点）、近 3 天训练 20 分。
+    /// 关键项（睡眠与心率）都没同步到时返回 nil，界面显示「还没同步到」，绝不编造分数。
+    private func readinessScore(sleepMinutes: Double?, restingHeartRate: Double?) -> Int? {
+        guard sleepMinutes != nil || restingHeartRate != nil else { return nil }
+        var total = 0.0
+        if let sleep = sleepMinutes, sleep > 0 {
+            total += min(1.0, sleep / (7.5 * 60)) * 50
+        }
+        if let rhr = restingHeartRate, rhr > 0 {
+            total += rhr <= 65 ? 30 : max(8, 30 - (rhr - 65) * 0.8)
+        }
+        let calendar = ClubDates.calendar
+        let trainedRecently = (0..<3).contains { offset in
+            guard let date = calendar.date(byAdding: .day, value: -offset, to: Date()),
+                  let day = store.state.days[ClubDates.key(date)] else { return false }
+            return day.trainingLog.hasConfirmedTraining
+        }
+        total += trainedRecently ? 20 : 6
+        return Int(min(100, max(0, total)))
+    }
+
     private var readinessGaugeCard: some View {
         let healthSummary = health.summary(for: Date())
         let sleepMin = healthSummary?.nightSleep?.value ?? healthSummary?.sleep?.value
@@ -1349,24 +1236,27 @@ struct ClubAIWorkspaceIdleView: View {
             }
             return "还没同步到"
         }()
+        let score = readinessScore(sleepMinutes: sleepMin, restingHeartRate: rhr)
         let insight = ClubHomeInsightMerge.resolve(local: ClubInsightLedger.current(in: store.state, date: Date()).first, server: ai.homeInsight)
 
         return VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
-            HStack(alignment: .center) {
-                Label("身体状态", systemImage: "gauge.with.needle")
-                    .bojiFont(.label)
-                    .foregroundStyle(BojiColor.textPrimary)
-                    .padding(.horizontal, BojiLayout.inline)
-                    .padding(.vertical, BojiLayout.tight)
-                    .background(BojiColor.brandMist, in: Capsule())
-
-                Spacer()
+            // 巨号评分当主角（.display 88pt）+ 细分割线 + 标签
+            if let score {
+                BojiEditorialNumber(value: "\(score)", label: "今天的身体状态")
+            } else {
+                Text("还没同步到")
+                    .bojiType(.title)
+                    .foregroundStyle(BojiColor.textTertiary)
+                Text("健康数据同步后，这里会显示你的身体状态分数")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
             }
 
-            HStack(spacing: BojiLayout.rowGap) {
-                metricItem(title: "睡眠", value: sleepText, systemImage: "bed.double.fill")
-                metricItem(title: "心率", value: rhrText, systemImage: "heart.fill")
-                metricItem(title: "步数", value: stepsText, systemImage: "figure.walk")
+            // 三指标数据块横排（无图标汤：大数字 + 细线 + 标签）
+            HStack(alignment: .top, spacing: BojiLayout.rowGap) {
+                editorialMetric(title: "睡眠", value: sleepText)
+                editorialMetric(title: "心率", value: rhrText)
+                editorialMetric(title: "步数", value: stepsText)
             }
             .frame(maxWidth: .infinity)
 
@@ -1401,27 +1291,22 @@ struct ClubAIWorkspaceIdleView: View {
         .shadow(color: .black.opacity(0.04), radius: 10, x: 0, y: 3)
     }
 
-    private func metricItem(title: String, value: String, systemImage: String) -> some View {
-        HStack(spacing: BojiLayout.tight) {
-            Image(systemName: systemImage)
-                .bojiType(.caption)
+    /// 数据块（2+3 规格：大数字 + 标签，无图标、无描边）。
+    private func editorialMetric(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: BojiLayout.tight) {
+            Text(value)
+                .bojiFont(.bodyMetric, monospacedDigits: true)
+                .foregroundStyle(BojiColor.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text(title)
+                .bojiType(.label)
                 .foregroundStyle(BojiColor.textTertiary)
-                .frame(width: 16)
-            VStack(alignment: .leading, spacing: 0) {
-                Text(title)
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
-                Text(value)
-                    .bojiType(.label)
-                    .foregroundStyle(BojiColor.textPrimary)
-                    .lineLimit(1)
-            }
-            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    // MARK: - 核心层级 2: 今日战术任务看板
+    // MARK: - 今天练什么
     private var heroMissionCard: some View {
         VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
             HStack {

@@ -155,7 +155,7 @@ struct WeeklyReportView: View {
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: BojiLayout.rowGap) {
                 metricTile(
-                    title: "训练出勤",
+                    title: "练了几天",
                     value: "\(t?.training_days ?? 0) 天",
                     subtext: "累计 \(t?.total_completed_sets ?? 0) 组完成",
                     symbol: "figure.strengthtraining.traditional"

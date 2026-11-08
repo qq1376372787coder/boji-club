@@ -158,6 +158,78 @@ enum BojiTypeRole: String, CaseIterable {
     }
 }
 
+// MARK: - 巨号排印数字（2+3 规格表 §0.2：.display 88 / .editorial 76 / .hero 52）
+// 88pt/76pt 只在状态卡、进度大数字、记录当前值三处使用，封闭在此组件内，不改全局 BojiTypeRole
+// （既有 .display 34pt 档位全库使用中，直接改值会波及所有页面版式）。
+
+struct BojiEditorialNumber: View {
+    /// 数字本身（如 "88"、"3/12"、"76.5"）。
+    let value: String
+    /// 数字下方的细字标签（如 "今天的身体状态"、"组进度"）。
+    var label: String? = nil
+    /// 档位：88pt 状态/进度巨号，76pt 记录当前值。
+    var scale: EditorialScale = .display
+    /// 数字颜色；默认主文字色。
+    var tint: Color = BojiColor.textPrimary
+    @ScaledMetric(relativeTo: .largeTitle) private var scaledSize: CGFloat
+    @Environment(\.dynamicTypeSize) private var typeSize
+
+    enum EditorialScale {
+        /// 88pt / 800 / -3pt —— 状态数字、进度大数字。
+        case display
+        /// 76pt / 800 / -3.5pt —— 记录页当前值。
+        case editorial
+        /// 52pt —— 视频上的 Hero 数字。
+        case hero
+
+        var size: CGFloat {
+            switch self {
+            case .display: 88
+            case .editorial: 76
+            case .hero: 52
+            }
+        }
+        var tracking: CGFloat {
+            switch self {
+            case .display: -3
+            case .editorial: -3.5
+            case .hero: -2
+            }
+        }
+    }
+
+    init(value: String, label: String? = nil, scale: EditorialScale = .display, tint: Color = BojiColor.textPrimary) {
+        self.value = value; self.label = label; self.scale = scale; self.tint = tint
+        // Dynamic Type：跟随 largeTitle 缩放，最大档压到 accessibility3 防版式崩坏。
+        _scaledSize = ScaledMetric(relativeTo: .largeTitle, defaultValue: scale.size)
+    }
+
+    private var effectiveSize: CGFloat {
+        typeSize > .accessibility3 ? scaledSize * 0.75 : scaledSize
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(value)
+                .font(.system(size: effectiveSize, weight: .heavy, design: .default))
+                .monospacedDigit()
+                .kerning(scale.tracking * (effectiveSize / scale.size))
+                .foregroundStyle(tint)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+            if let label, !label.isEmpty {
+                Rectangle()
+                    .fill(BojiColor.divider)
+                    .frame(width: 44, height: 1)
+                Text(label)
+                    .bojiType(.label)
+                    .foregroundStyle(BojiColor.textSecondary)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
 // MARK: - 1.1 旧角色 → 新角色 迁移表（供 CI / codemod 使用）
 
 extension BojiTypeRole {
