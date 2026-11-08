@@ -12,7 +12,7 @@ final class BojiClubUITests: XCTestCase {
         app.launchEnvironment["BOJI_UI_TEST_SEED"] = seed ? "1" : "0"
         app.launch()
         XCTAssertTrue(app.buttons["v2-sidebar-toggle"].waitForExistence(timeout: 15), "App should reach the single AI shell")
-        XCTAssertFalse(app.tabBars.firstMatch.exists, "The retired five-tab shell must not be reachable")
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 10), "The shell must present the native three-tab bar (今天/训练/记录)")
         let later = app.buttons["稍后再看"].firstMatch
         if later.waitForExistence(timeout: 2) { later.tap() }
         switch tab {
@@ -26,22 +26,16 @@ final class BojiClubUITests: XCTestCase {
     }
 
     private func modeButton(_ title: String, in app: XCUIApplication) -> XCUIElement {
-        app.segmentedControls["v2-mode-picker"].buttons[title]
+        // 批次 0 导航壳：自绘胶囊分段器退役，工作区切换走原生 tab bar（今天/训练/记录）。
+        app.tabBars.firstMatch.buttons[title == "首页" ? "今天" : title]
     }
 
     private func selectMode(_ title: String, in app: XCUIApplication) {
-        let picker = app.segmentedControls["v2-mode-picker"]
-        if picker.exists {
-            let button = picker.buttons[title]
-            XCTAssertTrue(button.waitForExistence(timeout: 10))
-            button.tap(); XCTAssertTrue(button.isSelected)
-        } else {
-            let menu = app.buttons["v2-mode-picker"]
-            XCTAssertTrue(menu.waitForExistence(timeout: 10), "Large text must use the native mode menu")
-            menu.tap()
-            let option = app.buttons[title].firstMatch
-            XCTAssertTrue(option.waitForExistence(timeout: 5)); option.tap()
-        }
+        let button = modeButton(title, in: app)
+        XCTAssertTrue(button.waitForExistence(timeout: 10), "Native tab \"\(title)\" must exist")
+        button.tap()
+        XCTAssertTrue(button.waitForExistence(timeout: 5), "Native tab \"\(title)\" must stay selectable after tap")
+        XCTAssertTrue(button.isSelected)
     }
 
     private func composer(_ app: XCUIApplication) -> XCUIElement {
@@ -168,7 +162,7 @@ final class BojiClubUITests: XCTestCase {
 
     func testSingleAIShellAndBodyRecordsEntry() {
         let app = launch()
-        XCTAssertTrue(modeButton("Club AI", in: app).isSelected)
+        XCTAssertTrue(modeButton("今天", in: app).isSelected)
         XCTAssertTrue(composer(app).waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["v2-composer-plus"].isHittable)
         openSidebar("records", in: app)
@@ -225,7 +219,7 @@ final class BojiClubUITests: XCTestCase {
         app.buttons["v2-workout-collapse"].tap()
         let bar = app.descendants(matching: .any)["mini-workout-bar"].firstMatch
         XCTAssertTrue(bar.waitForExistence(timeout: 8))
-        selectMode("Club AI", in: app)
+        selectMode("今天", in: app)
         XCTAssertTrue(bar.exists)
         attachScreenshot("glass-active-workout-bar", app: app)
         openSidebar("profile", in: app)
@@ -338,7 +332,7 @@ final class BojiClubUITests: XCTestCase {
         field.tap(); field.typeText("检查今天的训练安排")
         app.buttons["v2-composer-send"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["ai-card-today_training"].firstMatch.waitForExistence(timeout: 15))
-        XCTAssertTrue(app.segmentedControls["v2-mode-picker"].exists)
+        XCTAssertTrue(app.tabBars.firstMatch.exists, "Native tab bar is the workspace switcher")
         XCTAssertLessThanOrEqual(app.navigationBars.count, 1, "Conversation must share the shell navigation layer")
         XCTAssertTrue(composer(app).exists)
         XCTAssertTrue(app.buttons["v2-composer-plus"].exists)
@@ -592,17 +586,16 @@ final class BojiClubUITests: XCTestCase {
 
     func testV2ShellHeaderAndModeSwitch() {
         let app = launchV2()
-        let picker = app.segmentedControls["v2-mode-picker"]
-        XCTAssertTrue(picker.waitForExistence(timeout: 15), "The mode control must be a native segmented picker")
-        XCTAssertTrue(modeButton("Club AI", in: app).isSelected)
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 15), "The workspace switcher is the native tab bar")
+        XCTAssertTrue(modeButton("今天", in: app).isSelected)
         XCTAssertTrue(app.buttons["v2-context-action"].exists)
         XCTAssertTrue(composer(app).exists)
-        XCTAssertFalse(app.tabBars.firstMatch.exists)
+        XCTAssertEqual(app.tabBars.buttons.count, 3, "Exactly three workspace tabs: 今天/训练/记录")
         selectMode("训练", in: app)
         XCTAssertTrue(app.buttons["plan-calendar-toggle"].waitForExistence(timeout: 8))
         XCTAssertFalse(composer(app).isHittable, "Composer must not intercept training input")
         XCTAssertLessThanOrEqual(app.navigationBars.count, 1)
-        selectMode("Club AI", in: app)
+        selectMode("今天", in: app)
         XCTAssertTrue(composer(app).waitForExistence(timeout: 8))
         attachScreenshot("native-ai-home", app: app)
     }
@@ -621,7 +614,7 @@ final class BojiClubUITests: XCTestCase {
         app.buttons["v2-sidebar-close"].tap()
         openSidebar("records", in: app)
         XCTAssertTrue(app.segmentedControls["records-category-picker"].waitForExistence(timeout: 8))
-        selectMode("Club AI", in: app)
+        selectMode("今天", in: app)
         XCTAssertTrue(app.buttons["v2-sidebar-toggle"].waitForExistence(timeout: 8))
         XCTAssertTrue(composer(app).isHittable)
     }
@@ -635,7 +628,7 @@ final class BojiClubUITests: XCTestCase {
         for _ in 0..<20 {
             selectMode("训练", in: app)
             XCTAssertTrue(app.buttons["plan-calendar-toggle"].waitForExistence(timeout: 8))
-            selectMode("Club AI", in: app)
+            selectMode("今天", in: app)
         }
         let restored = composer(app)
         XCTAssertTrue(restored.waitForExistence(timeout: 8))
@@ -672,7 +665,7 @@ final class BojiClubUITests: XCTestCase {
         XCTAssertTrue(card.waitForExistence(timeout: 15))
         XCTAssertTrue(composer(app).exists, "The same composer remains available inside the conversation")
         XCTAssertTrue(app.buttons["v2-composer-plus"].exists)
-        modeButton("Club AI", in: app).tap()
+        modeButton("今天", in: app).tap()
         XCTAssertTrue(card.exists, "Re-tapping selected AI must preserve the current conversation")
         openSidebar("today", in: app)
         XCTAssertTrue(composer(app).waitForExistence(timeout: 8))
@@ -801,9 +794,9 @@ final class BojiClubUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchEnvironment = ["BOJI_PREVIEW_ACCOUNT": "complete", "BOJI_PREVIEW_SKIP_GUIDE": "1", "BOJI_UI_TEST_SEED": "1", "BOJI_V2_SHELL": "0"]
         app.launch()
-        XCTAssertTrue(app.segmentedControls["v2-mode-picker"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 15))
         XCTAssertTrue(composer(app).exists)
-        XCTAssertFalse(app.tabBars.firstMatch.exists, "A retired switch must never restore the legacy shell")
+        XCTAssertTrue(app.tabBars.firstMatch.exists, "The native tab bar is the only shell switcher")
     }
 
     private func completeIndependentIntake(in app: XCUIApplication) {
@@ -892,7 +885,7 @@ final class BojiClubUITests: XCTestCase {
         XCTAssertTrue(app.buttons["plan-calendar-toggle"].waitForExistence(timeout: 8))
         attachScreenshot("glass-training-page", app: app)
         end.press(forDuration: 0.05, thenDragTo: start)
-        XCTAssertTrue(modeButton("Club AI", in: app).isSelected)
+        XCTAssertTrue(modeButton("今天", in: app).isSelected)
         XCTAssertEqual(composer(app).value as? String, "保留这条草稿")
         attachScreenshot("glass-ai-composer", app: app)
     }
@@ -928,7 +921,7 @@ final class BojiClubUITests: XCTestCase {
         selectMode("训练", in: app)
         XCTAssertTrue(app.buttons["plan-calendar-toggle"].waitForExistence(timeout: 8))
         attachScreenshot("native-training-workspace", app: app)
-        selectMode("Club AI", in: app)
+        selectMode("今天", in: app)
         app.buttons["v2-sidebar-toggle"].tap()
         XCTAssertTrue(app.buttons["v2-sidebar-today"].waitForExistence(timeout: 8))
         attachScreenshot("native-sidebar", app: app)
@@ -966,7 +959,7 @@ final class BojiClubUITests: XCTestCase {
 
     func testV2WorkspaceAccessibilityAudit() throws {
         let app = launchV2()
-        XCTAssertTrue(app.segmentedControls["v2-mode-picker"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 15))
         // Xcode 内建无障碍审计作为硬门禁：对比度不足、触控区过小、文字裁切、
         // 不支持动态字体 → 失败。仅把达大字号标准的 nearly-passed 对比度记录为提示。
         // 不再沿用旧组件的逐文案豁免，也不吞掉审计框架抛出的错误。
@@ -1020,7 +1013,7 @@ final class BojiClubUITests: XCTestCase {
         // 训练进行中收起为 mini 条后的工作台也要过审计（Phase 2 曾因 active workout
         // 残留暴露 mini 条对比度问题，此前审计从未覆盖该状态）。
         let app = launchV2()
-        XCTAssertTrue(app.segmentedControls["v2-mode-picker"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 15))
         selectMode("训练", in: app)
         let start = app.buttons["开始训练"].firstMatch
         XCTAssertTrue(start.waitForExistence(timeout: 8), "Training home must offer start")
@@ -1030,7 +1023,7 @@ final class BojiClubUITests: XCTestCase {
         collapse.tap()
         let miniBar = app.descendants(matching: .any)["mini-workout-bar"].firstMatch
         XCTAssertTrue(miniBar.waitForExistence(timeout: 8), "Collapsed workout must show the mini bar")
-        selectMode("Club AI", in: app)
+        selectMode("今天", in: app)
 
         // 折叠点击偶发把 App 切到后台（模拟器手势/灵动岛干扰）——审计前确保前台，
         // 否则对比度会按主屏幕壁纸像素测量，产生无意义失败。
@@ -1128,14 +1121,9 @@ final class BojiClubUITests: XCTestCase {
         ]
         app.launch()
         XCTAssertTrue(app.buttons["v2-sidebar-toggle"].waitForExistence(timeout: 15))
-        let nativePicker = app.segmentedControls["v2-mode-picker"]
-        if nativePicker.waitForExistence(timeout: 3) {
-            nativePicker.buttons["训练"].tap()
-        } else {
-            let training = app.buttons["v2-mode-training"]
-            XCTAssertTrue(training.waitForExistence(timeout: 8))
-            training.tap()
-        }
+        let training = app.tabBars.buttons["训练"]
+        XCTAssertTrue(training.waitForExistence(timeout: 8))
+        training.tap()
         XCTAssertTrue(app.buttons["plan-calendar-toggle"].waitForExistence(timeout: 8))
         // The old shell keeps its inactive AI view at x=-100000. Choose the
         // visible training scroller in both versions before starting measurement.

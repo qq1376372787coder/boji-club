@@ -42,7 +42,6 @@ final class FeatureFlagService: ObservableObject {
 }
 
 enum ClubShellMode: Hashable { case clubAI, training, records }
-private enum ClubShellPage: Hashable { case clubAI, training, records(String) }
 enum ClubSidebarRoute: String, Identifiable {
     // 拍板 #5：`aiMemory`（记忆页浏览入口）随对话下线，收敛为偏好数据所在的
     // 「AI 记录与授权」；记忆页仅保留该页内一处行权入口。
@@ -270,76 +269,62 @@ struct ClubAIShellView: View {
         .background { ClubBackground() }
     }
 
-    private var workspacePath: Binding<NavigationPath> {
-        switch mode {
-        case .clubAI: return $aiPath
-        case .training: return $trainingPath
-        case .records: return $recordsPath131
-        }
-    }
-    private var workspacePage: Binding<ClubShellPage> {
-        Binding(get: {
-            switch mode {
-            case .clubAI: return .clubAI
-            case .training: return .training
-            case .records:
-                return .records(ClubRecordsHub.pageCategories.contains(recordsCategory) ? recordsCategory : "综合看板")
-            }
-        }, set: { page in
-            switch page {
-            case .clubAI: mode = .clubAI
-            case .training: mode = .training
-            case .records(let category): recordsCategory = category; mode = .records
-            }
-        })
-    }
     private var navigationWorkspace: some View {
-        NavigationStack(path: workspacePath) {
-            // One pager owns horizontal gestures, including the record categories.
-            TabView(selection: workspacePage) {
-                aiWorkspace.tag(ClubShellPage.clubAI)
-                    .accessibilityHidden(mode != .clubAI)
-                ClubPlanHub(selectedDate: $selectedDate, openWorkout: startTrainingFromPlan, embeddedInShell: true, scrollAnchor: $trainingScrollAnchor, calendarExpanded: $calendarExpanded)
-                    .tag(ClubShellPage.training)
-                    .accessibilityHidden(mode != .training)
-                ForEach(ClubRecordsHub.pageCategories, id: \.self) { category in
-                    ClubRecordsHub(category: $recordsCategory, embeddedInShell: true, pagedCategory: category)
-                        .tag(ClubShellPage.records(category))
-                        .accessibilityHidden(workspacePage.wrappedValue != .records(category))
-                }
+        // 原生 TabView 三 tab（2+3 规格表 §1.1）：今天/训练/记录，tab bar 由系统渲染（iOS 26 悬浮玻璃）。
+        TabView(selection: $mode) {
+            NavigationStack(path: $aiPath) {
+                aiWorkspace
+                    .navigationTitle("今天")
+                    .navigationBarTitleDisplayMode(.large)
+                    .toolbar { shellToolbar(for: .clubAI) }
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(transitionAnimation, value: workspacePage.wrappedValue)
-            .clubBottomBar { bottomDock }
-            .toolbar { rootToolbar }
-            .navigationBarTitleDisplayMode(.inline)
+            .tabItem { Label("今天", systemImage: "house") }
+            .accessibilityIdentifier("v2-tab-today")
+            .tag(ClubShellMode.clubAI)
+
+            NavigationStack(path: $trainingPath) {
+                ClubPlanHub(selectedDate: $selectedDate, openWorkout: startTrainingFromPlan, embeddedInShell: true, scrollAnchor: $trainingScrollAnchor, calendarExpanded: $calendarExpanded)
+                    .toolbar { shellToolbar(for: .training) }
+            }
+            .tabItem { Label("训练", systemImage: "figure.strengthtraining.traditional") }
+            .accessibilityIdentifier("v2-tab-training")
+            .tag(ClubShellMode.training)
+
+            NavigationStack(path: $recordsPath131) {
+                // 分类横翻收进 hub 内部（pagedCategory 为空时自带 page 样式）。
+                ClubRecordsHub(category: $recordsCategory, embeddedInShell: true)
+                    .toolbar { shellToolbar(for: .records) }
+            }
+            .tabItem { Label("记录", systemImage: "list.bullet.rectangle") }
+            .accessibilityIdentifier("v2-tab-records")
+            .tag(ClubShellMode.records)
         }
+        .clubBottomBar { bottomDock }
     }
 
-    @ToolbarContentBuilder private var rootToolbar: some ToolbarContent {
+    @ToolbarContentBuilder private func shellToolbar(for tab: ClubShellMode) -> some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Button(action: openSidebar) { Image(systemName: "sidebar.leading") }
                 .accessibilityLabel(horizontalSizeClass == .regular && columns == .all ? "收起侧栏" : "打开侧栏")
                 .accessibilityIdentifier("v2-sidebar-toggle")
                 .accessibilityFocused($sidebarToggleFocused)
         }
-        ToolbarItem(placement: .principal) { ClubModeCapsulePicker(mode: $mode) }
         ToolbarItem(placement: .topBarTrailing) {
-            if mode == .clubAI {
+            if tab == .clubAI {
                 Menu {
-                    Button("挑选经典方案", systemImage: "rectangle.stack.badge.play") { showTrainingPlans = true }
-                    Button("定制训练计划", systemImage: "wand.and.stars") { showPlanWizard = true }
+                    Button("看现成方案", systemImage: "rectangle.stack.badge.play") { showTrainingPlans = true }
+                    Button("让 AI 帮排", systemImage: "wand.and.stars") { showPlanWizard = true }
                     Button("身体档案与报告", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
                 } label: { Image(systemName: "ellipsis") }
                 .accessibilityLabel("更多操作").accessibilityIdentifier("v2-context-action")
-            } else if mode == .training {
+            } else if tab == .training {
                 Button { showTrainingPlans = true } label: { Image(systemName: "calendar") }
                     .accessibilityLabel("管理训练计划").accessibilityIdentifier("v2-context-action")
             } else {
                 Menu {
                     Button("记录饮食") { openMeal("手动") }
                     Button("记录身体数据") { bodyEntryRoute = ClubDateRoute(date: Date()) }
-                    Button("解读记录", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
+                    Button("AI 报告", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
                 } label: { Image(systemName: "ellipsis") }.accessibilityLabel("记录更多操作").accessibilityIdentifier("v2-context-action")
             }
         }
@@ -779,29 +764,6 @@ private struct HubSectionRoute: Identifiable { let id = UUID(); let section: Str
 private struct ClubDateRoute: Identifiable { let id = UUID(); let date: Date }
 
 /// Native selection appearance; the page container owns horizontal navigation.
-struct ClubModeCapsulePicker: View {
-    @Binding var mode: ClubShellMode
-    @Environment(\.dynamicTypeSize) private var typeSize
-    var body: some View {
-        Group {
-            if typeSize.isAccessibilitySize {
-                Picker("工作区", selection: $mode) { options }.pickerStyle(.menu)
-            } else {
-                Picker("工作区", selection: $mode) { options }
-                    .pickerStyle(.segmented).frame(idealWidth: 240, maxWidth: 300)
-            }
-        }
-        .accessibilityIdentifier("v2-mode-picker")
-    }
-    private var options: some View {
-        Group {
-            Text("首页").tag(ClubShellMode.clubAI)
-            Text("训练").tag(ClubShellMode.training)
-            Text("记录").tag(ClubShellMode.records)
-        }
-    }
-}
-
 extension Notification.Name {
     static let bojiPlanApplied135 = Notification.Name("bojiPlanApplied135")
     static let clubShellReturnToToday = Notification.Name("clubShellReturnToToday")
@@ -855,7 +817,7 @@ struct SidebarHostView: View {
 
                     Section("数据与分析") {
                         entry("身体档案与报告", symbol: "doc.text.magnifyingglass", id: "v2-sidebar-reports", action: onOpenReports)
-                        entry("综合看板与记录", symbol: "chart.xyaxis.line", id: "v2-sidebar-records") { onOpen(.records) }
+                        entry("概览与记录", symbol: "chart.xyaxis.line", id: "v2-sidebar-records") { onOpen(.records) }
                     }
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -1117,7 +1079,7 @@ struct ClubAIWorkspaceIdleView: View {
                             Text("俱乐部成长季")
                                 .bojiType(.label)
                                 .foregroundStyle(BojiColor.textPrimary)
-                            Text("赛季任务 · 徽章 · 奖励")
+                            Text("打卡、徽章、奖励")
                                 .bojiType(.caption)
                                 .foregroundStyle(BojiColor.textTertiary)
                         }
@@ -1134,7 +1096,7 @@ struct ClubAIWorkspaceIdleView: View {
                 .accessibilityIdentifier("v2-home-club-season")
 
                 if isNewUser {
-                    Button("设置通知与健康授权", action: onOpenPermissions)
+                    Button("打开通知和健康权限", action: onOpenPermissions)
                         .bojiType(.label)
                         .foregroundStyle(BojiColor.textSecondary)
                         .frame(maxWidth: .infinity, minHeight: 44)
@@ -1343,7 +1305,7 @@ struct ClubAIWorkspaceIdleView: View {
                     Text("薄肌俱乐部")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.textTertiary)
-                    Text("战备决策舱")
+                    Text("薄肌俱乐部")
                         .bojiType(.section)
                         .foregroundStyle(BojiColor.textPrimary)
                 }
@@ -1361,7 +1323,7 @@ struct ClubAIWorkspaceIdleView: View {
         .padding(.vertical, BojiLayout.tight)
     }
 
-    // MARK: - 核心层级 1: 身体战备与恢复就绪卡
+    // MARK: - 身体状态卡（批次 0：假数据清零——88 分/固定简报/上肢推类占位全部移除，建议绑定真实洞察）
     private var readinessGaugeCard: some View {
         let healthSummary = health.summary(for: Date())
         let sleepMin = healthSummary?.nightSleep?.value ?? healthSummary?.sleep?.value
@@ -1371,26 +1333,27 @@ struct ClubAIWorkspaceIdleView: View {
                 let m = Int(min) % 60
                 return "\(h)h \(m)m"
             }
-            return "7.5h 计划"
+            return "还没同步到"
         }()
         let rhr = healthSummary?.restingHeartRate?.value
         let rhrText: String = {
             if let val = rhr, val > 0 {
                 return "\(Int(val)) bpm"
             }
-            return "54 bpm"
+            return "还没同步到"
         }()
         let steps = healthSummary?.steps?.value
         let stepsText: String = {
             if let val = steps, val > 0 {
                 return "\(Int(val)) 步"
             }
-            return "-- 步"
+            return "还没同步到"
         }()
+        let insight = ClubHomeInsightMerge.resolve(local: ClubInsightLedger.current(in: store.state, date: Date()).first, server: ai.homeInsight)
 
         return VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
             HStack(alignment: .center) {
-                Label("战备状态", systemImage: "gauge.with.needle")
+                Label("身体状态", systemImage: "gauge.with.needle")
                     .bojiFont(.label)
                     .foregroundStyle(BojiColor.textPrimary)
                     .padding(.horizontal, BojiLayout.inline)
@@ -1398,59 +1361,27 @@ struct ClubAIWorkspaceIdleView: View {
                     .background(BojiColor.brandMist, in: Capsule())
 
                 Spacer()
-
-                Text("神经负荷恢复良好")
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.emeraldAccent)
             }
 
-            HStack(spacing: BojiLayout.cardInset) {
-                // 就绪指数
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .firstTextBaseline, spacing: 0) {
-                        Text("88")
-                            .bojiType(.hero)
-                            .foregroundStyle(BojiColor.textPrimary)
-                        Text("%")
-                            .bojiType(.secondary)
-                            .foregroundStyle(BojiColor.textSecondary)
-                    }
-                    Text("综合充能")
-                        .bojiType(.caption)
-                        .foregroundStyle(BojiColor.textTertiary)
-                }
-                .frame(width: 88, alignment: .leading)
-
-                Divider()
-                    .frame(height: 48)
-                    .overlay(BojiColor.divider)
-
-                // 2x2 极简矩阵
-                VStack(spacing: BojiLayout.inline) {
-                    HStack(spacing: BojiLayout.rowGap) {
-                        metricItem(title: "睡眠时长", value: sleepText, systemImage: "bed.double.fill")
-                        metricItem(title: "静息心率", value: rhrText, systemImage: "heart.fill")
-                    }
-                    HStack(spacing: BojiLayout.rowGap) {
-                        metricItem(title: "恢复窗口", value: "上肢推类", systemImage: "figure.strengthtraining.traditional")
-                        metricItem(title: "今日步数", value: stepsText, systemImage: "figure.walk")
-                    }
-                }
-                .frame(maxWidth: .infinity)
+            HStack(spacing: BojiLayout.rowGap) {
+                metricItem(title: "睡眠", value: sleepText, systemImage: "bed.double.fill")
+                metricItem(title: "心率", value: rhrText, systemImage: "heart.fill")
+                metricItem(title: "步数", value: stepsText, systemImage: "figure.walk")
             }
+            .frame(maxWidth: .infinity)
 
-            // AI 战术决策微简报
+            // 今日建议：绑定真实洞察（服务端/本地规则），没有数据就说没有，不再显示写死的分析段。
             VStack(alignment: .leading, spacing: BojiLayout.tight) {
                 HStack(spacing: BojiLayout.tight) {
                     Image(systemName: "chart.xyaxis.line")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.brandAccent)
-                    Text("战术简报")
+                    Text("今天的建议")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.brandAccent)
                 }
 
-                Text("依据近期训练容量与静息心率测算，上肢肌群已完成超量恢复，神经疲劳指数处于良好区间。建议按计划推进核心复合动作。")
+                Text(insight?.detail ?? "练完或记完吃的，建议会出现在这里。")
                     .bojiType(.label)
                     .foregroundStyle(BojiColor.textSecondary)
                     .lineSpacing(3)
@@ -1494,7 +1425,7 @@ struct ClubAIWorkspaceIdleView: View {
     private var heroMissionCard: some View {
         VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
             HStack {
-                Label(activeWorkout == nil ? "今日战术任务" : "进行中的训练", systemImage: "figure.strengthtraining.traditional")
+                Label(activeWorkout == nil ? "今天练什么" : "正在练", systemImage: "figure.strengthtraining.traditional")
                     .bojiFont(.label)
                     .foregroundStyle(BojiColor.textPrimary)
                     .padding(.horizontal, BojiLayout.inline)
@@ -1516,7 +1447,7 @@ struct ClubAIWorkspaceIdleView: View {
                         }
                     }
                 } else {
-                    Text(today.exercises.isEmpty ? "暂无预设计划" : "\(today.trainingLog.exercises.count) 个动作 · 预计 45 分钟")
+                    Text(today.exercises.isEmpty ? "还没排计划" : "\(today.trainingLog.exercises.count) 个动作 · 预计 45 分钟")
                         .bojiFont(.secondary, monospacedDigits: true)
                         .foregroundStyle(BojiColor.textSecondary)
                 }
@@ -1527,7 +1458,7 @@ struct ClubAIWorkspaceIdleView: View {
                     Text(active.workoutName)
                         .bojiFont(.cardTitle)
                         .foregroundStyle(BojiColor.textPrimary)
-                    Text("已确认登记 \(active.completedSets)/\(active.totalSets) 组 · 保持组间专注")
+                    Text("记了 \(active.completedSets) 组，还剩 \(max(0, active.totalSets - active.completedSets)) 组")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.textSecondary)
                 }
@@ -1536,7 +1467,7 @@ struct ClubAIWorkspaceIdleView: View {
                     HStack(spacing: BojiLayout.inline) {
                         Image(systemName: "play.fill")
                             .bojiType(.secondary)
-                        Text("继续当前训练")
+                        Text("继续练")
                             .bojiType(.body)
                     }
                     .frame(maxWidth: .infinity, minHeight: BojiSize.primaryButtonHeight)
@@ -1562,7 +1493,7 @@ struct ClubAIWorkspaceIdleView: View {
                         }
                         .fixedSize(horizontal: false, vertical: true)
                         HStack(spacing: BojiLayout.tight) {
-                            Text("依据：近 3 天训练量与睡眠，强度已对齐你的恢复窗口")
+                            Text("按你最近 3 天的练和睡排的量，今天就按这个强度来。")
                                 .bojiType(.secondary)
                                 .foregroundStyle(BojiColor.textSecondary)
                             Spacer(minLength: 0)
@@ -1593,9 +1524,9 @@ struct ClubAIWorkspaceIdleView: View {
                 VStack(alignment: .leading, spacing: BojiLayout.tight) {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: BojiLayout.inline) {
-                            quickModifierChip(title: "肩峰受限换动作", systemImage: "arrow.triangle.swap")
-                            quickModifierChip(title: "压缩至30分钟", systemImage: "timer")
-                            quickModifierChip(title: "递减组强泵感", systemImage: "waveform.path.ecg")
+                            quickModifierChip(title: "肩膀不舒服，换个动作", systemImage: "arrow.triangle.swap")
+                            quickModifierChip(title: "缩短到 30 分钟", systemImage: "timer")
+                            quickModifierChip(title: "想练狠一点", systemImage: "waveform.path.ecg")
                         }
                     }
 
@@ -1612,34 +1543,34 @@ struct ClubAIWorkspaceIdleView: View {
                         HStack(spacing: BojiLayout.inline) {
                             Image(systemName: today.trainingLog.hasConfirmedTraining ? "doc.text.magnifyingglass" : "play.fill")
                                 .bojiType(.secondary)
-                            Text(today.trainingLog.hasConfirmedTraining ? "查看训练记录" : "开始今日训练")
+                            Text(today.trainingLog.hasConfirmedTraining ? "看今天的记录" : "开练")
                                 .bojiType(.body)
                         }
                         .frame(maxWidth: .infinity, minHeight: BojiSize.primaryButtonHeight)
                     }
                     .buttonStyle(BojiButtonStyle(kind: .primary))
 
-                    Button("计划详情") { onOpenHub("训练计划") }
+                    Button("看计划") { onOpenHub("训练计划") }
                         .buttonStyle(BojiButtonStyle(kind: .secondary))
                         .frame(minHeight: BojiSize.primaryButtonHeight)
                 }
 
             } else {
                 VStack(alignment: .leading, spacing: BojiLayout.tight) {
-                    Text("超量恢复日")
+                    Text("今天不用练力量")
                         .bojiFont(.cardTitle)
                         .foregroundStyle(BojiColor.textPrimary)
-                    Text("今日未安排力量训练任务，适宜进行轻度拉伸、筋膜放松或补充充足蛋白质。")
+                    Text("今天没排力量训练。想动一动就做做拉伸，蛋白质记得吃够。")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.textSecondary)
                         .lineSpacing(3)
                 }
 
                 HStack(spacing: BojiLayout.rowGap) {
-                    Button("挑选经典方案") { showPresetPlans = true }
-                        .buttonStyle(BojiButtonStyle(kind: .secondary))
-                    Button("制定计划", action: onArrangePlan131)
+                    Button("看现成方案") { showPresetPlans = true }
                         .buttonStyle(BojiButtonStyle(kind: .primary))
+                    Button("让 AI 帮排", action: onArrangePlan131)
+                        .buttonStyle(BojiButtonStyle(kind: .secondary))
                 }
             }
         }
@@ -1657,7 +1588,7 @@ struct ClubAIWorkspaceIdleView: View {
         Button {
             BojiHaptics.tick()
             withAnimation(BojiMotion2.state) {
-                appliedModifierNotice = "已根据「\(title)」微调动作编排"
+                appliedModifierNotice = "改好了：\(title)"
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 withAnimation { appliedModifierNotice = nil }
@@ -1696,7 +1627,7 @@ struct ClubAIWorkspaceIdleView: View {
 
         return VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
             HStack {
-                Label("能量与营养", systemImage: "fork.knife")
+                Label("今天吃了多少", systemImage: "fork.knife")
                     .bojiFont(.label)
                     .foregroundStyle(BojiColor.textPrimary)
                     .padding(.horizontal, BojiLayout.inline)
@@ -1800,7 +1731,7 @@ struct ClubAIWorkspaceIdleView: View {
                     .bojiType(.body)
                     .foregroundStyle(BojiColor.textPrimary)
                 Spacer()
-                Text("三大专业进阶引擎")
+                Text("三大报告")
                     .bojiType(.caption)
                     .foregroundStyle(BojiColor.textTertiary)
             }
@@ -1810,8 +1741,8 @@ struct ClubAIWorkspaceIdleView: View {
                 Button(action: onArrangePlan131) {
                     intelligenceFeatureRow(
                         title: "训练计划",
-                        roleTag: "规划未来",
-                        detail: "个性化周期定制 · 动作库与器械校验",
+                        roleTag: "排计划",
+                        detail: "帮你排周期，动作按你的器械挑",
                         symbol: "calendar.badge.clock",
                         accentColor: BojiColor.brandGold
                     )
@@ -1825,8 +1756,8 @@ struct ClubAIWorkspaceIdleView: View {
                     let hasConfirmed = today.trainingLog.hasConfirmedTraining
                     intelligenceFeatureRow(
                         title: "日报",
-                        roleTag: "总结当下",
-                        detail: hasConfirmed ? "今日训练已确认 · 查看客观数据与建议" : "今日出勤核算、餐食营养与明日恢复",
+                        roleTag: "看今天",
+                        detail: hasConfirmed ? "今天练完了，数据和建议都在里面" : "今天练得怎样、吃得怎样、明天怎么恢复",
                         symbol: "sun.max",
                         accentColor: .orange
                     )
@@ -1839,8 +1770,8 @@ struct ClubAIWorkspaceIdleView: View {
                 Button(action: onOpenWeeklyReport) {
                     intelligenceFeatureRow(
                         title: "周报",
-                        roleTag: "长期进步",
-                        detail: "7天出勤、总容量变化对比与体型趋势复盘",
+                        roleTag: "看这周",
+                        detail: "这周练了几天、重量有没有涨、身形变化",
                         symbol: "chart.xyaxis.line",
                         accentColor: .blue
                     )
@@ -1942,7 +1873,7 @@ struct ClubAIWorkspaceIdleView: View {
                         Text("我还没有计划，需要协助")
                             .bojiType(.bodyStrong)
                             .foregroundStyle(BojiColor.textPrimary)
-                        Text("挑选经典成熟方案，或定制属于你的计划")
+                        Text("看现成方案，或者让我们帮你排")
                             .bojiType(.caption)
                             .foregroundStyle(BojiColor.textSecondary)
                     }

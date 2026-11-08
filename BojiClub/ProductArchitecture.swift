@@ -556,7 +556,7 @@ struct ClubRecordsExecutiveDashboard: View {
                     .bojiType(.caption)
                     .foregroundStyle(BojiColor.textTertiary)
                     .textCase(.uppercase)
-                Text("综合看板")
+                Text("概览")
                     .bojiType(.title)
                     .foregroundStyle(BojiColor.textPrimary)
             }
@@ -919,6 +919,8 @@ struct ClubRecordsHub: View {
     @State private var mealDate = Date()
     @State private var showReports = false
     static let pageCategories = ["综合看板", "训练", "饮食", "身体"]
+    /// 显示名与内部路由 key 分离：改显示名不断路由（定稿第二节 ⚠️ 项）。
+    static func displayName(_ category: String) -> String { category == "综合看板" ? "概览" : category }
     private var categories: [String] { Self.pageCategories }
     private var category: Binding<String> { externalCategory ?? $localCategory }
     private var page: Binding<String> {
@@ -930,7 +932,7 @@ struct ClubRecordsHub: View {
         VStack(spacing: 0) {
             Picker("记录分类", selection: page) {
                 ForEach(categories, id: \.self) { title in
-                    Text(title).tag(title).accessibilityIdentifier("records-tab-" + title)
+                    Text(Self.displayName(title)).tag(title).accessibilityIdentifier("records-tab-" + title)
                 }
             }
             .clubAdaptivePicker()
@@ -956,7 +958,7 @@ struct ClubRecordsHub: View {
         .toolbar {
             if !embeddedInShell {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("解读记录", systemImage: "ellipsis") { showReports = true }
+                    Button("AI 报告", systemImage: "ellipsis") { showReports = true }
                 }
             }
         }

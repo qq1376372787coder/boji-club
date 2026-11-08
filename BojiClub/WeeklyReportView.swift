@@ -411,7 +411,7 @@ struct WeeklyReportView: View {
                     HStack {
                         Image(systemName: "arrow.right.circle")
                             .foregroundStyle(BojiColor.brandGold)
-                        Text("下一周战术建议")
+                        Text("下周安排")
                             .bojiType(.body)
                             .foregroundStyle(BojiColor.textPrimary)
                     }
