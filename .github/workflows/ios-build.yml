@@ -1167,9 +1167,10 @@ jobs:
             fi
 
             echo "Running: $BUILD_CMD"
-            # 用 script 把完整输出落到日志文件（保留退出码），失败时 Extract build
-            # errors 一步会抓出 xcodebuild 错误行，不必再下载日志归档。
-            script -q -e -c "$BUILD_CMD" "$RUNNER_TEMP/xcodebuild.log"
+            # 完整输出同时落盘与回显；pipefail 保证失败时仍是 xcodebuild 的退出码。
+            # 注意：macOS 的 script(1) 不支持 -e，用 script -e 会秒退（exit 1），所以用 tee。
+            set -o pipefail
+            eval $BUILD_CMD 2>&1 | tee "$RUNNER_TEMP/xcodebuild.log"
           else
             BUILD_CMD="xcodebuild"
             if [ -n "$WORKSPACE" ]; then
@@ -1207,9 +1208,10 @@ jobs:
             fi
 
             echo "Running: $BUILD_CMD"
-            # 用 script 把完整输出落到日志文件（保留退出码），失败时 Extract build
-            # errors 一步会抓出 xcodebuild 错误行，不必再下载日志归档。
-            script -q -e -c "$BUILD_CMD" "$RUNNER_TEMP/xcodebuild.log"
+            # 完整输出同时落盘与回显；pipefail 保证失败时仍是 xcodebuild 的退出码。
+            # 注意：macOS 的 script(1) 不支持 -e，用 script -e 会秒退（exit 1），所以用 tee。
+            set -o pipefail
+            eval $BUILD_CMD 2>&1 | tee "$RUNNER_TEMP/xcodebuild.log"
           fi
 
           # Create IPA
