@@ -1,0 +1,74 @@
+{
+  "devices" : [
+    {
+      "architecture" : "arm64",
+      "deviceId" : "F62C9B10-2130-4BAC-88A3-7E15F2314324",
+      "deviceName" : "PerfTest-iPhone",
+      "modelName" : "iPhone 16 Pro",
+      "osBuildNumber" : "23C54",
+      "osVersion" : "26.2",
+      "platform" : "iOS Simulator"
+    }
+  ],
+  "testNodes" : [
+    {
+      "children" : [
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "children" : [
+                    {
+                      "name" : "JourneyComponents.swift:59: Accessing Environment<Bool>'s value outside of being installed on a View. This will always read the default value and will not update.",
+                      "nodeType" : "Runtime Warning"
+                    }
+                  ],
+                  "duration" : "1m 13s",
+                  "durationInSeconds" : 73.25325191020966,
+                  "name" : "testLaunchBenchmark()",
+                  "nodeIdentifier" : "BojiClubPerformanceTests/testLaunchBenchmark()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubPerformanceTests/testLaunchBenchmark",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "children" : [
+                    {
+                      "name" : "JourneyComponents.swift:59: Accessing Environment<Bool>'s value outside of being installed on a View. This will always read the default value and will not update.",
+                      "nodeType" : "Runtime Warning"
+                    }
+                  ],
+                  "duration" : "37s",
+                  "durationInSeconds" : 37.872411012649536,
+                  "name" : "testScrollBenchmark()",
+                  "nodeIdentifier" : "BojiClubPerformanceTests/testScrollBenchmark()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubPerformanceTests/testScrollBenchmark",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "BojiClubPerformanceTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubPerformanceTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            }
+          ],
+          "name" : "BojiClubUITests",
+          "nodeIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests",
+          "nodeType" : "UI test bundle",
+          "result" : "Passed"
+        }
+      ],
+      "name" : "BojiClub",
+      "nodeType" : "Test Plan",
+      "result" : "Passed"
+    }
+  ],
+  "testPlanConfigurations" : [
+    {
+      "configurationId" : "1",
+      "configurationName" : "Test Scheme Action"
+    }
+  ]
+}
