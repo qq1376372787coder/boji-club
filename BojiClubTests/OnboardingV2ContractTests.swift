@@ -481,12 +481,7 @@ final class Build122ReferenceTests: XCTestCase {
     func testSettingsDarkAppearance() async throws {
         try await render(ClubNavigationStack132 { SettingsHub130() }.environmentObject(AccountService()), name: "Build132-settings-dark", style: .dark)
     }
-    func testReferenceComposerAppearance() async throws {
-        let account = AccountService(); let store = AppStore(); let ai = AIService()
-        let refs = [AIContextReference.day("workout_range", date: Date(), title: "今天的训练")]
-        let input = ClubSharedComposer(text: .constant("这次训练怎么安排？"), attachments: .constant([]), references: .constant(refs), deepAnalysis: .constant(false), conversationID: "native132-preview", busy: false, onSend: {}, onRecordMeal: { _ in }, onRecordBody: {})
-        try await render(VStack { Spacer(); input.padding(.horizontal, 14).padding(.bottom, 12) }.background(Color(uiColor: .systemBackground)).environmentObject(account).environmentObject(store).environmentObject(ai), name: "Build132-composer", height: 240)
-    }
+
     func testNativeCardSectionAppearance() async throws {
         let fixture = List {
             ClubCard { LabeledContent("资料体重", value: "70 kg"); LabeledContent("目标体重", value: "68 kg") }

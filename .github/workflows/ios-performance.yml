@@ -138,13 +138,17 @@ jobs:
         env:
           UDID: ${{ steps.sim.outputs.udid }}
         run: |
+          # 管道吞退出码会让构建失败假绿（今天已踩两次），必须加 pipefail。
+          set -o pipefail
           mkdir -p test-results
           # 先单独构建测试，把构建错误和测试失败分开看；日志落盘便于失败时定位。
+          # -only-testing 限定只构建性能用例目标，隔离其他测试目标的问题。
           echo "=== 构建测试目标 ==="
           xcodebuild build-for-testing \
             -project BojiClub.xcodeproj \
             -scheme BojiClub \
             -destination "platform=iOS Simulator,id=$UDID" \
+            -only-testing:BojiClubUITests/BojiClubPerformanceTests \
             -quiet 2>&1 | tee test-results/build-for-testing.log || {
               echo "::error::build-for-testing 失败，见 Step Summary 的日志尾部"
               tail -40 test-results/build-for-testing.log >> "$GITHUB_STEP_SUMMARY"
@@ -172,8 +176,16 @@ jobs:
             xcrun xcresulttool get test-results summary --path test-results/performance.xcresult --format json > test-results/performance-summary.json 2>/dev/null || true
             xcrun xcresulttool get test-results tests --path test-results/performance.xcresult --format json > test-results/performance-tests.json 2>/dev/null || true
             echo "已导出 JSON"
+            # 空跑判定：一个用例都没跑到就不算基线（防止管道吞退出码造成的假绿）。
+            COUNT=$(jq -r '.totalTestCount // 0' test-results/performance-summary.json 2>/dev/null || echo 0)
+            if [ "$COUNT" = "0" ]; then
+              echo "::error::性能用例空跑（totalTestCount=0），基线不成立"
+              exit 1
+            fi
+            echo "跑到用例数: $COUNT"
           else
-            echo "没有 xcresult 产物，跳过导出"
+            echo "::error::没有 xcresult 产物，基线不成立"
+            exit 1
           fi
 
       - name: Upload performance artifacts
