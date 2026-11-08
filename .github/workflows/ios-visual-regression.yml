@@ -147,6 +147,21 @@ jobs:
             xcrun xcresulttool export attachments \
               --path test-results/visual.xcresult \
               --output-path test-results/shots 2>&1 || true
+
+            # 导出文件名默认是 UUID，按 manifest 里的 attachment 名改回可读命名
+            # （R{编号}-{页}-{状态}-{亮|暗|AX}.png），方便直接审图。
+            if [ -f test-results/shots/manifest.json ]; then
+              jq -c '.. | objects | select(has("exportedFileName") and has("fileName")) | {e: .exportedFileName, n: .fileName}' \
+                test-results/shots/manifest.json 2>/dev/null | while read -r item; do
+                e=$(printf '%s' "$item" | jq -r '.e // empty' 2>/dev/null || true)
+                n=$(printf '%s' "$item" | jq -r '.n // empty' 2>/dev/null || true)
+                if [ -n "$e" ] && [ -n "$n" ] && [ "$e" != "$n" ] \
+                   && [ -f "test-results/shots/$e" ] && [ ! -e "test-results/shots/$n" ]; then
+                  mv "test-results/shots/$e" "test-results/shots/$n"
+                fi
+              done || true
+            fi
+
             COUNT=$(find test-results/shots -type f \( -name '*.png' -o -name '*.jpg' \) | wc -l | tr -d ' ')
             echo "已导出截图: $COUNT 张"
             echo "截图清单" >> "$GITHUB_STEP_SUMMARY"
