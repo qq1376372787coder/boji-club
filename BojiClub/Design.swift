@@ -175,8 +175,8 @@ extension View {
         modifier(ClubBottomBarModifier(bar: content()))
     }
 
-    /// 滚动位移监听（批次 2 玻璃沉浸：Hero 收缩玻璃条等滚动驱动动效的唯一桥接）。
-    /// iOS 18+ 用系统 onScrollGeometryChange；iOS 17 静默不触发——Hero 保持全屏不收缩，功能不减。
+    /// 滚动位移监听（Hero M6 视差等滚动驱动动效的唯一桥接；原「收缩玻璃条」用法已随组件废止删除，见 `63e0b27`）。
+    /// iOS 18+ 用系统 onScrollGeometryChange；iOS 17 静默不触发——视差不动、其余布局照常，功能不减。
     /// 页面层禁止自行散写 #available 滚动监听，一律经本修饰符。
     func clubTrackScrollY(_ action: @escaping (CGFloat) -> Void) -> some View {
         modifier(ClubScrollYTracker(action: action))

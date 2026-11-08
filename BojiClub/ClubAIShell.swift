@@ -1045,7 +1045,8 @@ struct ClubAIWorkspaceIdleView: View {
 
     // MARK: - 顶部标题区
     /// Hero 三段式（施工卡 §一）：视频带（只有品牌小字 + 暂停钮）→ 页面底色排印区 → 细线数据条。
-    /// 滚动收缩玻璃条已废止（规范 §2 最高优先级）：主操作交给底部玻璃胶囊，滚动动效改走 M6 视差。
+    /// 滚动收缩玻璃条已废止并删除（规范 §2 最高优先级；组件已于 `63e0b27` 移除）：
+    /// 主操作交给底部玻璃胶囊，滚动动效走 M6 视差（`clubTrackScrollY` 继续喂 `heroParallaxProgress`）。
     private var heroGlassCard: some View {
         TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion)) { context in
             let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
