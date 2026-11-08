@@ -910,6 +910,7 @@ struct ClubAIWorkspaceIdleView: View {
     @State private var appliedModifierNotice: String? = nil
     @State private var revealed = false
     @State private var heroScrollY: CGFloat = 0
+    @State private var showScoreBreakdown = false
     private var heroShrunk: Bool { heroScrollY >= 120 }
     @ObservedObject private var flags = FeatureFlagService.shared
 
@@ -1029,6 +1030,13 @@ struct ClubAIWorkspaceIdleView: View {
                 }
             }
         }
+        .sheet(isPresented: $showScoreBreakdown) {
+            NavigationStack {
+                scoreBreakdownCard
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showScoreBreakdown = false } } }
+            }
+            .presentationDetents([.medium, .large])
+        }
         .background(BojiColor.pageBackground)
         .accessibilityIdentifier("v2-ai-workspace")
     }
@@ -1136,6 +1144,7 @@ struct ClubAIWorkspaceIdleView: View {
 
     private struct HeroReadiness {
         let score: Int?
+        let breakdown: ScoreBreakdown?
         let metrics: [HeroMetric]
     }
 
@@ -1161,7 +1170,8 @@ struct ClubAIWorkspaceIdleView: View {
         if let sleepText { metrics.append(HeroMetric(label: "睡眠", value: sleepText, unit: nil)) }
         if let rhrText { metrics.append(HeroMetric(label: "心率", value: rhrText, unit: "bpm")) }
         if let stepsText { metrics.append(HeroMetric(label: "步数", value: stepsText, unit: "步")) }
-        return HeroReadiness(score: readinessScore(sleepMinutes: sleepMin, restingHeartRate: rhr), metrics: metrics)
+        let breakdown = scoreBreakdown(sleepMinutes: sleepMin, restingHeartRate: rhr)
+        return HeroReadiness(score: breakdown?.total, breakdown: breakdown, metrics: metrics)
     }
 
     /// 第二段（施工卡 §一 C 区）：页面底色上的排印区——eyebrow T5 + 巨号 T1 88 +「状态分」T5 + 一句话 T4 15。
@@ -1178,14 +1188,20 @@ struct ClubAIWorkspaceIdleView: View {
                 .padding(.bottom, BojiLayout.tight)
 
             if let score = data.score {
-                // 巨号评分当主角（T1 88 heavy 等宽，M8 数字滚动在组件内），右侧 T5 标签说明它是什么
-                HStack(alignment: .firstTextBaseline, spacing: 7) {
-                    BojiEditorialNumber(value: "\(score)")
-                    Text("状态分")
-                        .bojiType(.caption)
-                        .foregroundStyle(BojiColor.textTertiary)
-                        .bojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: 1)
+                // 巨号评分当主角（T1 88 heavy 等宽，M8 数字滚动在组件内），右侧「状态分 ›」可点看分项构成
+                Button { showScoreBreakdown = true } label: {
+                    HStack(alignment: .firstTextBaseline, spacing: 7) {
+                        BojiEditorialNumber(value: "\(score)")
+                        Text("状态分 ›")
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.textTertiary)
+                            .bojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: 1)
+                    }
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("v2-home-score-detail")
+                .accessibilityLabel("状态分 \(score)，点按查看怎么算的")
             } else {
                 Text(today.exercises.isEmpty ? "今天还没排训练" : "今天练 \(planLead)")
                     .bojiType(.title)
@@ -1374,26 +1390,98 @@ struct ClubAIWorkspaceIdleView: View {
         }
     }
 
-    // MARK: - 身体状态评分（批次 1：巨号排印当主角；评分=睡眠+心率+近 3 天训练的真实规则，缺数据说缺）
-    /// 状态评分（0…100）：睡眠 50 分（7.5h 满）、静息心率 30 分（越低越好，65/80 断点）、近 3 天训练 20 分。
-    /// 关键项（睡眠与心率）都没同步到时返回 nil，界面显示「还没同步到」，绝不编造分数。
-    private func readinessScore(sleepMinutes: Double?, restingHeartRate: Double?) -> Int? {
+    // MARK: - 身体状态评分（巨号排印当主角；评分=睡眠+心率+近 3 天训练的真实规则，缺数据说缺）
+    /// 状态分构成：睡眠 50（7.5 小时满）、静息心率 30（越低越好，65 断点）、近 3 天训练 20（练过）/6（没练）。
+    struct ScoreBreakdown {
+        let total: Int
+        let sleep: Int
+        let heart: Int
+        let training: Int
+    }
+
+    /// 关键项（睡眠与心率）都没同步到时返回 nil，界面不给分，绝不编造分数。
+    private func scoreBreakdown(sleepMinutes: Double?, restingHeartRate: Double?) -> ScoreBreakdown? {
         guard sleepMinutes != nil || restingHeartRate != nil else { return nil }
-        var total = 0.0
-        if let sleep = sleepMinutes, sleep > 0 {
-            total += min(1.0, sleep / (7.5 * 60)) * 50
-        }
-        if let rhr = restingHeartRate, rhr > 0 {
-            total += rhr <= 65 ? 30 : max(8, 30 - (rhr - 65) * 0.8)
-        }
+        let sleepPoints: Double = {
+            guard let sleep = sleepMinutes, sleep > 0 else { return 0 }
+            return min(1.0, sleep / (7.5 * 60)) * 50
+        }()
+        let heartPoints: Double = {
+            guard let rhr = restingHeartRate, rhr > 0 else { return 0 }
+            return rhr <= 65 ? 30 : max(8, 30 - (rhr - 65) * 0.8)
+        }()
         let calendar = ClubDates.calendar
         let trainedRecently = (0..<3).contains { offset in
             guard let date = calendar.date(byAdding: .day, value: -offset, to: Date()),
                   let day = store.state.days[ClubDates.key(date)] else { return false }
             return day.trainingLog.hasConfirmedTraining
         }
-        total += trainedRecently ? 20 : 6
-        return Int(min(100, max(0, total)))
+        let trainingPoints: Double = trainedRecently ? 20 : 6
+        let total = Int(min(100, max(0, sleepPoints + heartPoints + trainingPoints)))
+        return ScoreBreakdown(total: total,
+                              sleep: Int(sleepPoints.rounded()),
+                              heart: Int(heartPoints.rounded()),
+                              training: Int(trainingPoints))
+    }
+
+    private func readinessScore(sleepMinutes: Double?, restingHeartRate: Double?) -> Int? {
+        scoreBreakdown(sleepMinutes: sleepMinutes, restingHeartRate: restingHeartRate)?.total
+    }
+
+    /// 状态分分项卡（信息感裁决③：点「状态分 ›」弹出，写清算法，不加首页文字行）。
+    private var scoreBreakdownCard: some View {
+        let data = heroReadiness
+        return VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
+            Text("状态分怎么来的")
+                .bojiType(.title)
+                .foregroundStyle(BojiColor.textPrimary)
+
+            if let score = data.score, let b = data.breakdown {
+                HStack(alignment: .firstTextBaseline, spacing: 7) {
+                    BojiEditorialNumber(value: "\(score)")
+                    Text("今天")
+                        .bojiType(.caption)
+                        .foregroundStyle(BojiColor.textTertiary)
+                }
+                VStack(spacing: 0) {
+                    breakdownRow("睡够 7.5 小时", b.sleep, 50)
+                    breakdownRow("静息心率", b.heart, 30)
+                    breakdownRow("近三天练过", b.training, 20)
+                }
+                .overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+                Text("就这三项相加。没同步到的那项按 0 分算，连上 Apple 健康就能拿满。")
+                    .bojiType(.body15)
+                    .foregroundStyle(BojiColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text("今天还没拿到睡眠和心率，先不给分。")
+                    .bojiType(.body15)
+                    .foregroundStyle(BojiColor.textSecondary)
+                Button("去连接", action: onOpenPermissions)
+                    .clubNativeGlassButton()
+                    .frame(maxWidth: .infinity, minHeight: BojiLayout.controlHeight)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(BojiLayout.pageInset)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(BojiColor.pageBackground)
+        .accessibilityIdentifier("v2-score-breakdown")
+    }
+
+    private func breakdownRow(_ label: String, _ value: Int, _ of: Int) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(label)
+                .bojiType(.data)
+                .foregroundStyle(BojiColor.textPrimary)
+            Spacer(minLength: BojiLayout.inline)
+            Text("\(value)/\(of)")
+                .bojiType(.title, monospacedDigits: true)
+                .foregroundStyle(BojiColor.textPrimary)
+        }
+        .padding(.vertical, 13)
+        .overlay(alignment: .bottom) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+        .accessibilityElement(children: .combine)
     }
 
     // MARK: - 今天安排（施工卡 §三：编号 + 名称 + 组次右对齐 + 发丝线；不套卡，屏内主操作只留底部那一个）
