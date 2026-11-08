@@ -55,7 +55,7 @@
 | BUG-014 | Hero 品牌视频**没有静音** | `setupHeroVideo()`（`ClubAIShell.swift:1190-1196`）创建 `AVQueuePlayer` 后未设 `isMuted = true` | P1 | 苹果开发 | 已验收关闭 | 测试验收第三批复验发现（界面设计独立核对一致）；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1194` `player.isMuted = true` |
 | BUG-015 | 视频降级缺两项（低电量 / 首帧占位） | DES §5.2 要求「低电量模式 → 静态图」与「未就绪前显示第 0 帧静态图」 | P3 | 苹果开发 | 已验收关闭 | **两项均已闭环**：①低电量闸门 `ClubAIShell.swift:1199` guard 含 `!ProcessInfo.processInfo.isLowPowerModeEnabled`（commit 54092f1）；②首帧占位 `ClubAIShell.swift:1209-1222` `loadHeroPoster()` + z0/z0b 分层（commit 5ab6f97，测试验收 H-02 复核通过）。首帧未生成的一瞬仍有 `brandMist` 兜底，属可接受瞬态 |
 | BUG-016 | 勾选按钮动效未受「减少动态效果」约束 | `TrainingRegistrationViews.swift:295` `Image(...).symbolEffect(.bounce.up.byLayer, value: true)` 无条件生效；原自绘 `LiquidCheckbox` 的动画是有 `if !reduceMotion` 门控的，换原生后**门控丢失** | P3 | 苹果开发 | 已验收关闭 | 测试验收阶段 3 交互回归（F2/INT-06）发现；违反 DES §0 铁律 3「所有动效尊重减少动态效果」与 ACC-05。**已修**（commit 43d66f8）：`TrainingRegistrationViews.swift:298` `if reduceMotion { base } else { base.symbolEffect(...) }` |
-| BUG-017 | 首页进场动效与规范数值/曲线不一致；完成页整串超 0.5s 口径 | ①场景 1 `ClubAIShell.swift:2053` 用 `.easeOut(duration: 0.45).delay(index * 0.07)` + `offset(y: 8)`，而界面设计规范 §4.1「浮件进场」写的是 `spring(response 0.35, damping 0.85)` + `stagger 每项 0.05s` + `scale 0.96→1`——**时长 0.45 vs 0.35、间隔 0.07 vs 0.05、位移方式 offset vs scale 三项不一致**（同批场景 3 用的却是规范的 0.35/0.05，同一规范两个口径）；②场景 3 整串 `0.35 + 5×0.05 = 0.60s`，若按 §4.2「超过 0.5s 的进场动画」**整串**口径则超限 | P3 | 苹果开发／界面设计 | 待处理（**实现服从规范**，待落地） | 测试验收阶段 4 H 表终扫（H-10/H-12）发现。**界面设计已拍板**：①实现服从规范——场景 1 改回 `BojiMotion2.entrance`（spring 0.35/0.85 等效）+ `.delay(index * 0.05)` + `scaleEffect(0.96→1)`；②规范 §4.2/§7 补口径——**「0.5s」指单元素自身进场时长**，stagger 整串总和 ≤0.6s。口径确定后场景 3 整串 0.60s 与场景 1 改后（单元素 0.35s、整串 0.45s）均合规。复扫口径：`ClubAIShell.swift` 与 `WorkoutExperience125.swift` 两处 stagger 参数一致 |
+| BUG-017 | 首页进场动效与规范数值/曲线不一致；完成页整串超 0.5s 口径 | ①场景 1 `ClubAIShell.swift` `BojiHomeEntrance` 曾用时序/曲线与规范不符的实现；②场景 3 整串 0.60s，若按整串口径超 §4.2「0.5s」 | P3 | 苹果开发／界面设计 | **已验收关闭** | 测试验收阶段 4 H 表终扫（H-10/H-12）发现；界面设计拍板「实现服从规范」。**已修**（commit 064d234）：`BojiMotion2.entrance` 对齐为 `spring(response 0.35, dampingFraction 0.85)`、`stagger` 0.05；场景 1（`ClubAIShell.swift` `BojiHomeEntrance`）与场景 3（`WorkoutExperience125.swift` `BojiStaggeredEntrance`）**实现代码逐字一致**，均为 `opacity + scaleEffect(0.96→1) + resolved(entrance)?.delay(index*stagger)`，减动效降为 0.12s 交叉淡入。规范 §4.2/§7 补口径：「0.5s」指**单元素自身进场时长**，stagger 整串总和 ≤0.6s |
 
 > 用户直接在群里反馈的具体 bug 和流程卡壳点，由测试验收转记到此表。
 >
@@ -289,12 +289,14 @@
 | H-07 | 模糊效果 | ✅ 通过 | 3 处 `.blur(radius: 60/70/80)` 均为引导页静态背景色块，非动画、非无限循环 |
 | H-08 | 一屏同时运动元素 ≤2 | ⏳ 待判定 | 需界面设计按 §4.2 逐屏核对，并在真机/模拟器上观察；静态源码无法可靠判定 |
 | H-09 | CLN-02 死代码清理 | ✅ 通过 | `BreathingPulseHalo` 全库零命中（commit 98900b6） |
-| H-10 | DES-004 场景 1 首页两拍进场 | ⚠️ **实现与规范数值不一致（见 BUG-017）** | `ClubAIShell.swift:2045-2055` `BojiHomeEntrance`：`.easeOut(duration: 0.45).delay(index * 0.07)` + `offset(y: 8)`，减动效时动画置 nil（直接落终值）✅。但规范 §4.1 写的是 `spring(response 0.35, damping 0.85)` + `stagger 0.05s` + `scale 0.96→1`——**时长、曲线、位移方式三项都与规范不同** |
+| H-10 | DES-004 场景 1 首页两拍进场 | ✅ **通过**（commit 064d234 收口） | `ClubAIShell.swift` `BojiHomeEntrance` 已改回规范档：`BojiMotion2.entrance`（spring 0.35/0.85）+ `.delay(index * 0.05)` + `scaleEffect(0.96→1)`，只动 opacity/transform；`BojiMotion2.resolved` 在减少动态效果时降为 0.12s 交叉淡入 |
 | H-11 | DES-004 场景 2 训练中 | ✅ 通过 | `BojiSegmentedProgress` 改 `BojiMotion2.progress`（线性 easeOut 0.32s，杜绝假进度弹簧）；组数 `contentTransition(.numericText())` + counter |
-| H-12 | DES-004 场景 3 完成页 | ⚠️ 减动效与滚动 ✅，**整串时长超 0.5s 口径（见 BUG-017）** | `WorkoutExperience125.swift:260-292` 6 格 `entrance 0.35s + stagger 0.05s`（与规范一致），整串 0.60s；`BojiRollingFact:304-307` 减动效直落终值 ✅；`.sensoryFeedback(.success, trigger: appeared)` 一次性 ✅ |
+| H-12 | DES-004 场景 3 完成页 | ✅ **通过** | `WorkoutExperience125.swift` `BojiStaggeredEntrance` 与场景 1 **实现逐字一致**（同一 Token、同一 scale）；`BojiRollingFact` 减动效直落终值 ✅；`.sensoryFeedback(.success, trigger: appeared)` 一次性 ✅；整串 0.60s，按规范新增口径（单元素 ≤0.5s、整串 ≤0.6s）合规 |
 | H-13 | DES-004 红线复查 | ✅ 通过 | 无循环装饰、无彩虹、无整屏转场；新增动效全部只动 opacity/scale/offset 或数字；`sensoryFeedback` 属触感反馈非视觉运动；首页同时运动元素 2（界面设计 H-08 已核） |
 
-**H 表结论（终扫）**：H-01~H-09、H-11、H-13 通过；**H-10／H-12 发现规范与实现数值不一致，登记 BUG-017（P3）**——需界面设计统一口径（0.45/0.07 + offset 还是 0.35/0.05 + scale），并明确「0.5s 进场」按单元素还是整串计。除此之外减动效降级、红线（无循环/无彩虹/无整屏转场/同时运动 ≤2）全部合规。编译 run 42470321202 出包 `dist/BojiClub-862d9ccf.ipa`（37.47 MB）。
+**H 表结论（终扫完成）**：H-01~H-13 **全部通过**。减动效降级（H-02/H-03/H-10/H-12）、红线（H-04 无彩虹／H-05 无整屏转场／H-06 TimelineView／H-07 模糊／H-13 同时运动元素 2）、规范口径一致性（H-10/H-12 两处逐字一致，单一 Token 来源）均已核实。编译 run 42470904790 出包 `dist/BojiClub-8f1542dc.ipa`（37.47 MB）。
+
+**阶段 4 完成条件清点**：①品牌视频融入拍板位置（首页 Hero 玻璃卡底层，方案 A）✅；②播放自然不卡顿 ✅（源码级：`AVQueuePlayer` + `AVPlayerLooper` 循环、三闸门、首帧占位无缝切换；真机观感待链路）；③新动效符合规范、高级华丽不廉价 ✅（三场景按规范 §4.1 落地、红线全合规、口径单一来源）；④减少动态效果表现正常 ✅（源码级：所有动效均有 reduceMotion 降级分支）；⑤云端编译通过 ✅。**待 Chief 过目认可。**
 
 ---
 
