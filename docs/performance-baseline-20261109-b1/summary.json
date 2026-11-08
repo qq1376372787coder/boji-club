@@ -1,0 +1,45 @@
+{
+  "devicesAndConfigurations" : [
+    {
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "0A78FE0C-C1ED-4C80-A745-F08A7439BDB2",
+        "deviceName" : "PerfTest-iPhone",
+        "modelName" : "iPhone 16 Pro",
+        "osBuildNumber" : "23C54",
+        "osVersion" : "26.2",
+        "platform" : "iOS Simulator"
+      },
+      "expectedFailures" : 0,
+      "failedTests" : 0,
+      "passedTests" : 2,
+      "skippedTests" : 0,
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription" : "BojiClub · Built with macOS 26.7.2",
+  "expectedFailures" : 0,
+  "failedTests" : 0,
+  "finishTime" : 1794158586.393,
+  "passedTests" : 2,
+  "result" : "Passed",
+  "skippedTests" : 0,
+  "startTime" : 1794158376.776,
+  "statistics" : [
+    {
+      "subtitle" : "2 test runs",
+      "title" : "2 tests collected performance metrics"
+    }
+  ],
+  "testFailures" : [
+
+  ],
+  "title" : "Test - BojiClub",
+  "topInsights" : [
+
+  ],
+  "totalTestCount" : 2
+}
