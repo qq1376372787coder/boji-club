@@ -172,6 +172,10 @@ struct ClubAIShellView: View {
                 syncTrainingActivity()
             }
             .onChange(of: activeWorkout?.sessionID) { _, _ in refreshDay(); syncTrainingActivity() }
+            .onChange(of: activeWorkout?.isPaused) { _, paused in
+                // 双状态源（pauseService/restDeadlines）不一致时，以快照为准取消过期提醒
+                if paused == true { notifications.cancelRestReminder() }
+            }
             .onChange(of: trainingRoute?.id) { _, id in store.trainingInterfacePresented = id != nil }
             .onChange(of: conversationVisible) { _, visible in
                 store.clubAIInterfacePresented = visible
@@ -180,6 +184,7 @@ struct ClubAIShellView: View {
             .onAppear {
                 refreshDay()
                 syncTrainingActivity()
+                if activeWorkout?.isPaused == true { notifications.cancelRestReminder() }
                 #if DEBUG
                 if let envMode = ProcessInfo.processInfo.environment["BOJI_INITIAL_MODE"] {
                     if envMode == "training" { mode = .training }

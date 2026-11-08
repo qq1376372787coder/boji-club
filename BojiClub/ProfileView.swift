@@ -141,7 +141,9 @@ struct ProfileView: View {
 }
 
 struct MembershipGateView: View {
+    @EnvironmentObject private var membership: MembershipService
     @State private var showingAccount = false
+    @State private var rechecking = false
     /// 付费墙退出确认文案（果果/知知定稿 4 句，缺一不可；不承诺一键重登）。
     private static let exitMessage = [
         "记录保留在本机，重新登录同一 Apple 账号后继续同步",
@@ -153,6 +155,15 @@ struct MembershipGateView: View {
         MembershipView(isMandatory: true)
             .safeAreaInset(edge: .bottom) {
                 HStack(spacing: BojiLayout.rowGap) {
+                    Button(rechecking ? "正在检查…" : "重新检查会员状态") {
+                        guard !rechecking else { return }
+                        rechecking = true
+                        BojiHaptics.tick()
+                        Task { await membership.refresh(force: true); rechecking = false }
+                    }
+                    .buttonStyle(SecondaryButton())
+                    .disabled(rechecking)
+                    .accessibilityIdentifier("membership-recheck")
                     Button("账号管理") { showingAccount = true }
                         .buttonStyle(SecondaryButton()).accessibilityIdentifier("membership-account-settings")
                     ClubLogoutButton(

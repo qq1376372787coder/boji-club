@@ -79,9 +79,9 @@
 | IOS-009 | ConfettiView 手绘彩带粒子 | 系统 symbolEffect(.celebrate) 一次性庆祝 | OnboardingView.swift MemberCardCelebration | 已修复待验 | 22 粒子自绘已删；改用 SF Symbols「sparkles」+ symbolEffect(.celebrate)，减少动态效果时关闭 |
 | IOS-010 | 首次引导轨道环/渐变卫星手绘 | glassEffect + SF Symbols 重做 | FirstLaunchWalkthroughView.swift | 已修复待验 | Slide1 光晕 RadialGradient→品牌色+系统模糊、旋转渐变轨道环→静态细环、渐变水晶球→clubGlassEffect 原生玻璃；卫星胶囊/跳过/页码/15秒胶囊/数据徽章改不透明表面（同屏玻璃从 7 降到 1，仅保留 Slide1 水晶球与 Slide2 计时坞两个视觉主体）；背景光球 RadialGradient→模糊色块 |
 | IOS-011 | 训练/AI 界面呈现时通知深链被屏蔽（sheet 返回 nil） | 训练进行中点通知可见提示或跳转 | BojiClubApp.swift:216 | 已修复待验 | P1 流程断点；屏蔽逻辑保留（不打断训练），顶部安全区横幅如实提示+「知道了」关闭，route 保留待解除后自动弹出（BUG-001/010/011 同修） |
-| IOS-012 | 登录→会员门→引导→首启 walkthrough 四层状态机回写不及时卡门 | 状态收口+卡门可恢复提示 | BojiClubApp.swift、ClubAIShell.swift | 待处理 |  |
-| IOS-013 | 组间休息 pauseService+restDeadlines 双状态 | 单源事实+跨午夜边界回归 | ClubAIShell.swift:166-172 | 待处理 |  |
-| IOS-014 | 品牌视频融入技术位预留 | AVKit/VideoPlayer + 玻璃边框，**位置已定 A：首页 Hero 卡底层**（DEC-1） | ClubAIShell.swift heroGlassCard、pbxproj | 处理中 | 代码层按 DES-003 方案 A 完成（AVQueuePlayer 静音循环+三闸门降级+护字渐变+30pt 玻璃暂停钮），brand-video.mp4 已复制入 BojiClub/ 并在 pbxproj 注册；待云端编译与视觉验收 |
+| IOS-012 | 登录→会员门→引导→首启 walkthrough 四层状态机回写不及时卡门 | 卡门可恢复：会员门新增「重新检查会员状态」按钮（强制刷新会员权益，带检查中态） | ProfileView.swift MembershipGateView | 已修复待验 | 门页不再只能退出：刷新失败可重试；账号管理/退出路径保留 |
+| IOS-013 | 组间休息 pauseService+restDeadlines 双状态 | 以快照为准的单源校正：isPaused 变化或视图出现时同步取消过期提醒 | ClubAIShell.swift | 已修复待验 | 新增 onChange(activeWorkout?.isPaused) 与 onAppear 双保险；跨午夜边界仍待真机复核 |
+| IOS-014 | 品牌视频融入技术位预留 | AVKit/VideoPlayer + 玻璃边框，**位置已定 A：首页 Hero 卡底层**（DEC-1） | ClubAIShell.swift heroGlassCard、pbxproj | 已修复待验 | 代码层按 DES-003 方案 A 完成（AVQueuePlayer 静音循环+三闸门降级+护字渐变+44pt 玻璃暂停钮），brand-video.mp4 已入 bundle 并注册；首帧占位图留阶段 4 |
 
 ### B2. 界面设计 · 视觉与动效规范（规范产出后贴链接）
 
