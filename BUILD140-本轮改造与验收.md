@@ -234,11 +234,13 @@
 | G-05 | IOS-009 彩带粒子 → 系统庆祝 | ✅ 通过 | `ConfettiView` 全库已删（零命中），改 SF Symbols + 一次性 `symbolEffect(.bounce)` |
 | G-06 | BUG-016 勾选动效减动效门控 | ✅ 通过 | `TrainingRegistrationViews.swift:298` `if reduceMotion { base } else { base.symbolEffect(...) }` |
 | G-07 | CLN-01 遗留 Environment 清理 | ✅ 通过 | `JourneyComponents.swift` 已无 `reduceTransparency`/`colorSchemeContrast`（零命中） |
-| G-08 | P0 玻璃滥用收口（内容卡去玻璃） | ⚠️ **未完成** | 界面设计走查列 6 处（ClubAIShell 1426/1609/1720/1812/1888/1946 + ProfileView 奖励卡）。苹果开发报「ClubAIShell 5 处 + ProfileView 1 处」已改；**测试验收按当前源码复扫，ClubAIShell 仍有 2 处内容卡用玻璃**：`ClubAIShell.swift:1812`（智能分析专区 `intelligenceHubSection`）、`:1946`（新用户引导卡 `newUserDivergenceCard`），二者均在首页 ScrollView 内容层，按 DES 铁律 2 应改不透明 `cardSurface`。另 `ProfileView.swift` 仍有 5 处 `clubGlassEffect`（165/486/488/492/497），需界面设计逐处判定是否浮件 |
+| G-08 | P0 玻璃滥用收口（内容卡去玻璃） | ✅ **通过（fea35b7 复扫）** | 界面设计走查列 6 处（ClubAIShell 1426/1609/1720/1812/1888/1946 + ProfileView 奖励卡）。测试验收按当前源码复扫：ClubAIShell 内容层玻璃已 **归零**，仅剩 6 处浮件——`:821` 侧栏浮层、`:982/:1020/:1029` 速度拨号、`:1296` Hero 卡、`:1988` 训练迷你条（均属 L2 浮件或 DES 允许的 Hero）。ProfileView 5 处经界面设计判定为底部停靠条/状态条浮件，**合规保留** |
+| G-11 | IOS-010 引导页重做 | ✅ 通过 | `FirstLaunchWalkthroughView.swift` 内 `RadialGradient` 手绘光晕已清零；旋转环改静态（`rotationEffect(.degrees(-90))` 为常量、非动画）；水晶球 `:238`、Slide 2 主体 `:421` 各 1 处玻璃，**每屏 1 处**符合密度红线；卫星胶囊/页码/徽章改不透明表面 |
+| G-12 | 业务图形豁免确认 | ✅ 通过 | 全库仅剩 `BojiComponents.swift:83` 一处 `RadialGradient`，位于品牌封面图形内，属 DES 铁律 1 明确允许的「业务图形（封面/图表/缩略图）」范畴，不算违规 |
 | G-09 | `.celebrate` 不可用 | ✅ 已规避 | 苹果开发改用系统 `.bounce`，一次性庆祝语义不变；规范如需 `celebrate` 须先确认 SDK 版本（当前 SDK 的 `DiscreteSymbolEffect` 无此成员） |
 | G-10 | 编译回归 | ✅ 通过 | run 42466697711（head `77883ff`），产物 37.41 MB |
 
-**G 表结论**：IOS-006~009、BUG-016、CLN-01 全部通过，编译通过；**G-08 未完成**——ClubAIShell 仍有 2 处内容卡玻璃违反 DES 铁律 2，另有 ProfileView 5 处待判定。阶段 3 的「23 处材质收口/玻璃红线」验收项**不能判达标**，需苹果开发补 G-08、界面设计补 ProfileView 判定。
+**G 表结论（复扫后更新）**：IOS-006~009、BUG-016、CLN-01 全部通过；**G-08 复扫通过**——ClubAIShell 内容层玻璃归零，ProfileView 5 处判定合规；**G-11 IOS-010 通过**（引导页每屏玻璃 1 处）；G-12 业务图形豁免确认。**阶段 3 的玻璃红线项已达标**。剩余：IOS-012（四层状态机收口）、IOS-013（组间休息双状态单源化）两项流程断点改造，以及 P1 `RevenueCatViews.swift:318` 待 Chief 拍板。
 
 ---
 
@@ -306,6 +308,7 @@
 - 2026-11-08：**阶段 2 第四輪返工复验通过**。Chief 判定阶段 2 不通过后返工的三件（BUG-014 静音 / BUG-013 触控区 / BUG-015 低电量闸门）由 Chief 代收口提交 54092f1；测试验收逐处核对源码通过，云端编译 run 42465043363 出包 `dist/BojiClub-f9a471f6.ipa`（37.44 MB）。结果登记为 E-2 表。BUG-003 剩余 IOS-003／004 转阶段 3（苹果开发已推 b1d31c7）。
 - 2026-11-08：**阶段 3 交互回归（源码级）登记为 F 表**。全局四种设置基础设施齐备（动态字体 `@ScaledMetric`、AX 布局降级、reduceMotion、减少透明度/增强对比度分支均通过）；逐项核查发现 **BUG-016**（勾选按钮 `symbolEffect` 丢失 reduceMotion 门控，P3）与清理项 CLN-01（JourneyComponents 遗留未用 `@Environment`）。结论：阶段 3 改造项中 INT-11（IOS-006~010 动效）未开工，其余除 INT-06 外通过；全部结论待真机/模拟器实测复跑。
 - 2026-11-08：**阶段 3 批次复验登记为 G 表**（苹果开发 43d66f8→77883ff）。IOS-006~009 动效系统化、BUG-016 减动效门控、CLN-01 清理均通过，编译 run 42466697711 出包；**G-08 未完成**：ClubAIShell 仍有 2 处内容卡用玻璃（:1812 智能分析专区、:1946 新用户引导卡），违反 DES 铁律 2，另 ProfileView 5 处待界面设计判定。阶段 3 玻璃红线项不能判达标。
+- 2026-11-08：**G-08 复扫通过，阶段 3 玻璃红线达标**。苹果开发 fea35b7 补掉 ClubAIShell 两处内容卡玻璃（改不透明 `cardSurface`），同批完成 IOS-010 引导页重做（每屏玻璃 1 处）；界面设计判定 ProfileView 5 处为合规浮件；测试验收确认全库仅剩 `BojiComponents.swift:83` 一处 `RadialGradient` 属业务图形豁免。编译 run 42467301022 出包 `dist/BojiClub-07403782.ipa`（37.43 MB）。G 表已更新为通过。
 - 2026-11-08：**苹果开发第二批修复完成待提交**：BUG-003 输入串轨（删 ClubNumericKeypad 自绘键盘与 keypadWeight 双轨，ClubNumericField 改原生 TextField+sanitize，LiquidCheckbox 改系统符号按钮）、BUG-005 Hero 视频接入（DES-003 方案 A，brand-video.mp4 已入 bundle 并注册 pbxproj）、BUG-010/011 横幅修正（training 文案如实、带「知道了」关闭、改 safeAreaInset 不压顶栏）、BUG-012 JourneyComponents 三处散写玻璃分支收口 clubNativeGlassButton；台账 A/B1 表状态已同步更新。
 - 2026-11-08：**云端编译恢复通过（后端开发）**：逐次抓取 xcodebuild 错误行，定位并修复 4 处阻塞编译的问题——`AppStore.swift` 的 `ClubNotificationRoute` 补 `Equatable`（`onChange` 需要）、`TrainingRegistrationViews.swift` 的 `Button(action:) label:` 改回 trailing closure、`ClubAIShell.swift` 的 TimelineView 闭包内非法 `return` 去掉、`VideoPlayer` 无 `videoGravity` 改用 `AVPlayerLayer` 封装（`resizeAspectFill` 铺满）。**workflow run 42461169469 编译成功，IPA `dist/BojiClub-ffe4a1ed.ipa`（37.44 MB）**，已提交推送（`7cb0b97`）。BE-001/BE-004 修复保持「已修复待验」，等测试验收复验。
 - 2026-11-08：**阶段 2（P0 修复）Chief 验收通过，阶段 3（UI 原生化改造）开工**。登记：阶段进度表 2→已通过、3→进行中（含完成条件）；C 表第 1 轮验收记录（f9a471f6，首验不通过返工、第四輪通过）；E 节标注已收档归档（后续复验从 E-3 起）；阶段 2 分工表归档，新增阶段 3 分工表（苹果开发 IOS-006~010、界面设计规范走查、测试验收四设置回归、文档管理打勾）；B1 表加打勾进度汇总（14 项：6 待验 / 1 处理中 / 7 待处理）。
