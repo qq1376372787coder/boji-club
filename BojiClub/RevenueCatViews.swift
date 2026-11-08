@@ -314,8 +314,9 @@ private struct MembershipPlanOption: View {
                 }
             }
             .padding(BojiSpace.workoutCardInset).frame(maxWidth: .infinity, alignment: .leading)
-            // 拍板 #6：会员价格卡用玻璃（iOS 26 Liquid Glass；降级 regularMaterial/cardSurface）
-            .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
+            // 2026-11-08 Chief 拍板：价格卡改不透明 cardSurface，废止「拍板 #6」玻璃豁免
+            .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
+            .shadow(color: .black.opacity(selected ? 0.10 : 0), radius: selected ? 18 : 0, y: selected ? 5 : 0)
             .overlay {
                 RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous)
                     .stroke(selected ? ClubBrand.accent : BojiColor.outline, lineWidth: selected ? 1.5 : 0.5)
