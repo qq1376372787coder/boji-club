@@ -288,7 +288,9 @@ struct ClubAIShellView: View {
             .tag(ClubShellMode.clubAI)
 
             NavigationStack(path: $trainingPath) {
+                // BUG-020：坞挂进训练 tab 内容层（safeAreaInset 自动为 tab 栏让位），不再叠压 tab 栏
                 ClubPlanHub(selectedDate: $selectedDate, openWorkout: startTrainingFromPlan, embeddedInShell: true, scrollAnchor: $trainingScrollAnchor, calendarExpanded: $calendarExpanded)
+                    .clubBottomBar { bottomDock }
                     .toolbar { shellToolbar(for: .training) }
             }
             .tabItem { Label("训练", systemImage: "figure.strengthtraining.traditional") }
@@ -304,7 +306,6 @@ struct ClubAIShellView: View {
             .accessibilityIdentifier("v2-tab-records")
             .tag(ClubShellMode.records)
         }
-        .clubBottomBar { bottomDock }
     }
 
     @ToolbarContentBuilder private func shellToolbar(for tab: ClubShellMode) -> some ToolbarContent {
@@ -360,6 +361,7 @@ struct ClubAIShellView: View {
     private var bottomDock: some View {
         VStack(spacing: BojiLayout.inline) {
             // 规格表 §1.2：底部玻璃坞只归「训练」tab，今天/记录不设坞（主操作走全宽按钮）。
+            // BUG-020：挂在 shell 层会叠到 tab 栏上，改挂训练 tab 内容层让系统自动避让。
             if mode == .training, trainingRoute == nil, let snapshot = activeWorkout {
                 ClubActiveWorkoutAccessory(snapshot: snapshot, open: openActiveWorkout, togglePause: toggleActivePause)
                     .frame(maxWidth: BojiSize.contentWidth)
@@ -369,7 +371,6 @@ struct ClubAIShellView: View {
         .clubGlassGroup(spacing: BojiLayout.rowGap)
         .padding(.bottom, BojiLayout.tight)
     }
-
     private var shellWithPresentations: some View {
         shellStructure
             .safeAreaInset(edge: .top, spacing: 0) { bannerStack }
@@ -917,20 +918,15 @@ struct ClubAIWorkspaceIdleView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
-                headerArea
-
-                // 核心层级 0: Hero 玻璃流光卡（拍板 #2：保留视频感 + 动效）
+                // 返工·三段式 Hero：视频带（仅 12pt 品牌小字+暂停钮）→ 页面底色排印区（巨号评分+指标+建议）
                 heroGlassCard
                     .bojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: 0)
 
-                // 首个内容区块与 Hero 构成两拍进场（stagger 0.07s，DES-004）
+                // 首个内容区块与 Hero 构成两拍进场（stagger，DES-004）
                 Group {
                     if isNewUser {
                         newUserDivergenceCard
                     }
-
-                    // 核心层级 1: 身体状态卡
-                    readinessGaugeCard
                 }
                 .bojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: 1)
 
@@ -1022,14 +1018,18 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     // MARK: - 顶部标题区
-    /// Hero 玻璃卡（批次 2 玻璃沉浸）：默认 ~380pt 近整屏；滚动 ≥120pt 收缩成 46pt 玻璃条（iOS 18+ 监听，iOS 17 保持全屏）。
+    /// Hero 三段式（返工施工稿 §三）：视频带只放品牌小字+暂停钮，巨号/建议全部移到页面底色上，
+    /// 根治「52pt 中文按字断行 + 压脸」。滚动 ≥120pt 收缩成 46pt 玻璃条（iOS 18+ 监听，iOS 17 保持全屏）。
     private var heroGlassCard: some View {
         TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion || heroShrunk)) { context in
             let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
             if heroShrunk {
                 heroCollapsedBar
             } else {
-                heroGlassContent(phase: phase)
+                VStack(alignment: .leading, spacing: 0) {
+                    heroVideoBand(phase: phase, empty: heroReadiness.score == nil)
+                    heroTypeBlock
+                }
             }
         }
         .animation(BojiMotion2.resolved(BojiMotion2.state, reduceMotion: reduceMotion), value: heroShrunk)
@@ -1038,6 +1038,167 @@ struct ClubAIWorkspaceIdleView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { heroPlayer?.play() } else { heroPlayer?.pause() }
         }
+    }
+
+    /// 第一段：视频带（甲稿权威值：有数据 238pt / 空态 200pt，300 作废）。
+    /// 除品牌小字（12pt）与暂停钮（44pt 命中区）外零文字——>20pt 禁止压媒体。
+    private func heroVideoBand(phase: Double, empty: Bool) -> some View {
+        ZStack(alignment: .top) {
+            // z0 首帧占位（未就绪/减少动态效果/低电量时持续显示，视频就绪后叠在其上无缝切换）
+            Group {
+                if let heroPoster {
+                    Image(uiImage: heroPoster)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    Rectangle()
+                        .fill(BojiColor.brandMist.opacity(0.55))
+                }
+            }
+            .clipped()
+            .accessibilityHidden(true)
+            .allowsHitTesting(false)
+            // z0b 视频层（就绪后叠加）
+            if let heroPlayer {
+                HeroVideoSurface(player: heroPlayer)
+                    .accessibilityHidden(true)
+                    .allowsHitTesting(false)
+            }
+            // 深色模式压暗
+            if colorScheme == .dark { Color.black.opacity(0.2) }
+            // z2 慢周期流光（非循环）
+            LinearGradient(
+                colors: [ClubBrand.accent.opacity(0), ClubBrand.accent.opacity(0.30), ClubBrand.accent.opacity(0)],
+                startPoint: .leading, endPoint: .trailing
+            )
+            .offset(x: -220 + 440 * phase)
+            // 底部 60pt 渐隐：视频与页面底色缝合（不再需要压字渐变）
+            VStack {
+                Spacer(minLength: 0)
+                LinearGradient(colors: [Color.clear, BojiColor.pageBackground], startPoint: .top, endPoint: .bottom)
+                    .frame(height: 60)
+                    .allowsHitTesting(false)
+            }
+            // 顶栏：左上品牌小字 12pt；右上暂停钮（44pt 命中区）
+            HStack(alignment: .top) {
+                Text("薄肌俱乐部")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.45), radius: 1)
+                Spacer()
+                Button {
+                    if heroPlayer?.timeControlStatus == .playing { heroPlayer?.pause() } else { heroPlayer?.play() }
+                } label: {
+                    Image(systemName: heroPlayer?.timeControlStatus == .playing ? "pause.fill" : "play.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 30, height: 30)
+                }
+                .clubNativeGlassButton()
+                .frame(width: 44, height: 44)
+                .contentShape(Circle())
+                .accessibilityLabel(heroPlayer?.timeControlStatus == .playing ? "暂停视频" : "播放视频")
+            }
+            .padding(.horizontal, BojiLayout.pageInset)
+            .padding(.top, BojiLayout.tight)
+        }
+        .frame(height: empty ? 200 : 238)
+        .frame(maxWidth: .infinity)
+        .clipped()
+    }
+
+    private struct HeroReadiness {
+        let score: Int?
+        let sleepText: String?
+        let rhrText: String?
+        let stepsText: String?
+    }
+
+    /// 排印区数据源：真实健康值 + 诚实评分；无关键数据 → score nil（空态引导卡接管）。
+    private var heroReadiness: HeroReadiness {
+        let healthSummary = health.summary(for: Date())
+        let sleepMin = healthSummary?.nightSleep?.value ?? healthSummary?.sleep?.value
+        let sleepText = sleepMin.flatMap { min -> String? in
+            guard min > 0 else { return nil }
+            return "\(Int(min / 60))h \(Int(min) % 60)m"
+        }
+        let rhr = healthSummary?.restingHeartRate?.value
+        let rhrText = rhr.flatMap { val -> String? in
+            guard val > 0 else { return nil }
+            return "\(Int(val)) bpm"
+        }
+        let steps = healthSummary?.steps?.value
+        let stepsText = steps.flatMap { val -> String? in
+            guard val > 0 else { return nil }
+            return "\(Int(val)) 步"
+        }
+        return HeroReadiness(score: readinessScore(sleepMinutes: sleepMin, restingHeartRate: rhr),
+                             sleepText: sleepText, rhrText: rhrText, stepsText: stepsText)
+    }
+
+    /// 第二段：页面底色上的排印区——eyebrow + 巨号评分（缺数据换引导卡，不摆 0/—）+ 三指标 + 一句建议。
+    private var heroTypeBlock: some View {
+        let data = heroReadiness
+        let insight = ClubHomeInsightMerge.resolve(local: ClubInsightLedger.current(in: store.state, date: Date()).first, server: ai.homeInsight)
+
+        return VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
+            Text("今天 · \(ClubDates.label(Date(), format: "M月d日 EEEE"))")
+                .bojiType(.label)
+                .foregroundStyle(BojiColor.textTertiary)
+
+            if let score = data.score {
+                // 巨号评分当主角（.display 88pt heavy 等宽；数字不换行）
+                BojiEditorialNumber(value: "\(score)", label: "今天的身体状态")
+            } else {
+                // 空态场景 1：无健康数据 → 引导卡（不摆数字、不摆 0/—）
+                HStack(spacing: BojiLayout.rowGap) {
+                    Image(systemName: "heart.text.square")
+                        .bojiType(.title)
+                        .foregroundStyle(BojiColor.brandAccent)
+                    Text("连上健康后，这里显示状态分")
+                        .bojiFont(.cardTitle)
+                        .foregroundStyle(BojiColor.textPrimary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(BojiLayout.rowGap)
+                .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: BojiRadius.control, style: .continuous))
+            }
+
+            // 三指标数据块：有值才显示（缺项隐藏不占位）
+            HStack(alignment: .top, spacing: BojiLayout.rowGap) {
+                if let sleepText = data.sleepText { editorialMetric(title: "睡眠", value: sleepText) }
+                if let rhrText = data.rhrText { editorialMetric(title: "心率", value: rhrText) }
+                if let stepsText = data.stepsText { editorialMetric(title: "步数", value: stepsText) }
+                if data.sleepText == nil && data.rhrText == nil && data.stepsText == nil {
+                    editorialMetric(title: "身体数据", value: "未同步")
+                }
+            }
+            .frame(maxWidth: .infinity)
+
+            // 一句建议（绑定真实洞察；无洞察整块隐藏）
+            if let insight {
+                VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                    HStack(spacing: BojiLayout.tight) {
+                        Image(systemName: "chart.xyaxis.line")
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.brandAccent)
+                        Text("今天的建议")
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.brandAccent)
+                    }
+                    Text(insight.detail)
+                        .bojiType(.label)
+                        .foregroundStyle(BojiColor.textSecondary)
+                        .lineLimit(3)
+                        .lineSpacing(3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .padding(.horizontal, BojiLayout.pageInset)
+        .padding(.top, BojiLayout.rowGap)
+        .padding(.bottom, BojiLayout.tightRow)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     /// 收缩态玻璃条：高 46pt，内含唯一主操作「开始」（规格表 §2.1）。
@@ -1127,102 +1288,7 @@ struct ClubAIWorkspaceIdleView: View {
         }
     }
 
-    private func heroGlassContent(phase: Double) -> some View {
-        ZStack {
-            // z0 首帧占位（未就绪/减少动态效果/低电量时持续显示，视频就绪后叠在其上无缝切换）
-            Group {
-                if let heroPoster {
-                    Image(uiImage: heroPoster)
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous)
-                        .fill(BojiColor.brandMist.opacity(0.55))
-                }
-            }
-            .clipped()
-            .accessibilityHidden(true)
-            .allowsHitTesting(false)
-            // z0b 视频层（就绪后叠加）
-            if let heroPlayer {
-                HeroVideoSurface(player: heroPlayer)
-                    .accessibilityHidden(true)
-                    .allowsHitTesting(false)
-            }
-            // 深色模式压暗，保证玻璃高光可辨
-            if colorScheme == .dark { Color.black.opacity(0.2) }
-            // z1 护字渐变（底部最深，规格表 §2.1：透明→黑 58%）
-            LinearGradient(
-                colors: [Color.clear, Color.clear, Color.black.opacity(0.58)],
-                startPoint: .top, endPoint: .bottom
-            )
-            // z2 慢周期流光（非循环）
-            LinearGradient(
-                colors: [ClubBrand.accent.opacity(0), ClubBrand.accent.opacity(0.30), ClubBrand.accent.opacity(0)],
-                startPoint: .leading, endPoint: .trailing
-            )
-            .offset(x: -220 + 440 * phase)
-            // z3 内容：全白文字 + 投影
-            VStack(alignment: .leading, spacing: BojiLayout.tight) {
-                Text("薄肌俱乐部")
-                    .bojiType(.caption)
-                    .foregroundStyle(Color.white.opacity(0.85))
-                    .shadow(color: .black.opacity(0.45), radius: 1)
-                Text("今天的训练，已经为你准备好")
-                    .font(.system(size: 52, weight: .heavy))
-                    .kerning(-2)
-                    .foregroundStyle(.white)
-                    .shadow(color: .black.opacity(0.45), radius: 1)
-                Text("按计划开始 · 组间自动计时 · 训练后自动生成日报")
-                    .bojiType(.caption)
-                    .foregroundStyle(Color.white.opacity(0.8))
-                    .shadow(color: .black.opacity(0.45), radius: 1)
-            }
-            .padding(BojiLayout.cardInset)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            // 右上 30pt 玻璃暂停钮
-            VStack {
-                HStack {
-                    Spacer()
-                    Button {
-                        if heroPlayer?.timeControlStatus == .playing { heroPlayer?.pause() } else { heroPlayer?.play() }
-                    } label: {
-                        Image(systemName: heroPlayer?.timeControlStatus == .playing ? "pause.fill" : "play.fill")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 30, height: 30)
-                    }
-                    .clubNativeGlassButton()
-                    .frame(width: 44, height: 44)
-                    .contentShape(Circle())
-                }
-                Spacer()
-            }
-            .padding(BojiLayout.cardInset)
-        }
-        .frame(height: 380)
-        .clipShape(RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))
-        .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))
-    }
-
-    private var headerArea: some View {
-        // 定稿：区块名取消——只留品牌标 + 日期 chip，大标题走系统 navigationTitle("今天")
-        HStack(alignment: .center) {
-            BojiBrandMark(size: 34)
-
-            Spacer()
-
-            Text(ClubDates.label(Date(), format: "M月d日 EEEE"))
-                .bojiType(.caption)
-                .foregroundStyle(BojiColor.textTertiary)
-                .padding(.horizontal, BojiLayout.inline)
-                .padding(.vertical, BojiLayout.tight)
-                .background(BojiColor.subtleSurface, in: Capsule())
-        }
-        .padding(.vertical, BojiLayout.tight)
-    }
-
-    // MARK: - 身体状态卡（批次 1：巨号排印当主角；评分=睡眠+心率+近 3 天训练的真实规则，缺数据说缺）
+    // MARK: - 身体状态评分（批次 1：巨号排印当主角；评分=睡眠+心率+近 3 天训练的真实规则，缺数据说缺）
     /// 状态评分（0…100）：睡眠 50 分（7.5h 满）、静息心率 30 分（越低越好，65/80 断点）、近 3 天训练 20 分。
     /// 关键项（睡眠与心率）都没同步到时返回 nil，界面显示「还没同步到」，绝不编造分数。
     private func readinessScore(sleepMinutes: Double?, restingHeartRate: Double?) -> Int? {
@@ -1242,86 +1308,6 @@ struct ClubAIWorkspaceIdleView: View {
         }
         total += trainedRecently ? 20 : 6
         return Int(min(100, max(0, total)))
-    }
-
-    private var readinessGaugeCard: some View {
-        let healthSummary = health.summary(for: Date())
-        let sleepMin = healthSummary?.nightSleep?.value ?? healthSummary?.sleep?.value
-        let sleepText: String = {
-            if let min = sleepMin, min > 0 {
-                let h = Int(min / 60)
-                let m = Int(min) % 60
-                return "\(h)h \(m)m"
-            }
-            return "还没同步到"
-        }()
-        let rhr = healthSummary?.restingHeartRate?.value
-        let rhrText: String = {
-            if let val = rhr, val > 0 {
-                return "\(Int(val)) bpm"
-            }
-            return "还没同步到"
-        }()
-        let steps = healthSummary?.steps?.value
-        let stepsText: String = {
-            if let val = steps, val > 0 {
-                return "\(Int(val)) 步"
-            }
-            return "还没同步到"
-        }()
-        let score = readinessScore(sleepMinutes: sleepMin, restingHeartRate: rhr)
-        let insight = ClubHomeInsightMerge.resolve(local: ClubInsightLedger.current(in: store.state, date: Date()).first, server: ai.homeInsight)
-
-        return VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
-            // 巨号评分当主角（.display 88pt）+ 细分割线 + 标签
-            if let score {
-                BojiEditorialNumber(value: "\(score)", label: "今天的身体状态")
-            } else {
-                Text("还没同步到")
-                    .bojiType(.title)
-                    .foregroundStyle(BojiColor.textTertiary)
-                Text("健康数据同步后，这里会显示你的身体状态分数")
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
-            }
-
-            // 三指标数据块横排（无图标汤：大数字 + 细线 + 标签）
-            HStack(alignment: .top, spacing: BojiLayout.rowGap) {
-                editorialMetric(title: "睡眠", value: sleepText)
-                editorialMetric(title: "心率", value: rhrText)
-                editorialMetric(title: "步数", value: stepsText)
-            }
-            .frame(maxWidth: .infinity)
-
-            // 今日建议：绑定真实洞察（服务端/本地规则），没有数据就说没有，不再显示写死的分析段。
-            VStack(alignment: .leading, spacing: BojiLayout.tight) {
-                HStack(spacing: BojiLayout.tight) {
-                    Image(systemName: "chart.xyaxis.line")
-                        .bojiType(.caption)
-                        .foregroundStyle(BojiColor.brandAccent)
-                    Text("今天的建议")
-                        .bojiType(.caption)
-                        .foregroundStyle(BojiColor.brandAccent)
-                }
-
-                Text(insight?.detail ?? "练完或记完吃的，建议会出现在这里。")
-                    .bojiType(.label)
-                    .foregroundStyle(BojiColor.textSecondary)
-                    .lineSpacing(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .padding(BojiLayout.rowGap)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: BojiRadius.control, style: .continuous))
-        }
-        .padding(BojiLayout.cardInset)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous)
-                .stroke(BojiColor.outline, lineWidth: 0.5)
-        }
-        .shadow(color: .black.opacity(0.04), radius: 10, x: 0, y: 3)
     }
 
     /// 数据块（2+3 规格：大数字 + 标签，无图标、无描边）。

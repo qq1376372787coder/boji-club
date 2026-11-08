@@ -186,12 +186,6 @@ private struct TrainingNumericInput125: View {
             .focused($focused)
             .accessibilityLabel(label)
             .accessibilityIdentifier(identifier)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("收起") { focused = false }
-                }
-            }
             .onChange(of: focusRequest) { _, value in
                 if value > 0 { focused = true }
             }
