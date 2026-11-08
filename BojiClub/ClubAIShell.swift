@@ -1289,6 +1289,9 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     private func homePrimaryAction() {
+        // 三联动：触感 + 音效随按压（减动效只关动效，触感与音效照常）
+        BojiHaptics.selection()
+        BojiSound.play(.tap)
         if homePrimaryLabel == "记一顿" { onRecordMeal() } else { onStartTraining() }
     }
 
