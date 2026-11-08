@@ -60,7 +60,8 @@ def main() -> int:
 
     check("function bojiRequiredConfigKeys" in contract, "config-contract.php 定义 bojiRequiredConfigKeys")
     check("function bojiValidateConfig" in contract, "config-contract.php 定义 bojiValidateConfig")
-    check("bojiValidateConfig" in deploy, "deploy.sh 调用配置契约校验")
+    check("php check-config.php" in deploy, "deploy.sh 调用配置契约校验")
+    check((ROOT / "account-server" / "check-config.php").is_file(), "account-server/check-config.php 存在")
 
     match = re.search(r"<<'?PHP'?\n(.*?)\nPHP\n", deploy, re.S)
     check(match is not None, "deploy.sh 含 config.php 生成模板")
