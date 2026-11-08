@@ -437,7 +437,7 @@ struct BodyOverviewView: View {
                                 }
                             }
                         } else {
-                            Text("步数暂未同步")
+                            Text("步数还没同步到")
                                 .bojiType(.secondary)
                                 .foregroundStyle(BojiColor.textSecondary)
                         }
