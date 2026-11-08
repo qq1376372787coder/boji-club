@@ -137,30 +137,6 @@ struct ClubCameraCapture: UIViewControllerRepresentable {
     }
 }
 
-/// Field-level numeric entry; validation and persistence remain in the existing set editor.
-struct ClubNumericKeypad: View {
-    @Binding var value: String
-    var decimal: Bool
-    var next: (() -> Void)?
-    var body: some View {
-        VStack(spacing: BojiLayout.inline) {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: BojiLayout.inline), count: 3), spacing: BojiLayout.inline) {
-                ForEach(["1","2","3","4","5","6","7","8","9",".","0","⌫"], id: \.self) { key in
-                    Button {
-                        if key == "⌫" { if !value.isEmpty { value.removeLast() } }
-                        else if key == "." { if decimal && !value.contains(".") { value += value.isEmpty ? "0." : "." } }
-                        else if value.count < 8 { value += key }
-                    } label: { Text(key).bojiType(.section).frame(maxWidth: .infinity, minHeight: 46) }
-                    .buttonStyle(.bordered).tint(BojiColor.mistAccent)
-                    .disabled(key == "." && !decimal)
-                    .accessibilityLabel(key == "⌫" ? "删除一位" : key == "." ? "小数点" : key)
-                }
-            }
-            if let next { Button("下一项", action: next).frame(maxWidth: .infinity, minHeight: 44).buttonStyle(.borderedProminent) }
-        }.padding(.vertical, BojiLayout.inline)
-    }
-}
-
 struct ClubCompactReferencePicker: View {
     @Binding var selection: [AIContextReference]
     @EnvironmentObject private var store: AppStore
@@ -188,16 +164,31 @@ struct ClubCompactReferencePicker: View {
     }
 }
 
+/// 原生数字输入：系统键盘直接录入，过滤规则与原自绘键盘一致（数字、一个小数点、最长 8 位）。
 struct ClubNumericField: View {
     @Binding var value: String
     let placeholder: String
     let decimal: Bool
-    let selected: Bool
-    let select: () -> Void
     var body: some View {
-        Button(action: select) { Text(value.isEmpty ? placeholder : value).bojiType(.section).foregroundStyle(value.isEmpty ? .secondary : .primary).frame(maxWidth: .infinity, minHeight: 44).padding(.horizontal, BojiLayout.inline).background(selected ? BojiColor.brandMist : BojiColor.inputSurface, in: RoundedRectangle(cornerRadius: BojiRadius.thumb)) }
-            .buttonStyle(.plain)
-            .accessibilityRepresentation { TextField(placeholder, text: $value).keyboardType(decimal ? .decimalPad : .numberPad) }
+        TextField(placeholder, text: $value)
+            .bojiType(.section)
+            .keyboardType(decimal ? .decimalPad : .numberPad)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .padding(.horizontal, BojiLayout.inline)
+            .background(BojiColor.inputSurface, in: RoundedRectangle(cornerRadius: BojiRadius.thumb))
+            .onChange(of: value) { _, newValue in
+                let sanitized = ClubNumericField.sanitize(newValue, decimal: decimal)
+                if sanitized != newValue { value = sanitized }
+            }
+    }
+    private static func sanitize(_ raw: String, decimal: Bool) -> String {
+        let allowed = CharacterSet.decimalDigits.union(decimal ? CharacterSet(charactersIn: ".") : CharacterSet())
+        var result = String(raw.unicodeScalars.filter { allowed.contains($0) })
+        if decimal, let first = result.firstIndex(of: "."), let last = result.lastIndex(of: "."), first != last {
+            result.removeSubrange(result.index(after: first)...last)
+        }
+        return String(result.prefix(8))
     }
 }
 

@@ -834,7 +834,7 @@ private struct TrainingExerciseCard: View {
                 history: history,
                 canUseHistory: history.map { ($0.durationSeconds == nil) == (set.durationSeconds == nil) && !set.completed } ?? false,
                 weightStep: $weightStep,
-                allowTimer: !ClubDates.isFuture(date), isPlanTarget: ClubDates.isFuture(date), completeOnSave: completeAfterEdit == set.id, initialWeight: editingWeight,
+                allowTimer: !ClubDates.isFuture(date), isPlanTarget: ClubDates.isFuture(date), completeOnSave: completeAfterEdit == set.id,
                 save: { updated in toggleSet(set, updated: updated) },
                 startTimer: { completeAfterEdit = nil; pendingTimerSet = $0 },
                 performDelete: {

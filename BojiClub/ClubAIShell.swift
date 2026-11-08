@@ -1,4 +1,5 @@
 import SwiftUI
+import AVKit
 
 /// Feature availability can change remotely; the AI-first app shell is permanent.
 @MainActor
@@ -102,6 +103,9 @@ struct ClubAIShellView: View {
     @State private var restDeadlines: [String: ClubRestResume] = [:]
     @State private var creatingForDate: ClubTrainingRoute?
     @State private var guideOwner: ClubGuideOwner?
+    @State private var heroPlayer: AVQueuePlayer?
+    @State private var heroLooper: AVPlayerLooper?
+    @Environment(\.colorScheme) private var colorScheme
     @State private var showMembership = false
     @State private var showProfileBasics135 = false
     @State private var showPermissions135 = false
@@ -1167,37 +1171,98 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     // MARK: - 顶部标题区
-    /// Hero 玻璃流光卡：非循环慢周期光带 + 玻璃材质（iOS 26 Liquid Glass / 降级）。
-    /// 三闸门：Reduce Motion 时静态；「视频资产待补」——拿到 mp4 后替换为 VideoPlayer。
+    /// Hero 玻璃卡：品牌视频底层（静音循环）+ 慢周期流光 + 玻璃材质（DES-003）。
+    /// 三闸门：减少动态效果 / 视频未就绪 / 页面非活跃，均回退静态占位。
     private var heroGlassCard: some View {
         TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion)) { context in
             let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
             return heroGlassContent(phase: phase)
         }
+        .onAppear { setupHeroVideo() }
+        .onDisappear { teardownHeroVideo() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { heroPlayer?.play() } else { heroPlayer?.pause() }
+        }
+    }
+
+    /// 品牌视频单实例：静音、循环、仅页面活跃时播放；离场暂停并回零。
+    private func setupHeroVideo() {
+        guard heroPlayer == nil, !reduceMotion,
+              let url = Bundle.main.url(forResource: "brand-video", withExtension: "mp4") else { return }
+        let player = AVQueuePlayer()
+        heroPlayer = player
+        heroLooper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(url: url))
+        if scenePhase == .active { player.play() }
+    }
+
+    private func teardownHeroVideo() {
+        heroPlayer?.pause()
+        heroPlayer?.seek(to: .zero)
+        heroPlayer = nil
+        heroLooper = nil
     }
 
     private func heroGlassContent(phase: Double) -> some View {
         ZStack {
-            RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous)
-                .fill(BojiColor.brandMist.opacity(0.55))
+            // z0 视频层：未就绪时用品牌雾蓝底防黑块
+            Group {
+                if let heroPlayer {
+                    VideoPlayer(player: heroPlayer)
+                        .videoGravity(.resizeAspectFill)
+                        .accessibilityHidden(true)
+                        .allowsHitTesting(false)
+                } else {
+                    RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous)
+                        .fill(BojiColor.brandMist.opacity(0.55))
+                }
+            }
+            // 深色模式压暗，保证玻璃高光可辨
+            if colorScheme == .dark { Color.black.opacity(0.2) }
+            // z1 护字渐变（底部最深）
+            LinearGradient(
+                colors: [Color.clear, Color.clear, Color.black.opacity(0.52)],
+                startPoint: .top, endPoint: .bottom
+            )
+            // z2 慢周期流光（非循环）
             LinearGradient(
                 colors: [ClubBrand.accent.opacity(0), ClubBrand.accent.opacity(0.30), ClubBrand.accent.opacity(0)],
                 startPoint: .leading, endPoint: .trailing
             )
             .offset(x: -220 + 440 * phase)
+            // z3 内容：全白文字 + 投影
             VStack(alignment: .leading, spacing: BojiLayout.tight) {
                 Text("薄肌俱乐部")
                     .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textSecondary)
+                    .foregroundStyle(Color.white.opacity(0.85))
+                    .shadow(color: .black.opacity(0.45), radius: 1)
                 Text("今天的训练，已经为你准备好")
                     .bojiFont(.cardTitle)
-                    .foregroundStyle(BojiColor.textPrimary)
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.45), radius: 1)
                 Text("按计划开始 · 组间自动计时 · 训练后自动生成日报")
                     .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
+                    .foregroundStyle(Color.white.opacity(0.8))
+                    .shadow(color: .black.opacity(0.45), radius: 1)
             }
             .padding(BojiLayout.cardInset)
             .frame(maxWidth: .infinity, alignment: .leading)
+            // 右上 30pt 玻璃暂停钮
+            VStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        if heroPlayer?.timeControlStatus == .playing { heroPlayer?.pause() } else { heroPlayer?.play() }
+                    } label: {
+                        Image(systemName: heroPlayer?.timeControlStatus == .playing ? "pause.fill" : "play.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 30, height: 30)
+                    }
+                    .clubNativeGlassButton()
+                }
+                Spacer()
+            }
+            .padding(BojiLayout.cardInset)
         }
         .frame(height: 132)
         .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))

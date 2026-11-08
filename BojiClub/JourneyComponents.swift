@@ -69,41 +69,21 @@ struct ClubActionButtonStyle: PrimitiveButtonStyle {
             }
                 .buttonStyle(.plain)
         } else if kind == .primary {
-            if #available(iOS 26.0, *), !reduceTransparency, contrast != .increased {
-                Button(role: configuration.role, action: configuration.trigger) {
-                    configuration.label.frame(maxWidth: .infinity)
-                }
-                    .buttonStyle(.glassProminent)
-                    .tint(BojiColor.textPrimary)
-                    .foregroundStyle(BojiColor.pageBackground)
-                    .buttonBorderShape(.capsule)
-                    .controlSize(size)
-            } else {
-                Button(role: configuration.role, action: configuration.trigger) {
-                    configuration.label.frame(maxWidth: .infinity)
-                }
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
-                    .controlSize(size)
-                    .tint(BojiColor.textPrimary)
-                    .foregroundStyle(BojiColor.pageBackground)
+            Button(role: configuration.role, action: configuration.trigger) {
+                configuration.label.frame(maxWidth: .infinity)
             }
+                .clubNativeGlassButton(prominent: true)
+                .tint(BojiColor.textPrimary)
+                .foregroundStyle(BojiColor.pageBackground)
+                .buttonBorderShape(.capsule)
+                .controlSize(size)
         } else {
-            if #available(iOS 26.0, *), !reduceTransparency, contrast != .increased {
-                Button(configuration)
-                    .frame(minHeight: ClubUI.minimumTap)
-                    .buttonStyle(.glass)
-                    .buttonBorderShape(.capsule)
-                    .controlSize(size)
-                    .tint(kind == .destructive || configuration.role == .destructive ? .red : ClubBrand.accent)
-            } else {
-                Button(configuration)
-                    .frame(minHeight: ClubUI.minimumTap)
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.capsule)
-                    .controlSize(size)
-                    .tint(kind == .destructive || configuration.role == .destructive ? .red : ClubBrand.accent)
-            }
+            Button(configuration)
+                .frame(minHeight: ClubUI.minimumTap)
+                .clubNativeGlassButton()
+                .buttonBorderShape(.capsule)
+                .controlSize(size)
+                .tint(kind == .destructive || configuration.role == .destructive ? .red : ClubBrand.accent)
         }
     }
 }
@@ -122,16 +102,8 @@ struct SecondaryButton: PrimitiveButtonStyle {
 
 struct ClubSelectionButtonStyle: PrimitiveButtonStyle {
     let selected: Bool
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-    @Environment(\.colorSchemeContrast) private var contrast
     @ViewBuilder func makeBody(configuration: Configuration) -> some View {
-        if #available(iOS 26.0, *), !reduceTransparency, contrast != .increased {
-            if selected { native(configuration).buttonStyle(.glassProminent) }
-            else { native(configuration).buttonStyle(.glass) }
-        } else {
-            if selected { native(configuration).buttonStyle(.borderedProminent) }
-            else { native(configuration).buttonStyle(.bordered) }
-        }
+        native(configuration).clubNativeGlassButton(prominent: selected)
     }
     private func native(_ configuration: Configuration) -> some View {
         Button(configuration).buttonBorderShape(.capsule).controlSize(.regular)

@@ -39,18 +39,18 @@
 
 | 编号 | 页面/功能 | 复现步骤（静态核对） | 严重度 | 负责人 | 状态 | 备注 |
 |---|---|---|---|---|---|---|
-| BUG-001 | 通知深链（训练提醒等） | 训练进行中（或 AI 会话可见时）点推送通知：`BojiClubApp.swift:219` 的 `.sheet(item:)` Binding 在 `store.trainingInterfacePresented`/`store.clubAIInterfacePresented` 为真、或 `route.kind == "training"` 时直接返回 nil，通知被静默吞掉 | P1 | 苹果开发 | 已修复待验（部分） | 修复方式（commit ea531ff）：屏蔽时改顶部提示横幅，路由保留待条件解除后自动弹出。测试验收源码复验：横幅已生效，但遗留 BUG-010／BUG-011 |
+| BUG-001 | 通知深链（训练提醒等） | 训练进行中（或 AI 会话可见时）点推送通知：`BojiClubApp.swift:219` 的 `.sheet(item:)` Binding 在 `store.trainingInterfacePresented`/`store.clubAIInterfacePresented` 为真、或 `route.kind == "training"` 时直接返回 nil，通知被静默吞掉 | P1 | 苹果开发 | 已修复待验 | 修复方式（commit ea531ff + 第二批）：屏蔽时改顶部提示横幅，路由保留待条件解除后自动弹出；第二批已修遗留——文案区分 training（如实说明不会自动弹出）、带「知道了」关闭按钮、改 safeAreaInset 不压顶栏（BUG-010/011 同修） |
 | BUG-002 | 登录→首页入口状态机 | 登录后依次过 `account.phase`→`MembershipGateView`→`IndependentProfileOnboardingView`→`FirstLaunchWalkthroughView`→主壳，四层任一状态回写不及时即卡在门页 | P2 | 苹果开发 | 待处理 | 苹果开发提供，待模拟器复核 |
-| BUG-003 | 训练登记输入 | 训练中切换重量/次数输入：自绘 `ClubNumericKeypad` 与系统键盘（keypadWeight 开关）并存，输入串轨且 VoiceOver 不可达 | P1 | 苹果开发 | 待处理 | 与 B1 的 IOS-001 改造项同源，改造后自动关闭 |
+| BUG-003 | 训练登记输入 | 训练中切换重量/次数输入：自绘 `ClubNumericKeypad` 与系统键盘（keypadWeight 开关）并存，输入串轨且 VoiceOver 不可达 | P1 | 苹果开发 | 已修复待验 | 自绘键盘与 keypadWeight 双轨已删（ClubNumericKeypad 定义删除、底部键盘条删除），统一原生 TextField（decimalPad/numberPad）+ sanitize 过滤（数字、一个小数点、最长 8 位）；LiquidCheckbox 同步改系统符号按钮 |
 | BUG-004 | 组间休息状态 | 暂停/恢复休息并跨午夜或跨时区：`pauseService.state` 与 `restDeadlines` 双源（`ClubAIShell.swift:166-172`），提醒取消与恢复重排边界多，是卡顿高发区 | P2 | 苹果开发 | 待处理 | 待真机/跨日复核 |
-| BUG-005 | 品牌视频未融入界面 | 主壳空态 Hero 卡 `heroGlassCard`（`ClubAIShell.swift:1172`）仍是渐变+TimelineView 流光占位，源码注释明写「视频资产待补」；`design-assets/brand-video.mp4` 在工程内无任何引用 | P1 | 苹果开发／界面设计 | 待处理 | 直接对应验收标准④；**视频位已定 A（DEC-1）**，等界面设计 Hero 视觉稿后接入 |
+| BUG-005 | 品牌视频未融入界面 | 主壳空态 Hero 卡 `heroGlassCard`（`ClubAIShell.swift:1172`）仍是渐变+TimelineView 流光占位，源码注释明写「视频资产待补」；`design-assets/brand-video.mp4` 在工程内无任何引用 | P1 | 苹果开发／界面设计 | 已修复待验 | 按 DES-003 方案 A 接入：AVQueuePlayer+AVPlayerLooper 静音循环、仅页面活跃播放、离场 pause+seek(.zero)；三闸门（减少动态效果/视频未就绪/页面非活跃）回退静态占位；底部护字渐变、深色压暗 20%、全白文字+投影、右上 30pt 玻璃暂停钮；brand-video.mp4 已复制入 BojiClub/ 并在 pbxproj 注册资源 |
 | BUG-006 | 侧栏无障碍审计 | 默认侧栏自动审计仍报 3 个 `element=nil` 对比度失败 + 2 个「大字号可能裁切」预测（`docs/native-ui-20261024/diagnostics/sidebar-ax-triage.md`） | P2 | 苹果开发 | 待处理 | 上一轮未关闭项；草稿标题实测 15.81:1 非误报，但未知项无法定位 |
 | BUG-007 | 滚动性能回归 | 相同 SE3 模拟器 Debug 前后对比：滚动 CPU 0.304→0.448 秒（+47.2%），指令数 +38%（`docs/native-ui-20261024/performance/performance-comparison.md`） | P2 | 苹果开发 | 待处理 | 未做采样归因；影响「华丽动效」的流畅度观感 |
 | BUG-008 | 顶栏工作区选择器小屏溢出 | iPhone SE（375pt）下 `ClubModeCapsulePicker` 分段选择器 `maxWidth: 300`，加左 44pt 侧栏钮 + 右 44pt 更多钮 = 388pt > 375pt，可能压缩/截断 | P3 | 苹果开发 | 待处理 | 仅大字号走 `.menu` 降级；小屏待复核 |
 | BUG-009 | 强制解包风险点 | 静态扫描 31 处 `!`，多数有前置 guard；风险相对高的：`AppStore.swift:2111`（`state.days[key]!.meals[index]`）、`ExerciseLibraryView.swift:143/168/178`（`components.url!`）、`MembershipService.swift:240`（`self.notice!`）、`HealthViews.swift:206`（`URL(string:)!`） | P3 | 苹果开发 | 待处理 | 未发现必然崩溃路径，建议随改造一并加 guard |
-| BUG-010 | 通知横幅文案与实际行为不符 | training 类通知（`route.kind == "training"`）被 sheet 绑定**永久**屏蔽（`BojiClubApp.swift:219` 的 blocking 条件里含 `route?.kind == "training"`），横幅却写「退出训练或对话后会自动打开」——实际永远不会打开；且 `BojiStatusBanner` 未传 `action`，**没有关闭按钮**，route 未清理前横幅常驻 | P3 | 苹果开发 | 待处理 | 触发路径：训练中收到另一日期的训练提醒 → `ClubAIShell.swift:761-764` 把 `trainingRoute` 置 nil 但保留 route → 横幅常驻。测试验收复验 BUG-001 时发现 |
-| BUG-011 | 通知横幅可能遮挡顶栏 | 横幅 `.overlay(alignment: .top)` 直接压在 `navigationWorkspace` 上（`BojiClubApp.swift:241-247`），顶栏已有侧栏钮+分段选择器+更多钮，需确认不遮挡、不拦截点击 | P3 | 苹果开发 | 待处理 | 待模拟器/真机复核 |
-| BUG-012 | 页面内散写 `if #available(iOS 26)` | `JourneyComponents.swift:72/92/128` 仍直接写 `if #available(iOS 26.0, *)` 三分支（规范 §1 明令禁止，应收口到 `clubNativeGlassButton`）；且这三处所在的 `ClubActionButtonStyle` 本身就是待淘汰的自绘按钮（30+ 使用点） | P2 | 苹果开发 | 待处理 | 材质收口 IOS-005 的漏项；`clubNativeGlassButton` 目前仅 1 处使用。测试验收复验时发现 |
+| BUG-010 | 通知横幅文案与实际行为不符 | training 类通知（`route.kind == "training"`）被 sheet 绑定**永久**屏蔽（`BojiClubApp.swift:219` 的 blocking 条件里含 `route?.kind == "training"`），横幅却写「退出训练或对话后会自动打开」——实际永远不会打开；且 `BojiStatusBanner` 未传 `action`，**没有关闭按钮**，route 未清理前横幅常驻 | P3 | 苹果开发 | 待处理 | 触发路径：训练中收到另一日期的训练提醒 → `ClubAIShell.swift:761-764` 把 `trainingRoute` 置 nil 但保留 route → 横幅常驻。测试验收复验 BUG-001 时发现；**已修**：training 类文案如实写「训练进行中不会自动弹出，请稍后从通知中心重新打开本条通知」，横幅带「知道了」关闭动作（清提示状态），不再常驻 |
+| BUG-011 | 通知横幅可能遮挡顶栏 | 横幅 `.overlay(alignment: .top)` 直接压在 `navigationWorkspace` 上（`BojiClubApp.swift:241-247`），顶栏已有侧栏钮+分段选择器+更多钮，需确认不遮挡、不拦截点击 | P3 | 苹果开发 | 已修复待验 | 横幅从 `.overlay(alignment: .top)` 改为 `.safeAreaInset(edge: .top)`，走系统安全区布局，不压导航栏、不拦截顶栏点击 |
+| BUG-012 | 页面内散写 `if #available(iOS 26)` | `JourneyComponents.swift:72/92/128` 仍直接写 `if #available(iOS 26.0, *)` 三分支（规范 §1 明令禁止，应收口到 `clubNativeGlassButton`）；且这三处所在的 `ClubActionButtonStyle` 本身就是待淘汰的自绘按钮（30+ 使用点） | P2 | 苹果开发 | 待处理 | 材质收口 IOS-005 的漏项；**已修**：JourneyComponents 三处散写分支收口为 `.clubNativeGlassButton(prominent:)` / `.clubNativeGlassButton()`，页面层无 if #available；ClubActionButtonStyle 整体淘汰（30+ 使用点替换）留待后续批次 |
 
 > 用户直接在群里反馈的具体 bug 和流程卡壳点，由测试验收转记到此表。
 >
@@ -62,20 +62,20 @@
 
 | 编号 | 现状（自绘/自建控件或流程不通点） | 目标（原生组件/玻璃方案） | 涉及文件 | 状态 | 备注 |
 |---|---|---|---|---|---|
-| IOS-001 | LiquidCheckbox 自绘圆+波纹勾选 | 原生 Toggle 语义 + symbolEffect(.bounce.up) + 触感 | DesignTokens.swift:673、TrainingRegistrationViews.swift:293/298 | 待处理 | 摸底文档 A 节 |
-| IOS-002 | ClubNumericKeypad 自绘数字键盘 | 系统键盘 decimalPad + 原生 TextField | Experience123.swift:141、TrainingRegistrationViews.swift:630 | 待处理 | VoiceOver 不可达 |
+| IOS-001 | LiquidCheckbox 自绘圆+波纹勾选 | 系统符号按钮（checkmark.circle.fill/circle）+ symbolEffect(.bounce.up.byLayer) + 触感 | TrainingRegistrationViews.swift completeControl | 已修复待验 | 自绘定义已删（DesignTokens.swift:673 段）；完成/撤销分支保留 heavyDrop/latch/tick 触感与 accessibilityLabel/Hint |
+| IOS-002 | ClubNumericKeypad 自绘数字键盘 | 系统键盘 decimalPad/numberPad + 原生 TextField | Experience123.swift ClubNumericField、TrainingRegistrationViews.swift:542/546/564 | 已修复待验 | 自绘键盘定义与 keypadWeight 双轨已删，底部键盘条删除；TextField 带 sanitize 过滤（数字、一个小数点、最长 8 位），VoiceOver 走系统键盘语义 |
 | IOS-003 | TrainingNumericInput125 包 UITextField | 原生 TextField + formatted 数值约束 | WorkoutExperience125.swift:169/78/84 | 待处理 |  |
 | IOS-004 | SmartWeightStepper 自绘磁吸步进胶囊 | 原生 Stepper/Menu + 系统材质 | DesignTokens.swift:814 | 待处理 |  |
-| IOS-005 | 23 处直写 .regularMaterial/.ultraThinMaterial | 收口 clubGlassEffect（iOS 26 自动 glassEffect） | 见摸底文档 C 节 | 待处理 | 纯收口，不改视觉语义 |
+| IOS-005 | 23 处直写 .regularMaterial/.ultraThinMaterial | 收口 clubGlassEffect（iOS 26 自动 glassEffect） | 见摸底文档 C 节 | 已修复待验 | 17 处浮件收口 clubGlassEffect、2 处内容卡改不透明 cardSurface；全库复扫仅剩 Design.swift:200 桥接自身降级分支（预期）；含 BUG-012（JourneyComponents 散写玻璃分支收口） |
 | IOS-006 | ClubActivityMark/ClubWaitBar/AIWaitProgress 手绘 TimelineView | 原生 ProgressView（不确定态） | Design.swift:331/509/540 | 待处理 |  |
 | IOS-007 | BreathingPulseHalo 手绘呼吸环 | 原生 Gauge(.accessoryCircularCapacity) + symbolEffect | DesignTokens.swift:746 | 待处理 |  |
 | IOS-008 | LaserScanBeamOverlay 手绘激光扫描线 | 系统进度语义（ProgressView+识别文案） | DesignTokens.swift:888、MealEditorView.swift:876 | 待处理 |  |
 | IOS-009 | ConfettiView 手绘彩带粒子 | symbolEffect(.celebrate)/系统庆祝 | OnboardingView.swift:1324/1293 | 待处理 |  |
 | IOS-010 | 首次引导轨道环/渐变卫星手绘 | glassEffect + SF Symbols 重做 | FirstLaunchWalkthroughView.swift:223-530/794-810 | 待处理 | 等 DES 动效规范 |
-| IOS-011 | 训练/AI 界面呈现时通知深链被屏蔽（sheet 返回 nil） | 训练进行中点通知可见提示或跳转 | BojiClubApp.swift:218 | 待处理 | P1 流程断点 |
+| IOS-011 | 训练/AI 界面呈现时通知深链被屏蔽（sheet 返回 nil） | 训练进行中点通知可见提示或跳转 | BojiClubApp.swift:216 | 已修复待验 | P1 流程断点；屏蔽逻辑保留（不打断训练），顶部安全区横幅如实提示+「知道了」关闭，route 保留待解除后自动弹出（BUG-001/010/011 同修） |
 | IOS-012 | 登录→会员门→引导→首启 walkthrough 四层状态机回写不及时卡门 | 状态收口+卡门可恢复提示 | BojiClubApp.swift、ClubAIShell.swift | 待处理 |  |
 | IOS-013 | 组间休息 pauseService+restDeadlines 双状态 | 单源事实+跨午夜边界回归 | ClubAIShell.swift:166-172 | 待处理 |  |
-| IOS-014 | 品牌视频融入技术位预留 | AVKit/VideoPlayer + 玻璃边框，**位置已定 A：首页 Hero 卡底层**（DEC-1） | Hero 卡（`heroGlassCard`） | 待处理 | 素材 design-assets/brand-video.mp4；等界面设计视觉稿（会 @苹果开发） |
+| IOS-014 | 品牌视频融入技术位预留 | AVKit/VideoPlayer + 玻璃边框，**位置已定 A：首页 Hero 卡底层**（DEC-1） | ClubAIShell.swift heroGlassCard、pbxproj | 处理中 | 代码层按 DES-003 方案 A 完成（AVQueuePlayer 静音循环+三闸门降级+护字渐变+30pt 玻璃暂停钮），brand-video.mp4 已复制入 BojiClub/ 并在 pbxproj 注册；待云端编译与视觉验收 |
 
 ### B2. 界面设计 · 视觉与动效规范（规范产出后贴链接）
 
@@ -162,7 +162,7 @@
 | 成员 | 任务 | 状态 |
 |---|---|---|
 | 后端开发 | BE-001 核验改后台异步（请求路径只读本地权益，不再同步打 RevenueCat 卡 12 秒）；BE-004 改指数退避自动重试（弱网恢复自动续同步）；改完跑云端编译 + 登记台账 | **已修复待验**（代码已改，待云端编译 + 测试验收复验） |
-| 苹果开发 | 材质收口 17 处（15 处 + RemoteConfigNoticeView、ProfileView 补 2 处）→ git 提交推送 + 云端编译；P0 必改 BUG-001（通知深链）、BUG-003（输入串轨，随 IOS-001/002 原生化关闭）；拿到 Hero 视觉稿后接视频关 BUG-005 | 进行中 |
+| 苹果开发 | 材质收口 17 处（15 处 + RemoteConfigNoticeView、ProfileView 补 2 处）→ git 提交推送 + 云端编译；P0 必改 BUG-001（通知深链）、BUG-003（输入串轨，随 IOS-001/002 原生化关闭）；拿到 Hero 视觉稿后接视频关 BUG-005 | **第一批已提交（c3cf75d）**；第二批（BUG-003/005/010/011/012）已改完待提交，提交后请测试验收重跑云端编译 |
 | 运维支付 | BE-002/BE-003 部署配置核查 → **已完成**：根因 deploy.sh 配置模板缺键，源码已改（21 键契约 + 校验脚本 + 测试 21 键全过），线上补键清单交 Chief（OPS-003）；TestFlight 步骤指引已出（前提更正：需 $99 付费账号），待用户回「1/2/3」 | 已回报，待用户选链路 |
 | 界面设计 | 首页 Hero 卡视觉稿（视频底层静音循环/离开暂停/减少动态显静态帧 + 玻璃卡 + 渐变护字 + BUG-005 落地要点），出好 @苹果开发 | 进行中 |
 | 测试验收 | 据 DEC-1/DEC-2 更新 D 表 ACC-02/ACC-04；等修复报上来做复验回归 | 进行中 |
@@ -187,3 +187,6 @@
 - 2026-11-08：阶段 1（摸底与规范）Chief 验收通过；登记三个决定 DEC-1 视频位 A（首页 Hero 卡）、DEC-2 ACC-02 降级验收、DEC-3 真机链路推荐 TestFlight 待用户确认；建立 5 阶段进度表与阶段 2 分工状态表，进入阶段 2（P0 修复）。
 - 2026-11-08：运维支付回报 BE-002/BE-003 核查——根因 deploy.sh 配置模板缺 21 键，源码已改（契约+校验+测试全过，未碰线上），线上补键列为 OPS-003 待管理员；**更正 DEC-3/OPS-001：TestFlight 也需 $99/年付费开发者账号**，选项 3 仍零账号；TestFlight 步骤指引已出待用户回「1/2/3」。
 - 2026-11-08：测试验收完成阶段 2 首批源码复验——材质收口核对通过（全库仅 `Design.swift:200` 桥接处保留材质，符合预期）；BUG-001 通知深链改为顶部横幅，已生效但新增 BUG-010（文案与实际不符、无关闭按钮）、BUG-011（横幅可能遮挡顶栏，待复核）、BUG-012（`JourneyComponents.swift` 3 处散写 `#available` 未收口）。ACC-02 降级验收的源码核对已完成。
+- 2026-11-08：**云端编译验证未通过**。`builder ios build`（Build ID 12f2afd4，snapshot `fe1e4f5`，workflow run 42458229350）在 Build IPA 步骤失败，exit code 65（xcodebuild 编译错误）。**疑似根因**：快照拍于 15:17，当时工作树有 6 个 Swift 文件处于苹果开发未提交的半成品编辑中（+67/−171），快照不代表可编译状态。待苹果开发提交后重跑；错误日志因 GitHub API 限流暂未取得（15:41 重置后补）。
+- 2026-11-08：**流程建议（测试验收）**：编译验证必须在**已提交的干净工作树**上做，不要拍正在编辑中的工作树；builder 快照的是工作树而非 HEAD。
+- 2026-11-08：**苹果开发第二批修复完成待提交**：BUG-003 输入串轨（删 ClubNumericKeypad 自绘键盘与 keypadWeight 双轨，ClubNumericField 改原生 TextField+sanitize，LiquidCheckbox 改系统符号按钮）、BUG-005 Hero 视频接入（DES-003 方案 A，brand-video.mp4 已入 bundle 并注册 pbxproj）、BUG-010/011 横幅修正（training 文案如实、带「知道了」关闭、改 safeAreaInset 不压顶栏）、BUG-012 JourneyComponents 三处散写玻璃分支收口 clubNativeGlassButton；台账 A/B1 表状态已同步更新。

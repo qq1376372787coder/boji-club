@@ -290,14 +290,28 @@ struct TrainingSetRowView: View {
 
     @ViewBuilder private var completeControl: some View {
         if trainingSet.validCompletion {
-            LiquidCheckbox(isCompleted: true, isLastSet: isLastUncompletedSet) {
-                undoComplete()
+            Button(action: undoComplete) {
+                Image(systemName: "checkmark.circle.fill")
+                    .symbolEffect(.bounce.up.byLayer, value: true)
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(BojiColor.emeraldAccent)
+                    .frame(width: BojiSize.minimumTap, height: BojiSize.minimumTap)
+                    .contentShape(Circle())
             }
+            .buttonStyle(ClubMotionButton())
             .accessibilityLabel("第 \(number) 组已完成，点击撤销完成")
         } else if allowCompletion {
-            LiquidCheckbox(isCompleted: false, isLastSet: isLastUncompletedSet) {
+            Button(action: {
+                if isLastUncompletedSet { BojiHaptics.heavyDrop() } else { BojiHaptics.latch() }
                 toggleComplete()
+            }) label: {
+                Image(systemName: "circle")
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(BojiColor.textTertiary.opacity(0.55))
+                    .frame(width: BojiSize.minimumTap, height: BojiSize.minimumTap)
+                    .contentShape(Circle())
             }
+            .buttonStyle(ClubMotionButton())
             .disabled(amount <= 0)
             .accessibilityLabel("完成第 \(number) 组")
             .accessibilityHint(amount <= 0 ? "请先填写实际数值" : "保存本组并进入下一组")
@@ -473,7 +487,6 @@ struct TrainingSetEditPanel: View {
     /// 返回 false 表示未删除（如已确认场次保护），面板保持打开以展示原因。
     let performDelete: () -> Bool
 
-    @State private var keypadWeight: Bool
     @State private var weight: String
     @State private var amount: String
     @State private var error: String?
@@ -487,10 +500,9 @@ struct TrainingSetEditPanel: View {
 
     init(original: TrainingSet, number: Int, previous: TrainingSet?, canUsePrevious: Bool,
          history: TrainingSet? = nil, canUseHistory: Bool = false,
-         weightStep: Binding<Double>, allowTimer: Bool, isPlanTarget: Bool = false, completeOnSave: Bool = false, initialWeight: Bool = true,
+         weightStep: Binding<Double>, allowTimer: Bool, isPlanTarget: Bool = false, completeOnSave: Bool = false,
          save: @escaping (TrainingSet) -> Bool, startTimer: @escaping (TrainingSet) -> Void,
          performDelete: @escaping () -> Bool) {
-        _keypadWeight = State(initialValue: initialWeight && original.durationSeconds == nil)
         self.original = original; self.number = number
         self.previous = previous; self.canUsePrevious = canUsePrevious
         self.history = history; self.canUseHistory = canUseHistory
@@ -539,11 +551,11 @@ struct TrainingSetEditPanel: View {
                     HStack(spacing: BojiSpace.general) {
                         if !isTimed {
                             stepButton(symbol: "minus") { adjust(isWeight: true, positive: false) }
-                            ClubNumericField(value: $weight, placeholder: "无额外负重填 0", decimal: true, selected: keypadWeight) { keypadWeight = true }
+                            ClubNumericField(value: $weight, placeholder: "无额外负重填 0", decimal: true)
                             stepButton(symbol: "plus") { adjust(isWeight: true, positive: true) }
                         } else {
                             stepButton(symbol: "minus") { adjust(isWeight: false, positive: false, timed: true) }
-                            ClubNumericField(value: $amount, placeholder: "实际秒数", decimal: false, selected: !keypadWeight) { keypadWeight = false }
+                            ClubNumericField(value: $amount, placeholder: "实际秒数", decimal: false)
                             stepButton(symbol: "plus") { adjust(isWeight: false, positive: true, timed: true) }
                         }
                     }
@@ -561,7 +573,7 @@ struct TrainingSetEditPanel: View {
                     Section("次数") {
                         HStack(spacing: BojiSpace.general) {
                             stepButton(symbol: "minus") { adjust(isWeight: false, positive: false) }
-                            ClubNumericField(value: $amount, placeholder: "实际完成次数", decimal: false, selected: !keypadWeight) { keypadWeight = false }
+                            ClubNumericField(value: $amount, placeholder: "实际完成次数", decimal: false)
                             stepButton(symbol: "plus") { adjust(isWeight: false, positive: true) }
                         }
                     }
@@ -619,16 +631,6 @@ struct TrainingSetEditPanel: View {
                     .accessibilityLabel("本组更多操作")
                 }
                 ToolbarItem(placement: .confirmationAction) { Button("保存", action: submit) }
-            }
-            .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 0) {
-                    HStack {
-                        Text(keypadWeight ? "重量 kg" : isTimed ? "时长 秒" : "次数").bojiType(.caption)
-                        Spacer()
-                        Button("清空") { if keypadWeight { weight = "" } else { amount = "" } }.bojiType(.caption)
-                    }
-                    ClubNumericKeypad(value: keypadWeight ? $weight : $amount, decimal: keypadWeight, next: keypadWeight && !isTimed ? { keypadWeight = false } : nil)
-                }.padding(.horizontal, BojiLayout.pageInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
             }
             .interactiveDismissDisabled(dirty)
             .confirmationDialog("放弃这组未保存的输入？", isPresented: $confirmDiscard, titleVisibility: .visible) {

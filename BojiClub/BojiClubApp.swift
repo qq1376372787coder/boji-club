@@ -240,15 +240,18 @@ struct RootView: View {
             let blocked = activeMemberAccountID == nil || walkthroughPresented || route?.kind == "training" || store.trainingInterfacePresented || store.clubAIInterfacePresented
             pendingRouteNotice = route != nil && blocked
         }
-        .overlay(alignment: .top) {
+        .safeAreaInset(edge: .top) {
             if pendingRouteNotice, let kind = notifications.route?.kind {
-                BojiStatusBanner(icon: "bell.badge", title: "「\(RootView.routeDisplayName(kind))」已保留", detail: "当前界面不适合弹出，退出训练或对话后会自动打开。", tint: ClubBrand.accent)
-                    .padding(.horizontal, ClubUI.pageInset)
-                    .padding(.top, BojiSpace.general)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                BojiStatusBanner(
+                    icon: "bell.badge",
+                    title: "「\(RootView.routeDisplayName(kind))」已保留",
+                    detail: kind == "training"
+                        ? "训练进行中不会自动弹出，请稍后从通知中心重新打开本条通知。"
+                        : "当前界面不便弹出，退出训练或对话后会自动打开。",
+                    tint: ClubBrand.accent,
+                    actionTitle: "知道了") { pendingRouteNotice = false }
             }
         }
-        .animation(BojiMotion2.state, value: pendingRouteNotice)
     }
 
     private static func routeDisplayName(_ kind: String) -> String {
