@@ -83,7 +83,8 @@ struct AIReferencePicker: View {
             guard let log = store.state.days[key] else { continue }
             switch category {
             case "身体数据":
-                if log.bodyWeight != nil || !(log.bodyMeasurements ?? []).isEmpty { rows.append(.init(kind: "body_range", from: key, to: key, title: key + " · 身体测量")) }
+                // 「有没有身体测量」也走唯一读法（nil 才回落、[] 算没有、剔墓碑），不再自判
+                if !BodyWeightReading.rawRows(of: log).isEmpty { rows.append(.init(kind: "body_range", from: key, to: key, title: key + " · 身体测量")) }
             case "饮食记录":
                 if !log.meals.isEmpty { rows.append(.init(kind: "meal_day", from: key, to: key, title: key + " · \(log.meals.count)条饮食")) }
                 rows += log.meals.map { .init(kind: "meal_entry", resourceID: $0.id.uuidString.lowercased(), from: key, to: key, title: key + " · " + $0.name) }

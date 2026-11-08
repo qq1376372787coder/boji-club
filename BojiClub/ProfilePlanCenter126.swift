@@ -79,12 +79,10 @@ struct ProfileKnowledgeCards126: View {
 enum ProfileBodyRules126 {
     static func bmi(profile: MemberProfile) -> Double? { BodyProfileAssessment.bmi(profile) }
     static func latestMeasurement(_ days: [String: DayLog], now: Date = Date()) -> (date: String, value: Double)? {
+        // 体重唯一读法（口径表 §四）：多条测量/墓碑/非法值/排序统一在 BodyWeightReading 里处理
         for key in days.keys.filter({ $0 <= ClubDates.key(now) }).sorted(by: >) {
-            guard let day = days[key] else { continue }
-            let deleted = Set(day.deletedBodyMeasurementIDs ?? [])
-            let rows = (day.bodyMeasurements ?? []) + (day.bodyWeight.map { [$0] } ?? [])
-            if let row = rows.filter({ $0.id.map { !deleted.contains($0.uuidString) && !deleted.contains($0.uuidString.lowercased()) } ?? true })
-                .filter({ $0.measuredKilograms != nil }).max(by: { ($0.recordedAt ?? $0.updatedAt) < ($1.recordedAt ?? $1.updatedAt) }), let kg = row.measuredKilograms { return (key, kg) }
+            guard let day = days[key], let row = BodyWeightReading.latestEntry(day), let kg = row.measuredKilograms else { continue }
+            return (key, kg)
         }
         return nil
     }

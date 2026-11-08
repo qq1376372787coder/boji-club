@@ -366,11 +366,11 @@ struct DayLog: Codable {
         )
 
         let bodyMetrics = AIDailyBodyMetrics(
-            // 口径：体重走唯一读法 BodyWeightReading（多条测量取最后一次，非法值为 nil），
-            // 体脂/腰围同批只在整条记录有效时报出
+            // 口径：三个字段同走唯一读法 BodyWeightReading（最新一条有效测量），
+            // 不再依赖 saveBodyMeasurements 维护的镜像字段——云端合并/健康/导入时镜像可能滞后
             weight_kg: BodyWeightReading.latest(self),
-            body_fat_pct: bodyWeight?.isValid == true ? bodyWeight?.bodyFatPercentage : nil,
-            waist_cm: bodyWeight?.isValid == true ? bodyWeight?.waistCircumferenceCM : nil
+            body_fat_pct: BodyWeightReading.latestEntry(self)?.bodyFatPercentage,
+            waist_cm: BodyWeightReading.latestEntry(self)?.waistCircumferenceCM
         )
 
         let activityMetrics = AIDailyActivityMetrics(

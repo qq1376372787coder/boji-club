@@ -79,7 +79,7 @@ final class VisualRegressionShots: XCTestCase {
             // —— 主壳：今天 ——
             Screen(code: "R01", page: "首页", state: "有数据", route: "home", primaryID: "v2-home-primary"),
             Screen(code: "R02", page: "首页", state: "空态", route: "home", seed: "empty"),
-            Screen(code: "R03", page: "首页", state: "滚动后", route: "home", scroll: 1),
+            Screen(code: "R03", page: "首页", state: "滚动后布局", route: "home", scroll: 1),
             Screen(code: "R04", page: "首页", state: "AX大字号", route: "home", only: [.ax]),
             // —— 训练 ——
             Screen(code: "R05", page: "训练中", state: "有已完成组", route: "workout"),

@@ -284,16 +284,24 @@ struct BodyWeightPoint: Identifiable {
 /// 剔除删除墓碑、剔除非法值（measuredKilograms），按记录时间升序。
 /// 趋势 / 阶段报告 / 平台期 / 周报 / 记录历史（BodyWeightHistory）全部走这里，不许再有第二条读路。
 enum BodyWeightReading {
-    static func rows(of day: DayLog) -> [BodyWeightEntry] {
+    /// 原始测量列表（编辑面板定位用）：统一「nil 才回落单条、`[]` 视为没有批量记录」与墓碑过滤，
+    /// 但**不过滤非法值**——已有的 500kg 这类记录仍要能在面板里被找到并改正。
+    static func rawRows(of day: DayLog) -> [BodyWeightEntry] {
         let base = day.bodyMeasurements ?? [day.bodyWeight].compactMap { $0 }
         let deleted = Set((day.deletedBodyMeasurementIDs ?? []).map { $0.lowercased() })
         return base
             .filter { row in !(row.id.map { deleted.contains($0.uuidString.lowercased()) } ?? false) }
-            .filter { $0.measuredKilograms != nil }
             .sorted { ($0.recordedAt ?? $0.updatedAt) < ($1.recordedAt ?? $1.updatedAt) }
+    }
+
+    /// 有效称重（展示与计算用）：在 rawRows 之上剔除非法值（measuredKilograms 为 nil 的记录）。
+    static func rows(of day: DayLog) -> [BodyWeightEntry] {
+        rawRows(of: day).filter { $0.measuredKilograms != nil }
     }
     /// 当天最后一次有效称重（列表/日报等「今天多少公斤」的唯一读法）。
     static func latest(_ day: DayLog) -> Double? { rows(of: day).last?.measuredKilograms }
+    /// 当天最后一次有效测量的完整记录（体脂/腰围与体重同源的读法，防止镜像字段滞后）。
+    static func latestEntry(_ day: DayLog) -> BodyWeightEntry? { rows(of: day).last }
 }
 
 enum BodyWeightHistory {

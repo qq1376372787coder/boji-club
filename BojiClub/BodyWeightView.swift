@@ -301,7 +301,7 @@ struct WeightEntryEditor: View {
             }
             .onAppear {
                 guard !loaded else { return }; loaded = true; owner = store.editingAccountID
-                original = measurementID.flatMap { id in (store.log(for: date).bodyMeasurements ?? [store.log(for: date).bodyWeight].compactMap { $0 }).first { ($0.id ?? BodyMeasurementIdentity.legacy($0, date: ClubDates.key(date))) == id } }
+                original = measurementID.flatMap { id in BodyWeightReading.rawRows(of: store.log(for: date)).first { ($0.id ?? BodyMeasurementIdentity.legacy($0, date: ClubDates.key(date))) == id } }
                 let now = Date(); let c = ClubDates.calendar.dateComponents([.hour, .minute], from: now)
                 measuredAt = original?.recordedAt ?? ClubDates.calendar.date(bySettingHour: c.hour ?? 12, minute: c.minute ?? 0, second: 0, of: date) ?? date
                 measuredAt = min(max(measuredAt, measurementTimeRange.lowerBound), measurementTimeRange.upperBound)
@@ -323,7 +323,7 @@ struct WeightEntryEditor: View {
     }
     private var measurementUnchanged: Bool {
         guard let measurementID else { return true }
-        return original == (store.log(for: date).bodyMeasurements ?? [store.log(for: date).bodyWeight].compactMap { $0 }).first { ($0.id ?? BodyMeasurementIdentity.legacy($0, date: ClubDates.key(date))) == measurementID }
+        return original == BodyWeightReading.rawRows(of: store.log(for: date)).first { ($0.id ?? BodyMeasurementIdentity.legacy($0, date: ClubDates.key(date))) == measurementID }
     }
     private func saveMeasurements() {
         guard owner != nil, owner == store.editingAccountID else { error = "账号已变化，请重新打开。"; return }

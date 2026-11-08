@@ -91,7 +91,7 @@ struct ClubReferenceTextEditor: UIViewRepresentable {
                 result.append(.init(kind: "workout_session", resourceID: session.id.uuidString.lowercased(), from: key, to: key, title: key + " 训练"))
             }
             if !day.meals.isEmpty { result.append(.init(kind: "meal_day", from: key, to: key, title: key + " 饮食")) }
-            if day.bodyWeight != nil || !(day.bodyMeasurements ?? []).isEmpty { result.append(.init(kind: "body_range", from: key, to: key, title: key + " 身体测量")) }
+            if !BodyWeightReading.rawRows(of: day).isEmpty { result.append(.init(kind: "body_range", from: key, to: key, title: key + " 身体测量")) }
             if !day.exercises.isEmpty { result.append(.init(kind: "plan_day", from: key, to: key, title: key + " 计划")) }
             for plan in day.planVersions ?? [] { result.append(.init(kind: "plan_version", resourceID: plan.id, from: key, to: key, title: plan.title)) }
         }
