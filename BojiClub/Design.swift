@@ -331,30 +331,15 @@ struct ClubMotionButton: ButtonStyle {
 struct ClubActivityMark: View {
     var size: CGFloat = 28
     var tint: Color = ClubBrand.accent
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.scenePhase) private var scenePhase
-    @State private var visible = false
-    @State private var inViewport = false
-    private var moving: Bool { visible && inViewport && scenePhase == .active && !reduceMotion }
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30, paused: !moving)) { context in
-            let phase = moving ? context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 1.8) / 1.8 : 0
-            ZStack {
-                Circle().stroke(tint.opacity(0.12), lineWidth: 2)
-                Circle().fill(tint.opacity(0.45))
-                    .frame(width: size * 0.18, height: size * 0.18)
-                    .scaleEffect(CGFloat(moving ? 0.9 + 0.12 * sin(phase * 2 * Double.pi) : 1))
-                Circle().trim(from: 0, to: 0.26)
-                    .stroke(tint.opacity(0.8), style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                    .rotationEffect(.degrees(phase * 360 - 90))
-            }
-        }
-        .frame(width: size, height: size)
-        .accessibilityHidden(true)
-        .clubViewportVisibility($inViewport)
-        .onAppear { visible = true }
-        .onDisappear { visible = false }
+        ProgressView()
+            .progressViewStyle(.circular)
+            .tint(tint)
+            .controlSize(size > 32 ? .large : .regular)
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
     }
+}
 }
 
 struct ClubLoadingCard: View {
@@ -384,37 +369,34 @@ struct ClubLoadingSkeleton: View {
     let title: String
     var rows: Int = 3
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.scenePhase) private var scenePhase
-    @State private var visible = false
-    @State private var inViewport = false
     @State private var showPlaceholders = false
-    private var moving: Bool { visible && inViewport && scenePhase == .active && !reduceMotion }
+    @State private var dimmed = false
     var body: some View {
         VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
             ClubLoadingCard(title: title)
             if showPlaceholders {
-                TimelineView(.animation(minimumInterval: 1.0 / 20, paused: !moving)) { context in
-                    let pulse = moving ? 0.65 + 0.15 * sin(context.date.timeIntervalSinceReferenceDate * 3) : 0.65
-                    VStack(spacing: BojiLayout.rowGap) {
-                        ForEach(0..<max(0, min(rows, 4)), id: \.self) { _ in
-                            HStack(spacing: BojiLayout.rowGap) {
-                                RoundedRectangle(cornerRadius: BojiRadius.inner).fill(Color.primary.opacity(0.07)).frame(width: 54, height: 54)
-                                VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                                    RoundedRectangle(cornerRadius: BojiRadius.badge).fill(Color.primary.opacity(0.08)).frame(height: 11)
-                                    RoundedRectangle(cornerRadius: BojiRadius.badge).fill(Color.primary.opacity(0.06)).frame(maxWidth: 140).frame(height: 9)
-                                }
-                                Spacer(minLength: 18)
-                            }.padding(ClubUI.cardInset).background(ClubUI.surface, in: RoundedRectangle(cornerRadius: ClubUI.cardRadius, style: .continuous))
-                        }
-                    }.opacity(pulse)
+                VStack(spacing: BojiLayout.rowGap) {
+                    ForEach(0..<max(0, min(rows, 4)), id: \.self) { _ in
+                        HStack(spacing: BojiLayout.rowGap) {
+                            RoundedRectangle(cornerRadius: BojiRadius.inner).fill(Color.primary.opacity(0.07)).frame(width: 54, height: 54)
+                            VStack(alignment: .leading, spacing: BojiLayout.inline) {
+                                RoundedRectangle(cornerRadius: BojiRadius.badge).fill(Color.primary.opacity(0.08)).frame(height: 11)
+                                RoundedRectangle(cornerRadius: BojiRadius.badge).fill(Color.primary.opacity(0.06)).frame(maxWidth: 140).frame(height: 9)
+                            }
+                            Spacer(minLength: 18)
+                        }.padding(ClubUI.cardInset).background(ClubUI.surface, in: RoundedRectangle(cornerRadius: ClubUI.cardRadius, style: .continuous))
+                    }
                 }
+                .redacted(reason: .placeholder)
+                .opacity(dimmed ? 0.65 : 1)
                 .accessibilityHidden(true)
                 .transition(.opacity)
+                .onAppear {
+                    guard !reduceMotion else { return }
+                    withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) { dimmed = true }
+                }
             }
         }
-        .clubViewportVisibility($inViewport)
-        .onAppear { visible = true }
-        .onDisappear { visible = false }
         .task {
             // Quick responses never flash a full placeholder layout.
             do { try await Task.sleep(for: .milliseconds(180)) } catch { return }
@@ -468,20 +450,13 @@ extension View {
 // All AI waits use the same lightweight mark; task text comes from actual status.
 struct AIProcessingMark: View {
     var size: CGFloat = 40
-    @Environment(\.accessibilityReduceMotion) private var reduced
-    @Environment(\.scenePhase) private var phase
-    @State private var visible = false
-    @State private var inViewport = false
-    private var moving: Bool { visible && inViewport && !reduced && phase == .active }
     var body: some View {
-        TimelineView(.animation(minimumInterval:1.0 / 15,paused:!moving)) { context in
-            let angle = moving ? context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy:2.8) / 2.8 * .pi * 2 : .pi / 2
-            BojiBrandMark(size:size)
-                .opacity(moving ? 0.86 + 0.14 * sin(angle) : 1)
-        }
-        .frame(width:size,height:size).accessibilityHidden(true)
-        .clubViewportVisibility($inViewport)
-        .onAppear { visible = true }.onDisappear { visible = false }
+        ProgressView()
+            .progressViewStyle(.circular)
+            .tint(ClubBrand.accent)
+            .controlSize(size > 32 ? .large : .regular)
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
     }
 }
 
@@ -506,34 +481,25 @@ struct AILoadingCard: View {
 }
 
 /// A moving segment communicates activity; it does not claim a measured percentage.
+/// 原生线性不确定 ProgressView；减少动态效果时退化为静态条。
 struct ClubWaitBar: View {
     var tint: Color = ClubBrand.accent
     var active = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.scenePhase) private var scenePhase
-    @State private var visible = false
-    @State private var inViewport = false
-    private var moving: Bool { active && visible && inViewport && scenePhase == .active && !reduceMotion }
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 24, paused: !moving)) { context in
-            let phase = moving ? context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 2) / 2 : 0.5
-            GeometryReader { geometry in
-                let width = max(0, geometry.size.width)
-                ZStack(alignment: .leading) {
-                    Capsule().fill(tint.opacity(0.12))
-                    Capsule().fill(tint.opacity(active ? 1 : 0.45))
-                        .frame(width: width * 0.34)
-                        .offset(x: CGFloat(phase * 1.4 - 0.37) * width)
-                }.clipShape(Capsule())
+        Group {
+            if active && !reduceMotion {
+                ProgressView()
+                    .progressViewStyle(.linear)
+                    .tint(tint)
+            } else {
+                Capsule().fill(tint.opacity(active ? 0.6 : 0.45))
             }
         }
         .frame(height: 5)
         .accessibilityLabel("等待进度")
         .accessibilityValue(active ? "处理中，暂时没有准确百分比" : "等待继续")
-        .clubViewportVisibility($inViewport)
-        .onAppear { visible = true }
-        .onDisappear { visible = false }
     }
 }
 

@@ -668,64 +668,35 @@ struct BojiSectionHeader: View {
     }
 }
 
-// MARK: - 组间休息流体光晕进度环 (Breathing Pulse Halo 2.0)
+// MARK: - 组间休息进度环 (原生 Gauge)
 
+/// 原生 Gauge(.accessoryCircularCapacity) + 系统 symbolEffect；减少动态效果时系统自动降级。
 struct BreathingPulseHalo: View {
     let remaining: Int
     var total: Int = 60
-    @State private var breath = false
 
-    private var fraction: CGFloat {
+    private var fraction: Double {
         guard total > 0 else { return remaining > 0 ? 1 : 0 }
-        return CGFloat(min(1, max(0, Double(remaining) / Double(total))))
+        return min(1, max(0, Double(remaining) / Double(total)))
     }
     private var isUrgent: Bool { remaining > 0 && remaining <= 3 }
     private var ringColor: Color { isUrgent ? Color.red : BojiColor.timerAccent }
 
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            ringColor.opacity(breath ? 0.30 : 0.08),
-                            Color.clear
-                        ],
-                        center: .center,
-                        startRadius: 6,
-                        endRadius: 28
-                    )
-                )
-                .frame(width: 52, height: 52)
-                .scaleEffect(breath ? 1.14 : 0.94)
-                .animation(
-                    isUrgent
-                        ? BojiMotion2.celebrate.repeatForever(autoreverses: true)
-                        : BojiMotion2.celebrate.repeatForever(autoreverses: true),
-                    value: breath
-                )
-
-            Circle()
-                .stroke(ringColor.opacity(0.18), lineWidth: 3.5)
-                .frame(width: 36, height: 36)
-
-            Circle()
-                .trim(from: 0, to: fraction)
-                .stroke(
-                    ringColor,
-                    style: StrokeStyle(lineWidth: 3.5, lineCap: .round)
-                )
-                .frame(width: 36, height: 36)
-                .rotationEffect(.degrees(-90))
-                .animation(BojiMotion2.progress, value: remaining)
-
+        Gauge(value: fraction, in: 0...1) {
+            Text("组间休息")
+        } currentValueLabel: {
             Image(systemName: isUrgent ? "flame.fill" : (remaining == 0 ? "checkmark" : "timer"))
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(ringColor)
                 .symbolEffect(.bounce, value: isUrgent)
         }
+        .gaugeStyle(.accessoryCircularCapacity)
+        .tint(ringColor)
         .frame(width: 40, height: 40)
-        .onAppear { breath = true }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("组间休息剩余 \(remaining) 秒")
+        .accessibilityValue(remaining == 0 ? "休息结束" : "剩余 \(remaining) 秒")
         .onChange(of: remaining) { _, sec in
             if sec > 0 && sec <= 3 {
                 BojiHaptics.tick()
@@ -812,39 +783,27 @@ struct RollingNumericCounter: View {
 
 // MARK: - AI 照片激光流光扫描线 (Laser Scan Beam Animation)
 
+/// 系统进度语义：识别中显示原生 ProgressView + 文案（不再手绘扫描线）。
 struct LaserScanBeamOverlay: View {
     let isScanning: Bool
-    @State private var scanOffset: CGFloat = -120
 
     var body: some View {
-        GeometryReader { geo in
-            if isScanning {
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.clear,
-                                BojiColor.aiGold.opacity(0.6),
-                                BojiColor.aiGold,
-                                BojiColor.aiGold.opacity(0.6),
-                                Color.clear
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(height: 6)
-                    .shadow(color: BojiColor.aiGold.opacity(0.8), radius: 8, x: 0, y: 0)
-                    .offset(y: scanOffset)
-                    .onAppear {
-                        scanOffset = -10
-                        withAnimation(BojiMotion2.celebrate.repeatForever(autoreverses: true)) {
-                            scanOffset = geo.size.height + 10
-                        }
-                    }
+        if isScanning {
+            ZStack {
+                Color.black.opacity(0.25)
+                VStack(spacing: BojiLayout.inline) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(.white)
+                    Text("正在识别餐食…")
+                        .bojiType(.label)
+                        .foregroundStyle(.white)
+                }
+                .padding(BojiSpace.general)
+                .background(Color.black.opacity(0.55), in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
             }
+            .allowsHitTesting(false)
         }
-        .allowsHitTesting(false)
     }
 }
 

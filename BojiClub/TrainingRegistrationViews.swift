@@ -288,15 +288,20 @@ struct TrainingSetRowView: View {
         trainingSet.hasActualEntry || !allowCompletion ? trainingSet.weight.formatted(.number.precision(.fractionLength(0...1))) : "—"
     }
 
+    /// 完成勾选图标：减少动态效果时关闭符号动效（BUG-016）。
+    @ViewBuilder private var completeCheckmark: some View {
+        let base = Image(systemName: "checkmark.circle.fill")
+            .font(.system(size: 28, weight: .semibold))
+            .foregroundStyle(BojiColor.emeraldAccent)
+            .frame(width: BojiSize.minimumTap, height: BojiSize.minimumTap)
+            .contentShape(Circle())
+        if reduceMotion { base } else { base.symbolEffect(.bounce.up.byLayer, value: trainingSet.validCompletion) }
+    }
+
     @ViewBuilder private var completeControl: some View {
         if trainingSet.validCompletion {
             Button(action: undoComplete) {
-                Image(systemName: "checkmark.circle.fill")
-                    .symbolEffect(.bounce.up.byLayer, value: true)
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(BojiColor.emeraldAccent)
-                    .frame(width: BojiSize.minimumTap, height: BojiSize.minimumTap)
-                    .contentShape(Circle())
+                completeCheckmark
             }
             .buttonStyle(ClubMotionButton())
             .accessibilityLabel("第 \(number) 组已完成，点击撤销完成")

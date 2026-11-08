@@ -73,11 +73,11 @@
 | IOS-003 | TrainingNumericInput125 包 UITextField（自绘 inputAccessoryView 工具条） | 原生 TextField + decimalPad + 键盘工具条「收起」（ToolbarItemGroup placement: .keyboard） | WorkoutExperience125.swift | 已修复待验 | 自绘 UIViewRepresentable 与 Coordinator 已删，保留 label/identifier/focusRequest；键盘工具条走系统 ToolbarItemGroup；同步删除重复的 TrainingNumberStyle125 modifier 与未用 UIKit import |
 | IOS-004 | SmartWeightStepper 自绘磁吸步进胶囊 | 系统原生 Stepper（步长 2.5kg，范围 0…2000） | DesignTokens.swift SmartWeightStepper | 已修复待验 | 保留既有 API（currentWeight + onAdjust(delta)）兼容调用点，内部改系统 Stepper + accessibilityLabel/Value |
 | IOS-005 | 23 处直写 .regularMaterial/.ultraThinMaterial | 收口 clubGlassEffect（iOS 26 自动 glassEffect） | 见摸底文档 C 节 | 已修复待验 | 17 处浮件收口 clubGlassEffect、2 处内容卡改不透明 cardSurface；全库复扫仅剩 Design.swift:200 桥接自身降级分支（预期）；含 BUG-012（JourneyComponents 散写玻璃分支收口） |
-| IOS-006 | ClubActivityMark/ClubWaitBar/AIWaitProgress 手绘 TimelineView | 原生 ProgressView（不确定态） | Design.swift:331/509/540 | 待处理 |  |
-| IOS-007 | BreathingPulseHalo 手绘呼吸环 | 原生 Gauge(.accessoryCircularCapacity) + symbolEffect | DesignTokens.swift:746 | 待处理 |  |
-| IOS-008 | LaserScanBeamOverlay 手绘激光扫描线 | 系统进度语义（ProgressView+识别文案） | DesignTokens.swift:888、MealEditorView.swift:876 | 待处理 |  |
-| IOS-009 | ConfettiView 手绘彩带粒子 | symbolEffect(.celebrate)/系统庆祝 | OnboardingView.swift:1324/1293 | 待处理 |  |
-| IOS-010 | 首次引导轨道环/渐变卫星手绘 | glassEffect + SF Symbols 重做 | FirstLaunchWalkthroughView.swift:223-530/794-810 | 待处理 | 等 DES 动效规范 |
+| IOS-006 | ClubActivityMark/AIProcessingMark/ClubWaitBar/ClubLoadingSkeleton 手绘 TimelineView | 原生 ProgressView（circular/linear 不确定态）；骨架屏改 redacted + 透明度脉冲 | Design.swift | 已修复待验 | 4 处 TimelineView 全删；减少动态效果时 ClubWaitBar 退化为静态条、骨架脉冲关闭；spinner 全部系统渲染 |
+| IOS-007 | BreathingPulseHalo 手绘呼吸环 | 原生 Gauge(.accessoryCircularCapacity) + symbolEffect | DesignTokens.swift BreathingPulseHalo | 已修复待验 | 系统 Gauge + tint（紧急红色/常规计时色）+ 保留触感反馈与无障碍标签；减少动态效果由系统处理 |
+| IOS-008 | LaserScanBeamOverlay 手绘激光扫描线 | 系统进度语义（ProgressView + 识别文案） | DesignTokens.swift LaserScanBeamOverlay、MealEditorView.swift photoCaptureArea | 已修复待验 | 改为半透明遮罩 + 系统 ProgressView + 「正在识别餐食…」文案；不额外增加玻璃件 |
+| IOS-009 | ConfettiView 手绘彩带粒子 | 系统 symbolEffect(.celebrate) 一次性庆祝 | OnboardingView.swift MemberCardCelebration | 已修复待验 | 22 粒子自绘已删；改用 SF Symbols「sparkles」+ symbolEffect(.celebrate)，减少动态效果时关闭 |
+| IOS-010 | 首次引导轨道环/渐变卫星手绘 | glassEffect + SF Symbols 重做 | FirstLaunchWalkthroughView.swift | 待处理 | 待本批后续提交 |
 | IOS-011 | 训练/AI 界面呈现时通知深链被屏蔽（sheet 返回 nil） | 训练进行中点通知可见提示或跳转 | BojiClubApp.swift:216 | 已修复待验 | P1 流程断点；屏蔽逻辑保留（不打断训练），顶部安全区横幅如实提示+「知道了」关闭，route 保留待解除后自动弹出（BUG-001/010/011 同修） |
 | IOS-012 | 登录→会员门→引导→首启 walkthrough 四层状态机回写不及时卡门 | 状态收口+卡门可恢复提示 | BojiClubApp.swift、ClubAIShell.swift | 待处理 |  |
 | IOS-013 | 组间休息 pauseService+restDeadlines 双状态 | 单源事实+跨午夜边界回归 | ClubAIShell.swift:166-172 | 待处理 |  |

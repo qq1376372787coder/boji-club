@@ -665,7 +665,11 @@ struct ClubKeepsakeVaultView: View {
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, BojiSpace.pageInset)
                                         .padding(.horizontal, BojiLayout.inline)
-                                        .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous))
+                                        .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous))
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous)
+                                                .stroke(BojiColor.outline, lineWidth: 0.5)
+                                        }
                                     }.buttonStyle(ClubMotionButton())
                                 }
                             }

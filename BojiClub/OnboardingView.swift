@@ -1290,7 +1290,6 @@ private struct MemberCardCelebration: View {
     var body: some View {
         ZStack {
             FlowBackground()
-            if !reduceMotion { ConfettiView().accessibilityHidden(true) }
             ScrollView {
                 VStack(alignment: .leading, spacing: 32) {
                     FlowHeading(eyebrow: "WELCOME TO 薄肌俱乐部", title: "设置完成。", subtitle: "\(nickname)，欢迎来到薄肌俱乐部。")
@@ -1315,25 +1314,19 @@ private struct MemberCardCelebration: View {
                         .bojiType(.section).lineSpacing(9).foregroundStyle(FlowPalette.secondaryInk)
                 }.padding(BojiLayout.sectionGap).padding(.top, BojiLayout.Rhythm.pageTop).frame(maxWidth: ClubUI.contentWidth).frame(maxWidth: .infinity)
             }
+            // 系统庆祝动效：一次性 celebrate（减少动态效果时关闭）
+            if !reduceMotion {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 44, weight: .semibold))
+                    .foregroundStyle(FlowPalette.silver)
+                    .symbolEffect(.celebrate, value: revealed)
+                    .padding(.top, 96)
+                    .accessibilityHidden(true)
+                    .allowsHitTesting(false)
+            }
         }.safeAreaInset(edge: .bottom) { FlowDock { Button("开始我的第一天", action: enter).buttonStyle(FlowButtonStyle()) } }
             .onAppear { withAnimation(reduceMotion ? nil : BojiMotion2.celebrate) { revealed = true } }
             .sensoryFeedback(.success, trigger: revealed)
-    }
-}
-
-private struct ConfettiView: View {
-    @State private var falling = false
-    var body: some View {
-        GeometryReader { proxy in
-            ForEach(0..<22, id: \.self) { index in
-                Capsule().fill(index.isMultiple(of: 3) ? FlowPalette.silver : FlowPalette.secondaryInk.opacity(0.35))
-                    .frame(width: 3, height: CGFloat(7 + index % 5))
-                    .rotationEffect(.degrees(falling ? Double(index * 53) : 0))
-                    .position(x: CGFloat((index * 47) % 100) / 100 * proxy.size.width, y: falling ? proxy.size.height + 25 : -CGFloat(30 + index * 13))
-                    .opacity(falling ? 0 : 1)
-                    .animation(.easeInOut(duration: 0.5) /* 呼吸脉冲：原 3s 线性改为 0.5s 进退，L2 层级 */.delay(Double(index % 7) * 0.1), value: falling)
-            }
-        }.allowsHitTesting(false).onAppear { falling = true }
     }
 }
 

@@ -55,8 +55,6 @@ struct ClubActionButtonStyle: PrimitiveButtonStyle {
     @Environment(\.clubManagementSurface132) private var management
     var kind: ClubButtonKind = .secondary
     var size: ControlSize = .regular
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-    @Environment(\.colorSchemeContrast) private var contrast
     @ViewBuilder func makeBody(configuration: Configuration) -> some View {
         if management {
             Button(role: configuration.role, action: configuration.trigger) { configuration.label }
