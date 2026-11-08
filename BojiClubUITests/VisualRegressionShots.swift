@@ -52,8 +52,8 @@ final class VisualRegressionShots: XCTestCase {
         let seed: String
         /// 只在指定套里拍；nil = 三套都拍
         let only: Set<ShotSet>?
-        /// 向上滚动次数（0 = 不滚）
-        let scroll: Int
+        /// 向上滚动的精确像素量（0 = 不滚；用坐标拖拽实现，不用 swipe——手滑量不可控，R03a/R03b 要可比）
+        let scrollBy: CGFloat
         /// 本屏唯一主操作的可见文案（有就断言同屏只有一个）
         let primary: String?
         /// 本屏唯一主操作的无障碍标识（比文案稳，页面层登记过的才填）
@@ -66,10 +66,10 @@ final class VisualRegressionShots: XCTestCase {
         enum Action: Equatable { case focusTextField, openScoreSheet }
 
         init(code: String, page: String, state: String, route: String, seed: String = "1",
-             only: Set<ShotSet>? = nil, scroll: Int = 0, primary: String? = nil, primaryID: String? = nil,
+             only: Set<ShotSet>? = nil, scrollBy: CGFloat = 0, primary: String? = nil, primaryID: String? = nil,
              health: String? = nil, action: Action? = nil) {
             self.code = code; self.page = page; self.state = state; self.route = route
-            self.seed = seed; self.only = only; self.scroll = scroll; self.primary = primary
+            self.seed = seed; self.only = only; self.scrollBy = scrollBy; self.primary = primary
             self.primaryID = primaryID; self.health = health; self.action = action
         }
     }
@@ -79,7 +79,8 @@ final class VisualRegressionShots: XCTestCase {
             // —— 主壳：今天 ——
             Screen(code: "R01", page: "首页", state: "有数据", route: "home", primaryID: "v2-home-primary"),
             Screen(code: "R02", page: "首页", state: "空态", route: "home", seed: "empty"),
-            Screen(code: "R03", page: "首页", state: "滚动后布局", route: "home", scroll: 1),
+            Screen(code: "R03", page: "首页", state: "滚动100", route: "home", scrollBy: 100),
+            Screen(code: "R03", page: "首页", state: "滚动200", route: "home", scrollBy: 200),
             Screen(code: "R04", page: "首页", state: "AX大字号", route: "home", only: [.ax]),
             // —— 训练 ——
             Screen(code: "R05", page: "训练中", state: "有已完成组", route: "workout"),
@@ -178,8 +179,16 @@ final class VisualRegressionShots: XCTestCase {
             if opener.waitForExistence(timeout: 8) { opener.tap() }
         }
 
-        for _ in 0..<screen.scroll {
-            app.swipeUp(velocity: .slow)
+        if screen.scrollBy > 0 {
+            // 精确滚动量：坐标拖拽按像素换算（R03a=100pt / R03b=200pt，两帧才可比），
+            // 不用 swipe——手滑量不可控，判不了「缩放随滚动递增」
+            let height = Double(app.windows.firstMatch.frame.height)
+            if height > 0 {
+                let fraction = Double(screen.scrollBy) / height
+                let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.62))
+                let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: max(0.05, 0.62 - fraction)))
+                start.press(forDuration: 0.08, thenDragTo: end)
+            }
         }
 
         let name = "\(screen.code)-\(screen.page)-\(screen.state)-\(set.fileTag)"
