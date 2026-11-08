@@ -1197,7 +1197,7 @@ struct ClubAIWorkspaceIdleView: View {
         }
         .padding(.horizontal, BojiLayout.pageInset)
         .padding(.top, BojiLayout.rowGap)
-        .padding(.bottom, BojiLayout.tightRow)
+        .padding(.bottom, BojiLayout.inline)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
