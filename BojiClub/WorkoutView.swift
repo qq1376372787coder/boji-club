@@ -609,7 +609,7 @@ struct WorkoutView: View {
                         }
                         .frame(width: 84, height: 84)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("组间恢复").bojiType(.label).foregroundStyle(BojiColor.textPrimary)
+                            Text("组间休息").bojiType(.label).foregroundStyle(BojiColor.textPrimary)
                             Text(remaining > 0 ? "保持呼吸 · 准备下一组" : "好了，下一组")
                                 .bojiType(.caption).foregroundStyle(BojiColor.textTertiary)
                         }
@@ -651,7 +651,7 @@ struct WorkoutView: View {
 
     private var futurePlanSaveDock: some View {
         VStack(spacing: BojiLayout.inline) {
-            Button("保存训练计划") { if store.saveWorkoutPlan(on:selectedDate) { planFeedback &+= 1 } }
+            Button("存成计划") { if store.saveWorkoutPlan(on:selectedDate) { planFeedback &+= 1 } }
                 .buttonStyle(BojiButtonStyle(kind: .primary))
             Text("\(log.exercises.count) 个动作 · \(log.totalSets) 组计划 · 到当天再手动开始")
                 .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
