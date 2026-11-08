@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOJI_CLUB 2+3 混搭 · 三屏主视觉稿</title>
+<style>
+  :root{
+    --ink:#191A1E; --ink2:#62646C; --ink3:#8A8D96;
+    --page:#F5F5F7; --card:#FFFFFF; --mist:#E3E7F0;
+    --accent:#414D63; --hair:rgba(0,0,0,.10);
+    --glass-bg:linear-gradient(160deg, rgba(255,255,255,.24), rgba(255,255,255,.08) 45%, rgba(255,255,255,.14));
+    --shadow-glass:0 10px 30px rgba(15,23,42,.14);
+    --shadow-card:0 6px 20px rgba(15,23,42,.05);
+    --r-hero:28px; --r-card:24px; --r-inner:16px;
+    --f-display:88px; --f-hero:52px; --f-title:34px; --f-body:17px; --f-caption:13px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;
+    background:#E9EAEF;color:var(--ink);padding:28px 18px 72px;
+    font-feature-settings:"tnum" 1;
+  }
+  .wrap{max-width:1240px;margin:0 auto}
+  h1{font-size:24px;letter-spacing:-.4px}
+  .sub{color:#5B5E67;font-size:13.5px;margin:6px 0 20px;line-height:1.6;max-width:900px}
+  .sub code{background:#fff;padding:2px 6px;border-radius:6px;font-size:12px}
+  .bar{display:flex;gap:10px;align-items:center;margin-bottom:26px;flex-wrap:wrap}
+  .btn{
+    font:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:999px;
+    border:1px solid #D5D7DE;background:#fff;color:#2A2C33;cursor:pointer;
+  }
+  .btn.on{background:#191A1E;color:#fff;border-color:#191A1E}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#5B5E67;margin-bottom:26px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+  .board{display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
+  .frame{width:330px}
+  .frame > h2{font-size:15px;font-weight:700;margin-bottom:3px}
+  .frame > .why{font-size:12px;color:#7A7D86;margin-bottom:12px;line-height:1.5}
+  .phone{
+    position:relative;width:330px;height:680px;border-radius:46px;overflow:hidden;
+    background:var(--page);box-shadow:0 24px 60px rgba(15,23,42,.20);border:8px solid #14151A;
+  }
+  .dark .phone{--page:#0E0F12;--card:#1A1C20;--ink:#F5F6F8;--ink2:#A9ADB5;--ink3:#858A93;
+               --mist:#1C2430;--hair:rgba(255,255,255,.16);--shadow-card:0 6px 20px rgba(0,0,0,.45)}
+  .notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:106px;height:26px;
+         background:#14151A;border-radius:14px;z-index:20}
+  .status{display:flex;justify-content:space-between;padding:15px 24px 0;font-size:12px;font-weight:600;color:var(--ink)}
+  .scroll{position:absolute;inset:0;overflow:hidden}
+
+  /* ===== 通用玻璃 ===== */
+  .glass{
+    position:relative;border-radius:var(--r-hero);
+    backdrop-filter:blur(18px) saturate(1.6);-webkit-backdrop-filter:blur(18px) saturate(1.6);
+    background:var(--glass-bg);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55), inset 0 0 0 .5px rgba(255,255,255,.30), var(--shadow-glass);
+  }
+  .glass.card{border-radius:var(--r-card)}
+  .glass.inner{border-radius:var(--r-inner)}
+  .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.16) 40%,rgba(0,0,0,.58))}
+
+  /* ===== 屏 1 首页 ===== */
+  .hero{position:absolute;top:0;left:0;right:0;height:400px;overflow:hidden;border-radius:0 0 var(--r-hero) var(--r-hero)}
+  .hero video,.hero .still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .hero .still{background:linear-gradient(150deg,#2E3A4E 0%,#6B7A93 42%,#C9B8A4 100%)}
+  .hero .topbar{position:absolute;top:44px;left:16px;right:16px;display:flex;align-items:center;gap:10px;z-index:4}
+  .mark{width:36px;height:36px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;
+        font-size:14px;font-weight:800;color:#191A1E;letter-spacing:-.6px;
+        background:linear-gradient(140deg,#DEC18A,#C9B8A4 55%,#8A79C8)}
+  .topbar .tt{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.2px;text-shadow:0 1px 10px rgba(0,0,0,.4)}
+  .topbar .chip{margin-left:auto;font-size:11.5px;color:rgba(255,255,255,.92);padding:6px 12px;border-radius:999px;
+        backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(255,255,255,.18);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+  /* 收缩后的玻璃条（滚动状态） */
+  .shrinkbar{position:absolute;top:11px;left:16px;right:16px;height:46px;z-index:6;display:flex;align-items:center;
+        padding:0 14px;gap:10px;font-size:13.5px;font-weight:600;color:#fff}
+  .shrinkbar .mini{width:22px;height:22px;border-radius:7px;flex:none;background:linear-gradient(140deg,#DEC18A,#8A79C8)}
+  .shrinkbar .go{margin-left:auto;font-size:11.5px;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.22)}
+  .hero .copy{position:absolute;left:20px;right:20px;bottom:26px;z-index:4}
+  .hero .eyebrow{font-size:12px;color:rgba(255,255,255,.85);letter-spacing:.3px;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+  .hero .big{font-size:var(--f-hero);font-weight:800;letter-spacing:-2px;line-height:1.02;color:#fff;
+        text-shadow:0 2px 18px rgba(0,0,0,.35);margin:2px 0 4px}
+  .hero .cap{font-size:13px;color:rgba(255,255,255,.88);text-shadow:0 1px 8px rgba(0,0,0,.45)}
+
+  .sheet{position:absolute;left:0;right:0;bottom:0;top:400px;z-index:8;border-radius:28px 28px 0 0;
+        background:var(--page);box-shadow:0 -12px 40px rgba(15,23,42,.14);padding:18px 18px 22px;overflow:hidden}
+  .grab{width:38px;height:5px;border-radius:999px;background:var(--hair);margin:0 auto 14px}
+  .today{font-size:12.5px;color:var(--ink3);letter-spacing:.4px;margin-bottom:4px}
+  .today-t{font-size:21px;font-weight:700;letter-spacing:-.4px;margin-bottom:12px}
+  .metrics{display:flex;gap:8px;margin-bottom:14px}
+  .metric{flex:1;padding:12px 10px;text-align:left}
+  .metric .k{font-size:11px;color:rgba(255,255,255,.78);letter-spacing:.2px}
+  .metric .v{font-size:19px;font-weight:700;color:#fff;letter-spacing:-.4px;margin-top:3px}
+  .metric .u{font-size:10.5px;color:rgba(255,255,255,.7);margin-top:1px}
+  .primary{
+    width:100%;height:54px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+    font-size:16.5px;font-weight:700;color:#191A1E;background:#fff;letter-spacing:-.2px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 8px 22px rgba(15,23,42,.18);
+  }
+  .ghostrow{display:flex;justify-content:center;gap:18px;margin-top:12px;font-size:12.5px;color:var(--ink2)}
+  .ghostrow span{display:flex;align-items:center;gap:5px}
+  .section-t{font-size:13px;font-weight:700;color:var(--ink2);margin:18px 2px 8px;letter-spacing:.2px}
+  .row{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--card);
+       border-radius:var(--r-inner);box-shadow:var(--shadow-card);margin-bottom:8px}
+  .row .ic{width:32px;height:32px;border-radius:10px;background:var(--mist);display:flex;align-items:center;justify-content:center;font-size:15px}
+  .row .a{font-size:14.5px;font-weight:600}
+  .row .b{font-size:11.5px;color:var(--ink3);margin-top:1px}
+  .row .go{margin-left:auto;color:var(--ink3);font-size:16px}
+
+  /* ===== 屏 2 训练 ===== */
+  .wk{position:absolute;inset:0;padding:52px 18px 0}
+  .wk .eyebrow{font-size:12px;color:var(--ink3);letter-spacing:.4px}
+  .wk .big{font-size:var(--f-display);font-weight:800;letter-spacing:-4px;line-height:.94;color:var(--ink)}
+  .wk .big small{font-size:30px;font-weight:700;letter-spacing:-1.5px;color:var(--ink3)}
+  .wk .state{font-size:15px;font-weight:600;color:var(--ink2);margin-top:8px}
+  .wk .bar{height:8px;border-radius:999px;background:var(--mist);margin:18px 0 6px;overflow:hidden}
+  .wk .bar i{display:block;height:100%;width:42%;border-radius:999px;background:var(--accent)}
+  .wk .ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-bottom:16px}
+  .ex{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow-card);padding:14px 16px;margin-bottom:10px}
+  .ex .hd{display:flex;align-items:center;gap:10px}
+  .ex .nm{font-size:15.5px;font-weight:700;letter-spacing:-.2px}
+  .ex .mu{font-size:11.5px;color:var(--ink3)}
+  .ex .ck{margin-left:auto;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+          background:#10A36C;color:#fff;font-size:13px}
+  .sets{display:flex;gap:8px;margin-top:12px}
+  .set{flex:1;height:44px;border-radius:14px;background:var(--page);display:flex;flex-direction:column;
+       align-items:center;justify-content:center;font-size:12px;color:var(--ink2)}
+  .set b{font-size:14.5px;color:var(--ink);letter-spacing:-.2px}
+  .set.done{background:var(--mist);color:var(--ink)}
+  .set.done b{color:var(--ink)}
+  .dock{position:absolute;left:16px;right:16px;bottom:20px;height:76px;display:flex;align-items:center;
+        padding:0 16px;gap:12px;color:#fff}
+  .dock .tm{font-size:22px;font-weight:800;letter-spacing:-1px}
+  .dock .lb{font-size:11px;color:rgba(255,255,255,.8)}
+  .dock .act{margin-left:auto;height:44px;padding:0 20px;border-radius:999px;background:rgba(255,255,255,.92);
+        color:#191A1E;font-size:14.5px;font-weight:700;display:flex;align-items:center}
+
+  /* ===== 屏 3 记录 ===== */
+  .rc{position:absolute;inset:0;padding:52px 18px 0}
+  .rc .eyebrow{font-size:12px;color:var(--ink3);letter-spacing:.4px}
+  .rc .big{font-size:76px;font-weight:800;letter-spacing:-3.5px;line-height:.94;color:var(--ink)}
+  .rc .big small{font-size:26px;font-weight:700;color:var(--ink3);letter-spacing:-1px}
+  .rc .state{font-size:15px;font-weight:600;color:var(--ink2);margin-top:8px}
+  .edit{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow-card);padding:6px 16px 10px;margin-top:18px}
+  .frow{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--hair)}
+  .frow:last-child{border-bottom:0}
+  .frow .k{font-size:14.5px;font-weight:600;width:64px}
+  .frow .fld{flex:1;display:flex;align-items:baseline;justify-content:flex-end;gap:4px}
+  .frow .fld b{font-size:24px;font-weight:800;letter-spacing:-1px;color:var(--ink)}
+  .frow .fld span{font-size:13px;color:var(--ink3)}
+  .stepper{display:flex;gap:8px}
+  .stepper i{width:34px;height:34px;border-radius:12px;background:var(--page);display:flex;align-items:center;
+        justify-content:center;font-style:normal;font-size:17px;font-weight:700;color:var(--ink)}
+  .stepper b{width:44px;text-align:center;font-size:17px;align-self:center}
+  .seg{display:flex;background:var(--page);border-radius:14px;padding:3px;margin-top:16px}
+  .seg span{flex:1;text-align:center;font-size:13px;font-weight:600;padding:9px 0;border-radius:11px;color:var(--ink2)}
+  .seg span.on{background:var(--card);color:var(--ink);box-shadow:0 2px 8px rgba(15,23,42,.10)}
+  .rc .primary{margin-top:18px}
+  .rc .note{font-size:12px;color:var(--ink3);text-align:center;margin-top:10px}
+
+  .tabbar{
+    position:absolute;left:0;right:0;bottom:0;height:82px;z-index:30;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+    padding-bottom:18px;gap:3px;
+    backdrop-filter:blur(22px) saturate(1.7);-webkit-backdrop-filter:blur(22px) saturate(1.7);
+    background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.90));
+    box-shadow:inset 0 .5px 0 rgba(255,255,255,.9), 0 -6px 20px rgba(15,23,42,.06);
+  }
+  .dark .tabbar{background:linear-gradient(180deg,rgba(26,28,32,.72),rgba(26,28,32,.92));
+               box-shadow:inset 0 .5px 0 rgba(255,255,255,.14), 0 -6px 20px rgba(0,0,0,.35)}
+  .tabbar .items{display:flex;width:100%;justify-content:space-around}
+  .tabbar .it{display:flex;flex-direction:column;align-items:center;gap:2px;width:64px;color:var(--ink3)}
+  .tabbar .it.on{color:#414D63}
+  .dark .tabbar .it.on{color:#DEC18A}
+  .tabbar .it .gi{font-size:21px;line-height:1}
+  .tabbar .it .gl{font-size:10px;font-weight:600;letter-spacing:.1px}
+  .tabbar .hint{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:9.5px;color:#8A8D96;letter-spacing:.3px}
+  .ann{margin-top:14px;font-size:12px;line-height:1.7;color:#4A4C55;background:#fff;border-radius:14px;
+       padding:13px 15px;box-shadow:0 4px 14px rgba(15,23,42,.06)}
+  .ann b{color:#191A1E}
+  .ann code{background:#F0F0F5;padding:1px 5px;border-radius:5px;font-size:11px}
+  .dark .ann{background:#1A1C20;color:#C7CAD1}
+  .dark .ann b{color:#F5F6F8}
+  .dark .ann code{background:#26282E}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>BOJI_CLUB · 2+3 混搭三屏主视觉稿</h1>
+  <p class="sub">
+    方案二「玻璃旗舰」的骨架 × 方案三「杂志质感」的排印。<b>影像沉浸打底、玻璃分层悬浮、巨号数字当主角、每屏一个主操作、文案说人话</b>。
+    三屏：首页 / 训练中 / 记录。所有控件为 iOS 原生件（大标题、分组列表、系统按钮、Stepper、Picker），玻璃走 <code>clubGlassEffect</code>（iOS 26 原生 glassEffect，旧系统磨砂降级）。
+    右上角切深浅色看效果；稿中数值为示例数据。
+  </p>
+
+  <div class="bar">
+    <button class="btn on" id="btnLight">浅色</button>
+    <button class="btn" id="btnDark">深色</button>
+    <span style="font-size:12px;color:#7A7D86">深色下视频先压黑 20% 再叠护字（沿用 DES-003 规格）</span>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:#C9B8A4"></i>品牌沙金（封面/数字点缀）</span>
+    <span><i style="background:#414D63"></i>品牌雾蓝（主色/进度）</span>
+    <span><i style="background:linear-gradient(140deg,rgba(255,255,255,.5),rgba(255,255,255,.12))"></i>玻璃层（L2 浮件）</span>
+    <span><i style="background:#fff;border:1px solid #E2E4EA"></i>内容面（L1 不透明）</span>
+  </div>
+
+  <div class="board">
+
+    <!-- ============ 屏 1：首页 ============ -->
+    <div class="frame">
+      <h2>① 首页</h2>
+      <p class="why">整屏影像沉浸 → 下滚收缩成玻璃条；状态数字当主角；只留一个主操作。</p>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="scroll">
+          <div class="hero">
+            <video src="../design-assets/brand-video.mp4" autoplay muted loop playsinline></video>
+            <div class="scrim"></div>
+            <div class="topbar">
+              <div class="mark">B</div>
+              <div class="tt">薄肌俱乐部</div>
+              <div class="chip">11月8日 周日</div>
+            </div>
+            <div class="shrinkbar glass">
+              <div class="mini"></div>
+              状态 88 · 今天练上肢推
+              <div class="go">开始</div>
+            </div>
+            <div class="copy">
+              <div class="eyebrow">今天的状态</div>
+              <div class="big">88</div>
+              <div class="cap">状态正好，别浪费 —— 今天练上肢推，45 分钟</div>
+            </div>
+          </div>
+
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="today">今天</div>
+            <div class="today-t">上肢推 · 4 个动作</div>
+
+            <div class="metrics">
+              <div class="metric glass"><div class="k">睡眠</div><div class="v">7.5</div><div class="u">小时</div></div>
+              <div class="metric glass"><div class="k">静息心率</div><div class="v">54</div><div class="u">bpm</div></div>
+              <div class="metric glass"><div class="k">步数</div><div class="v">8,240</div><div class="u">步</div></div>
+            </div>
+
+            <div class="primary">开始今日训练</div>
+            <div class="ghostrow"><span>⊙ 查看计划</span><span>✦ 身体记录</span></div>
+
+            <div class="section-t">今天安排</div>
+            <div class="row"><div class="ic">▤</div><div><div class="a">胸大肌 · 中束</div><div class="b">4 组 × 8–12 次 · 休息 90 秒</div></div><div class="go">›</div></div>
+            <div class="row"><div class="ic">◫</div><div><div class="a">三角肌 · 前束</div><div class="b">3 组 × 10–15 次 · 休息 60 秒</div></div><div class="go">›</div></div>
+          </div>
+        </div>
+      <div class="tabbar">
+        <div class="hint">原生 TabView · iOS 26 悬浮玻璃 tab bar 由系统渲染（不自绘）</div>
+        <div class="items">
+          <div class="it on"><div class="gi">⌂</div><div class="gl">今天</div></div>
+          <div class="it"><div class="gi">◈</div><div class="gl">训练</div></div>
+          <div class="it"><div class="gi">☰</div><div class="gl">记录</div></div>
+        </div>
+      </div>
+      </div>
+      <div class="ann">
+        <b>层级</b>：视频 z0 → 护字渐变（透明→黑 58%）→ 玻璃层 → 全白文字。<br>
+        <b>收缩条</b>：滚动 ≥120pt 时顶部出现玻璃条（<code>clubGlassEffect(Capsule)</code>），含主操作「开始」——滚动时主操作始终可达。<br>
+        <b>数字</b>：88pt / weight 800 / 等宽数字 / 字距 -2pt（<code>BojiFont(.display)</code> 新增档，见规范 §9）。<br>
+        <b>主操作</b>：全宽 54pt 白胶囊，<code>clubNativeGlassButton(prominent:true)</code>。<br>
+        <b>底部</b>：今天 tab <b>不设坞</b>，主操作即全宽按钮（规格表 §1.2）。<br>
+        <b>文案</b>：「战备状态」→「今天的状态」；「战备决策舱」→ 删除。
+      </div>
+    </div>
+
+    <!-- ============ 屏 2：训练中 ============ -->
+    <div class="frame">
+      <h2>② 训练中</h2>
+      <p class="why">进度数字巨大、状态一眼可读；底部玻璃坞只放当前要做的动作。</p>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="scroll">
+          <div class="wk">
+            <div class="eyebrow">11月8日 · 上肢推</div>
+            <div class="big">3<small>/12 组</small></div>
+            <div class="state">第 2 个动作 · 已完成 3 组</div>
+            <div class="bar"><i></i></div>
+            <div class="ticks"><span>0</span><span>6</span><span>12</span></div>
+
+            <div class="ex">
+              <div class="hd">
+                <div><div class="nm">杠铃卧推</div><div class="mu">胸大肌 · 中束</div></div>
+                <div class="ck">✓</div>
+              </div>
+              <div class="sets">
+                <div class="set done"><b>80</b>kg × 8</div>
+                <div class="set done"><b>80</b>kg × 8</div>
+                <div class="set done"><b>80</b>kg × 7</div>
+                <div class="set"><b>80</b>kg × 8</div>
+              </div>
+            </div>
+
+            <div class="ex">
+              <div class="hd">
+                <div><div class="nm">上斜哑铃卧推</div><div class="mu">胸大肌 · 上束</div></div>
+              </div>
+              <div class="sets">
+                <div class="set"><b>22</b>kg × 12</div>
+                <div class="set"><b>22</b>kg × 12</div>
+                <div class="set"><b>22</b>kg × 12</div>
+              </div>
+            </div>
+
+            <div class="dock glass">
+              <div><div class="tm">01:24</div><div class="lb">组间休息</div></div>
+              <div class="act">完成这组</div>
+            </div>
+          </div>
+        </div>
+      <div class="tabbar">
+        <div class="items">
+          <div class="it"><div class="gi">⌂</div><div class="gl">今天</div></div>
+          <div class="it on"><div class="gi">◈</div><div class="gl">训练</div></div>
+          <div class="it"><div class="gi">☰</div><div class="gl">记录</div></div>
+        </div>
+      </div>
+      </div>
+      <div class="ann">
+        <b>层级</b>：内容面 L1（白/深卡）+ 底部玻璃坞 L2（唯一浮件）。<br>
+        <b>数字</b>：88pt 完成组数当主角；分母 30pt 弱化。整屏信息优先级：<b>做到哪了 &gt; 该做多少 &gt; 休息多久</b>。<br>
+        <b>组次块</b>：系统卡片 + 原生 <code>Stepper</code> 语义（加减在底部面板），完成态用系统 <code>checkmark.circle.fill</code> + <code>symbolEffect(.bounce)</code>。<br>
+        <b>主操作</b>：玻璃坞内「完成这组」——训练中最高频动作，44pt 命中区。<br>
+        <b>坞归属</b>：仅训练 tab 有坞；今天/记录用全宽主按钮（规格表 §1.2）。<br>
+        <b>文案</b>：「战备状态」「战术任务」全部删除；用「第 2 个动作 · 已完成 3 组」。
+      </div>
+    </div>
+
+    <!-- ============ 屏 3：记录 ============ -->
+    <div class="frame">
+      <h2>③ 记录</h2>
+      <p class="why">杂志式数据块：大数字 + 细分隔线，不用图标汤；原生表单录入。</p>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="scroll">
+          <div class="rc">
+            <div class="eyebrow">记录这一组</div>
+            <div class="big">80<small> kg</small></div>
+            <div class="state">杠铃卧推 · 第 4 组</div>
+
+            <div class="edit">
+              <div class="frow">
+                <div class="k">重量</div>
+                <div class="fld"><b>80</b><span>kg</span></div>
+                <div class="stepper"><i>−</i><b>2.5</b><i>＋</i></div>
+              </div>
+              <div class="frow">
+                <div class="k">次数</div>
+                <div class="fld"><b>8</b><span>次</span></div>
+                <div class="stepper"><i>−</i><b>1</b><i>＋</i></div>
+              </div>
+              <div class="frow">
+                <div class="k">感觉</div>
+                <div class="seg" style="flex:1;margin-top:0">
+                  <span>轻松</span><span class="on">正好</span><span>吃力</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="seg" style="margin-top:18px">
+              <span class="on">这一组</span><span>整场训练</span>
+            </div>
+
+            <div class="primary">保存这一组</div>
+            <div class="note">保存后自动进入下一组，组间开始计时</div>
+          </div>
+        </div>
+      <div class="tabbar">
+        <div class="items">
+          <div class="it"><div class="gi">⌂</div><div class="gl">今天</div></div>
+          <div class="it"><div class="gi">◈</div><div class="gl">训练</div></div>
+          <div class="it on"><div class="gi">☰</div><div class="gl">记录</div></div>
+        </div>
+      </div>
+      </div>
+      <div class="ann">
+        <b>层级</b>：内容面 L1 + 玻璃仅用于底部保存条（浮件）。<br>
+        <b>排印</b>：当前值 76pt 巨号；字段 24pt；标签 14.5pt；用细分隔线代替卡片描边，做「数据块」质感。<br>
+        <b>控件</b>：系统 <code>Stepper</code>（步长 2.5kg / 1 次）、系统 <code>Picker(.segmented)</code>、原生 <code>TextField</code> + 数字键盘。<br>
+        <b>主操作</b>：全宽 54pt「保存这一组」；保存成功走 <code>BojiMotion2.celebrate</code> 一次性 + L2 触感。<br>
+        <b>文案</b>：不再出现「战术」「战备」；提示语给下一步动作。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const body=document.body, L=document.getElementById('btnLight'), D=document.getElementById('btnDark');
+  L.onclick=()=>{body.classList.remove('dark');L.classList.add('on');D.classList.remove('on')};
+  D.onclick=()=>{body.classList.add('dark');D.classList.add('on');L.classList.remove('on')};
+</script>
+</body>
+</html>
