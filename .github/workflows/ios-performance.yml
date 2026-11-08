@@ -48,31 +48,54 @@ jobs:
       - name: Ensure iOS simulator runtime
         run: |
           set -e
-          echo "=== 当前 runtime ==="
-          xcrun simctl list runtimes
-          if ! xcrun simctl list runtimes | grep -qi "iOS"; then
-            echo "::warning::没有 iOS 模拟器 runtime，尝试安装"
-            xcodebuild -downloadPlatform iOS || true
-            sleep 10
+          {
+            echo "## 模拟器 runtime 现状"
+            echo '```'
+            xcrun simctl list runtimes 2>&1 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if xcrun simctl list runtimes 2>/dev/null | grep -qi "iOS"; then
+            echo "已有 iOS runtime"
+            exit 0
           fi
-          echo "=== 安装后 runtime ==="
-          xcrun simctl list runtimes
+
+          echo "::warning::runner 没有 iOS 模拟器 runtime，开始下载（可能需要几分钟）"
+          # macos-latest（arm64）不预装 iOS runtime，必须显式下载。
+          xcodebuild -downloadPlatform iOS -exportPath "$RUNNER_TEMP/ios-runtime" || true
+          sleep 20
+
+          {
+            echo "## 下载后 runtime"
+            echo '```'
+            xcrun simctl list runtimes 2>&1 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if ! xcrun simctl list runtimes 2>/dev/null | grep -qi "iOS"; then
+            echo "::error::iOS 模拟器 runtime 下载后仍不可用"
+            exit 1
+          fi
 
       - name: Select SE3 simulator
         id: sim
         run: |
           set -e
-          # 先看清 runner 上到底有哪些模拟器（诊断用，失败时也留着线索）。
-          echo "=== 可用设备 ==="
-          xcrun simctl list devices available
-          echo "=== 可用 runtime ==="
-          xcrun simctl list runtimes || true
-          echo "=== xcodebuild -version ==="
-          xcodebuild -version || true
+          DEVICES_JSON="$(xcrun simctl list devices available --json)"
+          {
+            echo "## 可用模拟器"
+            echo '```'
+            xcrun simctl list devices available 2>&1 || true
+            echo '```'
+            echo "## Xcode 版本"
+            echo '```'
+            xcodebuild -version 2>&1 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
           # 与旧基线同口径：iPhone SE（第 3 代）。名字写法在不同 Xcode 版本间会变，
-          # 所以用宽松匹配 + 直接按 runtime 版本挑。
-          UDID=$(xcrun simctl list devices available --json | jq -r '
+          # 所以用宽松匹配；都没有再退回任意 iPhone。
+          UDID=$(printf '%s' "$DEVICES_JSON" | jq -r '
             .devices[]
             | to_entries[]
             | .value[]
@@ -80,17 +103,31 @@ jobs:
             | .udid' | head -1)
           if [ -z "$UDID" ]; then
             echo "::warning::没有 iPhone SE，退回任意可用的 iPhone"
-            UDID=$(xcrun simctl list devices available --json | jq -r '
+            UDID=$(printf '%s' "$DEVICES_JSON" | jq -r '
               .devices[]
               | to_entries[]
               | .value[]
               | select(.name | test("iPhone"))
               | .udid' | head -1)
           fi
+
+          # 兜底：runtime 有但一台设备都没建出来，就手动建一台。
           if [ -z "$UDID" ]; then
-            echo "::error::没有可用的 iPhone 模拟器"
+            echo "::warning::没有现成设备，尝试手动创建一台 iPhone 模拟器"
+            RUNTIME_ID=$(xcrun simctl list runtimes --json | jq -r '
+              .runtimes[] | select(.identifier | test("iOS")) | .identifier' | head -1)
+            DEVICE_TYPE=$(xcrun simctl list devicetypes --json | jq -r '
+              .devicetypes[] | select(.name | test("iPhone 16 Pro|iPhone 15 Pro|iPhone 15|iPhone 14")) | .identifier' | head -1)
+            if [ -n "$RUNTIME_ID" ] && [ -n "$DEVICE_TYPE" ]; then
+              UDID=$(xcrun simctl create "PerfTest-iPhone" "$DEVICE_TYPE" "$RUNTIME_ID" 2>/dev/null || true)
+            fi
+          fi
+
+          if [ -z "$UDID" ]; then
+            echo "::error::没有可用的 iPhone 模拟器（runtime 与设备都不可得）"
             exit 1
           fi
+
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           echo "使用模拟器: $UDID"
           xcrun simctl boot "$UDID" 2>/dev/null || true
