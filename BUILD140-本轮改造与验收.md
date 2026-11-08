@@ -162,7 +162,7 @@
 
 | 成员 | 任务 | 状态 |
 |---|---|---|
-| 后端开发 | BE-001 核验改后台异步（请求路径只读本地权益，不再同步打 RevenueCat 卡 12 秒）；BE-004 改指数退避自动重试（弱网恢复自动续同步）；改完跑云端编译 + 登记台账 | **已修复待验**（代码已改，待云端编译 + 测试验收复验） |
+| 后端开发 | BE-001 核验改后台异步（请求路径只读本地权益，不再同步打 RevenueCat 卡 12 秒）；BE-004 改指数退避自动重试（弱网恢复自动续同步）；改完跑云端编译 + 登记台账 | **已修复待验**；云端编译已通过（run 42461169469，IPA `dist/BojiClub-ffe4a1ed.ipa`），等测试验收复验 |
 | 苹果开发 | 材质收口 17 处（15 处 + RemoteConfigNoticeView、ProfileView 补 2 处）→ git 提交推送 + 云端编译；P0 必改 BUG-001（通知深链）、BUG-003（输入串轨，随 IOS-001/002 原生化关闭）；拿到 Hero 视觉稿后接视频关 BUG-005 | **第一批已提交（c3cf75d）**；第二批（BUG-003/005/010/011/012）已改完待提交，提交后请测试验收重跑云端编译 |
 | 运维支付 | BE-002/BE-003 部署配置核查 → **已完成**：根因 deploy.sh 配置模板缺键，源码已改（21 键契约 + 校验脚本 + 测试 21 键全过），线上补键清单交 Chief（OPS-003）；TestFlight 步骤指引已出（前提更正：需 $99 付费账号），待用户回「1/2/3」 | 已回报，待用户选链路 |
 | 界面设计 | 首页 Hero 卡视觉稿（视频底层静音循环/离开暂停/减少动态显静态帧 + 玻璃卡 + 渐变护字 + BUG-005 落地要点），出好 @苹果开发 | 进行中 |
@@ -195,3 +195,4 @@
 - 2026-11-08：**错误行不可见的根因找到**：本地工作流 `.github/workflows/ios-build.yml` 有一处**从未提交**的改动（+41/−2），加了「`script` 落盘 xcodebuild 完整输出」+「Extract build errors 步骤（抓 `error:` 行写 Build Summary 并发 `::error::` annotation）」。因为没提交，**此前所有云端构建都没有错误行可看**。测试验收已把该改动精确提交并推送（**f5cbc19**），后续构建的失败原因将直接出现在 check-run annotations 里。
 - 2026-11-08：**构建历史比对（测试验收）**：最后一次成功构建是 run#2（head=`65c433d`，即接入编译流水线的那次，产出了 14:49 的 dist IPA）。**run#7（push 触发，head=`c3cf75db`）是第一次失败** → **第一批（c3cf75d 材质收口＋通知横幅）就是弄坏编译的那一笔**，与第二批无关。第一批 Swift 全量 diff 已逐行读过，未发现明显语法错误，需错误行定位。
 - 2026-11-08：**苹果开发第二批修复完成待提交**：BUG-003 输入串轨（删 ClubNumericKeypad 自绘键盘与 keypadWeight 双轨，ClubNumericField 改原生 TextField+sanitize，LiquidCheckbox 改系统符号按钮）、BUG-005 Hero 视频接入（DES-003 方案 A，brand-video.mp4 已入 bundle 并注册 pbxproj）、BUG-010/011 横幅修正（training 文案如实、带「知道了」关闭、改 safeAreaInset 不压顶栏）、BUG-012 JourneyComponents 三处散写玻璃分支收口 clubNativeGlassButton；台账 A/B1 表状态已同步更新。
+- 2026-11-08：**云端编译恢复通过（后端开发）**：逐次抓取 xcodebuild 错误行，定位并修复 4 处阻塞编译的问题——`AppStore.swift` 的 `ClubNotificationRoute` 补 `Equatable`（`onChange` 需要）、`TrainingRegistrationViews.swift` 的 `Button(action:) label:` 改回 trailing closure、`ClubAIShell.swift` 的 TimelineView 闭包内非法 `return` 去掉、`VideoPlayer` 无 `videoGravity` 改用 `AVPlayerLayer` 封装（`resizeAspectFill` 铺满）。**workflow run 42461169469 编译成功，IPA `dist/BojiClub-ffe4a1ed.ipa`（37.44 MB）**，已提交推送（`7cb0b97`）。BE-001/BE-004 修复保持「已修复待验」，等测试验收复验。
