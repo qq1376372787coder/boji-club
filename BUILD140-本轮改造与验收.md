@@ -53,7 +53,7 @@
 | BUG-012 | 页面内散写 `if #available(iOS 26)` | `JourneyComponents.swift:72/92/128` 仍直接写 `if #available(iOS 26.0, *)` 三分支（规范 §1 明令禁止，应收口到 `clubNativeGlassButton`）；且这三处所在的 `ClubActionButtonStyle` 本身就是待淘汰的自绘按钮（30+ 使用点） | P2 | 苹果开发 | 已修复待验 | 材质收口 IOS-005 的漏项；**已修**：JourneyComponents 三处散写分支收口为 `.clubNativeGlassButton(prominent:)` / `.clubNativeGlassButton()`，页面层无 if #available；ClubActionButtonStyle 整体淘汰（30+ 使用点替换）留待后续批次 |
 | BUG-013 | Hero 卡视频暂停钮触控区不足 | 暂停/播放钮视觉 30×30pt，实际触控区 < 44pt 最小触控标准 | P3 | 苹果开发 | 已验收关闭 | 测试验收第二批复验发现，第三輪复验未修；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1287-1288` 加 `.frame(width: 44, height: 44).contentShape(Circle())`，视觉仍 30pt、命中区 44pt，符合 ACC-06 与 DES §6 |
 | BUG-014 | Hero 品牌视频**没有静音** | `setupHeroVideo()`（`ClubAIShell.swift:1190-1196`）创建 `AVQueuePlayer` 后未设 `isMuted = true` | P1 | 苹果开发 | 已验收关闭 | 测试验收第三批复验发现（界面设计独立核对一致）；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1194` `player.isMuted = true` |
-| BUG-015 | 视频降级缺两项（低电量 / 首帧占位） | DES §5.2 要求「低电量模式 → 静态图」与「未就绪前显示第 0 帧静态图」 | P3 | 苹果开发 | **首帧占位仍未做** | **第四輪已修低电量闸门**（commit 54092f1）：`ClubAIShell.swift:1191` guard 增 `!ProcessInfo.processInfo.isLowPowerModeEnabled`。首帧占位经 Chief 划入阶段 4；阶段 4 动效走查（H-02）复确认 `ClubAIShell.swift:1247` 仍是纯色块兜底，**未实现第 0 帧静态图**，属阶段 4 必做项 |
+| BUG-015 | 视频降级缺两项（低电量 / 首帧占位） | DES §5.2 要求「低电量模式 → 静态图」与「未就绪前显示第 0 帧静态图」 | P3 | 苹果开发 | 已验收关闭 | **两项均已闭环**：①低电量闸门 `ClubAIShell.swift:1199` guard 含 `!ProcessInfo.processInfo.isLowPowerModeEnabled`（commit 54092f1）；②首帧占位 `ClubAIShell.swift:1209-1222` `loadHeroPoster()` + z0/z0b 分层（commit 5ab6f97，测试验收 H-02 复核通过）。首帧未生成的一瞬仍有 `brandMist` 兜底，属可接受瞬态 |
 | BUG-016 | 勾选按钮动效未受「减少动态效果」约束 | `TrainingRegistrationViews.swift:295` `Image(...).symbolEffect(.bounce.up.byLayer, value: true)` 无条件生效；原自绘 `LiquidCheckbox` 的动画是有 `if !reduceMotion` 门控的，换原生后**门控丢失** | P3 | 苹果开发 | 已验收关闭 | 测试验收阶段 3 交互回归（F2/INT-06）发现；违反 DES §0 铁律 3「所有动效尊重减少动态效果」与 ACC-05。**已修**（commit 43d66f8）：`TrainingRegistrationViews.swift:298` `if reduceMotion { base } else { base.symbolEffect(...) }` |
 
 > 用户直接在群里反馈的具体 bug 和流程卡壳点，由测试验收转记到此表。
@@ -64,7 +64,7 @@
 
 ### B1. 苹果开发 · 自绘控件 → 原生组件 + 玻璃改造
 
-> **打勾进度（文档管理随报随登）**：共 14 项。已修复待验 6 项（IOS-001~005、011，其中 4 个自绘控件 IOS-001~004 全部换完，b1d31c7 补最后两个，待其构建验证）；处理中 1 项（IOS-014 视频接入，代码完成待编译与视觉验收）；待处理 7 项（IOS-006~010 动效系统化为阶段 3 主体，IOS-012/013 流程状态改造）。阶段 3 收尾要求逐项转「已修复待验」并经界面设计走查 + 测试验收回归 + 云端编译。
+> **打勾进度（文档管理随报随登）**：共 14 项，**全部「已修复待验」并经阶段 3 复验（G 表）通过**（2026-11-08 阶段 3 收口）——4 个自绘控件 IOS-001~004 全换原生、23 处材质收口 IOS-005、动效系统化 IOS-006~010、流程断点 IOS-011~013、视频接入 IOS-014。**阶段 4 增量**：BUG-015 首帧占位图（苹果开发）、CLN-02 死代码清理、界面设计第二批动效方案落地后在此追加新条目。
 
 | 编号 | 现状（自绘/自建控件或流程不通点） | 目标（原生组件/玻璃方案） | 涉及文件 | 状态 | 备注 |
 |---|---|---|---|---|---|
@@ -90,6 +90,7 @@
 | DES-001 | 「iOS 原生组件 + 玻璃质感」视觉与动效规范：系统分层降级（iOS 26 glassEffect / iOS 17-25 磨砂 / 增强对比度不透明）、材质三层体系（内容面/浮动玻璃/强调玻璃，含圆角、描边、阴影、密度值）、z 层次约定、动效节奏表（时长/曲线/进场/流光/华丽感红线）、组件规格速查、验收自查清单 | [0.16.0-原生玻璃与动效规范.md](0.16.0-原生玻璃与动效规范.md) | 已交付待验 | 供苹果开发落地、测试验收按 §7 自查 |
 | DES-002 | 视频融入方案：素材已解析为 960×960 / 10 秒 / 2.1MB 方形视频；给出 A 首页 Hero 玻璃卡底层视频（推荐）、B 启动过场、C 训练完成页氛围底三个候选位 + 统一播放规格（静音循环、离开暂停、减少动态效果显示静态帧、渐变护字） | 同上 §5 | **已拍板选 A**（DEC-1） | 出首页 Hero 卡视觉稿（视频底层 + 玻璃卡 + 渐变护字 + BUG-005 落地要点），出好 @苹果开发 |
 | DES-003 | 首页 Hero 视频玻璃卡视觉稿（方案 A 落地），三状态：①浅色视频播放态 ②深色（视频上先叠黑 20% 再压护字）③减少动态效果/低电量/未就绪 → 同构图换首帧静态图。分层规格：视频 z0 → 全幅渐变护字（透明→黑 52%，底部最深）→ 玻璃高光层 `clubGlassEffect`(圆角28) → 全白文字+1px 投影（对比度≥4.5:1）→ 右上 30pt 玻璃暂停钮；14s 流光保留、仅页面活跃时跑 | [design-previews/hero-video-card-A.html](design-previews/hero-video-card-A.html) | 已交付待验 | **BUG-005 落地要点**：①`ClubAIShell.swift:1172` heroGlassCard 现有 TimelineView 流光保留，其下插视频层；②AVPlayer 单例、静音循环，页面活跃才 play，离场 pause+seek(.zero)；③三闸门（reduceMotion/低电量/视频未就绪）任一命中只显首帧图，可删"视频资产待补"注释；④视频入 bundle 前先挂占位图防黑块；⑤`design-assets/brand-video.mp4` 需加入 App 资源 |
+| DES-004 | 阶段 4 三场景动效方案（首页/训练中/训练完成）：全部复用 BojiMotion2 现有档位不新造参数；首页 Hero+区块两拍 stagger 进场（整串≤0.6s）、速度拨号 transition+子项 stagger；训练中勾选 micro+数字 counter 0.35s、分段进度线性 easeOut 0.32（禁弹簧假进度）、休息倒计时保持 1s 周期+linear 0.9；完成页品牌标 celebrate 0.52/0.74 一次性+symbolEffect(.bounce)、事实格 6 格 entrance 0.35+stagger 0.05（整串 0.60s 达标）+数字滚动 counter；统一 reduceMotion 降 0.12s 交叉淡入；同时运动元素≤2 | [design-previews/阶段4-动效方案-三场景.md](design-previews/阶段4-动效方案-三场景.md) | 已交付待落地 | 落地顺序：①首页两拍 stagger → ②完成页事实格序列+数字滚动 → ③训练中数字 counter 与分段进度 linear 包裹；每批一编译 |
 
 ### B3. 后端开发 · 接口/数据侧流程卡顿问题
 
@@ -278,7 +279,7 @@
 | 编号 | 检查项 | 结论 | 证据 |
 |---|---|---|---|
 | H-01 | Hero 视频三闸门 | ✅ 通过 | `ClubAIShell.swift:1196` guard 含 `!reduceMotion` 与 `!ProcessInfo.processInfo.isLowPowerModeEnabled`；`:1206-1207` 离场 `pause` + `seek(.zero)`；`:1199` `isMuted = true` |
-| H-02 | 视频未就绪防黑块 | ❌ **未做** | `ClubAIShell.swift:1247` 未就绪时仍是 `RoundedRectangle.fill(BojiColor.brandMist.opacity(0.55))` 纯色块，**未实现首帧静态图**（即 BUG-015 后半）。纯色块不会黑屏，但不符合 DES §5.2「显示第 0 帧静态图」，且视频就绪瞬间会出现一次明显跳变 |
+| H-02 | 视频未就绪防黑块 | ✅ **通过**（commit 5ab6f97） | `ClubAIShell.swift:1209-1222` `loadHeroPoster()`：`AVAssetImageGenerator` 在 `Task.detached(.utility)` 后台截第 0 帧（`appliesPreferredTrackTransform`、上限 960×960），`await MainActor.run` 回主线程发布；`:1198` 在 guard **之前**无条件调用，故减少动态效果/低电量下也会生成静态帧；`heroGlassContent` 分层为 **z0 首帧占位 + z0b 视频层叠加**（`:1259-1272`），视频就绪后叠加切换，消除原纯色块跳变。仅在 poster 尚未生成的一瞬间仍有 `brandMist` 兜底（短暂瞬态，可接受） |
 | H-03 | 无限循环动效的减动效门控 | ✅ 通过 | 全库 `repeatForever` 3 处均 gated：`Design.swift:395`（`guard !reduceMotion else { return }`）、`FirstLaunchWalkthroughView.swift:226`、`ProductArchitecture.swift:570`（均 `reduceMotion ? nil : ...`） |
 | H-04 | 彩虹轮播 | ✅ 通过 | 全库无 `hueRotation`／彩虹相关实现 |
 | H-05 | 整屏转场 | ✅ 通过 | 全库 `.transition(...)` 15 处均为 `.opacity`／`.move(edge:)`／`.scale` 组合，无整屏缩放/翻转转场 |
@@ -287,7 +288,7 @@
 | H-08 | 一屏同时运动元素 ≤2 | ⏳ 待判定 | 需界面设计按 §4.2 逐屏核对，并在真机/模拟器上观察；静态源码无法可靠判定 |
 | H-09 | CLN-02 死代码清理 | ✅ 通过 | `BreathingPulseHalo` 全库零命中（commit 98900b6） |
 
-**H 表结论**：减动效门控（H-03）、转场（H-05）、彩虹轮播（H-04）、TimelineView（H-06）、模糊（H-07）全部合规；**H-02（BUG-015 首帧占位）仍未做**，属阶段 4 必做项；H-08 待界面设计与真机确认。
+**H 表结论**：减动效门控（H-03）、转场（H-05）、彩虹轮播（H-04）、TimelineView（H-06）、模糊（H-07）全部合规；**H-02（BUG-015 首帧占位）已于 commit 5ab6f97 完成并复核通过**；H-08 经界面设计逐屏核对（功能计时文字不计装饰运动元素，首页峰值「Hero 流光 + 进场 stagger 首 0.6 秒」= 2，卡红线内）。**H 表全部闭环。** 编译 run 42469629352 出包 `dist/BojiClub-44f6e7e8.ipa`（37.44 MB）。
 
 ---
 
@@ -318,22 +319,32 @@
 
 | 成员 | 任务 | 状态 |
 |---|---|---|
-| 苹果开发 | **IOS-006~010 动效系统化**：手绘 TimelineView spinner → ProgressView、呼吸环 → Gauge + symbolEffect、激光扫描线 → 系统进度语义、彩带粒子 → celebrate、引导页轨道环 → glassEffect + SF Symbols；改一项勾一项 B1 表，一批一编译（已开好头 b1d31c7，IOS-003/004 原生化待其构建验证） | 进行中 |
-| 界面设计 | 按规范 §1–§7 走查改造效果：材质三层是否滥用、动效节奏表是否守住、玻璃红线（每屏数量、护字渐变）是否达标，不达标处列清单 | 进行中 |
-| 测试验收 | 交互回归：深色模式、大字号、减弱动态效果、增强对比度四种设置下过一遍改造过的控件，B1 清单逐项核对打勾 | 进行中 |
-| 文档管理 | B1 改造清单打勾状态随报随登；E-2 收档归档（已完成） | 进行中 |
+| 苹果开发 | **IOS-006~010 动效系统化**：手绘 TimelineView spinner → ProgressView、呼吸环 → Gauge + symbolEffect、激光扫描线 → 系统进度语义、彩带粒子 → celebrate、引导页轨道环 → glassEffect + SF Symbols；改一项勾一项 B1 表，一批一编译（已开好头 b1d31c7，IOS-003/004 原生化待其构建验证） | **已完成**（G-01~G-12 通过；含 G-08 内容卡去玻璃、G-19 价格卡拍板项） |
+| 界面设计 | 按规范 §1–§7 走查改造效果：材质三层是否滥用、动效节奏表是否守住、玻璃红线（每屏数量、护字渐变）是否达标，不达标处列清单 | **已完成**（走查列 6 处内容卡玻璃已改，判定达标 G-08/G-11） |
+| 测试验收 | 交互回归：深色模式、大字号、减弱动态效果、增强对比度四种设置下过一遍改造过的控件，B1 清单逐项核对打勾 | **已完成**（F 表 INT-01~13 + G 表 G-01~G-23，复验通过） |
+| 文档管理 | B1 改造清单打勾状态随报随登；E-2 收档归档（已完成） | 已完成（阶段 3 通过，本表归档） |
 | 后端开发 | （阶段 2 主任务已交付；BE-005~008 待排期，不属本阶段） | 待命 |
+
+### 阶段 4 分工与状态（随报随登）
+
+| 成员 | 任务 | 状态 |
+|---|---|---|
+| 界面设计 | 第二批动效方案：挑首页、训练中、训练完成三个重点场景，按动效节奏表做进场、转场、微交互的华丽化润色（stagger 进场、spring 展开、完成庆祝动效），红线内标注具体时长、层级和运动元素数量 | 进行中 |
+| 苹果开发 | 三件：①CLN-02 死代码（`BreathingPulseHalo`）收尾编译；②BUG-015 首帧占位图（视频未就绪/低电量/减少动态显示静态帧防黑块）；③界面设计方案出来后逐项落地，一批一编译 | 进行中 |
+| 测试验收 | 动效走查：减弱动态效果开启时降级正常、红线合规（无彩虹轮播/无限闪动/整屏转场，一屏运动元素 ≤2）、Hero 视频三闸门逐项核对；复验登记从 H 表起 | 进行中 |
+| 文档管理 | 视频与动效改动随报随登（本表 + B1/A 表联动） | 进行中 |
+| 后端开发 | （BE-005~008 待排期，不属本阶段） | 待命 |
 
 ### 事项状态
 
 | 事项 | 负责人 | 状态 |
 |---|---|---|
 | Bug 全量排查清单（首轮 BUG-001~009） | 测试验收 | 已完成首轮，待真机复核 |
-| 自绘控件与流程不通点清单 | 苹果开发 | 摸底完成；4 个自绘控件（IOS-001~004）已全部换原生待构建验证，动效系统化 IOS-006~010 阶段 3 进行中 |
+| 自绘控件与流程不通点清单 | 苹果开发 | **阶段 3 完成**：4 个自绘控件 + 动效系统化 + 流程断点全部换原生并复验通过；阶段 4 做 BUG-015 首帧占位、CLN-02 清理与新动效落地 |
 | 接口/数据侧问题清单 | 后端开发 | 已完成摸底，8 项入 B3 表 |
-| 视觉与动效规范（含视频融合方案） | 界面设计 | 已交付（DES-001~003）并通过阶段 1 验收；**视频位已定 A（DEC-1）**，Hero 视觉稿已出，待苹果开发接入后关 BUG-005 |
+| 视觉与动效规范（含视频融合方案） | 界面设计 | DES-001~003 已交付并通过验收；**阶段 4 进行中**：第二批动效方案（首页/训练中/训练完成三场景润色） |
 | 真机安装链路 | 运维支付 | **推荐 1 TestFlight（DEC-3），待用户回复 1/2/3**；更正：1、2 均需 $99/年付费账号，3 零账号；链路生效前真机验收项挂起，模拟器验收不受影响 |
-| 本文档 | 文档管理 | 台账运行中：阶段 1/2 已通过，阶段 3 打勾随报随登 |
+| 本文档 | 文档管理 | 台账运行中：阶段 1/2/3 已通过，阶段 4 视频与动效改动随报随登 |
 
 ## 变更记录
 
@@ -358,4 +369,5 @@
 - 2026-11-08：**G-08 复扫通过，阶段 3 玻璃红线达标**。苹果开发 fea35b7 补掉 ClubAIShell 两处内容卡玻璃（改不透明 `cardSurface`），同批完成 IOS-010 引导页重做（每屏玻璃 1 处）；界面设计判定 ProfileView 5 处为合规浮件；测试验收确认全库仅剩 `BojiComponents.swift:83` 一处 `RadialGradient` 属业务图形豁免。编译 run 42467301022 出包 `dist/BojiClub-07403782.ipa`（37.43 MB）。G 表已更新为通过。
 - 2026-11-08：**苹果开发第二批修复完成待提交**：BUG-003 输入串轨（删 ClubNumericKeypad 自绘键盘与 keypadWeight 双轨，ClubNumericField 改原生 TextField+sanitize，LiquidCheckbox 改系统符号按钮）、BUG-005 Hero 视频接入（DES-003 方案 A，brand-video.mp4 已入 bundle 并注册 pbxproj）、BUG-010/011 横幅修正（training 文案如实、带「知道了」关闭、改 safeAreaInset 不压顶栏）、BUG-012 JourneyComponents 三处散写玻璃分支收口 clubNativeGlassButton；台账 A/B1 表状态已同步更新。
 - 2026-11-08：**云端编译恢复通过（后端开发）**：逐次抓取 xcodebuild 错误行，定位并修复 4 处阻塞编译的问题——`AppStore.swift` 的 `ClubNotificationRoute` 补 `Equatable`（`onChange` 需要）、`TrainingRegistrationViews.swift` 的 `Button(action:) label:` 改回 trailing closure、`ClubAIShell.swift` 的 TimelineView 闭包内非法 `return` 去掉、`VideoPlayer` 无 `videoGravity` 改用 `AVPlayerLayer` 封装（`resizeAspectFill` 铺满）。**workflow run 42461169469 编译成功，IPA `dist/BojiClub-ffe4a1ed.ipa`（37.44 MB）**，已提交推送（`7cb0b97`）。BE-001/BE-004 修复保持「已修复待验」，等测试验收复验。
-- 2026-11-08：**阶段 2（P0 修复）Chief 验收通过，阶段 3（UI 原生化改造）开工**。登记：阶段进度表 2→已通过、3→进行中（含完成条件）；C 表第 1 轮验收记录（f9a471f6，首验不通过返工、第四輪通过）；E 节标注已收档归档（后续复验从 E-3 起）；阶段 2 分工表归档，新增阶段 3 分工表（苹果开发 IOS-006~010、界面设计规范走查、测试验收四设置回归、文档管理打勾）；B1 表加打勾进度汇总（14 项：6 待验 / 1 处理中 / 7 待处理）。
+- 2026-11-08：**阶段 2（P0 修复）Chief 验收通过，阶段 3（UI 原生化改造）开工**。登记：阶段进度表 2→已通过、3→进行中（含完成条件）；C 表第 1 轮验收记录（f9a471f6，首验不通过返工、第四輪通过）；E 节标注已收档归档（后续复验另开 E-3 起）；阶段 2 分工表归档，新增阶段 3 分工表（苹果开发 IOS-006~010、界面设计规范走查、测试验收四设置回归、文档管理打勾）；B1 表加打勾进度汇总（14 项：6 待验 / 1 处理中 / 7 待处理）。
+- 2026-11-08：**阶段 3（UI 原生化改造）Chief 验收通过，阶段 4（视频融入与华丽动效）开工**。登记：阶段进度表 3→已通过（G-4 全量复扫，run 42468330096 / f93a9470）、4→进行中（含 Chief 定的完成条件）；C 表第 2 轮验收记录（首验 G-08 内容卡玻璃与 P1 价格卡拍板项 → 全部闭环）；E 节归档注记更正为「阶段 3 复验实际用 F/G 表，阶段 4 从 H 表起」；阶段 3 分工表归档（四人任务全部标已完成），新增阶段 4 分工表（界面设计第二批动效方案、苹果开发 CLN-02+BUG-015+动效落地、测试验收动效走查、文档管理随报随登）；B1 打勾进度更新为 14/14 已修复待验，阶段 4 增量条目待追加。
