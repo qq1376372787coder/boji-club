@@ -159,7 +159,7 @@
 | **BE-004 弱网同步** | ✅ 通过 | `AppStore.swift:2646` 改 `DomainCommandBackoff.delay(attempts:)` 指数退避；`:2618` 按 `nextAttemptAt` 跳过未到期命令；`:765` blocked 不再中止整次同步；`ClubProposalSync.swift` 新增 `nextAttemptAt` + `DomainCommandBackoff` |
 | **客户端四连修** | ✅ 全部通过 | ①`ClubNotificationRoute: Identifiable, Equatable`（AppStore.swift）；②`TrainingRegistrationViews.swift:293/304` 已用 `Button(action:) { }`；③`ClubAIShell.swift:1178` TimelineView 闭包为表达式体、无非法 `return`；④`ClubAIShell.swift:1207-1228` 改用 `HeroVideoContainerView`（`AVPlayerLayer` + `videoGravity = .resizeAspectFill`） |
 | **BUG-001 / 010 / 011 通知横幅** | ✅ 通过 | 横幅 `safeAreaInset(edge: .top)` 不压顶栏；`actionTitle: "知道了"` 关闭；training 类文案如实 |
-| **BUG-005 视频三闸门** | ⚠️ 部分 | 循环（`AVPlayerLooper`）、离场暂停归零、reduceMotion 降级、深色压暗、护字渐变均到位；**未静音**（BUG-014，P1）、低电量与首帧占位缺失（BUG-015，P3） |
+| **BUG-005 视频三闸门** | ⚠️ 部分 | 循环（`AVPlayerLooper`）、离场暂停归零、reduceMotion 降级、深色压暗、护字渐变均到位；**未静音**（BUG-014，P1）、低电量与首帧占位缺失（BUG-015，P3）。**界面设计独立核对结论一致**（ClubAIShell.swift:1180-1244）：reduceMotion 闸门在（:1191）、离场暂停回零与 scenePhase 后台暂停都在、低电量闸门缺；并确认「静音」注释与实现不符 |
 | **BUG-012 玻璃分支收口** | ✅ 通过 | 全库 `if #available(iOS 26` 仅剩 `Design.swift:160/197/211` 桥接自身（预期） |
 | **BUG-003 输入串轨** | ⚠️ 部分 | `ClubNumericKeypad`／`LiquidCheckbox` 已删并改原生；`SmartWeightStepper`（DesignTokens.swift:741）与 `TrainingNumericInput125`（WorkoutExperience125.swift:169）仍在（IOS-003／004 未做） |
 | **BUG-013 暂停钮触控区** | ❌ 未修 | 仍为 30×30pt（ClubAIShell.swift:1281） |
