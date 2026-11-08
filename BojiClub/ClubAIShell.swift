@@ -911,7 +911,6 @@ struct ClubAIWorkspaceIdleView: View {
     @State private var revealed = false
     @State private var heroScrollY: CGFloat = 0
     @State private var showScoreBreakdown = false
-    private var heroShrunk: Bool { heroScrollY >= 120 }
     @ObservedObject private var flags = FeatureFlagService.shared
 
     private var today: DayLog { store.log(for: Date()) }
@@ -1042,21 +1041,16 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     // MARK: - 顶部标题区
-    /// Hero 三段式（返工施工稿 §三）：视频带只放品牌小字+暂停钮，巨号/建议全部移到页面底色上，
-    /// 根治「52pt 中文按字断行 + 压脸」。滚动 ≥120pt 收缩成 46pt 玻璃条（iOS 18+ 监听，iOS 17 保持全屏）。
+    /// Hero 三段式（施工卡 §一）：视频带（只有品牌小字 + 暂停钮）→ 页面底色排印区 → 细线数据条。
+    /// 滚动收缩玻璃条已废止（规范 §2 最高优先级）：主操作交给底部玻璃胶囊，滚动动效改走 M6 视差。
     private var heroGlassCard: some View {
-        TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion || heroShrunk)) { context in
+        TimelineView(.animation(minimumInterval: 0.05, paused: reduceMotion)) { context in
             let phase = context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 14) / 14
-            if heroShrunk {
-                heroCollapsedBar
-            } else {
-                VStack(alignment: .leading, spacing: 0) {
-                    heroVideoBand(phase: phase, empty: heroReadiness.score == nil)
-                    heroTypeBlock
-                }
+            VStack(alignment: .leading, spacing: 0) {
+                heroVideoBand(phase: phase, empty: heroReadiness.score == nil)
+                heroTypeBlock
             }
         }
-        .animation(BojiMotion2.resolved(BojiMotion2.state, reduceMotion: reduceMotion), value: heroShrunk)
         .onAppear { revealed = true; setupHeroVideo() }
         .onDisappear { teardownHeroVideo() }
         .onChange(of: scenePhase) { _, phase in
@@ -1071,13 +1065,14 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     /// M6 视差：媒体层比页面慢（在裁切框内下移），同时轻微缩放与淡出；减动效恒定不动。
+    /// 缩放永远 ≥1.0，保证媒体始终铺满裁切框（缩到 1 以下会露底色）。
     private struct HeroParallax: ViewModifier {
         let progress: CGFloat
         let reduceMotion: Bool
         func body(content: Content) -> some View {
             content
-                .scaleEffect(reduceMotion ? 1.06 : 1.06 - 0.10 * progress)
-                .offset(y: reduceMotion ? 0 : progress * 70)
+                .scaleEffect(reduceMotion ? 1.08 : 1.08 - 0.08 * progress)
+                .offset(y: reduceMotion ? 0 : progress * 40)
                 .opacity(reduceMotion ? 1 : 1 - 0.15 * progress)
         }
     }
@@ -1292,33 +1287,6 @@ struct ClubAIWorkspaceIdleView: View {
 
     private func homePrimaryAction() {
         if homePrimaryLabel == "记一顿" { onRecordMeal() } else { onStartTraining() }
-    }
-
-    /// 收缩态玻璃条：高 46pt，内含唯一主操作「开始」（规格表 §2.1）。
-    private var heroCollapsedBar: some View {
-        HStack(spacing: BojiLayout.inline) {
-            Image(systemName: "figure.strengthtraining.traditional")
-                .bojiType(.label)
-                .foregroundStyle(.white)
-            Text("今天的训练")
-                .bojiType(.label)
-                .foregroundStyle(.white)
-                .lineLimit(1)
-            Spacer(minLength: BojiLayout.inline)
-            Button(action: onStartTraining) {
-                Text("开始")
-                    .bojiType(.label)
-                    .foregroundStyle(BojiColor.pageBackground)
-                    .padding(.horizontal, BojiLayout.rowGap)
-                    .frame(minHeight: 30)
-                    .contentShape(Capsule())
-            }
-            .buttonStyle(BojiButtonStyle(kind: .primary))
-            .accessibilityIdentifier("hero-collapsed-start")
-        }
-        .padding(.horizontal, BojiLayout.rowGap)
-        .frame(height: 46)
-        .clubGlassEffect(in: Capsule())
     }
 
     /// 品牌视频单实例：静音、循环、仅页面活跃时播放；离场暂停并回零。
