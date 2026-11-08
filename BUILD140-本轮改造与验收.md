@@ -54,6 +54,7 @@
 | BUG-013 | Hero 卡视频暂停钮触控区不足 | 暂停/播放钮视觉 30×30pt，实际触控区 < 44pt 最小触控标准 | P3 | 苹果开发 | 已验收关闭 | 测试验收第二批复验发现，第三輪复验未修；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1287-1288` 加 `.frame(width: 44, height: 44).contentShape(Circle())`，视觉仍 30pt、命中区 44pt，符合 ACC-06 与 DES §6 |
 | BUG-014 | Hero 品牌视频**没有静音** | `setupHeroVideo()`（`ClubAIShell.swift:1190-1196`）创建 `AVQueuePlayer` 后未设 `isMuted = true` | P1 | 苹果开发 | 已验收关闭 | 测试验收第三批复验发现（界面设计独立核对一致）；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1194` `player.isMuted = true` |
 | BUG-015 | 视频降级缺两项（低电量 / 首帧占位） | DES §5.2 要求「低电量模式 → 静态图」与「未就绪前显示第 0 帧静态图」 | P3 | 苹果开发 | 已修复待验（低电量部分） | **第四輪已修低电量闸门**（commit 54092f1）：`ClubAIShell.swift:1191` guard 增 `!ProcessInfo.processInfo.isLowPowerModeEnabled`。**首帧占位图按 Chief 决定留到阶段 4** 随视频深化一起做，本条保持打开至阶段 4 |
+| BUG-016 | 勾选按钮动效未受「减少动态效果」约束 | `TrainingRegistrationViews.swift:295` `Image(...).symbolEffect(.bounce.up.byLayer, value: true)` 无条件生效；原自绘 `LiquidCheckbox` 的动画是有 `if !reduceMotion` 门控的，换原生后**门控丢失** | P3 | 苹果开发 | 待处理 | 测试验收阶段 3 交互回归（F2/INT-06）发现；违反 DES §0 铁律 3「所有动效尊重减少动态效果」与 ACC-05。修法：把 symbolEffect 包在 `reduceMotion ? nil : ...` 分支里，或改用 `.symbolEffect(..., options: reduceMotion ? [] : .default)` |
 
 > 用户直接在群里反馈的具体 bug 和流程卡壳点，由测试验收转记到此表。
 >
@@ -62,6 +63,8 @@
 ## B. 改造清单（按负责人分表）
 
 ### B1. 苹果开发 · 自绘控件 → 原生组件 + 玻璃改造
+
+> **打勾进度（文档管理随报随登）**：共 14 项。已修复待验 6 项（IOS-001~005、011，其中 4 个自绘控件 IOS-001~004 全部换完，b1d31c7 补最后两个，待其构建验证）；处理中 1 项（IOS-014 视频接入，代码完成待编译与视觉验收）；待处理 7 项（IOS-006~010 动效系统化为阶段 3 主体，IOS-012/013 流程状态改造）。阶段 3 收尾要求逐项转「已修复待验」并经界面设计走查 + 测试验收回归 + 云端编译。
 
 | 编号 | 现状（自绘/自建控件或流程不通点） | 目标（原生组件/玻璃方案） | 涉及文件 | 状态 | 备注 |
 |---|---|---|---|---|---|
@@ -119,7 +122,7 @@
 
 | 轮次 | 构建 | 日期 | 结果 | 发现的问题 | 处置 |
 |---|---|---|---|---|---|
-| 第 1 轮 |  |  |  |  |  |
+| 第 1 轮 | dist/BojiClub-f9a471f6.ipa（run 42465043363，未签名 Debug） | 2026-11-08 | **通过（阶段 2）** | 首验发现 BUG-014 视频未静音（P1）、BUG-013 暂停钮触控区不足、BUG-015 低电量闸门缺，判不通过返工 | 返工后第四輪复验通过（E-2 表，commit 54092f1）；BUG-015 首帧占位留阶段 4；进入阶段 3 |
 
 ---
 
@@ -148,7 +151,7 @@
 
 ---
 
-## E. 阶段 2 修复复验（测试验收，2026-11-08）
+## E. 阶段 2 修复复验（测试验收，2026-11-08）【已收档：阶段 2 于 2026-11-08 经第四輪复验通过，本节转为归档记录，后续复验另开 E-3 起】
 
 复验窗口由 Chief 开启。本轮为**源码级静态复验 + 云端编译验证**（真机/模拟器画面项仍待安装链路）。
 
@@ -181,6 +184,43 @@
 
 ---
 
+## F. 交互回归核查（阶段 3，测试验收）
+
+**方法限制**：本机无 Xcode／模拟器／真机安装链路，本轮为**源码级核查**——检查各改造项在四种系统设置（深色模式、更大字体、减少动态效果、增强对比度）下的分支是否存在且正确。**观感与实际行为仍需安装链路就绪后在真机/模拟器上复跑**，F 表结论不代表已实测。
+
+### F1. 全局四种设置的基础设施
+
+| 编号 | 检查项 | 源码证据 | 结论 |
+|---|---|---|---|
+| INT-01 | 动态字体缩放 | `DesignTokens.swift:152-162` `BojiFontModifier`：非 `.bodyMetric` 走 `Font.system(role.textStyle, weight:)`（跟随系统）；`.bodyMetric` 走 `Font.system(size: role.size * scale)`，`scale` 为 `@ScaledMetric(relativeTo: .body)`（同样跟随系统） | ✅ 通过 |
+| INT-02 | 更大字体（AX1–AX5）布局降级 | `ClubAIShell.swift:781` 分段选择器在 `isAccessibilitySize` 时降级 `.menu`；`BodyWeightView.swift:58/106`、`BojiComponents.swift:247/365`、`DashboardComponents.swift:243/333`、`ClubInsightTimelineView.swift:152` 均有 AX 分支 | ✅ 通过 |
+| INT-03 | 减少动态效果 | `Design.swift:123` `transitionAnimation` 在 reduceMotion 时为 nil；`ClubAIShell.swift:1178` TimelineView `paused: reduceMotion`；`:1191` Hero 视频 reduceMotion 时不创建 player（回退静态底） | ✅ 通过 |
+| INT-04 | 减少透明度 / 增强对比度 | `Design.swift:188-203` `ClubGlassSurface`：`reduceTransparency \|\| contrast == .increased` → 不透明 `cardSurface` + 描边；`Design.swift:205-220` `clubNativeGlassButton` 同样三分支；`DesignTokens.swift:459` `BojiDeepShadowModifier` 增强对比度加粗描边 | ✅ 通过 |
+| INT-05 | 深色模式 | 颜色走 `BojiColor` 自适应 Token（浅/深两套）；额外分支：`ClubAIShell.swift:1246` Hero 视频深色压暗 20%、`FirstLaunchWalkthroughView.swift:49/784/796/812` 引导页深色调 | ✅ 通过（Token 层） |
+
+### F2. 改造项 × 四种设置逐项核查
+
+| 编号 | 改造项 | 深色 | 大字号 | 减少动态 | 增强对比度 | 结论 |
+|---|---|---|---|---|---|---|
+| INT-06 | IOS-001 勾选按钮（`TrainingRegistrationViews.swift:293/304`） | 用 `BojiColor.emeraldAccent`／`textTertiary` 自适应 Token | `Image` 28pt 固定尺寸，AX5 下偏小但命中区 44pt 达标 | **`symbolEffect` 无 reduceMotion 门控（见 BUG-016）** | 不涉玻璃，无影响 | ⚠️ 待修（BUG-016） |
+| INT-07 | IOS-002 数字输入（`ClubNumericField`，Experience123.swift:167） | `inputSurface` 自适应 | 系统 TextField 跟随系统字体 | 无动效 | 无影响 | ✅ 通过 |
+| INT-08 | IOS-003 训练数值输入（`WorkoutExperience125.swift`，b1d31c7） | 原生 TextField + `inputSurface` | 系统键盘 + 系统字体 | 键盘工具条系统行为 | 无影响 | ✅ 通过 |
+| INT-09 | IOS-004 体重步进（`SmartWeightStepper`，b1d31c7） | 系统 Stepper 自适应 | 系统 Stepper 跟随 | 系统行为 | 无影响 | ✅ 通过 |
+| INT-10 | IOS-005 材质收口（17 处浮件 + 2 处内容卡） | Token 自适应 | 不影响 | `clubGlassEffect` 不含动效 | 由 `ClubGlassSurface` 分支保证不透明+描边 | ✅ 通过 |
+| INT-11 | IOS-006~010 动效系统化 | — | — | — | — | ⏳ 未开工（B1 表待处理） |
+| INT-12 | Hero 视频（ClubAIShell.swift:1178-1250） | `:1246` 深色压暗 | 不涉文字缩放 | reduceMotion／低电量不播，显静态底 | 玻璃层由 `clubGlassEffect` 处理 | ✅ 通过 |
+| INT-13 | 通知横幅（BojiClubApp.swift:243-253） | `BojiStatusBanner` 用自适应 Token | `BojiStatusBanner` 文字走 `.caption`（跟随系统） | 无循环动效 | 无玻璃 | ✅ 通过 |
+
+### F3. 复验中发现的清理项
+
+| 编号 | 问题 | 位置 | 严重度 | 备注 |
+|---|---|---|---|---|
+| CLN-01 | `ClubActionButtonStyle` 里 `@Environment(\.accessibilityReduceTransparency)` 与 `@Environment(\.colorSchemeContrast)` 已**不再被使用**（该样式已收口为 `clubNativeGlassButton`），属遗留 dead code | JourneyComponents.swift:58-59 | P3 | 不影响功能与编译（仅警告），建议随阶段 3 清理 |
+
+**F 表结论**：全局四种设置的基础设施（INT-01~05）齐备；已改造控件中 INT-07/08/09/10/12/13 通过，**INT-06 未通过**（勾选按钮 `symbolEffect` 无 reduceMotion 门控 → BUG-016）；INT-11（IOS-006~010 动效）未开工。**待办：安装链路就绪后，在真机/模拟器上按 F2 逐格实测复跑。**
+
+---
+
 ## 进度速览（文档管理维护）
 
 ### 阶段进度（5 阶段，Chief 逐阶段验收）
@@ -188,12 +228,12 @@
 | 阶段 | 内容 | 状态 | 说明 |
 |---|---|---|---|
 | 1 | 摸底与规范 | **已通过**（2026-11-08 Chief 验收） | 四份产出齐备、交叉核实一致（Bug 清单、自绘控件清单、后端问题清单、视觉动效规范） |
-| 2 | P0 修复：bug 与流程断点 | **进行中** | 完成条件：A 表 P0/严重 bug 全关；BUG-001 通知深链（`BojiClubApp.swift:218`）修复；5 个流程断点消除；BE-001（核验同步阻塞）与 BE-004（弱网同步停摆）修复；测试验收复验通过；云端编译通过；Chief 过目 |
-| 3 | 原生组件与玻璃质感全面改造 | 未开始 | 依赖阶段 2 |
+| 2 | P0 修复：bug 与流程断点 | **已通过**（2026-11-08 Chief 验收，第四輪复验后） | 完成条件全部满足：A 表 P1 阻塞项清空；BUG-001 通知深链修复；5 个流程断点消除；BE-001/BE-004 修复；测试验收第四輪复验通过（E-2 表）；云端编译 run 42465043363 出包 f9a471f6；Chief 过目认可。遗留：BUG-015 首帧占位按 Chief 决定留阶段 4 |
+| 3 | UI 原生化改造 | **进行中**（2026-11-08 开工） | 完成条件：4 个自绘控件全部换成原生组件（IOS-001~004，代码已完成待构建验证）；23 处材质收口到 clubGlassEffect（IOS-005 已收口）；自绘动效换系统动效（IOS-006~010 本阶段主体）；改造清单逐项打勾；界面设计按规范走查达标；云端编译通过；Chief 过目认可 |
 | 4 | 视频融入 + 动效特效 | 未开始 | 视频位 A 已定，可与阶段 3 并行部分推进 |
 | 5 | 整体验收（Chief 循环验收至满意） | 未开始 | 按 §0 五条标准 + D 表 ACC-01~10 |
 
-### 阶段 2 分工与状态（随报随登）
+### 阶段 2 分工与状态（已通过·归档）
 
 | 成员 | 任务 | 状态 |
 |---|---|---|
@@ -202,18 +242,28 @@
 | 运维支付 | BE-002/BE-003 部署配置核查 → **已完成**：根因 deploy.sh 配置模板缺键，源码已改（21 键契约 + 校验脚本 + 测试 21 键全过），线上补键清单交 Chief（OPS-003）；TestFlight 步骤指引已出（前提更正：需 $99 付费账号），待用户回「1/2/3」 | 已回报，待用户选链路 |
 | 界面设计 | 首页 Hero 卡视觉稿（视频底层静音循环/离开暂停/减少动态显静态帧 + 玻璃卡 + 渐变护字 + BUG-005 落地要点），出好 @苹果开发 | 进行中 |
 | 测试验收 | 据 DEC-1/DEC-2 更新 D 表 ACC-02/ACC-04；等修复报上来做复验回归 | 进行中 |
-| 文档管理 | 三个决定登记、阶段 2 修复状态随报随登（本表） | 进行中 |
+| 文档管理 | 三个决定登记、阶段 2 修复状态随报随登（本表） | 已完成（阶段 2 通过，本表归档） |
+
+### 阶段 3 分工与状态（随报随登）
+
+| 成员 | 任务 | 状态 |
+|---|---|---|
+| 苹果开发 | **IOS-006~010 动效系统化**：手绘 TimelineView spinner → ProgressView、呼吸环 → Gauge + symbolEffect、激光扫描线 → 系统进度语义、彩带粒子 → celebrate、引导页轨道环 → glassEffect + SF Symbols；改一项勾一项 B1 表，一批一编译（已开好头 b1d31c7，IOS-003/004 原生化待其构建验证） | 进行中 |
+| 界面设计 | 按规范 §1–§7 走查改造效果：材质三层是否滥用、动效节奏表是否守住、玻璃红线（每屏数量、护字渐变）是否达标，不达标处列清单 | 进行中 |
+| 测试验收 | 交互回归：深色模式、大字号、减弱动态效果、增强对比度四种设置下过一遍改造过的控件，B1 清单逐项核对打勾 | 进行中 |
+| 文档管理 | B1 改造清单打勾状态随报随登；E-2 收档归档（已完成） | 进行中 |
+| 后端开发 | （阶段 2 主任务已交付；BE-005~008 待排期，不属本阶段） | 待命 |
 
 ### 事项状态
 
 | 事项 | 负责人 | 状态 |
 |---|---|---|
 | Bug 全量排查清单（首轮 BUG-001~009） | 测试验收 | 已完成首轮，待真机复核 |
-| 自绘控件与流程不通点清单 | 苹果开发 | 进行中 |
+| 自绘控件与流程不通点清单 | 苹果开发 | 摸底完成；4 个自绘控件（IOS-001~004）已全部换原生待构建验证，动效系统化 IOS-006~010 阶段 3 进行中 |
 | 接口/数据侧问题清单 | 后端开发 | 已完成摸底，8 项入 B3 表 |
 | 视觉与动效规范（含视频融合方案） | 界面设计 | 已交付（DES-001~003）并通过阶段 1 验收；**视频位已定 A（DEC-1）**，Hero 视觉稿已出，待苹果开发接入后关 BUG-005 |
 | 真机安装链路 | 运维支付 | **推荐 1 TestFlight（DEC-3），待用户回复 1/2/3**；更正：1、2 均需 $99/年付费账号，3 零账号；链路生效前真机验收项挂起，模拟器验收不受影响 |
-| 本文档 | 文档管理 | 台账运行中：三决定已登记，阶段 2 状态随报随登 |
+| 本文档 | 文档管理 | 台账运行中：阶段 1/2 已通过，阶段 3 打勾随报随登 |
 
 ## 变更记录
 
@@ -233,5 +283,7 @@
 - 2026-11-08：测试验收完成**阶段 2 复验**，登记为 E 表。BE-001／BE-004 与客户端四连修通过；**新增 BUG-014（P1：Hero 视频未设 `isMuted`，会外放声音）**、BUG-015（P3：低电量降级与首帧占位缺失）；BUG-003 仍部分（SmartWeightStepper／TrainingNumericInput125 未换）、BUG-013 未修。**结论：阶段 2 尚不能判通过**，BUG-014 必须修。
 - 2026-11-08：`.gitignore` 补 `logs-builder-*.log`（测试验收本机排障日志不入库，Chief 建议）。
 - 2026-11-08：**阶段 2 第四輪返工复验通过**。Chief 判定阶段 2 不通过后返工的三件（BUG-014 静音 / BUG-013 触控区 / BUG-015 低电量闸门）由 Chief 代收口提交 54092f1；测试验收逐处核对源码通过，云端编译 run 42465043363 出包 `dist/BojiClub-f9a471f6.ipa`（37.44 MB）。结果登记为 E-2 表。BUG-003 剩余 IOS-003／004 转阶段 3（苹果开发已推 b1d31c7）。
+- 2026-11-08：**阶段 3 交互回归（源码级）登记为 F 表**。全局四种设置基础设施齐备（动态字体 `@ScaledMetric`、AX 布局降级、reduceMotion、减少透明度/增强对比度分支均通过）；逐项核查发现 **BUG-016**（勾选按钮 `symbolEffect` 丢失 reduceMotion 门控，P3）与清理项 CLN-01（JourneyComponents 遗留未用 `@Environment`）。结论：阶段 3 改造项中 INT-11（IOS-006~010 动效）未开工，其余除 INT-06 外通过；全部结论待真机/模拟器实测复跑。
 - 2026-11-08：**苹果开发第二批修复完成待提交**：BUG-003 输入串轨（删 ClubNumericKeypad 自绘键盘与 keypadWeight 双轨，ClubNumericField 改原生 TextField+sanitize，LiquidCheckbox 改系统符号按钮）、BUG-005 Hero 视频接入（DES-003 方案 A，brand-video.mp4 已入 bundle 并注册 pbxproj）、BUG-010/011 横幅修正（training 文案如实、带「知道了」关闭、改 safeAreaInset 不压顶栏）、BUG-012 JourneyComponents 三处散写玻璃分支收口 clubNativeGlassButton；台账 A/B1 表状态已同步更新。
 - 2026-11-08：**云端编译恢复通过（后端开发）**：逐次抓取 xcodebuild 错误行，定位并修复 4 处阻塞编译的问题——`AppStore.swift` 的 `ClubNotificationRoute` 补 `Equatable`（`onChange` 需要）、`TrainingRegistrationViews.swift` 的 `Button(action:) label:` 改回 trailing closure、`ClubAIShell.swift` 的 TimelineView 闭包内非法 `return` 去掉、`VideoPlayer` 无 `videoGravity` 改用 `AVPlayerLayer` 封装（`resizeAspectFill` 铺满）。**workflow run 42461169469 编译成功，IPA `dist/BojiClub-ffe4a1ed.ipa`（37.44 MB）**，已提交推送（`7cb0b97`）。BE-001/BE-004 修复保持「已修复待验」，等测试验收复验。
+- 2026-11-08：**阶段 2（P0 修复）Chief 验收通过，阶段 3（UI 原生化改造）开工**。登记：阶段进度表 2→已通过、3→进行中（含完成条件）；C 表第 1 轮验收记录（f9a471f6，首验不通过返工、第四輪通过）；E 节标注已收档归档（后续复验从 E-3 起）；阶段 2 分工表归档，新增阶段 3 分工表（苹果开发 IOS-006~010、界面设计规范走查、测试验收四设置回归、文档管理打勾）；B1 表加打勾进度汇总（14 项：6 待验 / 1 处理中 / 7 待处理）。
