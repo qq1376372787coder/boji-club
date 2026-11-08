@@ -1169,7 +1169,8 @@ struct ClubAIWorkspaceIdleView: View {
                     .foregroundStyle(Color.white.opacity(0.85))
                     .shadow(color: .black.opacity(0.45), radius: 1)
                 Text("今天的训练，已经为你准备好")
-                    .font(.system(size: 52, weight: .bold))
+                    .font(.system(size: 52, weight: .heavy))
+                    .kerning(-2)
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.45), radius: 1)
                 Text("按计划开始 · 组间自动计时 · 训练后自动生成日报")
@@ -1205,18 +1206,9 @@ struct ClubAIWorkspaceIdleView: View {
     }
 
     private var headerArea: some View {
+        // 定稿：区块名取消——只留品牌标 + 日期 chip，大标题走系统 navigationTitle("今天")
         HStack(alignment: .center) {
-            HStack(spacing: BojiLayout.rowGap) {
-                BojiBrandMark(size: 34)
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("薄肌俱乐部")
-                        .bojiType(.caption)
-                        .foregroundStyle(BojiColor.textTertiary)
-                    Text("薄肌俱乐部")
-                        .bojiType(.section)
-                        .foregroundStyle(BojiColor.textPrimary)
-                }
-            }
+            BojiBrandMark(size: 34)
 
             Spacer()
 
