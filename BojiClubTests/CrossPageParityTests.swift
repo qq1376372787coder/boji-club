@@ -524,7 +524,7 @@ final class CrossPageParityTests: XCTestCase {
         let removedID = UUID()
         var tombstoned = DayLog()
         tombstoned.bodyMeasurements = [
-            BodyWeightEntry(kilograms: 70.0, updatedAt: dayStart, recordedAt: dayStart, id: removedID)
+            BodyWeightEntry(kilograms: 70.0, updatedAt: dayStart, id: removedID, recordedAt: dayStart)
         ]
         tombstoned.deletedBodyMeasurementIDs = [removedID.uuidString.uppercased()]
 
@@ -566,7 +566,8 @@ final class CrossPageParityTests: XCTestCase {
         var shadowed = DayLog()
         shadowed.bodyMeasurements = [
             BodyWeightEntry(kilograms: 68.0, updatedAt: dayStart.addingTimeInterval(28800),
-                            recordedAt: dayStart.addingTimeInterval(28800), id: UUID())
+                            id: UUID(),
+                            recordedAt: dayStart.addingTimeInterval(28800))
         ]
         shadowed.bodyWeight = BodyWeightEntry(kilograms: 99.0, updatedAt: dayStart.addingTimeInterval(61200),
                                               recordedAt: dayStart.addingTimeInterval(61200))
@@ -599,13 +600,14 @@ final class CrossPageParityTests: XCTestCase {
         var day = DayLog()
         day.bodyMeasurements = [
             BodyWeightEntry(kilograms: 68.0, updatedAt: dayStart.addingTimeInterval(28800),
-                            recordedAt: dayStart.addingTimeInterval(28800),
-                            bodyFatPercentage: 20.0, waistCircumferenceCM: 80.0, id: UUID())
+                            id: UUID(),
+                            bodyFatPercentage: 20.0, waistCircumferenceCM: 80.0,
+                            recordedAt: dayStart.addingTimeInterval(28800))
         ]
         // 过期的镜像：体重相同，但体脂/腰围是旧值（模拟云合并/健康导入后未刷新）
         day.bodyWeight = BodyWeightEntry(kilograms: 68.0, updatedAt: dayStart.addingTimeInterval(61200),
-                                         recordedAt: dayStart.addingTimeInterval(61200),
-                                         bodyFatPercentage: 15.0, waistCircumferenceCM: 75.0)
+                                         bodyFatPercentage: 15.0, waistCircumferenceCM: 75.0,
+                                         recordedAt: dayStart.addingTimeInterval(61200))
 
         let latest = BodyWeightReading.rows(of: day).last
         XCTAssertNotNil(latest, "夹具预期至少有一条有效测量")
