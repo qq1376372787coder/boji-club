@@ -182,10 +182,17 @@ struct MembershipGateView: View {
 struct NotificationSettingsView: View {
     @EnvironmentObject private var notifications: AppNotificationService
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(BojiSound.enabledDefaultsKey) private var soundEnabled = true
 
     var body: some View {
         ClubNavigationStack132 {
             Form {
+                Section("互动音效") {
+                    Toggle("互动音效", isOn: $soundEnabled)
+                        .accessibilityIdentifier("boji-sound-toggle")
+                    Text("完成一组、打破纪录这些时刻会带短音。手机静音时，音效自动让位给震动。")
+                        .bojiType(.caption).foregroundStyle(.secondary)
+                }
                 Section("系统通知") {
                     LabeledContent("通知权限", value: notifications.authorizationStatus == .authorized ? "已开启" : (notifications.authorizationStatus == .denied ? "已关闭" : "未设置"))
                     if notifications.authorizationStatus == .denied {

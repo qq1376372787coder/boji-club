@@ -156,6 +156,7 @@ struct ClubAIShellView: View {
                 await handleAccountChange()
             }
             .task {
+                BojiSound.preload()
                 store.refreshClubInsights(); ai.resume()
                 if let ownerID { coach.selectConversation(coach.conversation, owner: ownerID) }
             }
@@ -171,7 +172,11 @@ struct ClubAIShellView: View {
                         (UserDefaults.standard.object(forKey: "training.rest.alerts") as? Bool ?? true) { notifications.scheduleRestReminder(until: end, on: date) }
                 syncTrainingActivity()
             }
-            .onChange(of: activeWorkout?.sessionID) { _, _ in refreshDay(); syncTrainingActivity() }
+            .onChange(of: activeWorkout?.sessionID) { _, id in
+                refreshDay(); syncTrainingActivity()
+                // 重启恢复进行中训练时，工作区同步到「训练」tab，坞条随 mode 归属规则正常显示
+                if id != nil, mode == .clubAI, !conversationVisible { mode = .training }
+            }
             .onChange(of: activeWorkout?.isPaused) { _, paused in
                 // 双状态源（pauseService/restDeadlines）不一致时，以快照为准取消过期提醒
                 if paused == true { notifications.cancelRestReminder() }

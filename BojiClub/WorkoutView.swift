@@ -182,6 +182,8 @@ struct WorkoutView: View {
                     try? await Task.sleep(for: .milliseconds(350))
                     guard store.editingAccountID == finishReviewOwner, day.activeWorkoutSessionID == finishReviewSession, ClubDates.key(selectedDate) == reviewDate, !hasFinished else { return }
                     finishWorkout()
+                    // 17.1：收官——S4 最长音（0.55s）只用于此处；milestone 触感同拍
+                    BojiHaptics.milestone(); BojiSound.play(.workoutDone)
                 }
             }, cancel: { confirmFinish = false })
         }

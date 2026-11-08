@@ -303,14 +303,24 @@ struct TrainingSetRowView: View {
 
     @ViewBuilder private var completeControl: some View {
         if trainingSet.validCompletion {
-            Button(action: undoComplete) {
+            Button(action: {
+                // 17.1：撤销完成——轻触点 S1（与 tick 同拍）
+                BojiHaptics.tick(); BojiSound.play(.tap)
+                undoComplete()
+            }) {
                 completeCheckmark
             }
             .buttonStyle(ClubMotionButton())
             .accessibilityLabel("第 \(number) 组已完成，点击撤销完成")
         } else if allowCompletion {
             Button(action: {
-                if isLastUncompletedSet { BojiHaptics.heavyDrop() } else { BojiHaptics.latch() }
+                if isLastUncompletedSet {
+                    // 全组完成：S3 milestone（贴 heavyDrop 第二脉冲 +75ms）
+                    BojiHaptics.heavyDrop(); BojiSound.play(.milestone, delay: 0.075)
+                } else {
+                    // 17.1：S2 贴 latch 第二脉冲（+55ms），忌与震动同刻
+                    BojiHaptics.latch(); BojiSound.play(.setDone, delay: 0.055)
+                }
                 toggleComplete()
             }) {
                 Image(systemName: "circle")
