@@ -28,7 +28,7 @@ Refunds are handled by Apple: submit a request at reportaproblem.apple.com with 
 
 ### How do I delete my account and all data?
 
-In the App, open "Me" → "Delete Account", or email {{contact_email}}. Deletion removes your profile, training/diet/health records, AI reports and server media — see the Account Deletion & Data Deletion Notice. Tip: cancel your App Store subscription before deleting the account.
+In the App, open "Settings → Account" → "Delete Account", or email {{contact_email}}. Deletion removes your profile, training/diet/health records, AI reports and server media — see the Account Deletion & Data Deletion Notice. Tip: cancel your App Store subscription before deleting the account.
 
 ### Which devices are supported?
 

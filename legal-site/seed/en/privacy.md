@@ -186,7 +186,7 @@ Subject to applicable law, you may:
 6. **Request explanation** of automated processing rules;
 7. **Complain** — to us or to the competent regulator where you live.
 
-Channels: email {{contact_email}} or in-App: Me → Agreements & Account. We may verify your identity first. **We respond within 15 working days of verification, unless applicable law sets a shorter period or specific procedure.** If unsatisfied, you may complain to regulators listed in Section 17.
+Channels: email {{contact_email}} or in-App: Me → Settings → About BOJI CLUB → Privacy Policy. We may verify your identity first. **We respond within 15 working days of verification, unless applicable law sets a shorter period or specific procedure.** If unsatisfied, you may complain to regulators listed in Section 17.
 
 ## 14. Minors
 

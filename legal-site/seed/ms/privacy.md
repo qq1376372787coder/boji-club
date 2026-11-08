@@ -190,7 +190,7 @@ Dalam lingkup yang dibenarkan oleh undang-undang terpakai, anda mempunyai hak-ha
 6. **Meminta penjelasan dan menolak pemprosesan automatik**: meminta kami menerangkan peraturan pemprosesan AI;
 7. **Aduan dan laporan**: mengadu kepada kami, atau mengadu kepada pengawal selia yang mempunyai bidang kuasa di tempat anda.
 
-Saluran pelaksanaan: hantar e-mel kepada {{contact_email}}, atau melalui pintu masuk berkaitan dalam App "Saya → Perjanjian dan Akaun". Bagi melindungi keselamatan akaun, kami mungkin perlu mengesahkan identiti anda (contohnya log masuk semula, pengesahan log masuk Apple atau nombor telefon). **Kami akan membalas dalam tempoh 15 hari bekerja selepas pengesahan; sekiranya undang-undang di sesuatu wilayah menetapkan had masa yang lebih pendek atau prosedur khusus, peraturan tersebut diguna pakai.** Sekiranya anda tidak berpuas hati dengan hasil respons, anda boleh mengadu kepada pengawal selia mengikut Seksyen 17.
+Saluran pelaksanaan: hantar e-mel kepada {{contact_email}}, atau melalui pintu masuk berkaitan dalam App "Saya → Tetapan → Perihal BOJI CLUB → Polisi Privasi". Bagi melindungi keselamatan akaun, kami mungkin perlu mengesahkan identiti anda (contohnya log masuk semula, pengesahan log masuk Apple atau nombor telefon). **Kami akan membalas dalam tempoh 15 hari bekerja selepas pengesahan; sekiranya undang-undang di sesuatu wilayah menetapkan had masa yang lebih pendek atau prosedur khusus, peraturan tersebut diguna pakai.** Sekiranya anda tidak berpuas hati dengan hasil respons, anda boleh mengadu kepada pengawal selia mengikut Seksyen 17.
 
 ## 14. Perlindungan Kanak-Kanak Bawah Umur
 

@@ -28,7 +28,7 @@ Bayaran balik dikendalikan oleh Apple: sila log masuk dengan Apple ID anda di re
 
 ### Bagaimana untuk memadamkan akaun dan memadamkan semua data?
 
-Di halaman "Saya" dalam aplikasi, pilih "Padamkan Akaun", atau hubungi khidmat pelanggan melalui {{contact_email}}. Pemadaman akan memadamkan profil akaun, rekod latihan/pemakanan/kesihatan, laporan AI serta media pada pelayan; sila rujuk "Penerangan Pemadaman Akaun dan Pemadaman Data". Nota: sebelum memadamkan akaun, sila batalkan langganan automatik terlebih dahulu dalam Pengurusan Langganan Apple ID.
+Di "Tetapan → Akaun" dalam aplikasi, pilih "Padamkan Akaun", atau hubungi khidmat pelanggan melalui {{contact_email}}. Pemadaman akan memadamkan profil akaun, rekod latihan/pemakanan/kesihatan, laporan AI serta media pada pelayan; sila rujuk "Penerangan Pemadaman Akaun dan Pemadaman Data". Nota: sebelum memadamkan akaun, sila batalkan langganan automatik terlebih dahulu dalam Pengurusan Langganan Apple ID.
 
 ### Peranti manakah yang disokong?
 

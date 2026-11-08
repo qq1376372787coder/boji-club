@@ -159,7 +159,7 @@ server {
 
 ## 五、App 内接入
 
-在 App 的「我的 → 协议与账号」中，把各协议入口指向（替换域名）：
+在 App 的「我的 → 设置 → 关于薄肌俱乐部」中，把各协议入口指向（替换域名）：
 
 ```
 https://bojiclub.fun/doc/terms?lang={lang}&theme={mode}

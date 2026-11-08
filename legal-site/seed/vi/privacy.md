@@ -190,7 +190,7 @@ Trong phạm vi pháp luật áp dụng cho phép, Bạn có các quyền sau đ
 6. **Yêu cầu giải thích và từ chối xử lý tự động**: Yêu cầu Chúng tôi giải thích quy tắc xử lý AI;
 7. **Khiếu nại và tố giác**: Khiếu nại với Chúng tôi, hoặc khiếu nại với cơ quan giám sát có thẩm quyền nơi Bạn sinh sống.
 
-Kênh thực hiện: Gửi email đến {{contact_email}}, hoặc qua mục liên quan "Tôi → Điều khoản và Tài khoản" trong ứng dụng. Để bảo vệ an toàn tài khoản, Chúng tôi có thể cần xác minh danh tính của Bạn (như đăng nhập lại, xác minh đăng nhập Apple hoặc số điện thoại). **Chúng tôi sẽ phản hồi trong vòng 15 ngày làm việc sau khi xác minh; nếu pháp luật từng khu vực quy định thời hạn ngắn hơn hoặc thủ tục đặc biệt, áp dụng theo quy định đó.** Nếu không hài lòng với kết quả phản hồi, Bạn có thể khiếu nại với cơ quan giám sát theo Mục 17.
+Kênh thực hiện: Gửi email đến {{contact_email}}, hoặc qua mục liên quan "Tôi → Cài đặt → Giới thiệu về BOJI CLUB → Chính sách quyền riêng tư" trong ứng dụng. Để bảo vệ an toàn tài khoản, Chúng tôi có thể cần xác minh danh tính của Bạn (như đăng nhập lại, xác minh đăng nhập Apple hoặc số điện thoại). **Chúng tôi sẽ phản hồi trong vòng 15 ngày làm việc sau khi xác minh; nếu pháp luật từng khu vực quy định thời hạn ngắn hơn hoặc thủ tục đặc biệt, áp dụng theo quy định đó.** Nếu không hài lòng với kết quả phản hồi, Bạn có thể khiếu nại với cơ quan giám sát theo Mục 17.
 
 ## 14. Bảo vệ người chưa thành niên
 

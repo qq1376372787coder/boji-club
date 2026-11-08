@@ -190,7 +190,7 @@ Sejauh diizinkan oleh hukum yang berlaku, Anda memiliki hak-hak berikut terhadap
 6. **Permintaan penjelasan dan penolakan pemrosesan otomatis**: meminta kami menjelaskan aturan pemrosesan AI;
 7. **Keluhan dan laporan**: mengajukan keluhan kepada kami, atau mengajukan keluhan kepada regulator yang berwenang di tempat Anda tinggal.
 
-Saluran pelaksanaan: kirim email ke {{contact_email}}, atau melalui pintu masuk terkait "Saya → Ketentuan dan Akun" di dalam aplikasi. Untuk melindungi keamanan akun, kami mungkin perlu memverifikasi identitas Anda (misalnya masuk ulang, verifikasi masuk Apple atau nomor telepon). **Kami akan merespons dalam 15 hari kerja setelah verifikasi; apabila hukum setempat mengatur batas waktu lebih singkat atau prosedur khusus, berlaku ketentuan tersebut.** Apabila Anda tidak puas dengan hasil respons, Anda dapat mengajukan keluhan kepada regulator sesuai Pasal 17.
+Saluran pelaksanaan: kirim email ke {{contact_email}}, atau melalui pintu masuk terkait "Saya → Pengaturan → Tentang BOJI CLUB → Kebijakan Privasi" di dalam aplikasi. Untuk melindungi keamanan akun, kami mungkin perlu memverifikasi identitas Anda (misalnya masuk ulang, verifikasi masuk Apple atau nomor telepon). **Kami akan merespons dalam 15 hari kerja setelah verifikasi; apabila hukum setempat mengatur batas waktu lebih singkat atau prosedur khusus, berlaku ketentuan tersebut.** Apabila Anda tidak puas dengan hasil respons, Anda dapat mengajukan keluhan kepada regulator sesuai Pasal 17.
 
 ## 14. Perlindungan Anak di Bawah Umur
 

@@ -28,7 +28,7 @@ Việc hoàn tiền do Apple xử lý: hãy đăng nhập Apple ID của Bạn t
 
 ### Làm thế nào để xóa tài khoản và toàn bộ dữ liệu?
 
-Trên trang "Cá nhân" trong ứng dụng, chọn "Xóa tài khoản", hoặc liên hệ bộ phận chăm sóc khách hàng qua {{contact_email}}. Việc xóa tài khoản sẽ xóa thông tin hồ sơ tài khoản, bản ghi tập luyện/dinh dưỡng/sức khỏe, báo cáo AI và tệp đa phương tiện trên máy chủ; xem chi tiết tại "Hướng dẫn Xóa tài khoản và Xóa dữ liệu". Lưu ý: trước khi xóa tài khoản, vui lòng hủy tự động gia hạn trong phần quản lý đăng ký của Apple ID.
+Trong "Cài đặt → Tài khoản" của ứng dụng, chọn "Xóa tài khoản", hoặc liên hệ bộ phận chăm sóc khách hàng qua {{contact_email}}. Việc xóa tài khoản sẽ xóa thông tin hồ sơ tài khoản, bản ghi tập luyện/dinh dưỡng/sức khỏe, báo cáo AI và tệp đa phương tiện trên máy chủ; xem chi tiết tại "Hướng dẫn Xóa tài khoản và Xóa dữ liệu". Lưu ý: trước khi xóa tài khoản, vui lòng hủy tự động gia hạn trong phần quản lý đăng ký của Apple ID.
 
 ### Hỗ trợ những thiết bị nào?
 

@@ -8,7 +8,7 @@ updated: 2026-10-27
 
 ## 1. Cara Menghapus Akun
 
-Anda dapat memilih "Hapus Akun" pada halaman "Saya" di dalam aplikasi, atau mengajukan permintaan penghapusan melalui {{contact_email}}.
+Anda dapat memilih "Hapus Akun" pada "Pengaturan → Akun" di dalam aplikasi, atau mengajukan permintaan penghapusan melalui {{contact_email}}.
 
 Untuk melindungi keamanan akun, kami mungkin meminta Anda menyelesaikan salah satu verifikasi berikut: masuk ke akun saat ini; verifikasi masuk Apple atau nomor telepon; memasukkan kata konfirmasi penghapusan yang jelas; atau verifikasi identitas melalui layanan pelanggan.
 

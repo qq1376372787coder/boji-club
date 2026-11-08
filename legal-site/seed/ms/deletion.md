@@ -8,7 +8,7 @@ updated: 2026-10-27
 
 ## 1. Cara Memadamkan Akaun
 
-Anda boleh memilih "Pemadaman Akaun" di halaman "Saya" dalam App, atau menghantar permohonan pemadaman melalui {{contact_email}}.
+Anda boleh memilih "Pemadaman Akaun" di "Tetapan → Akaun" dalam App, atau menghantar permohonan pemadaman melalui {{contact_email}}.
 
 Bagi melindungi keselamatan akaun, kami mungkin meminta anda menyelesaikan salah satu pengesahan berikut: log masuk ke akaun semasa; mengesahkan log masuk Apple atau nombor telefon; memasukkan perkataan pengesahan pemadaman yang jelas; atau pengesahan identiti melalui khidmat pelanggan.
 

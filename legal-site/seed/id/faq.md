@@ -28,7 +28,7 @@ Pengembalian dana diproses oleh Apple: silakan ajukan permohonan dengan masuk me
 
 ### Bagaimana cara menghapus akun dan seluruh data saya?
 
-Pilih "Hapus Akun" pada halaman "Saya" di dalam aplikasi, atau hubungi layanan pelanggan melalui {{contact_email}}. Penghapusan akan menghapus profil akun, catatan latihan/makanan/kesehatan, laporan AI, serta media di server; lihat Pernyataan Penghapusan Akun dan Penghapusan Data untuk detailnya. Catatan: sebelum menghapus akun, mohon batalkan terlebih dahulu perpanjangan otomatis pada pengelolaan langganan Apple ID.
+Pilih "Hapus Akun" pada "Pengaturan → Akun" di dalam aplikasi, atau hubungi layanan pelanggan melalui {{contact_email}}. Penghapusan akan menghapus profil akun, catatan latihan/makanan/kesehatan, laporan AI, serta media di server; lihat Pernyataan Penghapusan Akun dan Penghapusan Data untuk detailnya. Catatan: sebelum menghapus akun, mohon batalkan terlebih dahulu perpanjangan otomatis pada pengelolaan langganan Apple ID.
 
 ### Perangkat apa saja yang didukung?
 

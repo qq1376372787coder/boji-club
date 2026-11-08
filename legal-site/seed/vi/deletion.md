@@ -8,7 +8,7 @@ updated: 2026-10-27
 
 ## 1. Cách xóa tài khoản
 
-Bạn có thể chọn "Xóa tài khoản" trên trang "Tôi" trong ứng dụng, hoặc gửi yêu cầu xóa tài khoản qua {{contact_email}}.
+Bạn có thể chọn "Xóa tài khoản" trong "Cài đặt → Tài khoản" trong ứng dụng, hoặc gửi yêu cầu xóa tài khoản qua {{contact_email}}.
 
 Để bảo vệ an toàn tài khoản, Chúng tôi có thể yêu cầu Bạn hoàn thành một trong các xác minh sau: đăng nhập vào tài khoản hiện tại; xác minh đăng nhập Apple hoặc số điện thoại; nhập cụm từ xác nhận xóa rõ ràng; xác minh danh tính thông qua bộ phận chăm sóc khách hàng.
 

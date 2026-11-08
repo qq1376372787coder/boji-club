@@ -8,7 +8,7 @@ updated: 2026-10-27
 
 ## 1. How to Delete Your Account
 
-In the App, open "Me" and choose "Delete Account" or email {{contact_email}}.
+In the App, open "Settings → Account" and choose "Delete Account" or email {{contact_email}}.
 
 To protect account security we may ask you to complete one of the following: sign in to the current account; verify Apple sign-in or your phone number; enter an explicit deletion confirmation phrase; or verify identity through customer service.
 
