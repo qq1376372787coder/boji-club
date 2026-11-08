@@ -32,5 +32,6 @@
 ## 口径说明
 
 - **Debug 路线写死**：App 的测试钩子（`BOJI_PREVIEW_ACCOUNT`、`BOJI_UI_TEST_SEED`）都在 `#if DEBUG` 内，Release 包驱不动登录态，UI 用例无法运行。为不改动账号链路，基线与批次 2 后测统一用 Debug，报告标注口径。
+- **设备口径**：runner 没有 iPhone SE，兜底逻辑建的是 iPhone 16 Pro（iOS 26.2）。后续基线统一用同一台设备，保证一致性。
 - 这是**批次 0 完成后的管道验证快照**；正式基线按 Chief 定的时点取在**批次 1 收尾**（批次 2 整屏视频的对照组）。
-- 10-24 旧基线（`docs/native-ui-20261024/performance/`）同为 Debug 数据，按「同配置对比」铁律可作对照。
+- **10-24 旧基线不能作为对照**（`docs/native-ui-20261024/performance/`）：配置虽同为 Debug，但**设备不同**——旧基线是 iPhone SE (3rd generation) / iOS 26.5，本快照是 iPhone 16 Pro / iOS 26.2。跨设备对比同样无效（一致性铁律含设备），旧数据仅作历史背景，不进对比表。BUG-007 的历史 +47.2% 不可用本快照复算。
