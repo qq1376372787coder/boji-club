@@ -1,0 +1,148 @@
+name: iOS Visual Regression
+
+run-name: iOS Visual Regression ${{ inputs.build_id || github.ref_name }}
+
+# 视觉回归：在云端模拟器上跑 BojiClubUITests/VisualRegressionShots，
+# 把 xcresult 里的截图导出成 PNG 并上传制品，供用户 / 设计 / Chief 直接看界面。
+# 目的：发货前团队自己先看到界面，不再让用户当第一个看的人。
+#
+# 触发方式：push tag `ios-shots/<build-id>`，或手动 workflow_dispatch。
+on:
+  push:
+    tags:
+      - 'ios-shots/*'
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: 'Unique run identifier'
+        required: true
+        type: string
+      snapshot_ref:
+        description: 'Ref holding the working-tree snapshot to test (empty tests this branch)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  visual:
+    runs-on: macos-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Checkout working-tree snapshot
+        if: inputs.snapshot_ref != ''
+        env:
+          SNAPSHOT_REF: ${{ inputs.snapshot_ref }}
+        run: |
+          set -e
+          git fetch --depth=1 origin "+$SNAPSHOT_REF:refs/heads/snapshot"
+          git checkout --force snapshot
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Ensure iOS simulator runtime
+        run: |
+          set -e
+          if xcrun simctl list runtimes 2>/dev/null | grep -qi "iOS"; then
+            echo "已有 iOS runtime"; exit 0
+          fi
+          echo "::warning::runner 没有 iOS runtime，开始下载"
+          xcodebuild -downloadPlatform iOS -exportPath "$RUNNER_TEMP/ios-runtime" || true
+          sleep 20
+          if ! xcrun simctl list runtimes 2>/dev/null | grep -qi "iOS"; then
+            echo "::error::iOS 模拟器 runtime 不可用"; exit 1
+          fi
+
+      - name: Select simulator (iPhone 16 Pro)
+        id: sim
+        run: |
+          set -e
+          DEVICES_JSON="$(xcrun simctl list devices available --json)"
+          UDID=$(printf '%s' "$DEVICES_JSON" | jq -r '
+            .devices[] | to_entries[] | .value[]
+            | select(.name == "VisualTest-iPhone" or (.name | test("iPhone 16 Pro"))) | .udid' | head -1)
+          if [ -z "$UDID" ]; then
+            UDID=$(printf '%s' "$DEVICES_JSON" | jq -r '
+              .devices[] | to_entries[] | .value[]
+              | select(.name | test("iPhone")) | .udid' | head -1)
+          fi
+          if [ -z "$UDID" ]; then
+            RUNTIME_ID=$(xcrun simctl list runtimes --json | jq -r '
+              .runtimes[] | select(.identifier | test("iOS")) | .identifier' | head -1)
+            DEVICE_TYPE=$(xcrun simctl list devicetypes --json | jq -r '
+              .devicetypes[] | select(.name == "iPhone 16 Pro") | .identifier' | head -1)
+            if [ -n "$RUNTIME_ID" ] && [ -n "$DEVICE_TYPE" ]; then
+              UDID=$(xcrun simctl create "VisualTest-iPhone" "$DEVICE_TYPE" "$RUNTIME_ID" 2>/dev/null || true)
+            fi
+          fi
+          if [ -z "$UDID" ]; then echo "::error::没有可用的 iPhone 模拟器"; exit 1; fi
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          echo "使用模拟器: $UDID"
+          xcrun simctl boot "$UDID" 2>/dev/null || true
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Run visual regression shots
+        id: tests
+        env:
+          UDID: ${{ steps.sim.outputs.udid }}
+        run: |
+          # 管道吞退出码会让失败假绿，必须加 pipefail。
+          set -o pipefail
+          mkdir -p test-results
+          echo "=== 构建测试目标 ==="
+          xcodebuild build-for-testing \
+            -project BojiClub.xcodeproj \
+            -scheme BojiClub \
+            -destination "platform=iOS Simulator,id=$UDID" \
+            -only-testing:BojiClubUITests/VisualRegressionShots \
+            -quiet 2>&1 | tee test-results/build-for-testing.log || {
+              echo "::error::build-for-testing 失败，见日志尾部"
+              tail -40 test-results/build-for-testing.log >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            }
+
+          echo "=== 运行视觉用例 ==="
+          xcodebuild test-without-building \
+            -project BojiClub.xcodeproj \
+            -scheme BojiClub \
+            -destination "platform=iOS Simulator,id=$UDID" \
+            -only-testing:BojiClubUITests/VisualRegressionShots \
+            -resultBundlePath test-results/visual.xcresult \
+            2>&1 | tee test-results/test-run.log || {
+              echo "::error::视觉用例执行失败，见日志尾部"
+              tail -60 test-results/test-run.log >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            }
+
+      - name: Export screenshots as PNG
+        if: always()
+        run: |
+          set -e
+          mkdir -p test-results/shots
+          if [ -d test-results/visual.xcresult ]; then
+            xcrun xcresulttool export attachments \
+              --path test-results/visual.xcresult \
+              --output-path test-results/shots 2>&1 || true
+            COUNT=$(find test-results/shots -type f \( -name '*.png' -o -name '*.jpg' \) | wc -l | tr -d ' ')
+            echo "已导出截图: $COUNT 张"
+            echo "截图清单" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            ls -1 test-results/shots >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "没有 xcresult 产物，跳过导出"
+          fi
+
+      - name: Upload visual regression shots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-regression-shots
+          path: test-results/shots/
+          retention-days: 30
