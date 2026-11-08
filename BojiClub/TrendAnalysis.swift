@@ -185,10 +185,14 @@ enum ClubTrendRules {
         let calendar = ClubDates.calendar
         let end = calendar.startOfDay(for: endDate)
         guard let windowStart = calendar.date(byAdding: .day, value: -(ClubTrendThresholds.bodyPlateauMinSpanDays * 2 - 1), to: end) else { return nil }
-        let points = state.days.keys.sorted().compactMap { key -> (Date, Double)? in
+        let points = state.days.keys.sorted().flatMap { key -> [(Date, Double)] in
             guard let date = ClubDates.date(fromKey: key), date >= windowStart, date <= end,
-                  let kg = state.days[key]?.bodyWeight?.measuredKilograms else { return nil }
-            return (date, kg)
+                  let day = state.days[key] else { return [] }
+            // 一天记了两次就算两次测量，平台期判断不再只看单条
+            return BodyWeightReading.rows(of: day).compactMap { row in
+                guard let kg = row.measuredKilograms else { return nil }
+                return (row.recordedAt ?? date, kg)
+            }
         }
         guard points.count >= ClubTrendThresholds.bodyPlateauMinSamples else { return nil }
         let firstPoint = points[0].0
@@ -262,8 +266,9 @@ enum PhaseReportRules {
                 completed += 1
                 confirmedSets += TrainingEvidence.confirmedSetCount(day: day)
             }
-            if let kg = day.bodyWeight?.measuredKilograms {
-                weightPoints.append((key, kg))
+            // 当日多次称重全部计入（口径表 §八第 11 条）
+            for row in BodyWeightReading.rows(of: day) {
+                if let kg = row.measuredKilograms { weightPoints.append((key, kg)) }
             }
         }
         guard covered >= 7 else {
@@ -473,8 +478,8 @@ enum ReviewTrendRules {
                 bucket.protein += day.protein
                 bucket.nutritionDays += 1
             }
-            if let kg = day.bodyWeight?.measuredKilograms {
-                bucket.weight += kg; bucket.weightDays += 1
+            for row in BodyWeightReading.rows(of: day) {
+                if let kg = row.measuredKilograms { bucket.weight += kg; bucket.weightDays += 1 }
             }
             let planned = day.planCycle.map { $0.plannedDates.contains(key) } ?? !day.exercises.isEmpty
             if planned { bucket.plannedSets += Double(day.totalSets) }

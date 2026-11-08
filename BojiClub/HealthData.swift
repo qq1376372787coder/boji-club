@@ -282,14 +282,43 @@ final class HealthDataService: ObservableObject {
             do { weightCache = try JSONDecoder().decode(HealthWeightCache.self, from: Data(contentsOf: weightFile)) } catch { weightCacheAvailable = false; message = "体重同步缓存无法读取，原文件保留。" }
         }
         writtenWorkoutSessionIDs = []; busy = false; preferredSource = ""; message = nil; storageAvailable = true
-        guard let file, FileManager.default.fileExists(atPath: file.path) else { return }
-        do {
-            let saved = try JSONDecoder().decode(HealthLocalState.self, from: Data(contentsOf: file))
-            enabled = saved.enabled; writeWorkoutsEnabled = saved.writeWorkoutsEnabled
-            writtenWorkoutSessionIDs = Set(saved.writtenWorkoutSessionIDs)
-            preferredSource = saved.preferredSource; days = saved.days; imported = saved.imported
-        } catch { storageAvailable = false; message = "本机健康记录暂时无法读取，请解锁设备后重启 App。" }
+        if let file, FileManager.default.fileExists(atPath: file.path) {
+            do {
+                let saved = try JSONDecoder().decode(HealthLocalState.self, from: Data(contentsOf: file))
+                enabled = saved.enabled; writeWorkoutsEnabled = saved.writeWorkoutsEnabled
+                writtenWorkoutSessionIDs = Set(saved.writtenWorkoutSessionIDs)
+                preferredSource = saved.preferredSource; days = saved.days; imported = saved.imported
+            } catch { storageAvailable = false; message = "本机健康记录暂时无法读取，请解锁设备后重启 App。" }
+        }
+        #if DEBUG
+        seedUITestHealthIfRequested()
+        #endif
     }
+
+    #if DEBUG
+    /// 截图/巡检专用（DEBUG + 预览账号 + BOJI_UI_TEST_SEED=1）：
+    /// 默认注入一组能算出状态分的健康值（睡眠 7.6 小时 / 静息心率 58 / 步数 6420），
+    /// `BOJI_UI_TEST_HEALTH=empty` 全空（R02 首页空态、R10 身体页无数据），
+    /// `BOJI_UI_TEST_HEALTH=heart-only` 只给心率（R27 缺一项态：睡眠列应显示「未同步」）。
+    func seedUITestHealthIfRequested() {
+        guard accountID == AccountService.previewUserID,
+              ProcessInfo.processInfo.environment["BOJI_UI_TEST_SEED"] == "1" else { return }
+        let mode = ProcessInfo.processInfo.environment["BOJI_UI_TEST_HEALTH"] ?? "sample"
+        let key = ClubDates.key(Date())
+        let source = HealthSource(id: "ui-test", name: "巡检数据")
+        if mode == "empty" { days = [:]; return }
+        var day = HealthDay(date: key, timeZone: TimeZone.current.identifier, updatedAt: Date())
+        if mode == "heart-only" {
+            day.restingHeartRate = HealthMetric(value: 58, source: source)
+        } else {
+            day.nightSleep = HealthMetric(value: 456, source: source)
+            day.restingHeartRate = HealthMetric(value: 58, source: source)
+            day.steps = HealthMetric(value: 6420, source: source)
+        }
+        days = [key: day]
+        enabled = true
+    }
+    #endif
     @discardableResult
     func eraseAccountData(_ id: Int) -> Bool {
         if accountID == id { cancelQueries(); generation = UUID() }

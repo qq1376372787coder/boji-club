@@ -279,6 +279,21 @@ struct BodyWeightPoint: Identifiable {
     var id: String { measurementID ?? ClubDates.key(date) }
 }
 
+enum BodyWeightReading {
+    /// 当日全部有效称重（口径表 §八第 11 条：bodyMeasurements 多条优先，回落单条 bodyWeight，剔除已删除墓碑）。
+    /// 趋势/阶段报告/平台期判断三处必须走这里，否则「同一天记了两次体重」会被漏掉一条。
+    static func rows(of day: DayLog) -> [BodyWeightEntry] {
+        let base = (day.bodyMeasurements?.isEmpty == false) ? (day.bodyMeasurements ?? []) : [day.bodyWeight].compactMap { $0 }
+        let deleted = Set((day.deletedBodyMeasurementIDs ?? []).map { $0.lowercased() })
+        return base
+            .filter { row in !(row.id.map { deleted.contains($0.uuidString.lowercased()) } ?? false) }
+            .filter { $0.measuredKilograms != nil }
+            .sorted { ($0.recordedAt ?? $0.updatedAt) < ($1.recordedAt ?? $1.updatedAt) }
+    }
+    /// 当天最后一次有效称重（列表/日报等「今天多少公斤」的唯一读法）。
+    static func latest(_ day: DayLog) -> Double? { rows(of: day).last?.measuredKilograms }
+}
+
 enum BodyWeightHistory {
     static func points(days: [String: DayLog], through date: Date, limit: Int = 30) -> [BodyWeightPoint] {
         let end = ClubDates.key(date)
@@ -713,10 +728,14 @@ enum TrainingRecordText {
     }
     static func measurements(_ log: DayLog) -> [String] {
         var values: [String]=[]
-        if log.volume > 0 { values.append("训练量 \(log.volume.formatted(.number.precision(.fractionLength(0)))) kg·次") }
-        if log.timedSeconds > 0 {
-            let minutes=log.timedSeconds/60;let seconds=log.timedSeconds%60
-            let duration=minutes == 0 ? "\(seconds) 秒" : seconds == 0 ? "\(minutes) 分钟" : "\(minutes) 分 \(seconds) 秒"
+        // 口径：用户可见的训练量只认已保存场次的完成组（confirmedTraining.volume），
+        // 未保存的进行中场次不算进「这一天练了多少」。
+        let confirmedVolume = log.confirmedTraining.volume
+        if confirmedVolume > 0 { values.append("训练量 \(confirmedVolume.formatted(.number.precision(.fractionLength(0)))) kg·次") }
+        if log.confirmedTraining.timedSeconds > 0 {
+            let seconds = log.confirmedTraining.timedSeconds
+            let minutes=seconds/60;let rest=seconds%60
+            let duration=minutes == 0 ? "\(rest) 秒" : rest == 0 ? "\(minutes) 分钟" : "\(minutes) 分 \(rest) 秒"
             values.append("计时动作合计 \(duration)")
         }
         if values.isEmpty && log.completedSets > 0 { values.append("按次训练，以完成组数统计") }

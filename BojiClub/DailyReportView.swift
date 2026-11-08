@@ -195,15 +195,12 @@ struct DailyReportView: View {
             }
 
             if let t = metrics.training, (t.completed_sets ?? 0) > 0 {
-                HStack(spacing: BojiLayout.rowGap) {
-                    metricItem(title: "完成动作", value: "\(t.completed_exercises ?? 0)", unit: "项")
-                    metricItem(title: "完成组数", value: "\(t.completed_sets ?? 0)", unit: "组")
-                    if let mins = t.duration_minutes, mins > 0 {
-                        metricItem(title: "训练时长", value: "\(mins)", unit: "分钟")
-                    } else {
-                        metricItem(title: "训练场次", value: "\(t.sessions ?? 1)", unit: "次")
-                    }
-                }
+                // 指标走唯一组件（§2.6）：数字 T2 28 + 单位/标签 T5 11，跨页与首页一致
+                MetricRowGroup(metrics: [
+                    MetricValue(value: t.completed_exercises.map(String.init), unit: "项", label: "完成动作"),
+                    MetricValue(value: t.completed_sets.map(String.init), unit: "组", label: "完成组数"),
+                    t.duration_minutes.flatMap { $0 > 0 ? String($0) : nil }.map { MetricValue(value: $0, unit: "分钟", label: "训练时长") } ?? MetricValue(value: "\(t.sessions ?? 1)", unit: "次", label: "训练场次")
+                ])
             } else {
                 HStack {
                     Image(systemName: "bed.double")
@@ -238,12 +235,12 @@ struct DailyReportView: View {
             }
 
             if let n = metrics.nutrition, let cal = n.calories {
-                HStack(spacing: BojiLayout.rowGap) {
-                    metricItem(title: "摄入热量", value: "\(Int(cal))", unit: "kcal")
-                    metricItem(title: "蛋白质", value: String(format: "%.0f", n.protein ?? 0), unit: "g")
-                    metricItem(title: "碳水", value: String(format: "%.0f", n.carbs ?? 0), unit: "g")
-                    metricItem(title: "脂肪", value: String(format: "%.0f", n.fat ?? 0), unit: "g")
-                }
+                MetricRowGroup(metrics: [
+                    MetricValue(value: "\(Int(cal))", unit: "kcal", label: "摄入热量"),
+                    MetricValue(value: (n.protein ?? 0) > 0 ? String(format: "%.0f", n.protein ?? 0) : nil, unit: "g", label: "蛋白质"),
+                    MetricValue(value: (n.carbs ?? 0) > 0 ? String(format: "%.0f", n.carbs ?? 0) : nil, unit: "g", label: "碳水"),
+                    MetricValue(value: (n.fat ?? 0) > 0 ? String(format: "%.0f", n.fat ?? 0) : nil, unit: "g", label: "脂肪")
+                ])
             } else {
                 HStack {
                     Image(systemName: "takeoutbag.and.cup.and.straw")
@@ -268,41 +265,15 @@ struct DailyReportView: View {
                 Spacer()
             }
 
-            HStack(spacing: BojiLayout.rowGap) {
-                if let w = metrics.body?.weight_kg {
-                    metricItem(title: "今日体重", value: String(format: "%.1f", w), unit: "kg")
-                } else {
-                    metricItem(title: "今日体重", value: "—", unit: "未记录")
-                }
-
-                if let steps = metrics.activity?.steps, steps > 0 {
-                    metricItem(title: "日常步数", value: "\(Int(steps))", unit: "步")
-                }
-
-                if let cal = metrics.activity?.active_energy_kcal, cal > 0 {
-                    metricItem(title: "活动消耗", value: "\(Int(cal))", unit: "kcal")
-                }
-            }
+            // 身体与活动：走唯一指标组件，缺项整块不渲染（不再出现「— / 未记录」占位）
+            MetricRowGroup(metrics: [
+                MetricValue(value: metrics.body?.weight_kg.map { String(format: "%.1f", $0) }, unit: "kg", label: "今日体重"),
+                MetricValue(value: (metrics.activity?.steps ?? 0) > 0 ? "\(Int(metrics.activity?.steps ?? 0))" : nil, unit: "步", label: "日常步数"),
+                MetricValue(value: (metrics.activity?.active_energy_kcal ?? 0) > 0 ? "\(Int(metrics.activity?.active_energy_kcal ?? 0))" : nil, unit: "kcal", label: "活动消耗")
+            ])
         }
         .padding(BojiLayout.rowGap)
         .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-    }
-
-    private func metricItem(title: String, value: String, unit: String) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .bojiType(.caption)
-                .foregroundStyle(BojiColor.textTertiary)
-            HStack(alignment: .firstTextBaseline, spacing: 0) {
-                Text(value)
-                    .bojiType(.body)
-                    .foregroundStyle(BojiColor.textPrimary)
-                Text(unit)
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textSecondary)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - AI 深度点评

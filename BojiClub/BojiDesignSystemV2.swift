@@ -247,8 +247,91 @@ struct BojiEditorialNumber: View {
     }
 }
 
-// MARK: - 1.1 旧角色 → 新角色 迁移表（供 CI / codemod 使用）
+// MARK: - 唯一指标组件 MetricValue（全局组件规格体系 §2.6：跨页同名指标只许走这里）
+//
+// 数字 T2 28 / semibold / 等宽 / 字距 -1；单位与标签 T5 11；发丝线 0.5pt。
+// 空值（nil 或空串）整块不渲染——「0」「—」「未记录」不再上屏。
+// 页面层禁止再用 .bojiType(.body) 之类自拼指标数字（跨页字号散掉的根因）。
 
+struct MetricValue: View {
+    /// 数值文本；nil 或空串时整块不渲染。
+    let value: String?
+    var unit: String? = nil
+    let label: String
+    var tint: Color = BojiColor.textPrimary
+
+    var body: some View {
+        if let value, !value.isEmpty {
+            VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                Text(label)
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+                HStack(alignment: .firstTextBaseline, spacing: 2) {
+                    Text(value)
+                        .bojiType(.title, monospacedDigits: true)
+                        .fontWeight(.semibold)
+                        .kerning(-1)
+                        .foregroundStyle(tint)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                    if let unit, !unit.isEmpty {
+                        Text(unit)
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.textTertiary)
+                    }
+                }
+                .padding(.top, BojiLayout.tight)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(label) \(value) \(unit ?? "")")
+        }
+    }
+
+    /// 供分组容器判空：空值不进组，避免留白格。
+    var hasValue: Bool { !(value ?? "").isEmpty }
+}
+
+/// 横排一组指标（§2.6 横排式）：外层上下各一条发丝线，块间一条竖发丝线——不叠双线。
+struct MetricRowGroup: View {
+    let metrics: [MetricValue]
+    var body: some View {
+        let shown = metrics.filter(\.hasValue)
+        if !shown.isEmpty {
+            HStack(spacing: 0) {
+                ForEach(Array(shown.enumerated()), id: \.offset) { index, metric in
+                    metric
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 13)
+                        .padding(.leading, index == 0 ? 0 : 14)
+                        .overlay(alignment: .leading) {
+                            if index > 0 {
+                                Rectangle().fill(BojiColor.divider).frame(width: BojiLayout.hairline)
+                            }
+                        }
+                }
+            }
+            .overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+            .overlay(alignment: .bottom) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+            .accessibilityElement(children: .contain)
+        }
+    }
+}
+
+extension View {
+    /// 单列指标行（§2.6 单列式）：本块下一条发丝线；整列顶部再补一条 `.metricColumnTopRule()`。
+    func metricColumnItem() -> some View {
+        padding(.vertical, 13)
+            .overlay(alignment: .bottom) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+    }
+
+    /// 单列指标整列顶部发丝线。
+    func metricColumnTopRule() -> some View {
+        overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+    }
+}
+
+// MARK: - 1.1 旧角色 → 新角色 迁移表（供 CI / codemod 使用）
 extension BojiTypeRole {
     /// 旧 BojiFontRole 的机械映射。
     static func migrated(from old: String) -> BojiTypeRole {

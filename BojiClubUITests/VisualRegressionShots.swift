@@ -58,17 +58,19 @@ final class VisualRegressionShots: XCTestCase {
         let primary: String?
         /// 本屏唯一主操作的无障碍标识（比文案稳，页面层登记过的才填）
         let primaryID: String?
-        /// 额外操作（唤起键盘等）
+        /// 健康注入模式（BOJI_UI_TEST_HEALTH）：nil = 默认样例；"empty" 全空；"heart-only" 只有心率
+        let health: String?
+        /// 额外操作（唤起键盘、打开状态分分项卡等）
         let action: Action?
 
-        enum Action: Equatable { case focusTextField }
+        enum Action: Equatable { case focusTextField, openScoreSheet }
 
         init(code: String, page: String, state: String, route: String, seed: String = "1",
              only: Set<ShotSet>? = nil, scroll: Int = 0, primary: String? = nil, primaryID: String? = nil,
-             action: Action? = nil) {
+             health: String? = nil, action: Action? = nil) {
             self.code = code; self.page = page; self.state = state; self.route = route
             self.seed = seed; self.only = only; self.scroll = scroll; self.primary = primary
-            self.primaryID = primaryID; self.action = action
+            self.primaryID = primaryID; self.health = health; self.action = action
         }
     }
 
@@ -108,7 +110,10 @@ final class VisualRegressionShots: XCTestCase {
             // —— 状态补充：只跑亮色套（清单 §二 末尾）——
             Screen(code: "R24", page: "登录", state: "表单", route: "account-entry", only: [.light]),
             Screen(code: "R25", page: "错误", state: "样例", route: "meal-batch", only: [.light]),
-            Screen(code: "R26", page: "弹层", state: "sheet", route: "plan-move", only: [.light])
+            Screen(code: "R26", page: "弹层", state: "sheet", route: "plan-move", only: [.light]),
+            // —— R27 状态分分项卡（测试验收 补拍，亮色两张）：三行两列 + 缺项「未同步」——
+            Screen(code: "R27", page: "状态分", state: "有数据", route: "home", action: .openScoreSheet, only: [.light]),
+            Screen(code: "R27", page: "状态分", state: "缺一项", route: "home", health: "heart-only", action: .openScoreSheet, only: [.light])
         ]
     }
 
@@ -158,6 +163,7 @@ final class VisualRegressionShots: XCTestCase {
             "BOJI_UI_TEST_SEED": screen.seed
         ]
         if !screen.route.isEmpty { app.launchEnvironment["BOJI_AUDIT_SCREEN"] = screen.route }
+        if let health = screen.health { app.launchEnvironment["BOJI_UI_TEST_HEALTH"] = health }
         app.launch()
 
         // 等首屏稳定（按 model）
@@ -166,6 +172,10 @@ final class VisualRegressionShots: XCTestCase {
         if screen.action == .focusTextField {
             let field = app.textFields.firstMatch
             if field.waitForExistence(timeout: 8) { field.tap() }
+        }
+        if screen.action == .openScoreSheet {
+            let opener = app.buttons.matching(identifier: "v2-home-score-detail").firstMatch
+            if opener.waitForExistence(timeout: 8) { opener.tap() }
         }
 
         for _ in 0..<screen.scroll {

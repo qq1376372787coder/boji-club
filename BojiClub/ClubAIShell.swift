@@ -1273,39 +1273,10 @@ struct ClubAIWorkspaceIdleView: View {
                         .stroke(BojiColor.divider, lineWidth: BojiLayout.hairline)
                 }
             } else {
-                HStack(spacing: 0) {
-                    ForEach(Array(metrics.enumerated()), id: \.offset) { index, metric in
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text(metric.label)
-                                .bojiType(.caption)
-                                .foregroundStyle(BojiColor.textTertiary)
-                            HStack(alignment: .firstTextBaseline, spacing: 2) {
-                                Text(metric.value)
-                                    .bojiType(.title, monospacedDigits: true)
-                                    .foregroundStyle(BojiColor.textPrimary)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.75)
-                                if let unit = metric.unit {
-                                    Text(unit)
-                                        .bojiType(.caption)
-                                        .foregroundStyle(BojiColor.textTertiary)
-                                }
-                            }
-                            .padding(.top, BojiLayout.tight)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 13)
-                        .padding(.leading, index == 0 ? 0 : 14)
-                        .overlay(alignment: .leading) {
-                            if index > 0 {
-                                Rectangle().fill(BojiColor.divider).frame(width: BojiLayout.hairline)
-                            }
-                        }
-                        .accessibilityLabel("\(metric.label) \(metric.value)\(metric.unit ?? "")")
-                    }
-                }
-                .overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
-                .overlay(alignment: .bottom) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
+                // 细线数据条走唯一指标组件（规格表 §2.6），跨页同名指标同一档同一字重
+                MetricRowGroup(metrics: metrics.map {
+                    MetricValue(value: $0.value, unit: $0.unit, label: $0.label)
+                })
             }
         }
         .accessibilityElement(children: .contain)
@@ -1417,6 +1388,9 @@ struct ClubAIWorkspaceIdleView: View {
         let sleep: Int
         let heart: Int
         let training: Int
+        /// 缺数据的那项分值写「未同步」，不写 `0 / 50`（口径表 §5.3：0 分会被读成"我这项很差"）。
+        let missingSleep: Bool
+        let missingHeart: Bool
     }
 
     /// 关键项（睡眠与心率）都没同步到时返回 nil，界面不给分，绝不编造分数。
@@ -1437,11 +1411,14 @@ struct ClubAIWorkspaceIdleView: View {
             return day.trainingLog.hasConfirmedTraining
         }
         let trainingPoints: Double = trainedRecently ? 20 : 6
-        let total = Int(min(100, max(0, sleepPoints + heartPoints + trainingPoints)))
-        return ScoreBreakdown(total: total,
-                              sleep: Int(sleepPoints.rounded()),
-                              heart: Int(heartPoints.rounded()),
-                              training: Int(trainingPoints))
+        // 一票否决项：总分必须由「已取整的分项」相加得出，三项与巨号同源，用户自己加永远相等。
+        let sleepInt = Int(sleepPoints.rounded())
+        let heartInt = Int(heartPoints.rounded())
+        let trainingInt = Int(trainingPoints)
+        let total = min(100, max(0, sleepInt + heartInt + trainingInt))
+        return ScoreBreakdown(total: total, sleep: sleepInt, heart: heartInt, training: trainingInt,
+                              missingSleep: (sleepMinutes ?? 0) <= 0,
+                              missingHeart: (restingHeartRate ?? 0) <= 0)
     }
 
     private func readinessScore(sleepMinutes: Double?, restingHeartRate: Double?) -> Int? {
@@ -1464,12 +1441,12 @@ struct ClubAIWorkspaceIdleView: View {
                         .foregroundStyle(BojiColor.textTertiary)
                 }
                 VStack(spacing: 0) {
-                    breakdownRow("睡够 7.5 小时", b.sleep, 50)
-                    breakdownRow("静息心率", b.heart, 30)
-                    breakdownRow("近三天练过", b.training, 20)
+                    breakdownRow(label: "睡眠", anchor: "睡够 7.5 小时记 50 分，按实际时长折算", value: b.sleep, of: 50, unsynced: b.missingSleep)
+                    breakdownRow(label: "静息心率", anchor: "65 次/分记 30 分，越高越低，最低也记 8 分", value: b.heart, of: 30, unsynced: b.missingHeart)
+                    breakdownRow(label: "近三天练过", anchor: "练过记 20 分，没练过也记 6 分", value: b.training, of: 20)
                 }
                 .overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
-                Text("就这三项相加。没同步到的那项按 0 分算，连上 Apple 健康就能拿满。")
+                Text("就这三项相加。没同步到的那项按 0 分算，其余照常算。")
                     .bojiType(.body15)
                     .foregroundStyle(BojiColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -1489,19 +1466,35 @@ struct ClubAIWorkspaceIdleView: View {
         .accessibilityIdentifier("v2-score-breakdown")
     }
 
-    private func breakdownRow(_ label: String, _ value: Int, _ of: Int) -> some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(label)
-                .bojiType(.data)
-                .foregroundStyle(BojiColor.textPrimary)
+    /// 分项行（施工卡 §〇之三定稿）：标签 T3 17 + 锚点 T5 11 + 右侧分值；
+    /// 缺数据的那项分值写「未同步」，绝不出现 `0 / 50`。
+    private func breakdownRow(label: String, anchor: String, value: Int, of: Int, unsynced: Bool = false) -> some View {
+        HStack(alignment: .center, spacing: BojiLayout.inline) {
+            VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                Text(label)
+                    .bojiType(.data)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(BojiColor.textPrimary)
+                Text(anchor)
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             Spacer(minLength: BojiLayout.inline)
-            Text("\(value)/\(of)")
-                .bojiType(.title, monospacedDigits: true)
-                .foregroundStyle(BojiColor.textPrimary)
+            if unsynced {
+                Text("未同步")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+            } else {
+                Text("\(value)/\(of)")
+                    .bojiType(.title, monospacedDigits: true)
+                    .foregroundStyle(BojiColor.textPrimary)
+            }
         }
         .padding(.vertical, 13)
         .overlay(alignment: .bottom) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(unsynced ? "\(label) 未同步。\(anchor)" : "\(label) \(value) 分，满分 \(of)。\(anchor)")
     }
 
     // MARK: - 今天安排（施工卡 §三：编号 + 名称 + 组次右对齐 + 发丝线；不套卡，屏内主操作只留底部那一个）

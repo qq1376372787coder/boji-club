@@ -516,7 +516,46 @@ struct WeeklyReportView: View {
     }
 
     // MARK: - 辅助计算
+    // MARK: - 辅助计算
     private func computeDeterministicWeeklyMetrics() -> AIWeeklyMetrics {
+        // 周报唯一算法（Chief 硬要求）：参考实现一律不算过，视图只调 WeeklyMetricsCalculator。
+        guard let start = ClubDates.date(fromKey: currentCycle.start),
+              let end = ClubDates.date(fromKey: currentCycle.end) else { return AIWeeklyMetrics() }
+        return WeeklyMetricsCalculator.compute(state: store.state, start: start, end: end)
+    }
+
+    private func formatChangePct(_ val: Double?) -> String {
+        guard let val else { return "较上周稳定" }
+        let prefix = val > 0 ? "+" : ""
+        return "较上周 \(prefix)\(String(format: "%.1f", val))%"
+    }
+
+    private func formatWeightTrend(_ trend: String?) -> String {
+        switch trend {
+        case "increasing": return "持续上升"
+        case "decreasing": return "稳步下降"
+        case "stable": return "基本保持"
+        case "fluctuating": return "正常波动"
+        default: return "数据不足"
+        }
+    }
+
+    private func formatWeightChange(_ change: Double?) -> String {
+        guard let change else { return "样本少于2次" }
+        let prefix = change > 0 ? "+" : ""
+        return "净变 \(prefix)\(String(format: "%.1f", change)) kg"
+    }
+}
+
+
+/// 周报指标唯一算法（口径表 §八 / 「数字统一」一票否决项）：纯函数、只读出层、不依赖环境对象。
+/// 单测（CrossPageParityTests）与视图共用这一条路；视图里不许再出现同规则私有实现。
+enum WeeklyMetricsCalculator {
+    static func compute(state: SavedState, start: Date, end: Date) -> AIWeeklyMetrics {
+        compute(days: state.days, start: start, end: end)
+    }
+
+    static func compute(days: [String: DayLog], start: Date, end: Date) -> AIWeeklyMetrics {
         var trainingDays = 0
         var totalSets = 0
         var totalVolume = 0.0
@@ -528,15 +567,10 @@ struct WeeklyReportView: View {
         var totalProt = 0.0
         var weights: [(String, Double)] = []
 
-        guard let start = ClubDates.date(fromKey: currentCycle.start),
-              let end = ClubDates.date(fromKey: currentCycle.end) else {
-            return AIWeeklyMetrics()
-        }
-
         var cur = start
         while cur <= end {
             let key = ClubDates.key(cur)
-            let log = store.log(for: cur)
+            let log = days[key] ?? DayLog()
             let confirmed = log.confirmedTraining
             if confirmed.hasTraining {
                 trainingDays += 1
@@ -554,8 +588,9 @@ struct WeeklyReportView: View {
             }
             if !log.knownMeals.isEmpty { daysWithKnownMeals += 1 }
 
-            if let w = log.bodyWeight?.kilograms, w > 0 {
-                weights.append((key, w))
+            // 周报体重样本走唯一读法：当日多条有效测量都计入，非法值（500kg）不进
+            for row in BodyWeightReading.rows(of: log) {
+                if let w = row.measuredKilograms, w > 0 { weights.append((key, w)) }
             }
 
             guard let next = ClubDates.calendar.date(byAdding: .day, value: 1, to: cur) else { break }
@@ -601,27 +636,5 @@ struct WeeklyReportView: View {
             ),
             is_sufficient_for_analysis: trainingDays >= 1 || daysWithMeals >= 2 || weights.count >= 2
         )
-    }
-
-    private func formatChangePct(_ val: Double?) -> String {
-        guard let val else { return "较上周稳定" }
-        let prefix = val > 0 ? "+" : ""
-        return "较上周 \(prefix)\(String(format: "%.1f", val))%"
-    }
-
-    private func formatWeightTrend(_ trend: String?) -> String {
-        switch trend {
-        case "increasing": return "持续上升"
-        case "decreasing": return "稳步下降"
-        case "stable": return "基本保持"
-        case "fluctuating": return "正常波动"
-        default: return "数据不足"
-        }
-    }
-
-    private func formatWeightChange(_ change: Double?) -> String {
-        guard let change else { return "样本少于2次" }
-        let prefix = change > 0 ? "+" : ""
-        return "净变 \(prefix)\(String(format: "%.1f", change)) kg"
     }
 }

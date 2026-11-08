@@ -326,7 +326,9 @@ struct DayLog: Codable {
     }
     var hasConfirmedTraining: Bool { confirmedTraining.hasTraining }
     var confirmedCompletedSets: Int { confirmedTraining.completedSets }
-    /// 训练量唯一口径：只算记完的组（validCompletion），与 confirmedTraining.volume 一致。
+    /// 训练量唯一口径：只算记完的组（validCompletion）。
+    /// 「记完」= validCompletion；场次未保存的历史数据不重复计入（保存的场次已在其 exercises 内）。
+    /// 可见串一律用 confirmedTraining.volume（只认已保存场次），本属性仅供计划预览等未保存场景。
     var volume: Double { exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0) { $0 + $1.volume } }
     var completedSets: Int { exercises.flatMap(\.sets).filter(\.validCompletion).count }
     var totalSets: Int { exercises.reduce(0) { $0 + $1.sets.count } }
@@ -364,9 +366,10 @@ struct DayLog: Codable {
         )
 
         let bodyMetrics = AIDailyBodyMetrics(
-            weight_kg: bodyWeight?.kilograms,
-            body_fat_pct: bodyWeight?.bodyFatPercentage,
-            waist_cm: bodyWeight?.waistCircumferenceCM
+            // 口径：只报有效的实测体重（与记录页一致），非法值（如 500kg）不给日报当数
+            weight_kg: bodyWeight?.measuredKilograms,
+            body_fat_pct: bodyWeight?.isValid == true ? bodyWeight?.bodyFatPercentage : nil,
+            waist_cm: bodyWeight?.isValid == true ? bodyWeight?.waistCircumferenceCM : nil
         )
 
         let activityMetrics = AIDailyActivityMetrics(
