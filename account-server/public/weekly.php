@@ -188,7 +188,7 @@ if($method==='GET' && $path==='/me/tasks') {
 
 if ($path === '/me/ai/jobs' || preg_match('#^/me/ai/jobs/([a-f0-9-]{36})(/retry)?$#i', $path, $match)) {
     $user = authenticated($db);
-    if ($method === 'POST') revenueCatRefreshIfDue($db, $user, $config);
+    // 会员核对已改后台异步（process-membership-refresh），提交分析不再等待 RevenueCat。
     $requestBody = null;
     if ($path === '/me/ai/jobs') {
         if ($method !== 'POST') fail('不支持此操作。', 405);

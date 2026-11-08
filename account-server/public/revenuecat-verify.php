@@ -162,6 +162,7 @@ function revenueCatVerifyMembership(PDO $db, array $user, array $config, bool $f
     } catch(Throwable $error) { if($db->inTransaction())$db->rollBack(); throw $error; }
 }
 
+/** 仅用于响应后（respondThen）或后台 worker：请求路径不得调用。 */
 function revenueCatRefreshIfDue(PDO $db, array $user, array $config): void {
     if (!revenueCatVerificationConfigured($config) || $db->inTransaction()) return;
     $q=$db->prepare("SELECT 1 FROM membership_entitlements WHERE user_id=? AND source='apple' UNION ALL SELECT 1 FROM revenuecat_member_checks WHERE user_id=? AND verified_at IS NOT NULL LIMIT 1");

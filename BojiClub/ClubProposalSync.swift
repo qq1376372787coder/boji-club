@@ -20,6 +20,18 @@ struct PendingDomainCommand: Codable, Equatable {
     let createdAt: Date
     var blocked: Bool? = nil
     var lastError: String? = nil
+    /// 指数退避后的下次可重试时间；到期前不再重复发送。
+    var nextAttemptAt: Date? = nil
+}
+
+/// 弱网/服务异常后的重试节奏：2s、5s、15s、60s、5min、15min、1h。
+/// 只对「结果未确认」的命令生效；网络恢复后按同一编号自动续同步，永不因次数被 blocked。
+enum DomainCommandBackoff {
+    static let delays: [TimeInterval] = [2, 5, 15, 60, 300, 900, 3600]
+    static func delay(attempts: Int) -> TimeInterval {
+        let index = max(0, min(max(attempts, 1) - 1, delays.count - 1))
+        return delays[index]
+    }
 }
 
 /// Phase 2：模型请求的能力调用（只读请求，尚未执行）。

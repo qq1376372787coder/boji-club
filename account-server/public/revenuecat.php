@@ -23,7 +23,9 @@ function revenueCatDate(mixed $milliseconds): ?string {
 // Retained as an internal compatibility name; the old global free-access switch is retired.
 function membershipEnforced(array $config): bool { return true; }
 function requireActiveMembership(PDO $db, array $user, array $config): void {
-    revenueCatRefreshIfDue($db, $user, $config);
+    // 请求路径只读本地权益。到期的 RevenueCat 核对由后台
+    // process-membership-refresh.php 定时完成；/me 也会在响应后异步刷新。
+    // 任何情况下都不在请求路径上同步打 RevenueCat，避免一次慢查询卡住 12 秒。
     if (!membershipHasActiveEntitlement($db, (int)$user['id'])) fail('请先加入薄肌俱乐部后使用此功能。', 403, 'membership_required');
 }
 /**

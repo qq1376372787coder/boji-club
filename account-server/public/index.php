@@ -590,7 +590,7 @@ try {
     }
     if ($method === 'POST' && preg_match('#^/me/ai/conversations/([A-Za-z0-9_-]{8,64})/runs$#', $path, $runMatch)) {
         $user = authenticated($db);
-        if (function_exists('revenueCatRefreshIfDue')) revenueCatRefreshIfDue($db, $user, $config);
+        // 会员核对已改后台异步（process-membership-refresh），提交分析不再等待 RevenueCat。
         $created = aiRunCreate($db, $user, $config, (string)$runMatch[1], body(5900000), $_SERVER['HTTP_IDEMPOTENCY_KEY'] ?? null);
         respond(202, $created);
     }
@@ -599,7 +599,6 @@ try {
         // Python job identity with the legacy /me/ai/jobs path, so a client that
         // falls back to polling never double-submits.
         $user = authenticated($db);
-        if (function_exists('revenueCatRefreshIfDue')) revenueCatRefreshIfDue($db, $user, $config);
         $payload = body(5900000);
         $kind = (string)($payload['kind'] ?? '');
         $created = aiRunCreateForKind($db, $user, $config, $kind, $payload, $_SERVER['HTTP_IDEMPOTENCY_KEY'] ?? null);

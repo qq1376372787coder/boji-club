@@ -762,7 +762,8 @@ final class AppStore: ObservableObject {
             // Phase 1: 域命令先于权威读取冲刷，命令造成的 revision 变化随本次读取合并回本机。
             await flushDomainCommands(ticket: ticket, userID: userID)
             try checkContext(ticket, userID)
-            let hasBlockedCommands = pendingDomainCommands.contains { $0.owner == userID && $0.blocked == true }
+            // 被 blocked 的命令是真实冲突，保留在队列里等用户核对；它不再中止
+            // 本次云同步，其余记录照常读写（BE-004）。
             for _ in 0..<3 {
                 let known = cloudBase?.recordIntegrityVersion == 1 ? cloudRevision : nil
                 let response = try await CloudPartitionClient.read(account: account, userID: userID, knownRevision: known, cache: cloudPartitionCache)
@@ -771,7 +772,7 @@ final class AppStore: ObservableObject {
                 guard response.statusCode == 200 else { throw cloudError(response.http) }
                 guard let envelope = response.envelope else { throw CloudSyncError.message("云端分批读取尚未确认，请重试。") }
                 let remoteSnapshot = envelope.unchanged == true ? cloudBase : envelope.state
-                if envelope.unchanged == true, !hasBlockedCommands, !dirty, acknowledgedAIChange == aiService?.cloudChangeID {
+                if envelope.unchanged == true, !dirty, acknowledgedAIChange == aiService?.cloudChangeID {
                     needsAnotherSync = false; syncStatus = .synced(Date())
                     scheduleMediaSync(account, userID: userID, ticket: ticket); return
                 }
@@ -790,7 +791,6 @@ final class AppStore: ObservableObject {
                     aiService?.invalidateDomainQueries()
                     cloudBase = remote
                 }
-                if hasBlockedCommands { throw CloudSyncError.message("有一项修改需要处理，已更新云端记录。请到设置查看待处理记录。") }
                 if pendingDomainCommands.contains(where: { $0.owner == userID && $0.blocked != true }) {
                     cloudBase = remoteSnapshot; cloudRevision = envelope.revision
                     try await checkpoint(ticket: ticket, userID: userID)
@@ -2614,7 +2614,9 @@ final class AppStore: ObservableObject {
     private func flushDomainCommands(ticket: UUID, userID: Int) async {
         guard !pendingDomainCommands.isEmpty,
               let account = accountService, account.user?.id == userID, !account.isPreviewAccount else { return }
-        let ids = pendingDomainCommands.filter { $0.owner == userID && $0.blocked != true }.map(\.commandID)
+        let ids = pendingDomainCommands.filter {
+            $0.owner == userID && $0.blocked != true && ($0.nextAttemptAt ?? .distantPast) <= Date()
+        }.map(\.commandID)
         for id in ids {
             if Task.isCancelled { return }
             guard let command = pendingDomainCommands.first(where: { $0.commandID == id && $0.owner == userID }) else { continue }
@@ -2633,13 +2635,17 @@ final class AppStore: ObservableObject {
                 }
                 pendingDomainCommands.remove(at: index)
             case .conflict(let reason):
+                // 真实冲突（版本变化/提案失效）才 blocked；它不再中止整次云同步，
+                // 其他记录照常读写，用户可在「待同步项目」里核对处理。
                 pendingDomainCommands[index].blocked = true
                 pendingDomainCommands[index].lastError = reason
-                message = "有一笔操作需要核对：\(reason)；本机与队列均已保留。"
+                message = "有一笔操作需要核对：\(reason)；本机与队列均已保留，其他记录会继续同步。"
             case .deferred:
+                // 结果未确认：指数退避自动重试，弱网恢复后按原编号续同步。
                 pendingDomainCommands[index].attempts += 1
-                pendingDomainCommands[index].lastError = "网络结果未确认，重试沿用原编号。"
-                if pendingDomainCommands[index].attempts >= 6 { pendingDomainCommands[index].blocked = true; message = "操作已保留在待同步列表，可查看并重试。" }
+                let delay = DomainCommandBackoff.delay(attempts: pendingDomainCommands[index].attempts)
+                pendingDomainCommands[index].nextAttemptAt = Date().addingTimeInterval(delay)
+                pendingDomainCommands[index].lastError = "网络结果未确认，\(Int(delay)) 秒后自动重试。"
             case .offline:
                 // 请求未发出（断网/无法解析主机）：不累计失败次数，恢复网络后自动重试。
                 pendingDomainCommands[index].lastError = "当前离线，恢复网络后自动重试。"
@@ -2650,6 +2656,7 @@ final class AppStore: ObservableObject {
     func retryDomainCommand(_ id: String) {
         guard let i = pendingDomainCommands.firstIndex(where: { $0.commandID == id && $0.owner == activeAccountID }) else { return }
         pendingDomainCommands[i].blocked = false; pendingDomainCommands[i].attempts = 0; pendingDomainCommands[i].lastError = nil
+        pendingDomainCommands[i].nextAttemptAt = nil
         persistDomainCommands(); scheduleCloudSync()
     }
     func useCloudDomainDay(_ id: String) async {
