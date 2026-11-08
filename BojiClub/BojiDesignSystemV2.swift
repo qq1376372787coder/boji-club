@@ -663,6 +663,16 @@ private struct BojiPressModifier: ViewModifier {
     }
 }
 
+/// M7 玻璃按压统一档：scale 0.97（规格表 §2.9）。所有自绘按钮样式的按压缩放一律引用此常量，
+/// 不许页面散写 0.96/0.98/0.985——「玻璃按下必须有缩放」的反向红线靠这个常量兜住。
+enum BojiPressSpec {
+    static let scale: CGFloat = 0.97
+    static let shadowRadiusPressed: CGFloat = 16
+    static let shadowRadiusIdle: CGFloat = 24
+    static let shadowYPressed: CGFloat = 4
+    static let shadowYIdle: CGFloat = 8
+}
+
 struct BojiPressStyle: ButtonStyle {
     var scale: CGFloat = 0.96
     var haptic: BojiFeedback.Event? = .selection

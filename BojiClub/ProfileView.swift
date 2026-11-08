@@ -73,6 +73,8 @@ struct CloudStorageUsageView: View {
 }
 
 struct ProfileView: View {
+    /// M5 空间转场的命名空间（入口行 → 详情页成对使用）
+    @Namespace private var zoomNS
     var recordAccessOnly = false
     @Binding var routeToKeepsakeVault: Bool
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -111,10 +113,19 @@ struct ProfileView: View {
             Section {
                 // 拍板 #5：原「AI 对我的了解」（记忆页浏览入口）下线，
                 // 偏好数据改在「AI 记录与授权」内展示，此处收敛到该页。
-                NavigationLink { ClubActionPreferencesView().clubPushDestination132() } label: { Label("个人资料", systemImage: "person.text.rectangle") }
-                NavigationLink { ManagedPlanList(focusDate: Date(), initialCycleStart: nil).clubPushDestination132() } label: { Label("我的计划", systemImage: "calendar") }
-                NavigationLink { MembershipView().clubPushDestination132() } label: { Label("会员与订阅", systemImage: "crown") }
-                NavigationLink { SettingsHub130().clubPushDestination132() } label: { Label("设置", systemImage: "gearshape") }
+                // M5 空间转场：入口行「长成」下一页（iOS 18+，iOS 17 自动降级为普通 push）
+                NavigationLink { ClubActionPreferencesView().clubPushDestination132().clubZoomDestination("profile-prefs", in: zoomNS) } label: {
+                    Label("个人资料", systemImage: "person.text.rectangle").clubZoomSource("profile-prefs", in: zoomNS)
+                }
+                NavigationLink { ManagedPlanList(focusDate: Date(), initialCycleStart: nil).clubPushDestination132().clubZoomDestination("profile-plans", in: zoomNS) } label: {
+                    Label("我的计划", systemImage: "calendar").clubZoomSource("profile-plans", in: zoomNS)
+                }
+                NavigationLink { MembershipView().clubPushDestination132().clubZoomDestination("profile-member", in: zoomNS) } label: {
+                    Label("会员与订阅", systemImage: "crown").clubZoomSource("profile-member", in: zoomNS)
+                }
+                NavigationLink { SettingsHub130().clubPushDestination132().clubZoomDestination("profile-settings", in: zoomNS) } label: {
+                    Label("设置", systemImage: "gearshape").clubZoomSource("profile-settings", in: zoomNS)
+                }
             }
             if recordAccessOnly { Section { NavigationLink("历史报告") { ReportLibraryView().clubPushDestination132() } } }
         }.clubManagementList132()

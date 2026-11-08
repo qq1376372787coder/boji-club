@@ -175,6 +175,25 @@ extension View {
         modifier(ClubBottomBarModifier(bar: content()))
     }
 
+    /// M5 空间转场·源（动效规格 §M5）：卡片/行按下「长成」下一页。
+    /// iOS 18+ 用系统 zoom 转场；iOS 17 静默降级为普通 push——动画降级、功能不减。
+    @ViewBuilder func clubZoomSource(_ id: String, in namespace: Namespace.ID) -> some View {
+        if #available(iOS 18.0, *) {
+            matchedTransitionSource(id: id, in: namespace)
+        } else {
+            self
+        }
+    }
+
+    /// M5 空间转场·目标：与 clubZoomSource 成对使用（同一个 id + 同一个 namespace）。
+    @ViewBuilder func clubZoomDestination(_ id: String, in namespace: Namespace.ID) -> some View {
+        if #available(iOS 18.0, *) {
+            navigationTransition(.zoom(sourceID: id, in: namespace))
+        } else {
+            self
+        }
+    }
+
     /// 滚动位移监听（Hero M6 视差等滚动驱动动效的唯一桥接；原「收缩玻璃条」用法已随组件废止删除，见 `63e0b27`）。
     /// iOS 18+ 用系统 onScrollGeometryChange；iOS 17 静默不触发——视差不动、其余布局照常，功能不减。
     /// 页面层禁止自行散写 #available 滚动监听，一律经本修饰符。
@@ -234,13 +253,33 @@ private struct ClubNativeGlassButtonModifier: ViewModifier {
             // 系统玻璃自带按压反馈（interactive 高光彩带随指尖）——不自造缩放，避免与系统行为打架
             if prominent { content.buttonStyle(.glassProminent) }
             else { content.buttonStyle(.glass) }
-        } else if prominent {
-            // 降级：系统 borderedProminent 的按下变暗即按压反馈；M7 的显式缩放见 BojiGlassPressStyle（自绘按钮族用）
-            content.buttonStyle(.borderedProminent)
-                .shadow(color: .black.opacity(0.18), radius: 16, x: 0, y: 8)
         } else {
-            content.buttonStyle(.bordered)
+            // 降级路径（iOS 17–25 / 减少透明度 / 增强对比度）：M7 按压反馈一起保留，不能连质感一起降没
+            content.buttonStyle(BojiGlassFallbackButtonStyle(prominent: prominent))
         }
+    }
+}
+
+/// M7 玻璃按压（降级路径）：按下 scale 0.97 + 阴影 y8→y4、blur 24→16；减动效时只留阴影变化。
+private struct BojiGlassFallbackButtonStyle: ButtonStyle {
+    let prominent: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+
+    @ViewBuilder func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed
+        ZStack {
+            if prominent {
+                configuration.label.buttonStyle(.borderedProminent)
+            } else {
+                configuration.label.buttonStyle(.bordered)
+            }
+        }
+        .scaleEffect(pressed && !reduceMotion ? BojiPressSpec.scale : 1)
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.5 : 0.16),
+                radius: pressed ? BojiPressSpec.shadowRadiusPressed : BojiPressSpec.shadowRadiusIdle,
+                x: 0, y: pressed ? BojiPressSpec.shadowYPressed : BojiPressSpec.shadowYIdle)
+        .animation(reduceMotion ? nil : .spring(response: 0.22, dampingFraction: 0.8), value: pressed)
     }
 }
 
