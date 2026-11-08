@@ -229,11 +229,20 @@ jobs:
           # 缺页=覆盖缺口，不许默默少图（测试验收 按编号对账）。
           cd test-results/shots
           ls -1 *.png 2>/dev/null | sed -E 's/^(R[0-9]+)-.*/\1/' | sort -u -V > /tmp/have.txt || true
+          MISSING=""
+          for i in $(seq -w 1 28); do
+            grep -qx "R$i" /tmp/have.txt 2>/dev/null || MISSING="$MISSING R$i"
+          done
           {
             echo "# 截图 R 编号清单"
             echo ""
             echo "- 实际导出 PNG: $(ls -1 *.png 2>/dev/null | wc -l | tr -d ' ') 张"
             echo "- 覆盖 R 编号: $(wc -l < /tmp/have.txt | tr -d ' ') 个"
+            if [ -n "$MISSING" ]; then
+              echo "- 缺失 R 编号: ❌$MISSING"
+            else
+              echo "- 缺失 R 编号: 无（0 缺）"
+            fi
             echo ""
             echo "## 已到编号"
             echo '```'
@@ -242,12 +251,13 @@ jobs:
             echo ""
             echo "## R01–R28 中缺失"
             echo '```'
-            for i in $(seq -w 1 28); do
-              grep -qx "R$i" /tmp/have.txt 2>/dev/null || echo -n "R$i "
-            done; echo
+            if [ -n "$MISSING" ]; then echo "$MISSING"; else echo "（无）"; fi
             echo '```'
           } > R-manifest.md
           cat R-manifest.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$MISSING" ]; then
+            echo "::warning::R 编号缺图：$MISSING ——审图前先对编号账，缺页=覆盖缺口"
+          fi
 
       - name: Upload visual regression shots
         if: always() && steps.guard.outputs.skip != 'true'
