@@ -1,0 +1,24 @@
+{
+  "project": "BojiClub",
+  "platform": "ios",
+  "github": {
+    "owner": "qq1376372787coder",
+    "repo": "boji-club"
+  },
+  "provider": "github",
+  "codemagic": {},
+  "bitrise": {},
+  "ios": {
+    "path": ".",
+    "scheme": "BojiClub",
+    "extensions": [
+      "com.bojiclub.app.dev.widget"
+    ]
+  },
+  "flutter": {
+    "watch": {}
+  },
+  "reactNative": {},
+  "kmp": {},
+  "mobai": {}
+}
