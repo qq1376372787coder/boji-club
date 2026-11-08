@@ -6,10 +6,13 @@ run-name: iOS Visual Regression ${{ inputs.build_id || github.ref_name }}
 # 把 xcresult 里的截图导出成 PNG 并上传制品，供用户 / 设计 / Chief 直接看界面。
 # 目的：发货前团队自己先看到界面，不再让用户当第一个看的人。
 #
-# 触发方式：push tag `ios-shots/<build-id>`，或手动 workflow_dispatch。
+# 触发方式：
+#   1) push tag `ios-build/*` —— 跟随每批构建，自动出全页面截图（每批归档）；
+#   2) push tag `ios-shots/*` 或 workflow_dispatch —— 单独补跑。
 on:
   push:
     tags:
+      - 'ios-build/*'
       - 'ios-shots/*'
   workflow_dispatch:
     inputs:
@@ -41,12 +44,25 @@ jobs:
           git fetch --depth=1 origin "+$SNAPSHOT_REF:refs/heads/snapshot"
           git checkout --force snapshot
 
+      - name: Guard: 截图用例是否已存在
+        id: guard
+        run: |
+          if [ -f BojiClubUITests/VisualRegressionShots.swift ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "截图用例已在位"
+          else
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::VisualRegressionShots.swift 尚未创建，本轮跳过截图（不影响构建）"
+          fi
+
       - name: Setup Xcode
+        if: steps.guard.outputs.skip != 'true'
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
       - name: Ensure iOS simulator runtime
+        if: steps.guard.outputs.skip != 'true'
         run: |
           set -e
           if xcrun simctl list runtimes 2>/dev/null | grep -qi "iOS"; then
@@ -60,6 +76,7 @@ jobs:
           fi
 
       - name: Select simulator (iPhone 16 Pro)
+        if: steps.guard.outputs.skip != 'true'
         id: sim
         run: |
           set -e
@@ -88,6 +105,7 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
 
       - name: Run visual regression shots
+        if: steps.guard.outputs.skip != 'true'
         id: tests
         env:
           UDID: ${{ steps.sim.outputs.udid }}
@@ -121,7 +139,7 @@ jobs:
             }
 
       - name: Export screenshots as PNG
-        if: always()
+        if: always() && steps.guard.outputs.skip != 'true'
         run: |
           set -e
           mkdir -p test-results/shots
@@ -140,7 +158,7 @@ jobs:
           fi
 
       - name: Upload visual regression shots
-        if: always()
+        if: always() && steps.guard.outputs.skip != 'true'
         uses: actions/upload-artifact@v7
         with:
           name: visual-regression-shots
