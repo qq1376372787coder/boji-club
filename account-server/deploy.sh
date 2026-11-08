@@ -112,9 +112,13 @@ php check-config.php
 # PHP-FPM worker 用户随发行版不同（Debian 系常见 www-data，本机是 nginx）。
 # 缓存目录与 config.php 的属主必须跟它一致，否则 cachedAppleKeys() 会因
 # cache unavailable 让 Apple 登录返回 503，config.php 也会读不到。
-php_user="$(ps -o user= -C php-fpm 2>/dev/null | head -1 | tr -d '[:space:]')"
+# 注意：php-fpm 的 master 进程以 root 运行，必须读池配置才能拿到 worker 用户。
+php_user="$(awk -F= '/^user[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php*/fpm/pool.d/www.conf /etc/php-fpm.d/www.conf 2>/dev/null | head -1)"
 if [ -z "$php_user" ]; then
-    php_user="$(awk -F= '/^user[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php/*/fpm/pool.d/www.conf 2>/dev/null | head -1)"
+    php_user="$(awk -F= '/^user[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php/*/fpm/pool.d/*.conf 2>/dev/null | head -1)"
+fi
+if [ -z "$php_user" ]; then
+    php_user="$(ps -eo user,args | grep -E 'php-fpm: pool' | grep -v grep | awk '{print $1}' | head -1)"
 fi
 if [ -z "$php_user" ]; then
     echo "无法确定 PHP-FPM worker 用户，请手工指定后重跑。" >&2

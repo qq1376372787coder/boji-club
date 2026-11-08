@@ -30,8 +30,10 @@ done
 [ -f "$ROOT/config-contract.php" ] || die "缺少 config-contract.php，无法继续"
 
 # ---------- 0. PHP-FPM worker 用户 ----------
-php_user="$(ps -o user= -C php-fpm 2>/dev/null | head -1 | tr -d '[:space:]')"
-[ -n "$php_user" ] || php_user="$(awk -F= '/^user[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php/*/fpm/pool.d/www.conf 2>/dev/null | head -1)"
+# php-fpm 的 master 以 root 运行，必须读池配置才拿得到 worker 用户。
+php_user="$(awk -F= '/^user[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php*/fpm/pool.d/www.conf /etc/php-fpm.d/www.conf 2>/dev/null | head -1)"
+[ -n "$php_user" ] || php_user="$(ps -eo user,args | grep -E 'php-fpm: pool' | grep -v grep | awk '{print $1}' | head -1)"
+[ -n "$php_user" ] || php_user="$(awk -F= '/^user[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php/*/fpm/pool.d/*.conf 2>/dev/null | head -1)"
 [ -n "$php_user" ] || die "无法确定 PHP-FPM worker 用户"
 php_group="$(id -gn "$php_user" 2>/dev/null || echo "$php_user")"
 log "PHP-FPM worker: $php_user:$php_group"
