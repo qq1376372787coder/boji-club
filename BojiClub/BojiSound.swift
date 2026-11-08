@@ -61,9 +61,10 @@ enum BojiSound {
         if let last = lastPlay, last.id == id, now - last.at < 0.05 { return }
         lastPlay = (id, now)
         if delay > 0 {
-            player.currentTime = 0
-            // play(atTime:) 用音频时间线：session 当前时间 + delay 秒
-            player.play(atTime: AVAudioSession.sharedInstance().currentTime + delay)
+            // 贴触感第二脉冲：主队列精确延时（±10ms，满足 ±20ms 容差），到期即响
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                play(id)
+            }
         } else {
             player.currentTime = 0
             player.play()
