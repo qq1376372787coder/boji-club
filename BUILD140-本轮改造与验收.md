@@ -215,7 +215,8 @@
 
 | 编号 | 问题 | 位置 | 严重度 | 备注 |
 |---|---|---|---|---|
-| CLN-01 | `ClubActionButtonStyle` 里 `@Environment(\.accessibilityReduceTransparency)` 与 `@Environment(\.colorSchemeContrast)` 已**不再被使用**（该样式已收口为 `clubNativeGlassButton`），属遗留 dead code | JourneyComponents.swift:58-59 | P3 | 不影响功能与编译（仅警告），建议随阶段 3 清理 |
+| CLN-01 | `ClubActionButtonStyle` 里 `@Environment(\.accessibilityReduceTransparency)` 与 `@Environment(\.colorSchemeContrast)` 已**不再被使用**（该样式已收口为 `clubNativeGlassButton`），属遗留 dead code | JourneyComponents.swift:58-59 | P3 | 不影响功能与编译（仅警告）；**已在 fea35b7 清理完毕** |
+| CLN-02 | `BreathingPulseHalo` 全库已无使用点（仅 `DesignTokens.swift:674` 定义本身），属死代码 | DesignTokens.swift:674 | P3 | 测试验收阶段 3 收尾复扫发现；IOS-007 已改为直接内联 `Gauge`，原封装未再被引用。建议删除定义（勿误以为「还在用」） |
 
 **F 表结论**：全局四种设置的基础设施（INT-01~05）齐备；已改造控件中 INT-07/08/09/10/12/13 通过，**INT-06 未通过**（勾选按钮 `symbolEffect` 无 reduceMotion 门控 → BUG-016）；INT-11（IOS-006~010 动效）未开工。**待办：安装链路就绪后，在真机/模拟器上按 F2 逐格实测复跑。**
 
@@ -240,7 +241,19 @@
 | G-09 | `.celebrate` 不可用 | ✅ 已规避 | 苹果开发改用系统 `.bounce`，一次性庆祝语义不变；规范如需 `celebrate` 须先确认 SDK 版本（当前 SDK 的 `DiscreteSymbolEffect` 无此成员） |
 | G-10 | 编译回归 | ✅ 通过 | run 42466697711（head `77883ff`），产物 37.41 MB |
 
-**G 表结论（复扫后更新）**：IOS-006~009、BUG-016、CLN-01 全部通过；**G-08 复扫通过**——ClubAIShell 内容层玻璃归零，ProfileView 5 处判定合规；**G-11 IOS-010 通过**（引导页每屏玻璃 1 处）；G-12 业务图形豁免确认。**阶段 3 的玻璃红线项已达标**。剩余：IOS-012（四层状态机收口）、IOS-013（组间休息双状态单源化）两项流程断点改造，以及 P1 `RevenueCatViews.swift:318` 待 Chief 拍板。
+**G 表结论（复扫后更新）**：IOS-006~009、BUG-016、CLN-01 全部通过；**G-08 复扫通过**——ClubAIShell 内容层玻璃归零，ProfileView 5 处判定合规；**G-11 IOS-010 通过**（引导页每屏玻璃 1 处）；G-12 业务图形豁免确认。**阶段 3 的玻璃红线项已达标。**
+
+### G-3. 阶段 3 收尾复验（测试验收，2026-11-08，head `0b638da`）
+
+| 编号 | 复验项 | 结论 | 证据 |
+|---|---|---|---|
+| G-13 | IOS-012 卡门可恢复 | ✅ 通过 | `ProfileView.swift:158-162` 底部浮条新增「重新检查会员状态／正在检查…」按钮，`Task { await membership.refresh(force: true) }`，带禁用态；账号管理/退出路径保留 |
+| G-14 | IOS-013 休息提醒单源校正 | ✅ 通过 | `ClubAIShell.swift:175-177` `.onChange(of: activeWorkout?.isPaused)` 暂停即 `cancelRestReminder()`；`:187` onAppear 兜底；与既有 `:168-172` pauseService 分支并存形成双保险（跨午夜边界仍留真机复核） |
+| G-15 | 自绘控件全量复扫 | ✅ 通过 | `LiquidCheckbox`／`ClubNumericKeypad`／`ConfettiView` 全库零命中；`TrainingNumericInput125`／`SmartWeightStepper` 保留同名薄封装但内部已是原生 `TextField`／系统 `Stepper`；`ClubActivityMark`／`AIProcessingMark`／`ClubWaitBar`／`BreathingPulseHalo`／`LaserScanBeamOverlay` 内部均已换原生 ProgressView／Gauge |
+| G-16 | 材质与玻璃分支全量复扫 | ✅ 通过 | `.regularMaterial`/`.ultraThinMaterial` 直写仅剩 `Design.swift:200`（桥接自身降级分支，正确）；`if #available(iOS 26` 仅剩 `Design.swift:160/197/211`（桥接自身，正确）；全库 `clubGlassEffect` 42 处均经逐处判定 |
+| G-17 | 编译回归 | ✅ 通过 | run 42467773417（head `0b638da`），产物 `dist/BojiClub-53aedefe.ipa`（37.43 MB） |
+
+**阶段 3 客户端完成条件清点**：①4 个自绘控件全换原生 ✅；②23 处材质收口 ✅；③自绘动效换系统动效（IOS-006~010）✅；④流程断点改造（IOS-012/013）✅；⑤界面设计走查达标（G-08/G-11）✅；⑥云端编译通过 ✅。**待 Chief 过目认可**；P1 `RevenueCatViews.swift:318` 待拍板，CLN-02 建议清理。
 
 ---
 
