@@ -152,7 +152,9 @@ enum TaskCenterAPI {
     static func page(account: AccountService, cursor: String? = nil, group: String? = nil) async throws -> TaskPage {
         guard let uid = account.user?.id else { throw AccountError.unauthorized }
         var path = "/me/tasks?limit=30"
-        if let cursor { path += "&cursor=" + cursor.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)! }
+        if let cursor, let encodedCursor = cursor.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            path += "&cursor=" + encodedCursor
+        }
         if let group, !group.isEmpty { path += "&group=\(group)" }
         let response = try await account.cloudRequest(path: path, expectedUserID: uid)
         guard response.statusCode == 200 else { throw OnboardingAPIError(message: "任务列表暂不可用。", status: response.statusCode) }

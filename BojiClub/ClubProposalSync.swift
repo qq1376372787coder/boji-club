@@ -280,7 +280,10 @@ enum ClubProposalSync {
                 UserDefaults.standard.set(generation + 1, forKey: storageKey)
                 return .conflict("提案已过期或失效，请重新核对后重试。")
             }
-            let type = ["plan_change_proposal": "PlanReschedule.Confirm", "meal_draft": "Meal.Create", "weight_entry": "BodyWeight.Create"][kind]!
+            guard let type = ["plan_change_proposal": "PlanReschedule.Confirm", "meal_draft": "Meal.Create", "weight_entry": "BodyWeight.Create"][kind] else {
+                UserDefaults.standard.set(generation + 1, forKey: storageKey)
+                return .conflict("提案类型暂不支持，请重新核对后重试。")
+            }
             let command: [String: Any] = ["commandId": identity.command, "type": type,
                 "payload": ["proposalId": proposal.proposalId], "actor": "user"]
             let response = try await account.proposalRequest(path: "/me/commands", method: "POST",

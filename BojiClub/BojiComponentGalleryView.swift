@@ -276,10 +276,10 @@ struct BojiAuditHost: View {
         case "plan-create": PlanCreationSheet(date: date)
         case "body-overview": BodyOverviewView()
         case "plan-versions": ClubPlanVersionsView()
-        case "plan-move": PlanMoveSheet(sourceDate: ClubDates.calendar.date(byAdding: .day, value: 1, to: date)!)
+        case "plan-move": PlanMoveSheet(sourceDate: ClubDates.calendar.date(byAdding: .day, value: 1, to: date) ?? date.addingTimeInterval(86_400))
         case "plan-shift": ShiftScheduleView()
         case "plan-advance": AdvanceWorkoutView(date: date)
-        case "plan-continue": ContinueWeekView(endDate: ClubDates.date(fromKey: cycle.end)!, initialCycle: cycle)
+        case "plan-continue": ContinueWeekView(endDate: ClubDates.date(fromKey: cycle.end) ?? date, initialCycle: cycle)
         case "next-week": TrainingHandoffCard(cycle: cycle)
         case "plan-changes": ClubPlanChangesView(changes: [])
         case "training-preview": TrainingPreviewView(title: "今天的训练", focus: "胸 · 上肢力量", exercises: store.log(for: date).exercises, date: date, onStart: {})
@@ -338,8 +338,12 @@ struct BojiAuditHost: View {
         case "set-editor": TrainingSetEditPanel(original: TrainingSet(weight: 20, reps: 10), number: 1, previous: nil, canUsePrevious: false, weightStep: .constant(2.5), allowTimer: true, save: { _ in true }, startTimer: { _ in }, performDelete: { true })
         case "exercise-detail": LibraryExerciseDetailView(item: BojiAuditFixtures.libraryExercise, date: date, added: nil)
         case "exercise-guide": ExerciseDetailView(guide: ExerciseGuide.samples[0], add: { true })
-        case "replace-exercise": WorkoutAuditFactory.replace(date: date, exercise: store.log(for: date).exercises.first!)
-        case "set-timer": WorkoutAuditFactory.timer(date: date, exercise: store.log(for: date).exercises.first!)
+        case "replace-exercise":
+            guard let exercise = store.log(for: date).exercises.first else { return EmptyView() }
+            return WorkoutAuditFactory.replace(date: date, exercise: exercise)
+        case "set-timer":
+            guard let exercise = store.log(for: date).exercises.first else { return EmptyView() }
+            return WorkoutAuditFactory.timer(date: date, exercise: exercise)
         case "daily-report": AIReportReaderView(jobID: "audit-daily-report")
         case "weekly-report": WeeklyReviewHistoryDetail(review: BojiAuditFixtures.review(date: yesterday))
         case "phase-report": PhaseReportView(report: BojiAuditFixtures.phase(date: date))
@@ -371,7 +375,7 @@ enum BojiAuditFixtures {
         [AIPlanSession(date: ClubDates.key(date), label: "上肢力量", exercises: [AIPlanExercise(name: "哑铃卧推", muscle: "胸", sets: (0..<3).map { _ in AIPlanSet(weight: 20, reps: 10) }, library_query: nil, library_id: "0025")])]
     }
     static func review(date: Date) -> WeeklyReview {
-        WeeklyReview(id: UUID(uuidString: "00000000-0000-0000-0000-000000000099")!, date: ClubDates.key(date), status: "succeeded", result: WeeklyResult(kind: "weekly", summary: "训练记录正在建立，先保持当前节奏。", training: "本周已确认一次训练；单次样本不足以判断长期力量变化。", nutrition: "餐次记录仍不完整，暂不评价全天营养。", recovery: "结合实际疲劳感安排恢复，避免把未记录误当作未休息。", appearance: "没有用于比较的体态照片。", photoFeedback: [], decision: "保持", reason: "已有数据不足以支持大幅调整。", notes: ["本页为本地审计样本，不是个人训练建议。"], sessions: sessions(date: date)))
+        WeeklyReview(id: UUID(uuidString: "00000000-0000-0000-0000-000000000099") ?? UUID(), date: ClubDates.key(date), status: "succeeded", result: WeeklyResult(kind: "weekly", summary: "训练记录正在建立，先保持当前节奏。", training: "本周已确认一次训练；单次样本不足以判断长期力量变化。", nutrition: "餐次记录仍不完整，暂不评价全天营养。", recovery: "结合实际疲劳感安排恢复，避免把未记录误当作未休息。", appearance: "没有用于比较的体态照片。", photoFeedback: [], decision: "保持", reason: "已有数据不足以支持大幅调整。", notes: ["本页为本地审计样本，不是个人训练建议。"], sessions: sessions(date: date)))
     }
     static func report(date: Date) -> AILocalJob {
         AILocalJob(id: "audit-daily-report", digest: "audit", request: AIRequest(id: "audit-daily-report", kind: "report", date: ClubDates.key(date), payload: [:]), status: "succeeded", result: AIResult(kind: "report", notes: ["本地审计样本"], summary: "训练已经确认，下一步是补齐今天的餐次记录。", training: "已确认的数据来自实际完成组，不把计划组计算为完成。", nutrition: "只汇总已保存的一餐或多餐；记录不完整时，不评价全天摄入。", recovery: "按实际疲劳与日程安排恢复。样本不足时继续记录。"))

@@ -363,7 +363,7 @@ final class WeeklyReviewService: ObservableObject {
         let ticket = generation; var review = reviews[i]
         guard let end = ClubDates.date(fromKey: review.date) else { return }
         do {
-            let cycle = review.cycle ?? TrainingCycle(start: ClubDates.key(ClubDates.calendar.date(byAdding: .day, value: -6, to: end)!), plannedDates: [])
+            let cycle = review.cycle ?? TrainingCycle(start: ClubDates.key(ClubDates.calendar.date(byAdding: .day, value: -6, to: end) ?? end.addingTimeInterval(-6 * 86_400)), plannedDates: [])
             let readiness = WeeklyReadiness(cycle: cycle, days: store.state.days)
             guard readiness.allowed(scope: review.scope ?? "combined") else { throw AccountError.message(readiness.explanation) }
             guard store.state.profile.hasConfirmedBasics else {
@@ -381,7 +381,9 @@ final class WeeklyReviewService: ObservableObject {
                 days.append(.object(["date":.string(ClubDates.key(date)), "payload":.object(input.payload)]))
             }
             for offset in 1...7 {
-                let date = ClubDates.calendar.date(byAdding: .day, value: offset, to: end)!
+                guard let date = ClubDates.calendar.date(byAdding: .day, value: offset, to: end) else {
+                    throw AccountError.message("日期计算失败，请重新进入每周回顾。")
+                }
                 let log = store.log(for: date); let key = ClubDates.key(date)
                 review.baseline[key] = log.exercises
                 upcoming.append(.object(["date":.string(key),"exercises":.array(try ai.planExercisesInput(log))]))

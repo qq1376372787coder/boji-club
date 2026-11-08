@@ -317,12 +317,12 @@ final class HealthDataService: ObservableObject {
         try JSONEncoder().encode(state).write(to: file, options: [.atomic, .completeFileProtection])
     }
     private var readTypes: Set<HKObjectType> {
-        Set([HKObjectType.quantityType(forIdentifier: .stepCount)!, HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
-             HKObjectType.quantityType(forIdentifier: .heartRate)!, HKObjectType.quantityType(forIdentifier: .restingHeartRate)!,
-             HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!, HKObjectType.workoutType(),
-             HKObjectType.quantityType(forIdentifier: .bodyMass)!, HKObjectType.quantityType(forIdentifier: .bodyFatPercentage)!,
-             HKObjectType.quantityType(forIdentifier: .leanBodyMass)!, HKObjectType.quantityType(forIdentifier: .height)!,
-             HKObjectType.quantityType(forIdentifier: .bodyMassIndex)!, HKObjectType.quantityType(forIdentifier: .waistCircumference)!])
+        // 系统标准标识符由 HealthKit 保证存在；compactMap 仍避免任何异常路径下的强解包。
+        let identifiers: [HKQuantityTypeIdentifier] = [.stepCount, .activeEnergyBurned, .heartRate, .restingHeartRate, .bodyMass, .bodyFatPercentage, .leanBodyMass, .height, .bodyMassIndex, .waistCircumference]
+        var types: Set<HKObjectType> = Set(identifiers.compactMap { HKObjectType.quantityType(forIdentifier: $0) })
+        if let sleep = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) { types.insert(sleep) }
+        types.insert(HKObjectType.workoutType())
+        return types
     }
     func connect(on date: Date = Date()) async {
         guard available, !busy, accountID != nil, storageAvailable else { message = "此设备暂时无法读取健康数据，请在 iPhone 真机上使用。"; return }

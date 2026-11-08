@@ -237,7 +237,8 @@ final class MembershipService: ObservableObject {
             } catch {
                 guard self.generation == ticket else { return }
                 self.notice = "暂时无法更新会员状态，已有记录仍然保留。请检查网络后重新查询。"
-                if self.customerInfo == nil { self.state = .failed(self.notice!) }
+                let fallback = "暂时无法更新会员状态，请检查网络后重新查询。"
+                if self.customerInfo == nil { self.state = .failed(self.notice ?? fallback) }
             }
         }
     }
@@ -436,7 +437,10 @@ final class MembershipService: ObservableObject {
     private static func checkOfferingAPI(key: String) async -> String {
         guard key.hasPrefix("appl_") else { return "RevenueCat：安装包未配置 Apple 公共 SDK Key。" }
         // A fixed diagnostic identifier avoids transmitting the signed-in user's ID.
-        let url = URL(string: "https://api.revenuecat.com/v1/subscribers/boji-connectivity-check/offerings")!
+        // 固定诊断地址，格式固定；异常时给出可读诊断而不是崩溃。
+        guard let url = URLComponents(string: "https://api.revenuecat.com/v1/subscribers/boji-connectivity-check/offerings")?.url else {
+            return "RevenueCat：诊断地址无效，请检查安装包配置。"
+        }
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         request.setValue("Bearer " + key, forHTTPHeaderField: "Authorization")
         let config = URLSessionConfiguration.ephemeral

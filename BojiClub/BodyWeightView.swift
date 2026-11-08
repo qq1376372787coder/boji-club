@@ -316,7 +316,7 @@ struct WeightEntryEditor: View {
     }
     private var measurementTimeRange: ClosedRange<Date> {
         let start = ClubDates.calendar.startOfDay(for: date)
-        let end = min(ClubDates.calendar.date(byAdding: .day, value: 1, to: start)!.addingTimeInterval(-1), Date())
+        let end = min(ClubDates.calendar.date(byAdding: .day, value: 1, to: start) ?? start.addingTimeInterval(86_399), Date())
         return start...max(start, end)
     }
     private var measurementUnchanged: Bool {

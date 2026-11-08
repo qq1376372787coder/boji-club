@@ -1035,6 +1035,6 @@ enum BodyMeasurementIdentity {
         let hex = SHA256.hash(data: Data(("legacy-weight/" + date + "/" + time + "/" + weight).utf8)).map { String(format: "%02x", $0) }.joined()
         let a = Array(hex)
         let value = String(a[0..<8]) + "-" + String(a[8..<12]) + "-4" + String(a[13..<16]) + "-a" + String(a[17..<20]) + "-" + String(a[20..<32])
-        return UUID(uuidString: value)!
+        return UUID(uuidString: value) ?? UUID()
     }
 }

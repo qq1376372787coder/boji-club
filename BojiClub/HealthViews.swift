@@ -203,8 +203,10 @@ struct HealthConnectionsView: View {
                             DisclosureGroup(brand.0) {
                                 VStack(alignment: .leading, spacing: BojiLayout.inline) {
                                     Text(brand.1).bojiType(.caption).foregroundStyle(.secondary)
-                                    Link("品牌官方说明 ↗", destination: URL(string: brand.2)!)
-                                        .buttonStyle(SecondaryButton())
+                                    if let brandURL = URL(string: brand.2) {
+                                        Link("品牌官方说明 ↗", destination: brandURL)
+                                            .buttonStyle(SecondaryButton())
+                                    }
                                 }.frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, BojiSpace.tightRow)
                             }
                         }

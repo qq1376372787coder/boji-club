@@ -764,11 +764,19 @@ final class AppStore: ObservableObject {
             try checkContext(ticket, userID)
             // 被 blocked 的命令是真实冲突，保留在队列里等用户核对；它不再中止
             // 本次云同步，其余记录照常读写（BE-004）。
-            for _ in 0..<3 {
+            // 多设备并发时给足重试窗口（BE-007）：最多 6 次、每次隔 0.4 秒，
+            // 仍不收敛就保留本机记录并安排自动续同步，不硬报失败。
+            var syncAttempts = 0
+            while syncAttempts < 6 {
+                syncAttempts += 1
                 let known = cloudBase?.recordIntegrityVersion == 1 ? cloudRevision : nil
                 let response = try await CloudPartitionClient.read(account: account, userID: userID, knownRevision: known, cache: cloudPartitionCache)
                 try checkContext(ticket, userID)
-                if response.statusCode == 409 { continue }
+                if response.statusCode == 409 {
+                    try? await Task.sleep(nanoseconds: 400_000_000)
+                    try checkContext(ticket, userID)
+                    continue
+                }
                 guard response.statusCode == 200 else { throw cloudError(response.http) }
                 guard let envelope = response.envelope else { throw CloudSyncError.message("云端分批读取尚未确认，请重试。") }
                 let remoteSnapshot = envelope.unchanged == true ? cloudBase : envelope.state
@@ -807,7 +815,11 @@ final class AppStore: ObservableObject {
                 if !unchanged {
                     let result = try await CloudPartitionClient.write(account: account, userID: userID, baseRevision: envelope.revision, state: sent, base: remoteSnapshot, cache: cloudPartitionCache)
                     try checkContext(ticket, userID)
-                    if result.statusCode == 409 { continue }
+                    if result.statusCode == 409 {
+                        try? await Task.sleep(nanoseconds: 400_000_000)
+                        try checkContext(ticket, userID)
+                        continue
+                    }
                     guard result.statusCode == 200 else { throw cloudError(result.http) }
                     guard let acknowledgment = result.envelope else { throw CloudSyncError.message("云端保存结果尚未确认，请重试；本机原记录保留。") }
                     guard let canonical = acknowledgment.state else { throw CloudSyncError.message("云端保存状态尚未确认，请重试同步；本机记录仍保留。") }
@@ -835,7 +847,9 @@ final class AppStore: ObservableObject {
                 scheduleMediaSync(account, userID: userID, ticket: ticket)
                 return
             }
-            throw CloudSyncError.message("其他设备正在更新，请稍后再同步。")
+            // 多次仍收敛不了：不硬失败，保留本机记录并安排自动续同步（BE-007）。
+            if generation == ticket { syncStatus = .waitingService; retryDelay = 10; needsAnotherSync = true }
+            return
         } catch CloudSyncError.busy(_) {
             if generation == ticket { syncStatus = .waitingService; retryDelay = 5; needsAnotherSync = true }
         } catch is CancellationError {
@@ -1632,7 +1646,7 @@ final class AppStore: ObservableObject {
         var reviewDay = state.days[review.date] ?? DayLog()
         WeeklyVersions.insert(saved, into: &reviewDay)
         state.days[review.date] = reviewDay
-        let next = ClubDates.calendar.date(byAdding: .day, value: 1, to: end)!
+        let next = ClubDates.calendar.date(byAdding: .day, value: 1, to: end) ?? end.addingTimeInterval(86_400)
         let cycleDates = TrainingCycle.stamp(days: &state.days, start: next, plannedDates: sessions.map(\.date))
         recordWeeklyPlanHistory(review: review, sessions: sessions, previous: previous, start: next,
             scope: replaceWholeWeek ? nextWeek : selectedDates)
@@ -2108,7 +2122,12 @@ final class AppStore: ObservableObject {
         }
         let previous = state
         // Preserve the latest cloud photo and AI provenance while editing nutrition.
-        let current = state.days[key]!.meals[index]
+        // 加固：避免强解包，数据缺失时给出可恢复提示而不是崩溃。
+        guard let day = state.days[key], day.meals.indices.contains(index) else {
+            message = "这条饮食记录已被移除，请返回刷新。"
+            return false
+        }
+        let current = day.meals[index]
         state.days[key]?.meals[index] = MealNutritionMerge.merged(edited: edited, base: base, current: current)
         if persist(changedDates: [key]) { return true }
         state = previous
@@ -2293,7 +2312,8 @@ final class AppStore: ObservableObject {
     private func stableID(_ key: String) -> UUID {
         let hex = SHA256.hash(data: Data(key.utf8)).map { String(format: "%02x", $0) }.joined()
         let value = "\(hex.prefix(8))-\(hex.dropFirst(8).prefix(4))-\(hex.dropFirst(12).prefix(4))-\(hex.dropFirst(16).prefix(4))-\(hex.dropFirst(20).prefix(12))"
-        return UUID(uuidString: value)!
+        // 格式由 SHA-256 十六进制拼接保证；仍留兜底，避免极端情况下强解包崩溃。
+        return UUID(uuidString: value) ?? UUID()
     }
 
     private func checkContext(_ ticket: UUID, _ userID: Int) throws {

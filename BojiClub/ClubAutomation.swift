@@ -62,9 +62,9 @@ struct ClubAutomationSettings: Codable, Equatable {
     }
 
     var valid: Bool {
-        version == 1 && (serverZone == nil || TimeZone(identifier: serverZone!) != nil) && (0...23).contains(dailyHour) && (0...23).contains(quietStart) &&
+        version == 1 && (serverZone == nil || serverZone.flatMap { TimeZone(identifier: $0) } != nil) && (0...23).contains(dailyHour) && (0...23).contains(quietStart) &&
         (0...23).contains(quietEnd) && quietStart != quietEnd &&
-        (enabledFrom == nil || ClubDates.date(fromKey: enabledFrom!) != nil)
+        (enabledFrom == nil || enabledFrom.flatMap { ClubDates.date(fromKey: $0) } != nil)
     }
     static func key(_ owner: Int) -> String { "club-ai.automation.v1.\(owner)" }
     static func load(owner: Int, defaults: UserDefaults = .standard) throws -> Self {

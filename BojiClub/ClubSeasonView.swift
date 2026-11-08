@@ -670,6 +670,12 @@ struct ClubHistoryView: View {
 
 #if DEBUG
 enum SeasonAuditFactory {
- static func claim() -> some View { RewardClaimView(reward: ClubSeasonEnvelope.debugPreview(joined: true).rewards!.last!) }
+ @ViewBuilder static func claim() -> some View {
+     if let reward = ClubSeasonEnvelope.debugPreview(joined: true).rewards?.last {
+         RewardClaimView(reward: reward)
+     } else {
+         EmptyView()
+     }
+ }
 }
 #endif

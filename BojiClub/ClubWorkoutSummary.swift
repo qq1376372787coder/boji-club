@@ -194,7 +194,10 @@ struct ConfirmedWorkoutSnapshot: Equatable, Codable {
                     seconds: s.durationSeconds, completed: s.validCompletion, entered: s.hasActualEntry)
             }.sorted { $0.id < $1.id }) }.sorted { $0.id < $1.id }
         let source = Source(id: session.id.uuidString.lowercased(), start: stamp(session.startedAt), end: stamp(session.endedAt),
-            pauses: (session.pauseIntervals ?? []).map { Pause(start: stamp($0.start)!, end: stamp($0.end)) }, exercises: facts)
+            pauses: (session.pauseIntervals ?? []).compactMap { interval in
+                guard let start = stamp(interval.start) else { return nil }
+                return Pause(start: start, end: stamp(interval.end))
+            }, exercises: facts)
         let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
         guard let data = try? encoder.encode(source) else { return nil }
         return Self(ownerID: owner, dateKey: ClubDates.key(date), sessionID: sessionID, startedAt: session.startedAt,

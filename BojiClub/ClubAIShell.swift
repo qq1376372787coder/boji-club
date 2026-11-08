@@ -1237,7 +1237,7 @@ struct ClubAIWorkspaceIdleView: View {
     /// AVPlayerLayer 宿主视图：系统 VideoPlayer 没有 videoGravity，品牌视频需要 resizeAspectFill 铺满。
     private final class HeroVideoContainerView: UIView {
         override class var layerClass: AnyClass { AVPlayerLayer.self }
-        private var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
+        private var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer } // 本视图 layerClass 固定返回 AVPlayerLayer，安全
         var player: AVQueuePlayer? {
             get { playerLayer.player as? AVQueuePlayer }
             set {

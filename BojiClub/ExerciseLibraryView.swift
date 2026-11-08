@@ -82,7 +82,8 @@ enum ExerciseLibraryAPI {
         if let override = ProcessInfo.processInfo.environment["BOJI_EXERCISE_BASE_URL"], let url = URL(string: override), ["https", "http"].contains(url.scheme ?? "") { return url }
         #endif
         if let configured = Bundle.main.object(forInfoDictionaryKey: "ExerciseAPIBaseURL") as? String, let url = URL(string: configured), url.scheme == "https" { return url }
-        return URL(string: "https://117.50.119.49")!
+        // 兜底为硬编码常量，格式固定；仍避免强解包，异常时退化为本地文件 URL（不会被请求）。
+        return URLComponents(string: "https://117.50.119.49")?.url ?? URL(fileURLWithPath: "/")
     }()
     static func mediaURL(_ value: String?) -> URL? {
         guard let value, let url = URL(string: value) else { return nil }
@@ -136,7 +137,9 @@ enum ExerciseLibraryAPI {
     }
 
     fileprivate static func page(_ query: String, bodyPart: String = "", limit: Int = 40, offset: Int = 0, trainingType: String = "") async throws -> LibraryPage {
-        var components = URLComponents(url: base.appending(path: "/api/v1/exercises"), resolvingAgainstBaseURL: false)!
+        guard var components = URLComponents(url: base.appending(path: "/api/v1/exercises"), resolvingAgainstBaseURL: false) else {
+            throw URLError(.badURL)
+        }
         components.queryItems = [URLQueryItem(name: "q", value: query), URLQueryItem(name: "limit", value: String(limit)), URLQueryItem(name: "offset", value: String(offset))]
         if !bodyPart.isEmpty { components.queryItems?.append(URLQueryItem(name: "body_part", value: bodyPart)) }
         if !trainingType.isEmpty { components.queryItems?.append(URLQueryItem(name: "training_type", value: trainingType)) }
@@ -163,7 +166,9 @@ enum ExerciseLibraryAPI {
 
     static func verifiedMovement(_ query: String) async throws -> LibraryExercise? {
         struct Resolution: Decodable { let item: LibraryExercise? }
-        var components = URLComponents(url: base.appending(path: "/api/v1/resolve"), resolvingAgainstBaseURL: false)!
+        guard var components = URLComponents(url: base.appending(path: "/api/v1/resolve"), resolvingAgainstBaseURL: false) else {
+            throw URLError(.badURL)
+        }
         components.queryItems = [URLQueryItem(name: "q", value: query)]
         let response: Resolution = try await get(components.url!)
         return response.item
@@ -173,7 +178,9 @@ enum ExerciseLibraryAPI {
         guard id.range(of: #"^[0-9A-Za-z_-]{1,64}$"#, options: .regularExpression) != nil else {
             throw URLError(.badURL)
         }
-        var components = URLComponents(url: base.appending(path: "/api/v1/exercises/\(id)"), resolvingAgainstBaseURL: false)!
+        guard var components = URLComponents(url: base.appending(path: "/api/v1/exercises/\(id)"), resolvingAgainstBaseURL: false) else {
+            throw URLError(.badURL)
+        }
         components.queryItems = [URLQueryItem(name: "lang", value: "zh")]
         return try await get(components.url!)
     }

@@ -364,7 +364,7 @@ struct WeeklyReviewDetail: View {
     @State private var ownerID: Int?
     @State private var contextSource: ClubContextSource?
     private var ownsAccount: Bool { ownerID != nil && ownerID == store.editingAccountID }
-    private var cycle: TrainingCycle { review.cycle ?? TrainingCycle(start: ClubDates.key(ClubDates.calendar.date(byAdding: .day, value: -6, to: ClubDates.date(fromKey: review.date) ?? Date())!), plannedDates: []) }
+    private var cycle: TrainingCycle { review.cycle ?? TrainingCycle(start: ClubDates.key(ClubDates.calendar.date(byAdding: .day, value: -6, to: ClubDates.date(fromKey: review.date) ?? Date()) ?? Date().addingTimeInterval(-6 * 86_400)), plannedDates: []) }
     private var readiness: WeeklyReadiness { WeeklyReadiness(cycle: cycle, days: store.state.days) }
     private var review: WeeklyReview {
         if let local = weekly.reviews.first(where: { $0.id == initial.id }) { return local }

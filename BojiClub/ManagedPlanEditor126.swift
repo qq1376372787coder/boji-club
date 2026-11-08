@@ -15,7 +15,7 @@ enum PlanEditRules126 {
     }
     private static func stableID(_ key: String) -> UUID {
         let hex = SHA256.hash(data: Data(key.utf8)).map { String(format: "%02x", $0) }.joined()
-        return UUID(uuidString: "\(hex.prefix(8))-\(hex.dropFirst(8).prefix(4))-\(hex.dropFirst(12).prefix(4))-\(hex.dropFirst(16).prefix(4))-\(hex.dropFirst(20).prefix(12))")!
+        return UUID(uuidString: "\(hex.prefix(8))-\(hex.dropFirst(8).prefix(4))-\(hex.dropFirst(12).prefix(4))-\(hex.dropFirst(16).prefix(4))-\(hex.dropFirst(20).prefix(12))") ?? UUID()
     }
     static func editable(_ day: DayLog, key: String, now: Date = Date()) -> Bool {
         key >= ClubDates.key(now) && !PlanAdoptionRules.isProtected(day) && !day.hasUnconfirmedTraining
