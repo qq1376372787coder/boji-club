@@ -56,7 +56,7 @@ struct PlanCreationSheet: View {
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right").bojiType(.caption)
-            }.frame(maxWidth: .infinity, minHeight: 64, alignment: .leading).bojiCard(padding: 16)
+            }.frame(maxWidth: .infinity, minHeight: BojiLayout.rowHeight, alignment: .leading).bojiCard(padding: 16)
             .contentShape(Rectangle())
         }.buttonStyle(BojiRowPressStylePublic()).accessibilityIdentifier("create-" + target.rawValue)
     }

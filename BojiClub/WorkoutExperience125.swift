@@ -180,7 +180,7 @@ private struct TrainingNumericInput125: View {
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity, minHeight: 46)
+            .frame(maxWidth: .infinity, minHeight: BojiLayout.inputHeight)
             .padding(.horizontal, BojiLayout.tight)
             .background(BojiColor.inputSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
             .focused($focused)

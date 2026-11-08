@@ -126,7 +126,7 @@ struct ClubOptionRow: View {
                 Spacer(minLength: 8)
                 Image(systemName: selected ? "checkmark.circle.fill" : "circle")
                     .bojiType(.section).opacity(selected ? 1 : 0.35)
-            }.frame(maxWidth: .infinity, minHeight: 38, alignment: .leading)
+            }.frame(maxWidth: .infinity, minHeight: BojiLayout.controlHeight, alignment: .leading)
                 .padding(BojiSpace.general)
                 .foregroundStyle(selected ? ClubBrand.onAccent : .primary)
                 .background(selected ? ClubBrand.accent : BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: ClubUI.controlRadius))

@@ -420,7 +420,7 @@ private struct OnboardingGoalChoice: View {
                 Image(systemName: selected ? "checkmark.circle.fill" : "circle").bojiType(.section)
                     .opacity(selected ? 1 : 0.4)
             }
-            .padding(.horizontal, BojiLayout.cardInset).padding(.vertical, BojiSpace.general).frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
+            .padding(.horizontal, BojiLayout.cardInset).padding(.vertical, BojiSpace.general).frame(maxWidth: .infinity, minHeight: BojiLayout.rowHeight, alignment: .leading)
             .foregroundStyle(selected ? ClubBrand.onAccent : FlowPalette.ink)
             .background(selected ? ClubBrand.accent : ClubUI.surface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
         }
@@ -1064,7 +1064,7 @@ struct OnboardingView: View {
             Text(weekdayLabel(day))
                 .bojiType(.secondary)
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: 46)
+                .frame(minHeight: BojiLayout.controlHeight)
                 .foregroundStyle(selected ? ClubBrand.onAccent : FlowPalette.ink)
                 .background(selected ? ClubBrand.accent : FlowPalette.paper, in: Capsule())
         }

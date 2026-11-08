@@ -1848,7 +1848,7 @@ struct ClubAIWorkspaceIdleView: View {
                             Text("挑选经典方案")
                                 .bojiType(.secondary)
                         }
-                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .frame(maxWidth: .infinity, minHeight: BojiLayout.controlHeight)
                         .foregroundStyle(BojiColor.textPrimary)
                         .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: BojiRadius.thumb, style: .continuous))
                     }
@@ -1863,7 +1863,7 @@ struct ClubAIWorkspaceIdleView: View {
                             Text("制定训练计划")
                                 .bojiType(.secondary)
                         }
-                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .frame(maxWidth: .infinity, minHeight: BojiLayout.controlHeight)
                         .foregroundStyle(Color.black)
                         .background(BojiColor.brandAccent, in: RoundedRectangle(cornerRadius: BojiRadius.thumb, style: .continuous))
                     }

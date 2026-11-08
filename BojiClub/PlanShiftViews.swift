@@ -263,7 +263,7 @@ struct PlanMoveSheet: View {
                                 if ClubDates.key(date) == sourceKey { Text("原日期").bojiType(.caption) }
                                 else if !(store.state.days[ClubDates.key(date)]?.exercises.isEmpty ?? true) { Text("有安排").bojiType(.caption) }
                             }
-                            .frame(maxWidth: .infinity, minHeight: 42)
+                            .frame(maxWidth: .infinity, minHeight: BojiLayout.controlHeight)
                             .background(targetDate.map { ClubDates.calendar.isDate($0, inSameDayAs: date) } == true ? BojiColor.textPrimary : BojiColor.cardSurface.opacity(0.7), in: RoundedRectangle(cornerRadius: BojiRadius.inner))
                         }
                         .buttonStyle(.plain)

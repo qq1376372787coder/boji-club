@@ -297,7 +297,7 @@ struct ExerciseLibraryView: View {
             VStack(spacing: 0) {
                 recommendedRowContents(item)
                     .padding(.vertical, BojiSpace.general)
-                    .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
+                    .frame(maxWidth: .infinity, minHeight: BojiLayout.rowHeight, alignment: .leading)
                 if embedded { Divider().overlay(BojiColor.divider) }
             }.contentShape(Rectangle())
         }.buttonStyle(.plain).accessibilityIdentifier("library-exercise-" + item.id).accessibilityValue(selectedIDs.contains(item.id) ? "已选择" : "未选择")
@@ -365,7 +365,7 @@ struct ExerciseLibraryView: View {
             .padding(.horizontal, BojiLayout.inline).padding(.vertical, BojiSpace.tight)
             .background(BojiColor.inputSurface, in: Capsule())
             .foregroundStyle(BojiColor.textPrimary)
-            .frame(minHeight: 32)
+            .frame(minHeight: BojiLayout.controlHeight)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("清除筛选 \(label)")

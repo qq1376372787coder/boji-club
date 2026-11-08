@@ -154,6 +154,7 @@ struct RecordTimeline134: View {
                 HStack(alignment: .top, spacing: BojiLayout.rowGap) {
                     VStack(spacing: 0) {
                         Circle().fill(DataPalette134.blue).frame(width: 7, height: 7).padding(.top, BojiLayout.tight)
+                        // 时间线连接线高度随内容，非控件行高（规格表 G-1 豁免：非 44/48/54/56 控件）
                         if index < events.count - 1 { Rectangle().fill(BojiColor.outline).frame(width: 1).frame(minHeight: 52) }
                     }.frame(width: 10)
                     Text(ClubDates.label(event.date, format: "M月d日")).bojiType(.caption).foregroundStyle(.secondary).frame(width: 50, alignment: .leading).padding(.top, BojiLayout.tight)
