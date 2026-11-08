@@ -231,10 +231,13 @@ private struct ClubNativeGlassButtonModifier: ViewModifier {
 
     @ViewBuilder func body(content: Content) -> some View {
         if #available(iOS 26.0, *), !reduceTransparency, contrast != .increased {
+            // 系统玻璃自带按压反馈（interactive 高光彩带随指尖）——不自造缩放，避免与系统行为打架
             if prominent { content.buttonStyle(.glassProminent) }
             else { content.buttonStyle(.glass) }
         } else if prominent {
+            // 降级：系统 borderedProminent 的按下变暗即按压反馈；M7 的显式缩放见 BojiGlassPressStyle（自绘按钮族用）
             content.buttonStyle(.borderedProminent)
+                .shadow(color: .black.opacity(0.18), radius: 16, x: 0, y: 8)
         } else {
             content.buttonStyle(.bordered)
         }

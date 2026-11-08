@@ -196,7 +196,7 @@ struct ClubPlanHub: View {
                     Text(detail).bojiType(.caption).foregroundStyle(.secondary)
                 }.frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "chevron.right").bojiType(.caption).foregroundStyle(.tertiary)
-            }.padding(.horizontal, BojiLayout.cardInset).frame(minHeight: 78).contentShape(Rectangle())
+            }.padding(.horizontal, BojiLayout.cardInset).frame(minHeight: BojiLayout.rowHeight).contentShape(Rectangle())   // R2 双行入口行 56（规格表 §2.9 遗留裁决）
         }.buttonStyle(.plain)
     }
 
