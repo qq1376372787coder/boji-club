@@ -47,12 +47,13 @@ jobs:
       - name: Guard: 截图用例是否已存在
         id: guard
         run: |
-          if [ -f BojiClubUITests/VisualRegressionShots.swift ]; then
+          # 按类名识别（不死磕文件名），用例还没建时本轮跳过、不误报红。
+          if grep -rq "VisualRegressionShots" BojiClubUITests/ 2>/dev/null; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "截图用例已在位"
           else
             echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::VisualRegressionShots.swift 尚未创建，本轮跳过截图（不影响构建）"
+            echo "::notice::VisualRegressionShots 用例尚未创建，本轮跳过截图（不影响构建）"
           fi
 
       - name: Setup Xcode
