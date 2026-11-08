@@ -87,7 +87,7 @@ struct AccountEntryView: View {
                     Button("健康与运动风险提示") { legalDocument = .healthDisclaimer }
                     Button("购买与退款政策") { legalDocument = .purchase }
                     Button("注销说明") { legalDocument = .deletion }
-                    Link("管理 Apple 登录授权", destination: URL(string: "https://support.apple.com/zh-cn/102571")!)
+                    Link("管理 Apple 登录授权", destination: URLComponents(string: "https://support.apple.com/zh-cn/102571")?.url ?? URL(fileURLWithPath: "/"))
                 }.bojiType(.label)
                 Button {
                     legalAccepted.toggle()
