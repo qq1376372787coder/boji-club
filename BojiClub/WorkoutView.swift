@@ -78,6 +78,7 @@ struct WorkoutView: View {
                 Button("知道了") { actionError = nil }
             } message: {
                 Text(actionError ?? "请稍后再试。")
+                    .onAppear { BojiSound.play(.error) }
             }
     }
 
@@ -594,11 +595,22 @@ struct WorkoutView: View {
                             Text(remaining > 0 ? String(format: "%02d:%02d", remaining / 60, remaining % 60) : "完成")
                                 .bojiFont(.cardTitle, monospacedDigits: true)
                                 .foregroundStyle(BojiColor.textPrimary)
+                            // 17.1：休息最后 3 秒——S5 极轻木鱼 + tick 触感 + 数字微脉冲（减动效只留声音与触感）
+                                .scaleEffect(!reduceMotion && (1...3).contains(remaining) ? 1.06 : 1)
+                                .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: remaining)
+                                .onChange(of: remaining) { _, new in
+                                    if (1...3).contains(new) {
+                                        BojiHaptics.tick(); BojiSound.play(.restTick)
+                                    } else if new == 0 {
+                                        // 结束：「好了，下一组」文案在下方状态行，S2 轻收
+                                        BojiSound.play(.setDone)
+                                    }
+                                }
                         }
                         .frame(width: 84, height: 84)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("组间恢复").bojiType(.label).foregroundStyle(BojiColor.textPrimary)
-                            Text(remaining > 0 ? "保持呼吸 · 准备下一组" : "可以开始下一组")
+                            Text(remaining > 0 ? "保持呼吸 · 准备下一组" : "好了，下一组")
                                 .bojiType(.caption).foregroundStyle(BojiColor.textTertiary)
                         }
                         Spacer()
@@ -622,7 +634,11 @@ struct WorkoutView: View {
         restButton("跳过", symbol: "forward.end") { endRest() }
     }
     private func restButton(_ title: String, symbol: String, action: @escaping () -> Void) -> some View {
-        Button(action: { BojiHaptics.tick(); action() }) {
+        Button(action: {
+            // S1 轻触与休息控制同拍（设计表：tick + S1 ≤40ms）
+            BojiHaptics.tick(); BojiSound.play(.tap)
+            action()
+        }) {
             Label(title, systemImage: symbol).labelStyle(.titleAndIcon)
                 .bojiType(.caption).frame(maxWidth: .infinity, minHeight: 44)
                 .fixedSize(horizontal: false, vertical: true)
@@ -735,6 +751,7 @@ private struct TrainingExerciseCard: View {
             Button("知道了", role: .cancel) { actionError = nil }
         } message: {
             Text(actionError ?? "请重试。")
+                .onAppear { BojiSound.play(.error) }
         }
     }
 
