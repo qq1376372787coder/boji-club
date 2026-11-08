@@ -620,7 +620,39 @@
 
 **判定：批次 1 第二批通过。** 批次 1 剩尾巴两处（记录屏 `BodyWeightView` 巨号、训练完成页事实格），收口后即为**正式基线取样点**（运维支付执行，16 Pro 同设备 + Debug 口径）。
 
-**批次 1 全量收口复验（2026-11-09，run 42501578433 / HEAD `e5ad7ce`，含 `bbd9f58` 交付件入库）—— 通过**
+**批次 1 全量收口复验（2026-11-09，run 42501578433 / HEAD `e5ad7ce`，含 `bbd9f58` 交付件入库；后补 `f57f77b` 坞归属补正）—— 通过**
+
+| 项 | 结论 | 证据 |
+|---|---|---|
+| K1-1 编译 | ✅ | run 42501578433，`dist/BojiClub-33d9d2ff.ipa` 37.44 MB；坞补正后 run 42502242815（`f57f77b`）亦绿 |
+| 批次 1 尾巴两处 | ✅ | ①记录屏当前体重 `BodyWeightView:109` `BojiEditorialNumber(.editorial 76pt)` 主角落位；②完成页事实格 `WorkoutExperience125:272-300` 数据块化（大数字 + 28×1 细分割线 + 标签下置 + `monospacedDigit`），stagger 与数字滚动保留、减动效降级在位 |
+| 2 处 P3 残留清理 | ✅ | 注释「出勤频率」→「训练频率」、组件画廊「本周出勤」→「本周练了」（`e5ad7ce`）；**全库复扫：「出勤」0 处、军事黑话 10 词 0 处** |
+| 引导页三句 | ✅ | 「分秒必争/万事俱备/蜕变，历历在目」零命中（已按定稿重写） |
+| 坞归属补正（Chief 附带条件） | ✅ | `bottomDock:358` 条件 `mode == .training, trainingRoute == nil, let snapshot = activeWorkout`，符合规格表 §1.2；**1058 回归点**已由批次 2 的 `ClubAIShell:177-178` mode 联动堵住（详见批次 2 前半复验） |
+| 交付件入库 | ✅ | `bbd9f58` 8 份（视觉稿/规格表/三联动表/文案定稿等）路径限定入库 |
+
+**批次 1 复验全部通过，K 表无未决项。** 正式基线取样点经 Chief 修正为 **`f57f77b`**（坞补正计入批次 1），已由运维支付取样收数（见下节）。
+
+**批次 2 前半复验（2026-11-09，HEAD `348da21`，三联动 `9ef2f0c`/`715d255` + 玻璃沉浸 `348da21`）—— 通过**
+
+| 项 | 结论 | 证据 |
+|---|---|---|
+| K1-1 编译 | ✅ | run 42503593639（三联动，`dist/BojiClub-4ffd8007.ipa`）+ run 42504572337（玻璃，`dist/BojiClub-cf1edafa.ipa`）双绿 |
+| K1-8 三联动同拍 | ✅（源码级） | 触发点均在同一 action 闭包顺序调用：`TrainingRegistrationViews:308`（tick+tap 同刻）、`:319`（heavyDrop+milestone +75ms 贴第二脉冲）、`:322`（latch+setDone +55ms）、`WorkoutView:186`（milestone+workoutDone 同刻）；`BojiSound.play` 主队列延时 ±10ms（容差 ±20ms）、0.05s 去抖不叠声、6 player `prepareToPlay` 预加载。**实测同步性（手感/声音/画面）待真机** |
+| K1-9 降级不缺功能 | ✅（源码级） | 硬件静音：`.ambient` 会话天然优先（`BojiSound:46`）；设置开关 `boji.soundEnabled` 默认开（`ProfileView:190`），关只停音效、触感/动效照常；减动效：音效触感按设计表保留。**实测待真机** |
+| 1058 坞回归点 | ✅ 已堵 | `ClubAIShell:177-178` `onChange(of: activeWorkout?.sessionID)` 恢复进行中训练时 `mode = .training`（带注释），relaunch 后坞条按归属规则显示——我预警的回归点已修 |
+| 玻璃沉浸降级 | ✅ | `Design.swift` `clubTrackScrollY` 桥接：iOS 18 `onScrollGeometryChange`，**else 分支静默不收缩**（iOS 17 保持全屏），页面层零散写 `#available`；收缩动画 `BojiMotion2.resolved(..., reduceMotion:)`（`:1035`）；**流光收缩态暂停** `paused: reduceMotion \|\| heroShrunk`（`:1027`，一屏运动 ≤2 红线） |
+| K1-10 华丽红线 | ✅（源码级） | 无彩虹/无无限闪动（收缩态流光主动停）/音效不循环连播（去抖 + 单次 play） |
+| pbxproj 撞号防护 | ✅ | 音效素材注册 ID 9903-9906，注册前 grep 确认零占用 |
+
+**正式基线收数（运维支付 run 42503336067 / `f57f77b`，tag `ios-perf/batch1-baseline`）—— 双条件命中 ✅**
+
+- `totalTestCount: 2 / passedTests: 2 / Passed` + 设备 **iPhone 16 Pro / iOS 26.2**，归档 `docs/performance-baseline-20261109-b1/`（`4b58ecd`）。
+- **可靠对照项**：滚动时长 0.852s（RSD 1.8%）、内存峰值 106.2 MB（RSD 0.03%）。
+- **不作精确对比**：冷启动 5.756s（RSD 56.1%，首采样 12.19s 离群）、CPU Time 1.315s（RSD 27.9%，前两次离群）——新 runner 首采样污染，批次 2 后测同此处理（稳态值参考、标注离群）。
+- **对比归因拆分**（运维支付 `7d11b96`）：音效框架（+0.25MB、启动预加载 6 player 抬冷启动/内存）为非玻璃变量，批次 2 后测差值须拆「音效固定开销」与「玻璃沉浸增量」，拆不开标叠加不下结论。
+
+**批次 2 尾巴（苹果开发在做）**：完成页庆祝编排（S4+stagger 同拍）、S5 休息最后 3 秒、S6 错误音——交付后终扫，随后批次 2 后测取样（同 16 Pro/Debug）做前后对比。
 
 | 项 | 结论 | 证据 |
 |---|---|---|
