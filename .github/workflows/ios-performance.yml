@@ -138,17 +138,31 @@ jobs:
         env:
           UDID: ${{ steps.sim.outputs.udid }}
         run: |
-          set -e
           mkdir -p test-results
-          # 只跑性能用例：用例少、耗时可控，避免整套 UI 测试拖长流水线。
-          xcodebuild test \
+          # 先单独构建测试，把构建错误和测试失败分开看；日志落盘便于失败时定位。
+          echo "=== 构建测试目标 ==="
+          xcodebuild build-for-testing \
+            -project BojiClub.xcodeproj \
+            -scheme BojiClub \
+            -destination "platform=iOS Simulator,id=$UDID" \
+            -quiet 2>&1 | tee test-results/build-for-testing.log || {
+              echo "::error::build-for-testing 失败，见 Step Summary 的日志尾部"
+              tail -40 test-results/build-for-testing.log >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            }
+
+          echo "=== 运行性能用例 ==="
+          xcodebuild test-without-building \
             -project BojiClub.xcodeproj \
             -scheme BojiClub \
             -destination "platform=iOS Simulator,id=$UDID" \
             -only-testing:BojiClubUITests/BojiClubPerformanceTests \
             -resultBundlePath test-results/performance.xcresult \
-            -quiet
-          echo "exit=$?" >> "$GITHUB_OUTPUT"
+            2>&1 | tee test-results/test-run.log || {
+              echo "::error::测试执行失败，见 Step Summary 的日志尾部"
+              tail -60 test-results/test-run.log >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            }
 
       - name: Export test results as JSON
         if: always()
