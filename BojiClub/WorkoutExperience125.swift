@@ -270,23 +270,31 @@ struct WorkoutCelebration125: View {
             .sensoryFeedback(.success, trigger: appeared)
     }
     private func fact(_ title: String, value: String, unit: String, index: Int) -> some View {
-        VStack(spacing: BojiLayout.tight) {
-            Text(title).bojiType(.caption).foregroundStyle(.secondary)
-            Text(value).bojiType(.section).contentTransition(.numericText()).lineLimit(1).minimumScaleFactor(0.65)
-            Text(unit.isEmpty ? " " : unit).bojiType(.caption).foregroundStyle(.secondary)
-        }.frame(maxWidth:.infinity)
+        VStack(alignment: .leading, spacing: BojiLayout.tight) {
+            Text(value).font(.title2.weight(.semibold)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.65)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Rectangle().fill(BojiColor.divider).frame(width: 28, height: 1)
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(title).bojiType(.label).foregroundStyle(BojiColor.textSecondary)
+                if !unit.isEmpty { Text(unit).bojiType(.caption).foregroundStyle(BojiColor.textTertiary) }
+            }
+        }.frame(maxWidth: .infinity, alignment: .leading)
             .bojiStaggeredEntrance(appeared: appeared, reduceMotion: reduceMotion, index: index)
     }
 
     /// 数字滚动事实格：从 0 滚到目标值（counter linear 0.35s），减少动态效果直接落终值。
     private func rollingFact(_ title: String, target: Double, precision: Int = 0, unit: String, index: Int) -> some View {
         BojiRollingFact(target: target, precision: precision, reduceMotion: reduceMotion) { value in
-            VStack(spacing: BojiLayout.tight) {
-                Text(title).bojiType(.caption).foregroundStyle(.secondary)
-                Text(value).bojiType(.section).lineLimit(1).minimumScaleFactor(0.65)
-                Text(unit.isEmpty ? " " : unit).bojiType(.caption).foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                Text(value).font(.title2.weight(.semibold)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.65)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Rectangle().fill(BojiColor.divider).frame(width: 28, height: 1)
+                HStack(alignment: .firstTextBaseline, spacing: 2) {
+                    Text(title).bojiType(.label).foregroundStyle(BojiColor.textSecondary)
+                    if !unit.isEmpty { Text(unit).bojiType(.caption).foregroundStyle(BojiColor.textTertiary) }
+                }
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .bojiStaggeredEntrance(appeared: appeared, reduceMotion: reduceMotion, index: index)
         }
     }

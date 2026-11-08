@@ -104,25 +104,27 @@ struct BodyWeightView: View {
                         let weekDelta = weekAgo.map { last.kilograms - $0.kilograms }
                         let interval = weekAgo.map { ClubDates.calendar.dateComponents([.day], from: $0.date, to: last.date).day ?? 0 }
                         let layout = typeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading)) : AnyLayout(HStackLayout(spacing: BojiLayout.inline))
-                        layout {
-                            BojiKpiCapsule(
-                                title: "当前体重",
+                        VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
+                            // 2+3 §2.3：当前值 .editorial 巨号当主角（真实称重数据）
+                            BojiEditorialNumber(
                                 value: last.kilograms.formatted(.number.precision(.fractionLength(1))),
-                                unit: "kg",
-                                spark: points.suffix(7).map(\.kilograms)
+                                label: "当前体重 kg",
+                                scale: .editorial
                             )
-                            BojiKpiCapsule(
-                                title: interval.map { "较上次（\($0)天）" } ?? "较上次",
-                                value: weekDelta?.formatted(.number.sign(strategy: .always()).precision(.fractionLength(1))) ?? "—",
-                                unit: "kg",
-                                delta: weekDelta,
-                                downIsGood: target.map { last.kilograms > $0 } ?? false
-                            )
-                            BojiKpiCapsule(
-                                title: "距目标",
-                                value: target.map { abs($0 - last.kilograms).formatted(.number.precision(.fractionLength(1))) } ?? "未设置目标",
-                                unit: target == nil ? "" : "kg"
-                            )
+                            layout {
+                                BojiKpiCapsule(
+                                    title: interval.map { "较上次（\($0)天）" } ?? "较上次",
+                                    value: weekDelta?.formatted(.number.sign(strategy: .always()).precision(.fractionLength(1))) ?? "—",
+                                    unit: "kg",
+                                    delta: weekDelta,
+                                    downIsGood: target.map { last.kilograms > $0 } ?? false
+                                )
+                                BojiKpiCapsule(
+                                    title: "距目标",
+                                    value: target.map { abs($0 - last.kilograms).formatted(.number.precision(.fractionLength(1))) } ?? "未设置目标",
+                                    unit: target == nil ? "" : "kg"
+                                )
+                            }
                         }
                     }
                     ClubCard {
