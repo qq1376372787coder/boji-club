@@ -103,9 +103,6 @@ struct ClubAIShellView: View {
     @State private var restDeadlines: [String: ClubRestResume] = [:]
     @State private var creatingForDate: ClubTrainingRoute?
     @State private var guideOwner: ClubGuideOwner?
-    @State private var heroPlayer: AVQueuePlayer?
-    @State private var heroLooper: AVPlayerLooper?
-    @Environment(\.colorScheme) private var colorScheme
     @State private var showMembership = false
     @State private var showProfileBasics135 = false
     @State private var showPermissions135 = false
@@ -1061,6 +1058,10 @@ struct ClubAIWorkspaceIdleView: View {
     @EnvironmentObject private var clubSeason: ClubSeasonService
     @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var heroPlayer: AVQueuePlayer?
+    @State private var heroLooper: AVPlayerLooper?
     @State private var showSeason = false
     @State private var showPresetPlans = false
     @State private var readingDailyReportID: String? = nil
