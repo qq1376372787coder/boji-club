@@ -270,7 +270,7 @@ struct PlanMoveSheet: View {
                         .disabled(!enabled)
                         .opacity(ClubDates.key(date) == sourceKey ? 0.65 : 1)
                     } else {
-                        Color.clear.frame(height: 42)
+                        Color.clear.frame(height: BojiLayout.controlHeight)
                     }
                 }
             }

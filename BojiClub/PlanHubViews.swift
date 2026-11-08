@@ -225,7 +225,7 @@ struct PlanWeekCard: View {
                         .bojiType(.label)
                         .foregroundStyle(BojiColor.brandAccent)
                         .padding(.horizontal, BojiLayout.inline)
-                        .frame(height: 32)
+                        .frame(height: BojiLayout.controlHeight)
                         .background(BojiColor.cardSurface, in: Capsule())
                         .overlay {
                             Capsule().stroke(BojiColor.outline, lineWidth: 0.5)
@@ -303,7 +303,7 @@ struct PlanWeekCard: View {
                     }
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: BojiLayout.tight), count: 7), spacing: BojiLayout.tight) {
                         ForEach(Array(cells.enumerated()), id: \.offset) { _, date in
-                            if let date { dayCell(date) } else { Color.clear.frame(height: 40) }
+                            if let date { dayCell(date) } else { Color.clear.frame(height: BojiLayout.controlHeight) }
                         }
                     }
                 }

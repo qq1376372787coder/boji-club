@@ -110,14 +110,14 @@ struct AccountEntryView: View {
                         completeAppleSignIn(result)
                     }
                     .signInWithAppleButtonStyle(.black)
-                    .frame(height: 52)
+                    .frame(height: BojiLayout.inputHeight)
                     .clipShape(RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
                     .opacity(legalAccepted && !busy ? 1 : 0.55)
                     .disabled(busy || !legalAccepted)
                     .accessibilityHidden(!legalAccepted)
                     if !legalAccepted && !busy {
                         Button { error = "请先阅读并同意协议，再继续登录。" } label: {
-                            Color.clear.frame(height: 52).contentShape(Rectangle())
+                            Color.clear.frame(height: BojiLayout.inputHeight).contentShape(Rectangle())
                         }.buttonStyle(.plain)
                             .accessibilityLabel("继续使用 Apple 登录，需先同意协议")
                     }
