@@ -357,6 +357,30 @@ final class CrossPageParityTests: XCTestCase {
         XCTAssertEqual(oneWeek.body?.weight_trend, "insufficient_data")
     }
 
+    /// **首页体重变化的窗口 = 近 14 天**（不是全部历史）。
+    ///
+    /// 口径表 §4.4 裁定：窗口不必统一（首页 14 天 / 周报本周期 / 趋势按桶），
+    /// 但**必须标明**，且**同屏的图与数字要说同一个窗口**。
+    ///
+    /// 本用例钉住实现事实：`ClubDashboardFacts.weightHistory` 取近 14 天，
+    /// 防止有人把它改成全历史——那会与同屏图表的 14 天窗口自相矛盾。
+    func testHomeWeightDeltaUsesFourteenDayWindow() {
+        let today = Date()
+        let calendar = ClubDates.calendar
+        var days: [String: DayLog] = [:]
+        for (offset, kg) in [(0, 68.0), (10, 69.0), (30, 75.0)] {
+            let date = calendar.date(byAdding: .day, value: -offset, to: today) ?? today
+            days[ClubDates.key(date)] = DayLog(bodyWeight: BodyWeightEntry(kilograms: kg, updatedAt: date, recordedAt: date))
+        }
+        let state = makeState(days: days)
+
+        let history = ClubDashboardFacts.weightHistory(days: state.days, healthDays: [:], through: today)
+        XCTAssertEqual(history.count, 2, "14 天窗口只应含今天与 10 天前两点，实际 \(history.count)")
+        XCTAssertFalse(history.contains { $0.weight == 75.0 }, "30 天前的测量不得进入 14 天窗口")
+        XCTAssertEqual(history.last!.weight - history.first!.weight, -1.0, accuracy: 0.05,
+                       "首页 delta = 近 14 天首尾差（68.0 − 69.0）")
+    }
+
     /// 缺陷复现：一天里有多条称重记录时，趋势页只认单条 `bodyWeight`，漏掉 `bodyMeasurements`。
     /// 根因：TrendAnalysis.swift:476 用 `day.bodyWeight?.measuredKilograms`，
     /// 而记录页权威来源是 `BodyWeightHistory.points`（DailyExperience.swift:287，取当日全部有效测量）。
