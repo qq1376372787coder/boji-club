@@ -49,18 +49,35 @@ jobs:
         id: sim
         run: |
           set -e
-          # 与旧基线同口径：iPhone SE（第 3 代）
+          # 先看清 runner 上到底有哪些模拟器（诊断用，失败时也留着线索）。
+          echo "=== 可用设备 ==="
+          xcrun simctl list devices available
+          echo "=== 可用 runtime ==="
+          xcrun simctl list runtimes || true
+          echo "=== xcodebuild -version ==="
+          xcodebuild -version || true
+
+          # 与旧基线同口径：iPhone SE（第 3 代）。名字写法在不同 Xcode 版本间会变，
+          # 所以用宽松匹配 + 直接按 runtime 版本挑。
           UDID=$(xcrun simctl list devices available --json | jq -r '
             .devices[]
             | to_entries[]
             | .value[]
-            | select(.name | test("iPhone SE .*3|iPhone SE \(3rd|iPhone SE 3"))
+            | select(.name | test("iPhone SE"))
             | .udid' | head -1)
           if [ -z "$UDID" ]; then
-            echo "::warning::没找到 SE3，退回任意可用的 iPhone"
-            UDID=$(xcrun simctl list devices available --json | jq -r '.devices[] | to_entries[] | .value[] | .udid' | head -1)
+            echo "::warning::没有 iPhone SE，退回任意可用的 iPhone"
+            UDID=$(xcrun simctl list devices available --json | jq -r '
+              .devices[]
+              | to_entries[]
+              | .value[]
+              | select(.name | test("iPhone"))
+              | .udid' | head -1)
           fi
-          [ -n "$UDID" ] || { echo "::error::没有可用的模拟器"; exit 1; }
+          if [ -z "$UDID" ]; then
+            echo "::error::没有可用的 iPhone 模拟器"
+            exit 1
+          fi
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           echo "使用模拟器: $UDID"
           xcrun simctl boot "$UDID" 2>/dev/null || true
