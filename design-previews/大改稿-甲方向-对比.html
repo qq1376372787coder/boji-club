@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BOJI_CLUB 大改视觉稿 · 甲方向 · 现在 vs 改后</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;background:#E6E7EC;color:#15171C;padding:26px 16px 70px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:23px;letter-spacing:-.4px}
+.lead{color:#4E525C;font-size:13.5px;margin:8px 0 6px;line-height:1.75;max-width:900px}
+.lead b{color:#15171C}
+.rule7{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 26px}
+.rule7 span{font-size:11.5px;background:#fff;padding:6px 11px;border-radius:999px;color:#3A3E48;box-shadow:0 1px 4px rgba(15,23,42,.06)}
+.rule7 span b{color:#8A6A2F}
+
+.pair{margin-bottom:38px}
+.pair h3{font-size:14.5px;font-weight:700;margin-bottom:3px}
+.pair .ph{font-size:12px;color:#7A7E88;margin-bottom:12px}
+.row{display:flex;gap:22px;flex-wrap:wrap}
+.cell{width:300px}
+.cell .lbl{font-size:11px;font-weight:700;letter-spacing:.4px;margin-bottom:7px}
+.lbl.bad{color:#C0303A}.lbl.good{color:#0E7B52}
+.ph2{position:relative;width:300px;height:608px;border-radius:38px;overflow:hidden;background:#fff;
+     box-shadow:0 16px 40px rgba(15,23,42,.16);border:7px solid #12141A}
+.ph2.D{--bg:#0B0C0F;--card:#16181D;--ink:#F4F5F7;--ink2:#A6AAB3;--ink3:#7C818B;--hair:rgba(255,255,255,.14);background:var(--bg);color:var(--ink)}
+.notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:88px;height:21px;background:#12141A;border-radius:11px;z-index:30}
+.sb{display:flex;justify-content:space-between;padding:12px 20px 0;font-size:10.5px;font-weight:600;position:relative;z-index:31;color:var(--ink,#15171C)}
+
+/* ============ 旧：现在 ============ */
+.old{padding:0}
+.old .vid{position:relative;height:290px;background:linear-gradient(155deg,#3E4A5C,#6E7C93 42%,#BBA994);overflow:hidden;border-radius:0 0 24px 24px}
+.old .face{position:absolute;left:50%;top:26%;transform:translateX(-50%);width:104px;height:104px;border-radius:50%;
+  background:radial-gradient(circle at 42% 36%,#EFDAC4,#C6A78C 58%,#967C64)}
+.old .txt{position:absolute;left:16px;right:16px;bottom:20px;z-index:3}
+.old .eb{font-size:10.5px;color:rgba(255,255,255,.85)}
+.old .big{font-size:38px;font-weight:800;letter-spacing:-1.4px;line-height:1.1;color:#fff;
+  text-shadow:0 2px 12px rgba(0,0,0,.45);margin-top:2px}
+.old .dash{outline:2px dashed #E5484D;outline-offset:3px;border-radius:3px}
+.old .body{padding:14px 16px 0}
+.old .cards{display:flex;gap:8px}
+.old .cd{flex:1;background:#fff;border-radius:16px;padding:10px;box-shadow:0 4px 14px rgba(15,23,42,.07)}
+.old .cd .k{font-size:9.5px;color:#8A8D96}
+.old .cd .v{font-size:17px;font-weight:800;margin-top:2px}
+.old .cd .u{font-size:9px;color:#8A8D96}
+.old .rows{margin-top:12px}
+.old .rw{background:#fff;border-radius:16px;padding:11px 13px;margin-bottom:8px;display:flex;gap:10px;align-items:center;box-shadow:0 4px 14px rgba(15,23,42,.07)}
+.old .rw .ic{width:28px;height:28px;border-radius:9px;background:#EEF0F5;display:flex;align-items:center;justify-content:center;font-size:13px}
+.old .rw .a{font-size:13px;font-weight:600}
+.old .rw .b{font-size:10.5px;color:#8A8D96}
+.old .pill{position:absolute;left:16px;right:16px;bottom:76px;height:48px;border-radius:999px;background:#15171C;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:14.5px;font-weight:700}
+.old .tab{position:absolute;left:0;right:0;bottom:0;height:64px;background:rgba(255,255,255,.94);display:flex;
+  justify-content:space-around;align-items:center;font-size:9.5px;color:#8A8D96;border-top:.5px solid #E5E6EB;z-index:20}
+.old .tab .on{color:#414D63;font-weight:700}
+.badge{position:absolute;font-size:9.5px;background:#E5484D;color:#fff;padding:2px 7px;border-radius:999px;font-weight:700;z-index:25}
+
+/* ============ 新：改后 ============ */
+.new{padding:0;background:var(--bg,#fff);color:var(--ink,#15171C)}
+.new .hero{position:relative;margin:10px 16px 0;height:238px;border-radius:24px;overflow:hidden;
+  background:linear-gradient(155deg,#3E4A5C,#6E7C93 42%,#BBA994)}
+.new .hero .face{position:absolute;left:50%;top:24%;transform:translateX(-50%);width:96px;height:96px;border-radius:50%;
+  background:radial-gradient(circle at 42% 36%,#EFDAC4,#C6A78C 58%,#967C64)}
+.new .brand{position:absolute;left:14px;top:13px;z-index:4;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.94);letter-spacing:.3px;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.new .pause{position:absolute;right:11px;top:11px;z-index:4;width:30px;height:30px;border-radius:50%;
+  background:rgba(255,255,255,.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}
+.new .fade{position:absolute;left:0;right:0;bottom:0;height:52px;z-index:3;background:linear-gradient(180deg,rgba(255,255,255,0),var(--bg,#fff))}
+
+.new .head{padding:16px 20px 0}
+.new .kick{font-size:10.5px;color:var(--ink3,#8A8D96);letter-spacing:.5px;text-transform:none}
+.new .num{font-size:74px;font-weight:800;letter-spacing:-3.2px;line-height:.92;margin-top:5px;font-variant-numeric:tabular-nums}
+.new .num .un{font-size:15px;font-weight:600;letter-spacing:0;color:var(--ink3,#8A8D96);margin-left:5px}
+.new .num .tag2{font-size:10.5px;font-weight:600;letter-spacing:.5px;color:var(--ink3,#8A8D96);margin-left:7px;vertical-align:baseline}
+.new .say{font-size:14.5px;color:var(--ink2,#5A5E68);margin-top:9px;line-height:1.45}
+.new .sub2{font-size:11px;color:var(--ink3,#8A8D96);margin-top:4px}
+
+/* 数据条：去卡片、细线分隔 */
+.new .stats{display:flex;gap:0;margin:20px 20px 0;border-top:.5px solid var(--hair,#E3E5EA);border-bottom:.5px solid var(--hair,#E3E5EA)}
+.new .st2{flex:1;padding:13px 0}
+.new .st2+.st2{border-left:.5px solid var(--hair,#E3E5EA);padding-left:14px}
+.new .st2 .k{font-size:10px;color:var(--ink3,#8A8D96);letter-spacing:.2px}
+.new .st2 .v{font-size:20px;font-weight:700;letter-spacing:-.7px;margin-top:3px;font-variant-numeric:tabular-nums}
+.new .st2 .v small{font-size:10px;font-weight:600;color:var(--ink3,#8A8D96);margin-left:2px;letter-spacing:0}
+
+.new .sec{display:flex;justify-content:space-between;align-items:baseline;padding:24px 20px 0}
+.new .sec .t{font-size:11px;font-weight:700;color:var(--ink3,#8A8D96);letter-spacing:.8px}
+.new .sec .m{font-size:11.5px;color:var(--ink2,#5A5E68)}
+.new .list{margin:8px 20px 0;border-top:.5px solid var(--hair,#E3E5EA)}
+.new .li{display:flex;align-items:baseline;gap:11px;padding:13px 0;border-bottom:.5px solid var(--hair,#E3E5EA)}
+.new .li .ix{font-size:10.5px;font-weight:700;color:var(--ink3,#8A8D96);width:16px;font-variant-numeric:tabular-nums}
+.new .li .nm{font-size:14.5px;font-weight:600;letter-spacing:-.2px}
+.new .li .dt{font-size:11px;color:var(--ink3,#8A8D96);margin-top:1px}
+.new .li .rt{margin-left:auto;font-size:12.5px;color:var(--ink2,#5A5E68);font-variant-numeric:tabular-nums}
+.new .dock{position:absolute;left:16px;right:16px;bottom:74px}
+/* 主操作 = 玻璃（操作层），不是纯黑 */
+.new .cta{height:54px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  font-size:15.5px;font-weight:700;letter-spacing:-.2px;color:var(--ink,#15171C);
+  background:linear-gradient(160deg,rgba(255,255,255,.82),rgba(255,255,255,.52) 48%,rgba(255,255,255,.72));
+  backdrop-filter:blur(20px) saturate(1.7);-webkit-backdrop-filter:blur(20px) saturate(1.7);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 0 0 .5px rgba(255,255,255,.65),
+             0 10px 26px rgba(15,23,42,.16)}
+.new.D .cta{color:#F4F5F7;
+  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.07) 48%,rgba(255,255,255,.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), inset 0 0 0 .5px rgba(255,255,255,.18),
+             0 10px 26px rgba(0,0,0,.45)}
+.new .tab{position:absolute;left:0;right:0;bottom:0;height:64px;background:rgba(255,255,255,.96);display:flex;
+  justify-content:space-around;align-items:center;font-size:9.5px;color:#8A8D96;border-top:.5px solid #E5E6EB;z-index:20}
+.new.D .tab{background:rgba(16,18,22,.96);border-top-color:rgba(255,255,255,.12)}
+.new .tab .on{color:#414D63;font-weight:700}
+.new.D .tab .on{color:#DCC08A}
+
+/* 空态卡 */
+.new .guide{margin:20px 20px 0;border:.5px solid var(--hair,#E3E5EA);border-radius:18px;padding:18px 16px}
+.new .guide .g1{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.new .guide .g2{font-size:12.5px;color:var(--ink2,#5A5E68);margin-top:6px;line-height:1.55}
+.new .guide .gbtn{margin-top:14px;height:44px;border-radius:999px;border:1px solid var(--hair,#E3E5EA);
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--ink,#15171C)}
+.new.D .guide .gbtn{color:#F4F5F7}
+.new .ghost{font-size:11px;color:var(--ink3,#8A8D96);text-align:center;margin-top:11px}
+
+/* 训练中 */
+.new .wtop{padding:14px 20px 0}
+.new .wbig{font-size:64px;font-weight:800;letter-spacing:-2.8px;line-height:.94;font-variant-numeric:tabular-nums}
+.new .wbig .d{font-size:17px;font-weight:700;color:var(--ink3,#8A8D96);letter-spacing:-.3px;margin-left:3px}
+.new .bar2{height:6px;border-radius:999px;background:var(--hair,#E3E5EA);margin:16px 20px 0;overflow:hidden}
+.new .bar2 i{display:block;height:100%;width:42%;border-radius:999px;background:#414D63}
+.new.D .bar2 i{background:#DCC08A}
+.new .ex{margin:18px 20px 0;border-top:.5px solid var(--hair,#E3E5EA);padding-top:14px}
+.new .ex .h{display:flex;align-items:baseline;gap:8px}
+.new .ex .n{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.new .ex .mu{font-size:10.5px;color:var(--ink3,#8A8D96)}
+.new .ex .ck{margin-left:auto;font-size:13px;color:#0E7B52}
+.new .sets{display:flex;gap:7px;margin-top:11px}
+.new .s2{flex:1;border-radius:11px;border:.5px solid var(--hair,#E3E5EA);padding:8px 0;text-align:center}
+.new .s2 b{font-size:14px;font-weight:700;letter-spacing:-.3px;font-variant-numeric:tabular-nums;display:block}
+.new .s2 i{font-style:normal;font-size:9.5px;color:var(--ink3,#8A8D96)}
+.new .s2.on{background:var(--hair,#F1F2F5);border-color:transparent}
+.new .wbar{position:absolute;left:16px;right:16px;bottom:74px;height:58px;border-radius:999px;display:flex;align-items:center;
+  padding:0 8px 0 18px;background:rgba(21,23,28,.92);color:#fff;backdrop-filter:blur(12px);
+  box-shadow:0 10px 26px rgba(0,0,0,.22)}
+.new .wbar .tm{font-size:17px;font-weight:800;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.new .wbar .lb{font-size:9.5px;color:rgba(255,255,255,.7);margin-top:1px}
+.new .wbar .go{margin-left:auto;height:44px;padding:0 19px;border-radius:999px;background:#fff;color:#15171C;
+  font-size:14px;font-weight:700;display:flex;align-items:center}
+
+/* 记录 */
+.new .edit{margin:18px 20px 0;border-top:.5px solid var(--hair,#E3E5EA)}
+.new .fr{display:flex;align-items:center;padding:15px 0;border-bottom:.5px solid var(--hair,#E3E5EA)}
+.new .fr .k{font-size:12.5px;color:var(--ink3,#8A8D96);width:52px}
+.new .fr .val{font-size:28px;font-weight:800;letter-spacing:-1.2px;font-variant-numeric:tabular-nums}
+.new .fr .un{font-size:11px;color:var(--ink3,#8A8D96);margin-left:3px}
+.new .stp{margin-left:auto;display:flex;align-items:center;gap:2px;border:.5px solid var(--hair,#E3E5EA);border-radius:10px;overflow:hidden}
+.new .stp b{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600}
+.new .stp b+b{border-left:.5px solid var(--hair,#E3E5EA)}
+.new .seg{margin:16px 20px 0;display:flex;border:.5px solid var(--hair,#E3E5EA);border-radius:10px;overflow:hidden}
+.new .seg span{flex:1;text-align:center;font-size:11.5px;font-weight:600;padding:8px 0;color:var(--ink3,#8A8D96)}
+.new .seg span.on{background:var(--hair,#F1F2F5);color:var(--ink,#15171C)}
+.new.D .seg span.on{background:rgba(255,255,255,.1);color:#F4F5F7}
+
+.note{margin-top:11px;font-size:11.5px;line-height:1.68;color:#3E424B;background:#fff;border-radius:11px;padding:11px 13px;
+  box-shadow:0 2px 10px rgba(15,23,42,.05)}
+.note b{color:#15171C}
+.note .t{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;margin-bottom:5px}
+.t.r{background:#FCE8E8;color:#B82B34}.t.g{background:#E1F4EA;color:#0B6F49}
+.switch{display:flex;gap:8px;margin-bottom:20px;align-items:center}
+.switch button{font:inherit;font-size:12.5px;font-weight:600;padding:7px 15px;border-radius:999px;border:1px solid #D2D4DB;background:#fff;cursor:pointer;color:#2A2D35}
+.switch button.on{background:#15171C;color:#fff;border-color:#15171C}
+</style></head><body>
+<div class="wrap">
+<h1>大改视觉稿 · 甲方向（骨架保留，布局分层推倒重排）</h1>
+<p class="lead">骨架不动：<b>大字排印 + 玻璃 + 视频带</b>。改的是<b>布局、层次、细节</b>——目标是「真正高级」。下面四组「现在 ↔ 改后」，右边是新稿。看气质对不对，丑的地方直接说。</p>
+
+<div class="rule7">
+  <span>① <b>视频只做一条带</b>，绝不做背景铺满</span>
+  <span>② <b>文字全部离开媒体</b>，护脸是第一原则</span>
+  <span>③ <b>去卡片化</b>：细线分隔代替白卡浮起</span>
+  <span>④ <b>字号拉开对比</b>：展示字更大，正文更小</span>
+  <span>⑤ <b>整屏一个彩色</b>，其余全灰阶</span>
+  <span>⑥ <b>主操作位置固定</b>：底部全宽胶囊</span>
+  <span>⑦ <b>留白加多</b>：区块间距 18→28</span>
+</div>
+
+<div class="switch">
+  <button class="on" id="bL">亮色</button><button id="bD">暗色</button>
+  <span style="font-size:11.5px;color:#7A7E88">暗色是方案的一等公民，不是反色</span>
+</div>
+
+<!-- ===== 1 首页 ===== -->
+<div class="pair">
+  <h3>① 首页 · 有数据</h3>
+  <p class="ph">现在：52pt 标题压视频 + 白卡堆叠 + 黑钮盖内容｜改后：视频带 238pt 干净、巨号落底色、细线分区</p>
+  <div class="row">
+    <div class="cell">
+      <div class="lbl bad">现在</div>
+      <div class="ph2 old">
+        <div class="sb"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+        <div style="margin-top:8px">
+          <div class="vid">
+            <div class="face"></div>
+            <div class="txt">
+              <div class="eb">薄肌俱乐部</div>
+              <div class="big dash">今天的训练，已<br>经为你准备好</div>
+            </div>
+            <span class="badge" style="left:16px;top:200px">断在词中间 · 压脸</span>
+          </div>
+          <div class="body">
+            <div class="cards">
+              <div class="cd"><div class="k">睡眠</div><div class="v">—</div><div class="u">小时</div></div>
+              <div class="cd"><div class="k">心率</div><div class="v">—</div><div class="u">bpm</div></div>
+              <div class="cd"><div class="k">步数</div><div class="v">0</div><div class="u">步</div></div>
+            </div>
+            <div class="rows">
+              <div class="rw"><div class="ic">▤</div><div><div class="a">胸大肌 · 中束</div><div class="b">4 组 × 8–12 次</div></div></div>
+              <div class="rw"><div class="ic">◫</div><div><div class="a">三角肌 · 前束</div><div class="b">3 组 × 10–15 次</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pill">开始今日训练</div>
+        <div class="tab"><span class="on">今天</span><span>训练</span><span>记录</span></div>
+      </div>
+      <div class="note" style="margin-top:9px"><span class="t r">病</span><br>标题断行断在词中、压人脸；三张白卡各自浮起，层次一律；「— / 0」放空态寒酸。</div>
+    </div>
+    <div class="cell">
+      <div class="lbl good">改后</div>
+      <div class="ph2 new">
+        <div class="sb"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+        <div class="hero">
+          <div class="face"></div>
+          <div class="brand">薄肌俱乐部</div>
+          <div class="pause">▮▮</div>
+          <div class="fade"></div>
+        </div>
+        <div class="head">
+          <div class="kick">今天 · 11月9日 周日</div>
+          <div class="num">88</div>
+          <div class="say">状态正好，今天练上肢推</div>
+          <div class="sub2">45 分钟 · 4 个动作</div>
+        </div>
+        <div class="stats">
+          <div class="st2"><div class="k">睡眠</div><div class="v">7.5<small>h</small></div></div>
+          <div class="st2"><div class="k">静息心率</div><div class="v">54<small>bpm</small></div></div>
+          <div class="st2"><div class="k">步数</div><div class="v">8,240</div></div>
+        </div>
+        <div class="sec"><div class="t">今天安排</div><div class="m">全部 ›</div></div>
+        <div class="list">
+          <div class="li"><div class="ix">01</div><div><div class="nm">杠铃卧推</div><div class="dt">胸大肌 · 中束</div></div><div class="rt">4×8</div></div>
+          <div class="li"><div class="ix">02</div><div><div class="nm">上斜哑铃卧推</div><div class="dt">胸大肌 · 上束</div></div><div class="rt">3×12</div></div>
+        </div>
+        <div class="dock"><div class="cta">开始今日训练</div></div>
+        <div class="tab"><span class="on">今天</span><span>训练</span><span>记录</span></div>
+      </div>
+      <div class="note" style="margin-top:9px"><span class="t g">改</span><br>视频带只留品牌字+暂停钮；88 落在干净底色上不会断行；三指标改「细线分隔的数据条」不浮卡；动作列表细线排列，编号 01/02 出杂志感。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2 空态 ===== -->
+<div class="pair">
+  <h3>② 首页 · 空态</h3>
+  <p class="ph">现在：满屏 0 / — / 截断｜改后：不摆数字，换一张引导卡</p>
+  <div class="row">
+    <div class="cell">
+      <div class="lbl bad">现在</div>
+      <div class="ph2 old">
+        <div class="sb"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+        <div style="margin-top:8px">
+          <div class="vid" style="height:250px">
+            <div class="face"></div>
+            <div class="txt"><div class="eb">薄肌俱乐部</div><div class="big dash">今天的训练，已<br>经为你准…</div></div>
+          </div>
+          <div class="body">
+            <div class="cards"><div class="cd"><div class="k">睡眠</div><div class="v">—</div><div class="u">小时</div></div>
+              <div class="cd"><div class="k">心率</div><div class="v">—</div><div class="u">bpm</div></div>
+              <div class="cd"><div class="k">步数</div><div class="v">0</div><div class="u">步</div></div></div>
+            <div class="rows" style="margin-top:12px">
+              <div class="rw"><div class="a" style="color:#8A8D96">还没同…</div></div>
+              <div class="rw"><div class="a" style="color:#8A8D96">还没同…</div></div>
+              <div class="rw"><div class="a" style="color:#8A8D96">暂未同步</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pill">开始今日训练</div>
+        <div class="tab"><span class="on">今天</span><span>训练</span><span>记录</span></div>
+      </div>
+      <div class="note" style="margin-top:9px"><span class="t r">病</span><br>3 个「—」+ 0 + 三行「还没同…」——没数据比有数据更占屏，还截断。</div>
+    </div>
+    <div class="cell">
+      <div class="lbl good">改后</div>
+      <div class="ph2 new">
+        <div class="sb"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+        <div class="hero" style="height:200px">
+          <div class="face"></div>
+          <div class="brand">薄肌俱乐部</div>
+          <div class="pause">▮▮</div>
+          <div class="fade"></div>
+        </div>
+        <div class="head">
+          <div class="kick">今天 · 11月9日 周日</div>
+          <div class="num" style="font-size:34px;letter-spacing:-1px;line-height:1.15">今天练上肢推</div>
+          <div class="say" style="font-size:13px">45 分钟 · 4 个动作</div>
+        </div>
+        <div class="guide">
+          <div class="g1">先连上 Apple 健康</div>
+          <div class="g2">连上之后，每天早上会告诉你今天该练多狠——睡眠、心率、步数都在这里。</div>
+          <div class="gbtn">去连接</div>
+        </div>
+        <div class="ghost">也可以直接开练，之后补都行</div>
+        <div class="dock"><div class="cta">开始今日训练</div></div>
+        <div class="tab"><span class="on">今天</span><span>训练</span><span>记录</span></div>
+      </div>
+      <div class="note" style="margin-top:9px"><span class="t g">改</span><br>不显示 0/—；巨号降为 34pt 短标题；一张引导卡说清「连上有什么好处」；保留一条「也可以直接开练」不挡路。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3 训练中 ===== -->
+<div class="pair">
+  <h3>③ 训练中</h3>
+  <p class="ph">现在：白卡进度 + 行内堆信息 + 浮条压 tab｜改后：巨号进度 + 细线组次 + 玻璃坞让位 tab</p>
+  <div class="row">
+    <div class="cell">
+      <div class="lbl bad">现在</div>
+      <div class="ph2 old">
+        <div class="sb"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+        <div class="body" style="padding-top:22px">
+          <div class="rw" style="display:block;padding:13px">
+            <div style="display:flex;justify-content:space-between">
+              <div><div class="a">已完成 3 / 12 组</div><div class="b" style="margin-top:2px">训练进行中</div></div>
+              <div class="b" style="text-align:right">80kg<br>24 次</div>
+            </div>
+            <div style="height:5px;border-radius:9px;background:#EEF0F5;margin-top:10px"><div style="height:100%;width:25%;border-radius:9px;background:#414D63"></div></div>
+          </div>
+          <div class="rw" style="display:block">
+            <div class="a">杠铃卧推</div>
+            <div class="b" style="margin-top:1px">胸大肌 · 中束</div>
+            <div style="display:flex;gap:6px;margin-top:9px">
+              <div style="flex:1;height:34px;border-radius:9px;background:#EEF0F5;display:flex;align-items:center;justify-content:center;font-size:11px">80×8</div>
+              <div style="flex:1;height:34px;border-radius:9px;background:#EEF0F5;display:flex;align-items:center;justify-content:center;font-size:11px">80×8</div>
+              <div style="flex:1;height:34px;border-radius:9px;background:#F5F6F8;border:.5px solid #E5E6EB;display:flex;align-items:center;justify-content:center;font-size:11px;color:#8A8D96">80×8</div>
+            </div>
+          </div>
+          <div class="rw" style="display:block">
+            <div class="a">上斜哑铃卧推</div><div class="b" style="margin-top:1px">胸大肌 · 上束</div>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:64px;height:52px;background:#F2F3F5;display:flex;align-items:center;padding:0 14px;font-size:12px;color:#15171C">
+          训练进行中 <span style="margin-left:auto;font-size:11px;color:#8A8D96">01:24</span>
+        </div>
+        <span class="badge" style="left:16px;bottom:104px">浮条压 tab 栏</span>
+        <div class="tab"><span>今天</span><span class="on">训练</span><span>记录</span></div>
+      </div>
+      <div class="note" style="margin-top:9px"><span class="t r">病</span><br>进度塞进白卡小字、组次块挤在一起、底部浮条直接压住 tab 栏。</div>
+    </div>
+    <div class="cell">
+      <div class="lbl good">改后</div>
+      <div class="ph2 new">
+        <div class="sb"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+        <div class="wtop">
+          <div class="kick" style="font-size:10.5px;color:#8A8D96;letter-spacing:.5px">11月9日 · 上肢推</div>
+          <div class="wbig">3<span class="d">/12 组</span></div>
+          <div class="say" style="font-size:12.5px;margin-top:6px">第 2 个动作 · 已完成 3 组</div>
+        </div>
+        <div class="bar2"><i></i></div>
+        <div class="ex">
+          <div class="h"><div class="n">杠铃卧推</div><div class="mu">胸大肌 · 中束</div><div class="ck">✓</div></div>
+          <div class="sets">
+            <div class="s2 on"><b>80</b><i>kg × 8</i></div>
+            <div class="s2 on"><b>80</b><i>kg × 8</i></div>
+            <div class="s2 on"><b>80</b><i>kg × 7</i></div>
+            <div class="s2"><b>—</b><i>待记</i></div>
+          </div>
+        </div>
+        <div class="ex">
+          <div class="h"><div class="n">上斜哑铃卧推</div><div class="mu">胸大肌 · 上束</div></div>
+          <div class="sets">
+            <div class="s2"><b>22</b><i>kg × 12</i></div>
+            <div class="s2"><b>22</b><i>kg × 12</i></div>
+            <div class="s2"><b>22</b><i>kg × 12</i></div>
+          </div>
+        </div>
+        <div class="wbar"><div><div class="tm">01:24</div><div class="lb">组间休息</div></div><div class="go">完成这组</div></div>
+        <div class="tab"><span>今天</span><span class="on">训练</span><span>记录</span></div>
+      </div>
+      <div class="note" style="margin-top:9px"><span class="t g">改</span><br>64pt 进度当主角；组次块细边框、完成态浅底；底部玻璃坞<b>坐在 tab 栏上方让位</b>，时间+主动作同一条；tab 栏完整可见。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4 记录 ===== -->
+<div class="pair">
+  <h3>④ 记录 · 数值编辑</h3>
+  <p class="ph">现在：卡片套卡片、字段小｜改后：巨号当前值 + 细线表单 + 步进器右侧整合</p>
+  <div class="row">
+    <div class="cell">
+      <div class="lbl bad">现在</div>
+      <div class="ph2 old">
+        <div class="sb"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+        <div class="body" style="padding-top:22px">
+          <div class="rw" style="display:block;padding:14px">
+            <div class="b">杠铃卧推 · 第 4 组</div>
+            <div style="display:flex;gap:10px;margin-top:12px">
+              <div style="flex:1;background:#F5F6F8;border-radius:12px;padding:10px;text-align:center">
+                <div class="k" style="font-size:9.5px;color:#8A8D96">重量</div>
+                <div style="font-size:20px;font-weight:800;margin-top:2px">80</div>
+              </div>
+              <div style="flex:1;background:#F5F6F8;border-radius:12px;padding:10px;text-align:center">
+                <div class="k" style="font-size:9.5px;color:#8A8D96">次数</div>
+                <div style="font-size:20px;font-weight:800;margin-top:2px">8</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:10px">
+              <div style="flex:1;height:36px;border-radius:10px;background:#EEF0F5;display:flex;align-items:center;justify-content:center;font-size:10.5px;color:#8A8D96">轻松</div>
+              <div style="flex:1;height:36px;border-radius:10px;background:#E8EAEF;display:flex;align-items:center;justify-content:center;font-size:10.5px">正好</div>
+              <div style="flex:1;height:36px;border-radius:10px;background:#EEF0F5;display:flex;align-items:center;justify-content:center;font-size:10.5px;color:#8A8D96">吃力</div>
+            </div>
+          </div>
+          <div class="rw"><div class="a" style="font-size:12px;color:#8A8D96">保存后自动进入下一组</div></div>
+        </div>
+        <div class="pill" style="bottom:76px">保存这一组</div>
+        <div class="tab"><span>今天</span><span>训练</span><span class="on">记录</span></div>
+      </div>
+      <div class="note" style="margin-top:9px"><span class="t r">病</span><br>卡片里再套灰块，两层底色打架；80 这数字明明是主角，却只有 20pt。</div>
+    </div>
+    <div class="cell">
+      <div class="lbl good">改后</div>
+      <div class="ph2 new">
+        <div class="sb"><span>9:41</span><span>●●● ⌁ ▮</span></div>
+        <div class="wtop">
+          <div class="kick" style="font-size:10.5px;color:#8A8D96;letter-spacing:.5px">杠铃卧推 · 第 4 组</div>
+          <div class="wbig" style="font-size:72px">80<span class="d">kg</span></div>
+          <div class="say" style="font-size:12.5px;margin-top:7px">上一次：80 kg × 8 次</div>
+        </div>
+        <div class="edit">
+          <div class="fr">
+            <div class="k">次数</div><div class="val">8</div><div class="un">次</div>
+            <div class="stp"><b>−</b><b>+</b></div>
+          </div>
+          <div class="fr">
+            <div class="k">感觉</div>
+            <div class="seg" style="flex:1;margin:0"><span>轻松</span><span class="on">正好</span><span>吃力</span></div>
+          </div>
+        </div>
+        <div class="dock"><div class="cta">保存这一组</div></div>
+        <div class="tab"><span>今天</span><span>训练</span><span class="on">记录</span></div>
+      </div>
+      <div class="note" style="margin-top:9px"><span class="t g">改</span><br>当前值 72pt 当主角；重量已在巨号里，表单只留「次数」和「感觉」；步进器收成右侧一体小方块；单一底色，没有嵌套。</div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const bL=document.getElementById('bL'),bD=document.getElementById('bD');
+bL.onclick=()=>{document.querySelectorAll('.ph2.new').forEach(p=>p.classList.remove('D'));bL.classList.add('on');bD.classList.remove('on')};
+bD.onclick=()=>{document.querySelectorAll('.ph2.new').forEach(p=>p.classList.add('D'));bD.classList.add('on');bL.classList.remove('on')};
+</script>
+</body></html>
