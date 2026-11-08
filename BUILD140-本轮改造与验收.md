@@ -51,9 +51,9 @@
 | BUG-010 | 通知横幅文案与实际行为不符 | training 类通知（`route.kind == "training"`）被 sheet 绑定**永久**屏蔽（`BojiClubApp.swift:219` 的 blocking 条件里含 `route?.kind == "training"`），横幅却写「退出训练或对话后会自动打开」——实际永远不会打开；且 `BojiStatusBanner` 未传 `action`，**没有关闭按钮**，route 未清理前横幅常驻 | P3 | 苹果开发 | 已修复待验 | 触发路径：训练中收到另一日期的训练提醒 → `ClubAIShell.swift:761-764` 把 `trainingRoute` 置 nil 但保留 route → 横幅常驻。测试验收复验 BUG-001 时发现；**已修**：training 类文案如实写「训练进行中不会自动弹出，请稍后从通知中心重新打开本条通知」，横幅带「知道了」关闭动作（清提示状态），不再常驻 |
 | BUG-011 | 通知横幅可能遮挡顶栏 | 横幅 `.overlay(alignment: .top)` 直接压在 `navigationWorkspace` 上（`BojiClubApp.swift:241-247`），顶栏已有侧栏钮+分段选择器+更多钮，需确认不遮挡、不拦截点击 | P3 | 苹果开发 | 已修复待验 | 横幅从 `.overlay(alignment: .top)` 改为 `.safeAreaInset(edge: .top)`，走系统安全区布局，不压导航栏、不拦截顶栏点击 |
 | BUG-012 | 页面内散写 `if #available(iOS 26)` | `JourneyComponents.swift:72/92/128` 仍直接写 `if #available(iOS 26.0, *)` 三分支（规范 §1 明令禁止，应收口到 `clubNativeGlassButton`）；且这三处所在的 `ClubActionButtonStyle` 本身就是待淘汰的自绘按钮（30+ 使用点） | P2 | 苹果开发 | 已修复待验 | 材质收口 IOS-005 的漏项；**已修**：JourneyComponents 三处散写分支收口为 `.clubNativeGlassButton(prominent:)` / `.clubNativeGlassButton()`，页面层无 if #available；ClubActionButtonStyle 整体淘汰（30+ 使用点替换）留待后续批次 |
-| BUG-013 | Hero 卡视频暂停钮触控区不足 | 暂停/播放钮 `Image(...).frame(width: 30, height: 30)`（`ClubAIShell.swift:1281`）直接作为 Button label，`clubNativeGlassButton()` 不含最小尺寸，实际触控区 = 30×30pt < 44pt 最小触控标准 | P3 | 苹果开发 | 待处理 | 测试验收第二批复验时发现，第三輪复验**仍未修**；违反 ACC-06 与 DES §6「视觉可 42pt、触控必须 ≥44pt」 |
-| BUG-014 | Hero 品牌视频**没有静音** | `setupHeroVideo()`（`ClubAIShell.swift:1190-1196`）创建 `AVQueuePlayer` 后未设 `isMuted = true`；全库 `BojiClub/*.swift` 搜 `isMuted` **零命中**。打开 App 首页会直接外放视频原声 | P1 | 苹果开发 | 待处理 | 测试验收第三批复验时发现；违反 DES §5.2「静音 `isMuted = true`」。修法：`player.isMuted = true` |
-| BUG-015 | 视频降级缺两项（低电量 / 首帧占位） | DES §5.2 要求「低电量模式 → 静态图」与「未就绪前显示第 0 帧静态图」。现状：只实现减少动态效果降级（不创建 player，回退 `brandMist` 纯色底）；无 `isLowPowerModeEnabled` 判断，未就绪回退是纯色块而非首帧截图 | P3 | 苹果开发 | 待处理 | 测试验收第三批复验时发现；纯色底已能避免黑块，但不符合规范原文，建议补 `ProcessInfo.processInfo.isLowPowerModeEnabled` 与首帧占位 |
+| BUG-013 | Hero 卡视频暂停钮触控区不足 | 暂停/播放钮视觉 30×30pt，实际触控区 < 44pt 最小触控标准 | P3 | 苹果开发 | 已验收关闭 | 测试验收第二批复验发现，第三輪复验未修；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1287-1288` 加 `.frame(width: 44, height: 44).contentShape(Circle())`，视觉仍 30pt、命中区 44pt，符合 ACC-06 与 DES §6 |
+| BUG-014 | Hero 品牌视频**没有静音** | `setupHeroVideo()`（`ClubAIShell.swift:1190-1196`）创建 `AVQueuePlayer` 后未设 `isMuted = true` | P1 | 苹果开发 | 已验收关闭 | 测试验收第三批复验发现（界面设计独立核对一致）；**第四輪已修**（commit 54092f1）：`ClubAIShell.swift:1194` `player.isMuted = true` |
+| BUG-015 | 视频降级缺两项（低电量 / 首帧占位） | DES §5.2 要求「低电量模式 → 静态图」与「未就绪前显示第 0 帧静态图」 | P3 | 苹果开发 | 已修复待验（低电量部分） | **第四輪已修低电量闸门**（commit 54092f1）：`ClubAIShell.swift:1191` guard 增 `!ProcessInfo.processInfo.isLowPowerModeEnabled`。**首帧占位图按 Chief 决定留到阶段 4** 随视频深化一起做，本条保持打开至阶段 4 |
 
 > 用户直接在群里反馈的具体 bug 和流程卡壳点，由测试验收转记到此表。
 >
@@ -164,7 +164,20 @@
 | **BUG-003 输入串轨** | ⚠️ 部分 | `ClubNumericKeypad`／`LiquidCheckbox` 已删并改原生；`SmartWeightStepper`（DesignTokens.swift:741）与 `TrainingNumericInput125`（WorkoutExperience125.swift:169）仍在（IOS-003／004 未做） |
 | **BUG-013 暂停钮触控区** | ❌ 未修 | 仍为 30×30pt（ClubAIShell.swift:1281） |
 
-**复验结论**：BE-001／BE-004 与客户端四连修通过，云端编译通过；**阶段 2 尚不能判通过**——BUG-014（P1 视频未静音）必须修，BUG-003 剩余两项与 BUG-013／015 需排期。
+**复验结论（第三輪）**：BE-001／BE-004 与客户端四连修通过，云端编译通过；**阶段 2 尚不能判通过**——BUG-014（P1 视频未静音）必须修，BUG-003 剩余两项与 BUG-013／015 需排期。
+
+### E-2. 第四輪返工复验（测试验收，2026-11-08，Chief 判定阶段 2 不通过后返工）
+
+| 项 | 复验结论 | 证据 |
+|---|---|---|
+| **BUG-014 视频静音** | ✅ 通过 | `ClubAIShell.swift:1194` `player.isMuted = true`（commit 54092f1） |
+| **BUG-015 低电量闸门** | ✅ 通过（首帧占位留阶段 4） | `ClubAIShell.swift:1191` guard 增 `!ProcessInfo.processInfo.isLowPowerModeEnabled` |
+| **BUG-013 暂停钮触控区** | ✅ 通过 | `ClubAIShell.swift:1287-1288` `.frame(width: 44, height: 44).contentShape(Circle())`，视觉 30pt／命中 44pt |
+| **云端编译回归** | ✅ 通过 | run 42465043363（Build ID f9a471f6，head `54092f1`），耗时 4m37s，产物 `dist/BojiClub-f9a471f6.ipa`（37.44 MB，未签名 Debug） |
+
+**第四輪复验结论：通过。** 阶段 2 的 P1 阻塞项已清空；BUG-003 剩余 IOS-003／004 按 Chief 决定转阶段 3 关闭（苹果开发已推 b1d31c7 完成，待其构建验证），BUG-015 首帧占位留阶段 4。
+
+> 注：`dist/BojiClub-f9a471f6.ipa` 为未签名 Debug 包，模拟器可用、真机仍需安装链路（B4）。
 
 ---
 
@@ -219,5 +232,6 @@
 - 2026-11-08：**云端编译恢复通过**。错误行经 Chief 用认证接口下载日志后定位为 `ClubAIShell.swift:1212 VideoPlayer 无 videoGravity`（已由苹果开发改 `AVPlayerLayer` 封装）；后端开发 7cb0b97 收口另外 3 处既有编译阻塞。测试验收 run 42461772092（Build ID c6647b04）编译成功，IPA 37.44 MB，快照源码与 HEAD `8b3447e` 一致。
 - 2026-11-08：测试验收完成**阶段 2 复验**，登记为 E 表。BE-001／BE-004 与客户端四连修通过；**新增 BUG-014（P1：Hero 视频未设 `isMuted`，会外放声音）**、BUG-015（P3：低电量降级与首帧占位缺失）；BUG-003 仍部分（SmartWeightStepper／TrainingNumericInput125 未换）、BUG-013 未修。**结论：阶段 2 尚不能判通过**，BUG-014 必须修。
 - 2026-11-08：`.gitignore` 补 `logs-builder-*.log`（测试验收本机排障日志不入库，Chief 建议）。
+- 2026-11-08：**阶段 2 第四輪返工复验通过**。Chief 判定阶段 2 不通过后返工的三件（BUG-014 静音 / BUG-013 触控区 / BUG-015 低电量闸门）由 Chief 代收口提交 54092f1；测试验收逐处核对源码通过，云端编译 run 42465043363 出包 `dist/BojiClub-f9a471f6.ipa`（37.44 MB）。结果登记为 E-2 表。BUG-003 剩余 IOS-003／004 转阶段 3（苹果开发已推 b1d31c7）。
 - 2026-11-08：**苹果开发第二批修复完成待提交**：BUG-003 输入串轨（删 ClubNumericKeypad 自绘键盘与 keypadWeight 双轨，ClubNumericField 改原生 TextField+sanitize，LiquidCheckbox 改系统符号按钮）、BUG-005 Hero 视频接入（DES-003 方案 A，brand-video.mp4 已入 bundle 并注册 pbxproj）、BUG-010/011 横幅修正（training 文案如实、带「知道了」关闭、改 safeAreaInset 不压顶栏）、BUG-012 JourneyComponents 三处散写玻璃分支收口 clubNativeGlassButton；台账 A/B1 表状态已同步更新。
 - 2026-11-08：**云端编译恢复通过（后端开发）**：逐次抓取 xcodebuild 错误行，定位并修复 4 处阻塞编译的问题——`AppStore.swift` 的 `ClubNotificationRoute` 补 `Equatable`（`onChange` 需要）、`TrainingRegistrationViews.swift` 的 `Button(action:) label:` 改回 trailing closure、`ClubAIShell.swift` 的 TimelineView 闭包内非法 `return` 去掉、`VideoPlayer` 无 `videoGravity` 改用 `AVPlayerLayer` 封装（`resizeAspectFill` 铺满）。**workflow run 42461169469 编译成功，IPA `dist/BojiClub-ffe4a1ed.ipa`（37.44 MB）**，已提交推送（`7cb0b97`）。BE-001/BE-004 修复保持「已修复待验」，等测试验收复验。
