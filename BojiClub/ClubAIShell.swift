@@ -1809,7 +1809,7 @@ struct ClubAIWorkspaceIdleView: View {
                 .buttonStyle(.plain)
             }
             .padding(BojiLayout.rowGap)
-            .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous))
+            .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous)
                     .stroke(BojiColor.outline, lineWidth: 0.5)
@@ -1943,7 +1943,7 @@ struct ClubAIWorkspaceIdleView: View {
                 }
             }
             .padding(BojiLayout.cardInset)
-            .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
+            .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous)
                     .stroke(BojiColor.outline, lineWidth: 0.5)

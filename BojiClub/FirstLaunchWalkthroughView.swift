@@ -118,7 +118,7 @@ struct FirstLaunchWalkthroughView: View {
                         .foregroundStyle(BojiColor.textSecondary)
                         .padding(.horizontal, BojiLayout.rowGap)
                         .padding(.vertical, BojiLayout.inline)
-                        .clubGlassEffect(in: Capsule())
+                        .background(BojiColor.subtleSurface, in: Capsule())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("跳过引导")
@@ -145,7 +145,7 @@ struct FirstLaunchWalkthroughView: View {
             }
             .padding(.horizontal, BojiLayout.rowGap)
             .padding(.vertical, BojiLayout.inline)
-            .clubGlassEffect(in: Capsule())
+            .background(BojiColor.subtleSurface, in: Capsule())
 
             Spacer()
 
@@ -217,59 +217,27 @@ private struct WalkthroughAICoachSlide: View {
 
             // 3D Floating Crystal Sphere with Ambient Halos
             ZStack {
-                // Layer 1: Ambient breathing glow
+                // Layer 1: Ambient breathing glow（品牌色软光 + 系统模糊）
                 Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                BojiColor.brandMist.opacity(isBreathing ? 0.65 : 0.35),
-                                BojiColor.brandAccent.opacity(isBreathing ? 0.25 : 0.10),
-                                Color.clear
-                            ],
-                            center: .center,
-                            startRadius: 20,
-                            endRadius: 130
-                        )
-                    )
+                    .fill(BojiColor.brandMist.opacity(isBreathing ? 0.30 : 0.18))
+                    .blur(radius: 60)
                     .frame(width: 260, height: 260)
                     .scaleEffect(isBreathing ? 1.08 : 0.95)
                     .animation(reduceMotion ? nil : BojiMotion2.celebrate.repeatForever(autoreverses: true), value: isBreathing)
 
-                // Layer 2: Liquid glass outer orbit ring
+                // Layer 2: Orbit ring（静态细环，去手绘旋转渐变）
                 Circle()
-                    .stroke(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.4),
-                                Color.white.opacity(0.05),
-                                BojiColor.brandMist.opacity(0.3)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1.5
-                    )
+                    .stroke(BojiColor.brandMist.opacity(0.45), lineWidth: 1.5)
                     .frame(width: 190, height: 190)
-                    .rotationEffect(.degrees(isBreathing ? 360 : 0))
-                    .animation(reduceMotion ? nil : BojiMotion2.celebrate.repeatForever(autoreverses: false), value: isBreathing)
 
-                // Layer 3: Central High-Craft Crystal Sphere
+                // Layer 3: Central crystal sphere（原生玻璃 + SF Symbols）
                 ZStack {
                     Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color(red: 30/255, green: 36/255, blue: 48/255).opacity(0.85),
-                                    Color(red: 14/255, green: 18/255, blue: 24/255).opacity(0.95)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                        .fill(BojiColor.brandMist.opacity(0.18))
                         .frame(width: 130, height: 130)
+                        .clubGlassEffect(in: Circle())
                         .overlay {
-                            Circle()
-                                .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                            Circle().stroke(Color.white.opacity(0.35), lineWidth: 1)
                         }
                         .shadow(color: BojiColor.brandMist.opacity(0.35), radius: 24, y: 10)
 
@@ -343,7 +311,8 @@ private struct WalkthroughAICoachSlide: View {
         }
         .padding(.horizontal, BojiLayout.inline)
         .padding(.vertical, BojiLayout.tight)
-        .clubGlassEffect(in: Capsule())
+        .background(BojiColor.cardSurface, in: Capsule())
+        .overlay { Capsule().stroke(BojiColor.outline, lineWidth: 0.5) }
         .offset(offset)
         .shadow(color: Color.black.opacity(0.12), radius: 6, y: 3)
     }
@@ -428,7 +397,8 @@ private struct WalkthroughWorkoutSetsSlide: View {
                         .foregroundStyle(BojiColor.textPrimary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, BojiLayout.inline)
-                        .clubGlassEffect(in: Capsule())
+                        .background(BojiColor.subtleSurface, in: Capsule())
+                        .overlay { Capsule().stroke(BojiColor.outline, lineWidth: 0.5) }
                     }
                     .buttonStyle(.plain)
 
@@ -571,10 +541,14 @@ private struct WalkthroughNutritionEvolutionSlide: View {
                     }
                     .padding(.horizontal, BojiLayout.rowGap)
                     .padding(.vertical, BojiLayout.inline)
-                    .clubGlassEffect(in: Capsule())
+                    .background(BojiColor.subtleSurface, in: Capsule())
                 }
                 .padding(BojiLayout.blockGap)
-                .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))
+                .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: BojiRadius.hero, style: .continuous)
+                        .stroke(BojiColor.outline, lineWidth: 0.5)
+                }
                 .shadow(color: Color.black.opacity(0.12), radius: 16, y: 8)
                 .padding(.horizontal, BojiLayout.sectionGap)
             }
@@ -767,7 +741,11 @@ private struct WalkthroughReadinessSlide: View {
             .disabled(isLoading || isDone)
         }
         .padding(BojiLayout.rowGap)
-        .clubGlassEffect(in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(BojiColor.outline, lineWidth: 0.5)
+        }
     }
 }
 
@@ -790,33 +768,15 @@ private struct WalkthroughAtmosphereBackdrop: View {
                 let h = geo.size.height
 
                 Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                BojiColor.brandMist.opacity(colorScheme == .dark ? 0.18 : 0.45),
-                                Color.clear
-                            ],
-                            center: .center,
-                            startRadius: 20,
-                            endRadius: 220
-                        )
-                    )
+                    .fill(BojiColor.brandMist.opacity(colorScheme == .dark ? 0.18 : 0.45))
+                    .blur(radius: 80)
                     .frame(width: 440, height: 440)
                     .offset(x: activeSlide % 2 == 0 ? -60 : w - 380, y: activeSlide < 2 ? 60 : h - 480)
                     .animation(reduceMotion ? nil : BojiMotion2.celebrate, value: activeSlide)
 
                 Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                BojiColor.brandAccent.opacity(colorScheme == .dark ? 0.10 : 0.25),
-                                Color.clear
-                            ],
-                            center: .center,
-                            startRadius: 20,
-                            endRadius: 180
-                        )
-                    )
+                    .fill(BojiColor.brandAccent.opacity(colorScheme == .dark ? 0.10 : 0.25))
+                    .blur(radius: 70)
                     .frame(width: 360, height: 360)
                     .offset(x: activeSlide % 2 == 0 ? w - 300 : -40, y: activeSlide < 2 ? h - 380 : 100)
                     .animation(reduceMotion ? nil : BojiMotion2.celebrate, value: activeSlide)

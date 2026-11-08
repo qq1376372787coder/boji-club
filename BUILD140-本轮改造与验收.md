@@ -77,7 +77,7 @@
 | IOS-007 | BreathingPulseHalo 手绘呼吸环 | 原生 Gauge(.accessoryCircularCapacity) + symbolEffect | DesignTokens.swift BreathingPulseHalo | 已修复待验 | 系统 Gauge + tint（紧急红色/常规计时色）+ 保留触感反馈与无障碍标签；减少动态效果由系统处理 |
 | IOS-008 | LaserScanBeamOverlay 手绘激光扫描线 | 系统进度语义（ProgressView + 识别文案） | DesignTokens.swift LaserScanBeamOverlay、MealEditorView.swift photoCaptureArea | 已修复待验 | 改为半透明遮罩 + 系统 ProgressView + 「正在识别餐食…」文案；不额外增加玻璃件 |
 | IOS-009 | ConfettiView 手绘彩带粒子 | 系统 symbolEffect(.celebrate) 一次性庆祝 | OnboardingView.swift MemberCardCelebration | 已修复待验 | 22 粒子自绘已删；改用 SF Symbols「sparkles」+ symbolEffect(.celebrate)，减少动态效果时关闭 |
-| IOS-010 | 首次引导轨道环/渐变卫星手绘 | glassEffect + SF Symbols 重做 | FirstLaunchWalkthroughView.swift | 待处理 | 待本批后续提交 |
+| IOS-010 | 首次引导轨道环/渐变卫星手绘 | glassEffect + SF Symbols 重做 | FirstLaunchWalkthroughView.swift | 已修复待验 | Slide1 光晕 RadialGradient→品牌色+系统模糊、旋转渐变轨道环→静态细环、渐变水晶球→clubGlassEffect 原生玻璃；卫星胶囊/跳过/页码/15秒胶囊/数据徽章改不透明表面（同屏玻璃从 7 降到 1，仅保留 Slide1 水晶球与 Slide2 计时坞两个视觉主体）；背景光球 RadialGradient→模糊色块 |
 | IOS-011 | 训练/AI 界面呈现时通知深链被屏蔽（sheet 返回 nil） | 训练进行中点通知可见提示或跳转 | BojiClubApp.swift:216 | 已修复待验 | P1 流程断点；屏蔽逻辑保留（不打断训练），顶部安全区横幅如实提示+「知道了」关闭，route 保留待解除后自动弹出（BUG-001/010/011 同修） |
 | IOS-012 | 登录→会员门→引导→首启 walkthrough 四层状态机回写不及时卡门 | 状态收口+卡门可恢复提示 | BojiClubApp.swift、ClubAIShell.swift | 待处理 |  |
 | IOS-013 | 组间休息 pauseService+restDeadlines 双状态 | 单源事实+跨午夜边界回归 | ClubAIShell.swift:166-172 | 待处理 |  |
