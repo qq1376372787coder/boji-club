@@ -59,7 +59,8 @@ struct TrainingPreviewView: View {
         VStack(spacing: 0) {
             ForEach(Array(exercises.enumerated()), id: \.element.id) { index, exercise in
                 BojiAdaptiveGroup(spacing: BojiSpace.general) {
-                    BojiExerciseThumb(exercise: exercise, side: 56)
+                    // 含图入口行定式（规格表 §2.9）：行 56 + 图元 44 + 上下内边距 6×2，图元服从行高
+                    BojiExerciseThumb(exercise: exercise, side: 44)
                     VStack(alignment: .leading, spacing: BojiLayout.tight) {
                         Text(exercise.displayName)
                             .bojiFont(.exerciseName)
@@ -76,9 +77,10 @@ struct TrainingPreviewView: View {
                         .foregroundStyle(BojiColor.textSecondary)
                 }
                 .padding(.horizontal, BojiSpace.cardInset)
-                .frame(minHeight: 80)
+                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity, minHeight: BojiLayout.rowHeight, alignment: .leading)   // 含图入口行 R2 56（§2.9 定式）
                 if index < exercises.count - 1 {
-                    Divider().overlay(BojiColor.divider).padding(.leading, BojiSpace.cardInset + 56 + BojiSpace.general)
+                    Divider().overlay(BojiColor.divider).padding(.leading, BojiSpace.cardInset + 44 + BojiSpace.general)
                 }
             }
         }

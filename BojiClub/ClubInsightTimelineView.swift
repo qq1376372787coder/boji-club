@@ -245,7 +245,8 @@ struct ClubInsightMessageView: View {
                 .bojiType(.label)
                 .foregroundStyle(BojiColor.textTertiary)
                 .frame(minWidth: 28, minHeight: 28)
-                .contentShape(Rectangle())
+                // BUG-027：命中区外扩到 44×44（视觉 28 不变）——contentShape 只裁剪不放大，必须 inset 负值撑开
+                .contentShape(Rectangle().inset(by: -8))
         }
         .accessibilityLabel("\(event.kind.label)选项")
     }

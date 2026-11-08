@@ -447,7 +447,8 @@ struct ClubAIMemoryView: View {
                     .bojiType(.secondary)
                     .foregroundStyle(BojiColor.textSecondary)
                     .frame(width: 32, height: 32)
-                    .contentShape(Rectangle())
+                    // BUG-027 同族：命中区外扩到 44×44（视觉 32 不变）
+                    .contentShape(Rectangle().inset(by: -6))
             }
             .buttonStyle(.plain)
         }
