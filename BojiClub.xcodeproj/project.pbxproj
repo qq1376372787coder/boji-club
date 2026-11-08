@@ -54,9 +54,9 @@ B02120261021000000000003 = {isa = PBXBuildFile; fileRef = B021202610210000000000
         C01920260000000000000001 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewDashboardView.swift; sourceTree = "<group>"; };
         C01920260000000000000002 = {isa = PBXBuildFile; fileRef = C01920260000000000000001; };
 		000000000000000000007001 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiClubUITests.swift; sourceTree = "<group>"; };
-		00000000000000000000700A = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiClubPerformanceTests.swift; sourceTree = "<group>"; };
+		00000000000000000000700E = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiClubPerformanceTests.swift; sourceTree = "<group>"; };
 		000000000000000000007002 = { isa = PBXBuildFile; fileRef = 000000000000000000007001; };
-		00000000000000000000700B = { isa = PBXBuildFile; fileRef = 00000000000000000000700A; };
+		00000000000000000000700F = { isa = PBXBuildFile; fileRef = 00000000000000000000700E; };
 		000000000000000000007004 = { isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BojiClubUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B37320261024000000000001 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagServiceTests.swift; sourceTree = "<group>"; };
 		B37320261024000000000002 = { isa = PBXBuildFile; fileRef = B37320261024000000000001; };
@@ -330,9 +330,9 @@ B02120261021000000000003 = {isa = PBXBuildFile; fileRef = B021202610210000000000
 		00000000000000000000001F = { isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		000000000000000000009902 = { isa = PBXFileReference; lastKnownFileType = video.mp4; path = brand-video.mp4; sourceTree = "<group>"; };
 		000000000000000000000020 = { isa = PBXBuildFile; fileRef = 00000000000000000000001F; };
-		000000000000000000007003 = { isa = PBXGroup; children = (000000000000000000007001,00000000000000000000700A,); path = BojiClubUITests; sourceTree = "<group>"; };
+		000000000000000000007003 = { isa = PBXGroup; children = (000000000000000000007001,00000000000000000000700E,); path = BojiClubUITests; sourceTree = "<group>"; };
 		000000000000000000007005 = { isa = PBXNativeTarget; buildConfigurationList = 000000000000000000007009; buildPhases = (000000000000000000007006, 000000000000000000007007, 000000000000000000007008,); buildRules = (); dependencies = (00000000000000000000700D,); name = BojiClubUITests; productName = BojiClubUITests; productReference = 000000000000000000007004; productType = "com.apple.product-type.bundle.ui-testing"; };
-		000000000000000000007006 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (000000000000000000007002,00000000000000000000700B,); runOnlyForDeploymentPostprocessing = 0; };
+		000000000000000000007006 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (000000000000000000007002,00000000000000000000700F,); runOnlyForDeploymentPostprocessing = 0; };
 		000000000000000000007007 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		000000000000000000007008 = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		000000000000000000007009 = { isa = XCConfigurationList; buildConfigurations = (00000000000000000000700A, 00000000000000000000700B,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
