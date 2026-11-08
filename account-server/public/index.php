@@ -594,6 +594,17 @@ try {
         $created = aiRunCreate($db, $user, $config, (string)$runMatch[1], body(5900000), $_SERVER['HTTP_IDEMPOTENCY_KEY'] ?? null);
         respond(202, $created);
     }
+    if ($method === 'POST' && $path === '/me/ai/jobs/runs') {
+        // Durable Run creation for report / weekly_review (phase 1). Shares the
+        // Python job identity with the legacy /me/ai/jobs path, so a client that
+        // falls back to polling never double-submits.
+        $user = authenticated($db);
+        if (function_exists('revenueCatRefreshIfDue')) revenueCatRefreshIfDue($db, $user, $config);
+        $payload = body(5900000);
+        $kind = (string)($payload['kind'] ?? '');
+        $created = aiRunCreateForKind($db, $user, $config, $kind, $payload, $_SERVER['HTTP_IDEMPOTENCY_KEY'] ?? null);
+        respond(202, $created);
+    }
     if ($method === 'GET' && preg_match('#^/me/ai/runs/([0-9a-f-]{36})$#i', $path, $runMatch)) {
         $user = authenticated($db);
         respond(200, aiRunSnapshot($db, (int)$user['id'], strtolower($runMatch[1])));

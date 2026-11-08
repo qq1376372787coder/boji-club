@@ -15,6 +15,11 @@ final class FeatureFlagService: ObservableObject {
     @Published private(set) var aiRouterV3 = true
     /// Phase 2 SSE. Enabled by default for instant streaming replies.
     @Published private(set) var streamingV2 = true
+    /// Phase 3: durable Run + SSE for report / weekly_review.
+    /// Server-authoritative and default-off, matching the coach_enabled pattern:
+    /// the client only uses this path once the backend publishes the flag.
+    @Published private(set) var runV2Enabled = false
+    @Published private(set) var runV2Kinds = ""
     @Published private(set) var referencesEnabled = false
     /// coach 后端休眠开关（拍板 #7）：默认休眠；远程可拉起回退（coach_backend_enabled）。
     @Published private(set) var coachBackendEnabled = false
@@ -28,7 +33,12 @@ final class FeatureFlagService: ObservableObject {
         aiFastIntentV1 = remote?.config.aiFastIntentV1 ?? true
         aiRouterV3 = remote?.config.aiRouterV3 ?? true
         streamingV2 = remote?.config.aiStreamingV2 ?? true
+<<<<<<< HEAD
         coachBackendEnabled = remote?.config.coachBackendEnabled ?? false
+=======
+        runV2Enabled = remote?.config.aiRunV2Enabled ?? false
+        runV2Kinds = remote?.config.aiRunV2Kinds ?? ""
+>>>>>>> feature/sse-report
     }
 }
 

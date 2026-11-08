@@ -841,6 +841,10 @@ final class AIService: ObservableObject {
                 }
             }
             guard ticket == workerGeneration, !Task.isCancelled else { return }
+            // Phase 3: durable Run + SSE for report / weekly_review. Server-authoritative
+            // flag; any refusal falls through to the polling loop with the same
+            // client_job_id, so the server maps both paths to one Python job.
+            if await runKindPath(id: id, ticket: ticket, request: local.request) { return }
             let deadline = Date().addingTimeInterval(600)
             var pollDelay: UInt64 = 300_000_000
             while !Task.isCancelled && ticket == workerGeneration {
@@ -858,6 +862,57 @@ final class AIService: ObservableObject {
             if Task.isCancelled || ticket != workerGeneration { return }
             recordFailure(error, id: id)
         }
+    }
+
+    /// Phase 3: durable Run + SSE for report / weekly_review.
+    /// Returns true when the run reached a terminal state (the caller must stop);
+    /// false means the caller keeps the legacy polling loop.
+    private func runKindPath(id: String, ticket: UUID, request: AIRequest) async -> Bool {
+        guard ticket == workerGeneration, !Task.isCancelled,
+              let account = accountService, let owner = activeAccountID,
+              FeatureFlagService.shared.runV2Enabled,
+              Self.runV2KindAllowed(request.kind),
+              ["report", "weekly_review"].contains(request.kind) else { return false }
+        let input = AIInput(kind: request.kind, date: request.date, payload: request.payload)
+        do {
+            let outcome = try await AIRunKindRunner.run(input: input, clientJobID: id, owner: owner, account: account)
+            guard ticket == workerGeneration, !Task.isCancelled else { return true }
+            let result = try outcome.aiResult()
+            guard let index = jobs.firstIndex(where: { $0.id == id }) else { return true }
+            jobs[index].result = result
+            jobs[index].status = "succeeded"
+            jobs[index].traceID = outcome.traceID
+            jobs[index].error = nil
+            jobs[index].errorCode = nil
+            jobs[index].retryAfter = nil
+            do { try persist() } catch { notice = AppErrorText.message(error) }
+            return true
+        } catch let error as AIRunKindError {
+            switch error {
+            case .uncertain:
+                // The create POST may have been accepted. Never resubmit: keep
+                // polling the same client_job_id, which resolves to the same job.
+                return false
+            case .disabled, .rejected:
+                return false
+            case .failed, .resyncUnavailable:
+                guard ticket == workerGeneration, !Task.isCancelled else { return true }
+                guard let index = jobs.firstIndex(where: { $0.id == id }) else { return true }
+                jobs[index].status = "failed"
+                jobs[index].error = error.localizedDescription
+                jobs[index].errorCode = "run_failed"
+                do { try persist() } catch { notice = AppErrorText.message(error) }
+                return true
+            }
+        } catch {
+            return false
+        }
+    }
+
+    static func runV2KindAllowed(_ kind: String) -> Bool {
+        let list = FeatureFlagService.shared.runV2Kinds
+        if list.isEmpty { return true }
+        return list.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.contains(kind)
     }
 
     private func recordFailure(_ error: Error, id: String) {
