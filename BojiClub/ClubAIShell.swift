@@ -990,6 +990,9 @@ struct ClubAIWorkspaceIdleView: View {
             Button(action: homePrimaryAction) {
                 Text(homePrimaryLabel)
                     .frame(maxWidth: .infinity, minHeight: BojiLayout.actionHeight)
+                    .contentShape(Rectangle())
+                    // 玻璃 buttonStyle 会包一层，标识放 label 内层才查得到（巡检 R01 断言用）
+                    .accessibilityIdentifier("v2-home-primary")
             }
             .clubNativeGlassButton(prominent: true)
             .accessibilityIdentifier("v2-home-primary")
@@ -1598,80 +1601,70 @@ struct ClubAIWorkspaceIdleView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - 核心层级 3: 代谢与营养平衡板
+    // MARK: - 核心层级 3: 今天吃了多少（细线数据条，空态不摆 0）
     private var fuelBalanceCard: some View {
-        let totalCal = today.meals.reduce(0.0) { $0 + $1.calories }
+        let known = today.knownMeals
+        let totalCal = known.reduce(0.0) { $0 + $1.calories }
         let targetCal = today.nutritionTarget?.caloriesMax ?? store.state.nutritionTarget?.caloriesMax ?? 2350
         let calProgress = targetCal > 0 ? min(1.0, totalCal / targetCal) : 0
         let calDeficit = max(0, Int(targetCal - totalCal))
-
-        let totalProtein = today.meals.reduce(0.0) { $0 + $1.protein }
-        let targetProtein = today.nutritionTarget?.proteinMax ?? store.state.nutritionTarget?.proteinMax ?? 160
-
-        let totalCarbs = today.meals.reduce(0.0) { $0 + $1.carbs }
-        let targetCarbs = 260.0
-
-        let totalFat = today.meals.reduce(0.0) { $0 + $1.fat }
-        let targetFat = today.nutritionTarget?.fatMax ?? store.state.nutritionTarget?.fatMax ?? 65
+        let totalProtein = known.reduce(0.0) { $0 + $1.protein }
+        let totalCarbs = known.reduce(0.0) { $0 + $1.carbs }
+        let totalFat = known.reduce(0.0) { $0 + $1.fat }
 
         return VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
             HStack {
-                Label("今天吃了多少", systemImage: "fork.knife")
-                    .bojiFont(.label)
-                    .foregroundStyle(BojiColor.textPrimary)
-                    .padding(.horizontal, BojiLayout.inline)
-                    .padding(.vertical, BojiLayout.tight)
-                    .background(BojiColor.brandMist, in: Capsule())
-
+                Text("今天吃了多少")
+                    .bojiType(.caption)
+                    .fontWeight(.semibold)
+                    .tracking(0.8)
+                    .foregroundStyle(BojiColor.textTertiary)
                 Spacer()
-
                 Button(action: onRecordMeal) {
-                    HStack(spacing: BojiLayout.tight) {
-                        Image(systemName: "camera.viewfinder")
-                            .bojiType(.label)
-                        Text("记录餐食")
-                            .bojiType(.label)
-                    }
-                    .foregroundStyle(BojiColor.brandAccent)
+                    Text("记一顿")
+                        .bojiType(.caption)
+                        .foregroundStyle(BojiColor.brandAccent)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("v2-home-record-meal")
             }
 
-            VStack(alignment: .leading, spacing: BojiLayout.tight) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("\(Int(totalCal))")
-                        .bojiType(.title)
+            if known.isEmpty {
+                // 空态：不摆 0 kcal，一句说明 + 一句做什么（18.3 口径）
+                VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                    Text("今天还没记吃的")
+                        .bojiType(.data)
                         .foregroundStyle(BojiColor.textPrimary)
-                    Text("/ \(Int(targetCal)) kcal")
-                        .bojiType(.secondary)
+                    Text("记一顿，这里就开始算热量和蛋白质。")
+                        .bojiType(.body15)
                         .foregroundStyle(BojiColor.textSecondary)
-
-                    Spacer()
-
-                    Text(calDeficit > 0 ? "还差 \(calDeficit) kcal" : "目标已达成")
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } else {
+                VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                    MetricRowGroup(metrics: [
+                        MetricValue(value: "\(Int(totalCal))", unit: "kcal", label: "摄入热量"),
+                        MetricValue(value: "\(Int(totalProtein))", unit: "g", label: "蛋白质"),
+                        MetricValue(value: "\(Int(totalCarbs))", unit: "g", label: "碳水"),
+                        MetricValue(value: "\(Int(totalFat))", unit: "g", label: "脂肪")
+                    ])
+                    // 细线进度条（有数据才画）
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule()
+                                .fill(BojiColor.inputSurface)
+                                .frame(height: 3)
+                            Capsule()
+                                .fill(BojiColor.brandAccent)
+                                .frame(width: max(0, geo.size.width * CGFloat(calProgress)), height: 3)
+                        }
+                    }
+                    .frame(height: 3)
+                    Text(calDeficit > 0 ? "还差 \(calDeficit) kcal 到目标" : "已到目标")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.textTertiary)
                 }
-
-                // 细线进度条
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(BojiColor.inputSurface)
-                            .frame(height: 5)
-                        Capsule()
-                            .fill(BojiColor.brandAccent)
-                            .frame(width: max(0, geo.size.width * CGFloat(calProgress)), height: 5)
-                    }
-                }
-                .frame(height: 5)
-            }
-
-            // 三大宏量营养素条
-            HStack(spacing: BojiLayout.rowGap) {
-                macroItem(title: "蛋白质", current: totalProtein, target: targetProtein, color: BojiColor.macroProtein)
-                macroItem(title: "碳水", current: totalCarbs, target: targetCarbs, color: BojiColor.macroCarbs)
-                macroItem(title: "脂肪", current: totalFat, target: targetFat, color: BojiColor.macroFat)
             }
         }
         .padding(BojiLayout.cardInset)
@@ -1681,34 +1674,7 @@ struct ClubAIWorkspaceIdleView: View {
             RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous)
                 .stroke(BojiColor.outline, lineWidth: 0.5)
         }
-        .shadow(color: .black.opacity(0.04), radius: 10, x: 0, y: 3)
-    }
-
-    /// 宏量素数据块（2+3 规格表 §2.1：大数字 + 细分割线 + 目标，替代图标汤进度条）
-    private func macroItem(title: String, current: Double, target: Double, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: BojiLayout.tight) {
-            HStack(alignment: .firstTextBaseline, spacing: 0) {
-                Text("\(Int(current))")
-                    .font(.title3.weight(.semibold))
-                    .monospacedDigit()
-                    .foregroundStyle(color)
-                Text(" g")
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
-            }
-            Rectangle()
-                .fill(BojiColor.divider)
-                .frame(width: 28, height: 1)
-            HStack(alignment: .firstTextBaseline, spacing: 2) {
-                Text(title).bojiType(.label).foregroundStyle(BojiColor.textSecondary)
-                if target > 0 {
-                    Text("/ \(Int(target))g").bojiType(.caption).foregroundStyle(BojiColor.textTertiary)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title) \(Int(current)) 克，目标 \(Int(target)) 克")
+        .accessibilityIdentifier("v2-home-fuel-card")
     }
 
     // MARK: - 核心层级 4: 智能分析专区 (Fitness Intelligence)

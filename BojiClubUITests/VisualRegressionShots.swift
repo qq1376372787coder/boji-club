@@ -212,8 +212,11 @@ final class VisualRegressionShots: XCTestCase {
             XCTAssertEqual(count, 1, "\(name) 主操作「\(primary)」应恰好 1 个，实际 \(count)")
         }
         if let primaryID = screen.primaryID {
+            // 玻璃 buttonStyle 会把标识留在 label 层：按钮查不到时按同名可交互元素再查一次
             let buttons = app.buttons.matching(identifier: primaryID)
-            XCTAssertEqual(buttons.count, 1, "\(name) 主操作（\(primaryID)）应恰好 1 个，实际 \(buttons.count)")
+            let generic = app.descendants(matching: .any).matching(identifier: primaryID)
+            let count = buttons.count > 0 ? buttons.count : generic.count
+            XCTAssertEqual(count, 1, "\(name) 主操作（\(primaryID)）应恰好 1 个，实际 \(count)")
         }
 
         // 5) 主操作必须完整在屏内（不许被 tab 栏/底边裁掉）
