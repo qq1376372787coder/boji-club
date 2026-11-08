@@ -326,13 +326,12 @@ struct DayLog: Codable {
     }
     var hasConfirmedTraining: Bool { confirmedTraining.hasTraining }
     var confirmedCompletedSets: Int { confirmedTraining.completedSets }
-    /// 训练量唯一口径：只算记完的组（validCompletion）。
-    /// 「记完」= validCompletion；场次未保存的历史数据不重复计入（保存的场次已在其 exercises 内）。
-    /// 可见串一律用 confirmedTraining.volume（只认已保存场次），本属性仅供计划预览等未保存场景。
-    var volume: Double { exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0) { $0 + $1.volume } }
+    // 口径表 §八 第 16 条：`DayLog.volume` 已删除——它只滤 validCompletion、不滤保存状态，
+    // 与 confirmedTraining.volume 同叫 volume 却算法不同，且全库零读取者（修了可见串之后留下的死字段）。
+    // 训练量唯一口径 = confirmedTraining.volume（只认已保存场次）。
     var completedSets: Int { exercises.flatMap(\.sets).filter(\.validCompletion).count }
     var totalSets: Int { exercises.reduce(0) { $0 + $1.sets.count } }
-    var timedSeconds: Int { exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0) { $0 + ($1.durationSeconds ?? 0) } }
+    // 口径表 §八 第 16 条：`DayLog.timedSeconds` 已删除——同样零读取者（读取都在 ConfirmedTraining 上）。
     var unknownNutritionMeals: Int { meals.filter { !$0.hasNutrition }.count }
     var knownMeals: [Meal] { meals.filter(\.hasNutrition) }
     var calories: Double { knownMeals.reduce(0) { $0 + $1.calories } }
@@ -343,7 +342,10 @@ struct DayLog: Codable {
     func deterministicMetrics(dateKey: String) -> AIDailyMetrics {
         let confirmed = confirmedTraining
         let completedExNames = Set(confirmed.exercises.filter { $0.sets.contains(where: \.validCompletion) }.map(\.name))
-        let durationMinutes: Int? = confirmed.elapsedSeconds > 0 ? (confirmed.elapsedSeconds / 60) : (timedSeconds > 0 ? (timedSeconds / 60) : nil)
+        // 口径表 §三 裁定：`duration_minutes` 只表示「场次墙钟时长」，**去掉 timed 兜底分支**。
+        // 原实现「有 elapsed 用 elapsed，否则用 timedSeconds」是一字段两含义，日报与周报会拿到两个意思的数。
+        // 计时时长由客户端从 confirmedTraining.timedSeconds 自行换算，不进契约、不欠服务端。
+        let durationMinutes: Int? = confirmed.elapsedSeconds > 0 ? (confirmed.elapsedSeconds / 60) : nil
         let sessionsCount = (workoutSessions?.filter { $0.savedAt != nil }.count ?? 0) > 0 ? (workoutSessions?.filter { $0.savedAt != nil }.count ?? 0) : (hasConfirmedTraining ? 1 : 0)
 
         let hasMealRecords = !meals.isEmpty
