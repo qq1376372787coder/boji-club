@@ -340,7 +340,6 @@ struct ClubActivityMark: View {
             .accessibilityHidden(true)
     }
 }
-}
 
 struct ClubLoadingCard: View {
     let title: String
