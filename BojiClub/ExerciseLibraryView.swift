@@ -143,7 +143,8 @@ enum ExerciseLibraryAPI {
         components.queryItems = [URLQueryItem(name: "q", value: query), URLQueryItem(name: "limit", value: String(limit)), URLQueryItem(name: "offset", value: String(offset))]
         if !bodyPart.isEmpty { components.queryItems?.append(URLQueryItem(name: "body_part", value: bodyPart)) }
         if !trainingType.isEmpty { components.queryItems?.append(URLQueryItem(name: "training_type", value: trainingType)) }
-        let page: LibraryPage = try await get(components.url!)
+        guard let url = components.url else { throw URLError(.badURL) }
+        let page: LibraryPage = try await get(url)
         return page
     }
 
@@ -170,7 +171,8 @@ enum ExerciseLibraryAPI {
             throw URLError(.badURL)
         }
         components.queryItems = [URLQueryItem(name: "q", value: query)]
-        let response: Resolution = try await get(components.url!)
+        guard let url = components.url else { throw URLError(.badURL) }
+        let response: Resolution = try await get(url)
         return response.item
     }
 
@@ -182,7 +184,8 @@ enum ExerciseLibraryAPI {
             throw URLError(.badURL)
         }
         components.queryItems = [URLQueryItem(name: "lang", value: "zh")]
-        return try await get(components.url!)
+        guard let url = components.url else { throw URLError(.badURL) }
+        return try await get(url)
     }
 
     private static func get<T: Decodable>(_ url: URL) async throws -> T {
