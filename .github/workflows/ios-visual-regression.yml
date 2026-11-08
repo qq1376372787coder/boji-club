@@ -80,7 +80,7 @@ jobs:
             echo "跨页一致性断言已在位"
           else
             echo "parity_skip=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::CrossPageParityTests 尚未创建，本轮跳过断言"
+            echo "::warning::parity 用例未入库，本轮断言层不算过（关账只认步骤状态 success 原文）"
           fi
 
       - name: Setup Xcode
@@ -133,6 +133,7 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
 
       - name: 跨页一致性断言（CrossPageParityTests）
+        id: parity
         if: steps.guard.outputs.parity_skip != 'true'
         env:
           UDID: ${{ steps.sim.outputs.udid }}
@@ -265,6 +266,7 @@ jobs:
             else
               echo "- 缺失 R 编号: 无（0 缺）"
             fi
+            echo "- parity 步骤状态: ${{ steps.parity.conclusion }}"
             echo ""
             echo "## 已到编号（括号内为张数，同编号多态会 >1）"
             echo '```'
