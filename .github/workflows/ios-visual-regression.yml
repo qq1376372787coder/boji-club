@@ -45,19 +45,23 @@ jobs:
         if: github.event_name == 'workflow_run'
         run: |
           set -e
-          # 目标代码版本：优先取「父提交 == 本次构建 main 头」的那个 builder 快照
-          # （快照 ref 会被 builder 清理，只按 ref 存在与否取「最新」会拿到残留旧快照）；
-          # 取不到就退回构建对应的 main 头——团队出包前都已提交，main 与快照内容一致。
-          TARGET="${{ github.event.workflow_run.head_sha }}"
+          # 目标代码版本：优先取「父提交 == 本次构建 main 头」的那个 builder 快照；
+          # 取不到就退回构建对应的 main 头（出包前都已提交，内容一致）。
+          TARGET_SHA="${{ github.event.workflow_run.head_sha }}"
+          TARGET_REF=""
           git fetch --depth=2 origin "+refs/ios-builder/jobs/*:refs/remotes/origin/ios-builder/jobs/*" 2>/dev/null || true
           for ref in $(git for-each-ref --format='%(refname)' refs/remotes/origin/ios-builder/jobs/ 2>/dev/null); do
             PARENT=$(git rev-parse --verify "$ref^" 2>/dev/null || true)
-            if [ -n "$PARENT" ] && [ "$PARENT" = "$TARGET" ]; then
-              TARGET="$ref"; break
-            fi
+            if [ -n "$PARENT" ] && [ "$PARENT" = "$TARGET_SHA" ]; then TARGET_REF="$ref"; break; fi
           done
-          echo "使用代码版本: $TARGET"
-          git checkout --force "$TARGET"
+          if [ -n "$TARGET_REF" ]; then
+            echo "使用构建快照: $TARGET_REF"
+            git checkout --force "$TARGET_REF"
+          else
+            echo "未匹配到快照，退回构建对应 main 头: $TARGET_SHA"
+            git fetch --depth=1 origin "$TARGET_SHA" 2>/dev/null || true
+            git checkout --force "$TARGET_SHA" || git checkout --force origin/main
+          fi
 
       - name: Checkout working-tree snapshot
         if: github.event.inputs.snapshot_ref != ''
