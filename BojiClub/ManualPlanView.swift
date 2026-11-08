@@ -216,7 +216,7 @@ struct ManualPlanView: View {
     private var cyclePatternSection: some View {
         VStack(alignment: .leading, spacing: BojiLayout.inline) {
             Text("安排方式（可选）").bojiType(.secondary)
-            Picker("编排方式", selection: $cyclePattern) {
+            Picker("循环方式", selection: $cyclePattern) {
                 ForEach(PlanCyclePattern.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }.pickerStyle(.menu)
             if cyclePattern.needsWeekdays {

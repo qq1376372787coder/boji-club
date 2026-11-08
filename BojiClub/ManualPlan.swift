@@ -89,7 +89,7 @@ struct ManualPlanDraft: Identifiable, Codable, Equatable {
         // F3：循环编排生成的待配置日必须先配动作，不能把半成品当训练日采用。
         // 用户已把标题清空（或点了“设为休息日”）时，这一天就是休息日，不再拦截。
         if placeholderCount > 0 {
-            return "还有 \(placeholderCount) 个待配置训练日（循环编排生成、还没有动作）。请给它们添加动作，或使用“设为休息日”。"
+            return "还有 \(placeholderCount) 个待配置训练日（循环安排生成、还没有动作）。请给它们添加动作，或使用“设为休息日”。"
         }
         guard activeDays.contains(where: { !$0.movements.isEmpty }) else { return "至少安排一个训练日，其他空白日期会作为休息日。" }
         guard activeDays.allSatisfy({ $0.title.count <= 80 && $0.movements.count <= 30 && $0.movements.allSatisfy(\.valid) }) else {
@@ -109,7 +109,7 @@ struct ManualPlanDraft: Identifiable, Codable, Equatable {
         var notes: [String] = []
         if let description = planDescription, !description.isEmpty { notes.append("计划描述：" + description) }
         if let intent = planIntent, !intent.isEmpty { notes.append("计划意图：" + intent) }
-        if let pattern = planPatternLabel, !pattern.isEmpty { notes.append("编排方式：" + pattern) }
+        if let pattern = planPatternLabel, !pattern.isEmpty { notes.append("循环方式：" + pattern) }
         return AIResult(kind: "plan", notes: notes, title: title, sessions: sessions, plan_days: duration,
                         plan_description: planDescription, plan_intent: planIntent, plan_pattern: planPatternLabel)
     }

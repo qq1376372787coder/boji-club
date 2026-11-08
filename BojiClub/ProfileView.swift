@@ -56,7 +56,7 @@ struct CloudStorageUsageView: View {
             if usage.photo_limit_bytes > 0 {
                 ProgressView(value: min(1, Double(usage.photo_bytes) / Double(usage.photo_limit_bytes)))
             }
-            Text("服务器仍有实际磁盘容量；单张云端JPEG附件最多4MB，必要时App会压缩后上传。").bojiType(.caption).foregroundStyle(.secondary)
+            Text("云端空间够用。单张照片超过 4MB 时，App 会先压缩再上传。").bojiType(.caption).foregroundStyle(.secondary)
         }
     }
     @MainActor private func refresh() async {

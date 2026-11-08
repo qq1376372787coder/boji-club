@@ -72,7 +72,7 @@ struct ClubPlanHub: View {
                     BojiPageHeader(
                         eyebrow: "TRAINING PLAN · 训练计划",
                         title: cycleTitle ?? "训练计划",
-                        subtitle: cycleDetail ?? "按目标编排与调整每周训练安排"
+                        subtitle: cycleDetail ?? "按目标安排与调整每周训练"
                     )
                 }
                 PlanWeekCard(selectedDate: $selectedDate, monthExpanded: calendarExpanded,
