@@ -1613,32 +1613,31 @@ struct ClubAIWorkspaceIdleView: View {
         .shadow(color: .black.opacity(0.04), radius: 10, x: 0, y: 3)
     }
 
+    /// 宏量素数据块（2+3 规格表 §2.1：大数字 + 细分割线 + 目标，替代图标汤进度条）
     private func macroItem(title: String, current: Double, target: Double, color: Color) -> some View {
-        let progress = target > 0 ? min(1.0, current / target) : 0
-        return VStack(alignment: .leading, spacing: BojiLayout.tight) {
-            HStack {
-                Text(title)
+        VStack(alignment: .leading, spacing: BojiLayout.tight) {
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                Text("\(Int(current))")
+                    .font(.title3.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(color)
+                Text(" g")
                     .bojiType(.caption)
                     .foregroundStyle(BojiColor.textTertiary)
-                Spacer()
-                Text("\(Int(current))g")
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textPrimary)
             }
-
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(BojiColor.inputSurface)
-                        .frame(height: 3)
-                    Capsule()
-                        .fill(color)
-                        .frame(width: max(0, geo.size.width * CGFloat(progress)), height: 3)
+            Rectangle()
+                .fill(BojiColor.divider)
+                .frame(width: 28, height: 1)
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(title).bojiType(.label).foregroundStyle(BojiColor.textSecondary)
+                if target > 0 {
+                    Text("/ \(Int(target))g").bojiType(.caption).foregroundStyle(BojiColor.textTertiary)
                 }
             }
-            .frame(height: 3)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title) \(Int(current)) 克，目标 \(Int(target)) 克")
     }
 
     // MARK: - 核心层级 4: 智能分析专区 (Fitness Intelligence)
