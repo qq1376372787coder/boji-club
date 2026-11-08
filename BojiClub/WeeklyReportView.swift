@@ -347,7 +347,7 @@ struct WeeklyReportView: View {
                     Divider().padding(.vertical, 0)
 
                     VStack(alignment: .leading, spacing: BojiLayout.tight) {
-                        Text("训练进阶与强度")
+                        Text("练得怎么样")
                             .bojiType(.caption)
                             .foregroundStyle(BojiColor.textSecondary)
                         Text(res.training)
@@ -384,21 +384,26 @@ struct WeeklyReportView: View {
                 .padding(BojiLayout.cardInset)
                 .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
             } else {
-                VStack(spacing: BojiLayout.rowGap) {
-                    Image(systemName: "chart.line.text.clipboard")
-                        .bojiType(.title)
-                        .foregroundStyle(BojiColor.textTertiary)
-                    Text("本周期尚未生成深度总结")
-                        .bojiType(.secondary)
-                        .foregroundStyle(BojiColor.textSecondary)
-                    Text("依据过去 7 天真实训练与饮食记录，全自动生成长效进阶分析。")
-                        .bojiType(.caption)
-                        .foregroundStyle(BojiColor.textTertiary)
-                        .multilineTextAlignment(.center)
+                // 空态可点：文案承诺「点一下就能生成」，这里就给真按钮，不许话术落空
+                Button(action: generateWeeklyReport) {
+                    VStack(spacing: BojiLayout.rowGap) {
+                        Image(systemName: "chart.line.text.clipboard")
+                            .bojiType(.title)
+                            .foregroundStyle(BojiColor.textTertiary)
+                        Text("还没有总结，点一下就能生成")
+                            .bojiType(.secondary)
+                            .foregroundStyle(BojiColor.textSecondary)
+                        Text("依据过去 7 天真实训练与饮食记录，自动生成本周分析。")
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.textTertiary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(BojiLayout.Rhythm.headerToContent)
+                    .frame(maxWidth: .infinity)
+                    .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
                 }
-                .padding(BojiLayout.Rhythm.headerToContent)
-                .frame(maxWidth: .infinity)
-                .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
+                .buttonStyle(.plain)
+                .disabled(isGenerating)
             }
         }
     }

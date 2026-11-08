@@ -76,14 +76,14 @@ struct NutritionView: View {
                 weeklyTrend
             }.padding(ClubUI.pageInset)
         }
-        .safeAreaInset(edge: .bottom) {
+        // BUG-021：底部主操作单一玻璃胶囊（B1 规格 54pt，safeAreaInset 自动为列表留位），
+        // 去掉「黑钮 + 玻璃条」双层叠放与重复内边距
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             Button { recorder = MealEntryRequest(date: selectedDate) } label: {
-                Label("记录饮食", systemImage: "plus").frame(maxWidth: .infinity, minHeight: 44)
+                Label("记一顿", systemImage: "plus")
+                    .frame(maxWidth: .infinity, minHeight: 54)
             }
-            .buttonStyle(BojiButtonStyle(kind: .primary))
-            .padding(.horizontal, BojiSpace.pageInset)
-            .padding(.vertical, BojiSpace.tightRow)
-            .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous))
+            .clubNativeGlassButton(prominent: true)
             .padding(.horizontal, BojiSpace.pageInset)
             .padding(.bottom, BojiLayout.tight)
         }

@@ -528,7 +528,7 @@ final class HealthDataService: ObservableObject {
             if !day.hasData { message = "该日暂无可读取数据，可能尚未同步、未记录或未允许读取。请先同步品牌 App，再检查 Apple 健康中的数据权限。" }
         } catch {
             guard ticket == generation, !(error is CancellationError), !Task.isCancelled else { return }
-            message = "读取未完成，保留上次记录：\(AppErrorText.message(error))"
+            message = "这次没读到最新数据。你原来的记录都在，稍后再试一次。"
         }
     }
     func importTCX(_ url: URL) throws -> Date {

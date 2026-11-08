@@ -250,7 +250,7 @@ private struct ClubBottomBarModifier<Bar: View>: ViewModifier {
 
 
 enum AppErrorText {
-    static func message(_ error: Error, fallback: String = "暂时未能完成操作，请稍后重试。") -> String {
+    static func message(_ error: Error, fallback: String = "这次没办成。你原来的记录都在，稍后再试一次。") -> String {
         let authored = (error as? AccountError)?.errorDescription
             ?? (error as? AIClientError)?.errorDescription
             ?? (error as? CloudSyncError)?.errorDescription

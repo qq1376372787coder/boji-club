@@ -300,7 +300,7 @@ struct ClubAIMemoryView: View {
                     perfItem(title: "深蹲估算 1RM", value: perf.squatBest.map { "\($0.formatted(.number.precision(.fractionLength(0)))) kg" } ?? "--", hint: "下肢力量")
                 }
 
-                Label("数据基于你的真实完成组自动运算，无需繁琐做问卷。随着训练深入，估算将更加精准。", systemImage: "lightbulb.fill")
+                Label("数据来自你真正练完的组，不用填问卷。练得越久，估得越准。", systemImage: "lightbulb.fill")
                     .bojiType(.caption)
                     .foregroundStyle(BojiColor.textTertiary)
             }

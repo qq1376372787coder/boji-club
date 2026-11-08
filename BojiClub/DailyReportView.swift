@@ -248,7 +248,7 @@ struct DailyReportView: View {
                 HStack {
                     Image(systemName: "takeoutbag.and.cup.and.straw")
                         .foregroundStyle(BojiColor.textTertiary)
-                    Text("今日暂无餐食营养记录（缺失值不计为 0）")
+                    Text("今天还没记吃的")
                         .bojiType(.label)
                         .foregroundStyle(BojiColor.textSecondary)
                 }
