@@ -90,7 +90,7 @@ struct ClubAIMemoryView: View {
             contentStack
         }
         .background { ClubBackground() }
-        .navigationTitle("数字运动档案")
+        .navigationTitle("AI 记住的内容")
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("ai-memory-page")
         .task(id: account.user?.id) { await refreshFacts() }

@@ -292,7 +292,7 @@ struct WeightEntryEditor: View {
                 }
                 if let error { Section { Text(error).foregroundStyle(.red) } }
             }.clubManagementList132().clubGroupedSurface()
-            .navigationTitle(measurementID == nil ? "登记身体测量" : "纠正这次测量").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(measurementID == nil ? "记一次测量" : "修正这次测量").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) { Button("保存") { saveMeasurements() }.disabled(!canSave) }

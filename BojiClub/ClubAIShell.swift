@@ -1055,12 +1055,12 @@ struct ClubAIWorkspaceIdleView: View {
                         newUserDivergenceCard
                     }
 
-                    // 核心层级 1: 身体战备与恢复就绪卡
+                    // 核心层级 1: 身体状态卡
                     readinessGaugeCard
                 }
                 .bojiHomeEntrance(revealed: revealed, reduceMotion: reduceMotion, index: 1)
 
-                // 核心层级 2: 今日战术任务看板
+                // 核心层级 2: 今天练什么
                 heroMissionCard
 
                 // 核心层级 3: 代谢与营养平衡板

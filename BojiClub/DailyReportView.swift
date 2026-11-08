@@ -66,7 +66,7 @@ struct DailyReportView: View {
                 // 第二层：AI 今日分析与亮点点评
                 aiAnalysisSection
 
-                // 第三层：明日战术与恢复建议
+                // 第三层：明日建议
                 recommendationsSection
 
                 // 底部操作区

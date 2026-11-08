@@ -895,7 +895,7 @@ final class BojiClubUITests: XCTestCase {
         selectMode("记录", in: app)
         let picker = app.segmentedControls["records-category-picker"]
         XCTAssertTrue(picker.waitForExistence(timeout: 8))
-        XCTAssertTrue(picker.buttons["综合看板"].isSelected)
+        XCTAssertTrue(picker.buttons["概览"].isSelected)
         let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.85, dy: 0.55))
         let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.55))
         for title in ["训练", "饮食", "身体"] {
@@ -910,8 +910,8 @@ final class BojiClubUITests: XCTestCase {
         let reversed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: picker.buttons["饮食"])
         XCTAssertEqual(XCTWaiter.wait(for: [reversed], timeout: 5), .completed)
         XCTAssertTrue(modeButton("记录", in: app).isSelected)
-        picker.buttons["综合看板"].tap()
-        XCTAssertTrue(picker.buttons["综合看板"].isSelected)
+        picker.buttons["概览"].tap()
+        XCTAssertTrue(picker.buttons["概览"].isSelected)
         attachScreenshot("glass-records-dashboard", app: app)
     }
 

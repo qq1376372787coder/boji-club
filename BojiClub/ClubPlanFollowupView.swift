@@ -42,7 +42,7 @@ struct ClubPlanFollowupView: View {
                     }
                 } else { Text("正在核对方案与已确认记录…").bojiType(.secondary).foregroundStyle(.secondary) }
             }.padding(ClubUI.pageInset).frame(maxWidth: ClubUI.contentWidth).frame(maxWidth: .infinity)
-        }.background { ClubBackground() }.navigationTitle("方案执行跟进").navigationBarTitleDisplayMode(.inline)
+        }.background { ClubBackground() }.navigationTitle("计划完成情况").navigationBarTitleDisplayMode(.inline)
             .onAppear { ownerID = store.editingAccountID; refresh() }
             .onReceive(store.$state) { _ in Task { @MainActor in await Task.yield(); refresh() } }
             .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in refresh() }

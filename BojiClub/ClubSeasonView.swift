@@ -642,7 +642,7 @@ struct ClubHistoryView: View {
                 }
             }
         }.clubListSurface()
-        .navigationTitle("成长季与奖品记录").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("成长季记录").navigationBarTitleDisplayMode(.inline)
         .task(id: account.user?.id) { loading = true; await service.refreshHistory(account: account); loading = false }
         .onChange(of: account.user?.id) { _, _ in selectedReward = nil; detailReward = nil; pendingAction = nil }
         .refreshable { await service.refreshHistory(account: account) }

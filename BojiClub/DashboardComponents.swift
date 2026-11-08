@@ -421,7 +421,7 @@ struct BojiVolumeHeatStrip: View {
         .chartYAxis(.hidden)
         .chartLegend(.hidden)
         .frame(height: 48)
-        .accessibilityLabel("7天出勤节奏分布")
+        .accessibilityLabel("这周练了几天的节奏分布")
     }
 }
 

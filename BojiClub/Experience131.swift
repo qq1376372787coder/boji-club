@@ -83,7 +83,7 @@ struct PlanMissingConditions131: View {
                 if let error = editor.error { Section { Text(error); Button("重新读取") { Task { await reload() } } } }
                 if loading { ProgressView("正在读取资料…") }
             }
-            .navigationTitle("补充训练条件").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("再补充一点训练条件").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("稍后") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

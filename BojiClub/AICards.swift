@@ -772,7 +772,7 @@ struct AIMemoryDraftCard: View {
                 .bojiType(.body)
                 .foregroundStyle(BojiColor.textPrimary)
                 
-            Text(saved ? "已存入长期档案，AI 后续对话与排课将遵循此偏好。" : dismissed ? "已忽略此条记忆。" : "确认后将存入你的“数字运动档案”，后续排课与建议将自动考虑。")
+            Text(saved ? "已存入长期记忆，AI 后续对话与排课将遵循此偏好。" : dismissed ? "已忽略此条记忆。" : "确认后将存入你的“AI 记住的内容”，后续排课与建议将自动考虑。")
                 .bojiType(.label)
                 .foregroundStyle(BojiColor.textSecondary)
 

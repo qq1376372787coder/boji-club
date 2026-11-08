@@ -73,7 +73,7 @@ struct MembershipView: View {
                 }
             }
             .background { ClubBackground() }
-            .navigationTitle("俱乐部会员").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("会员").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if !isMandatory && !pushed132 { ToolbarItem(placement: .confirmationAction) { Button("关闭") { dismiss() } } }
                 #if DEBUG
@@ -105,7 +105,7 @@ struct MembershipView: View {
                 Button("确认购买永久会员") { membership.purchase(.lifetime) }
                 Button("暂不升级", role: .cancel) { }
             } message: {
-                Text("永久会员是另一次购买，不抵扣已支付订阅费用，也不会自动取消月费或年费。购买后请到 Apple 订阅设置关闭原订阅，避免继续续费。实际价格以购买窗口为准。")
+                Text("永久会员是另一次购买，不抵扣已支付订阅费用，也不会自动取消月费或年费。购买后请到 Apple 订阅设置关闭原订阅，避免继续续费。实际价格以购买页为准。")
             }
             .task { if !isPricePreview { membership.refresh(force: true) } }
             .toolbar {
@@ -267,7 +267,7 @@ struct MembershipView: View {
 
     private var legalFooter: some View {
         VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
-            Text("月度和年度会员自动续订，可在 Apple 订阅设置中取消。永久会员为一次性购买，不自动续订。实际价格以购买窗口为准。购买永久会员不会自动取消已有订阅。")
+            Text("月度和年度会员自动续订，可在 Apple 订阅设置中取消。永久会员为一次性购买，不自动续订。实际价格以购买页为准。购买永久会员不会自动取消已有订阅。")
                 .bojiType(.label).foregroundStyle(.secondary)
             HStack(spacing: BojiLayout.cardInset) {
                 Button("隐私政策") { legalDocument = .privacy }
@@ -408,7 +408,7 @@ private struct MembershipPurchaseDiagnosticsView: View {
                 }.padding(ClubUI.pageInset)
             }
             .background { ClubBackground() }
-            .navigationTitle("购买服务检查").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("会员检查").navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("关闭") { dismiss() } } }
             .task { membership.checkPurchaseServices() }
         }

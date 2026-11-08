@@ -543,7 +543,7 @@ struct ReviewDashboardView: View {
 
             VStack(alignment: .leading, spacing: BojiLayout.tight) {
                 HStack {
-                    Text("训练出勤节奏")
+                    Text("这周练了几次")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.textSecondary)
                     Spacer()

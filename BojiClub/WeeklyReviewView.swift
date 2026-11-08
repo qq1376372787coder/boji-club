@@ -52,7 +52,7 @@ struct WeeklyReviewCenter: View {
                                     .bojiFont(.cardTitle)
                                     .foregroundStyle(BojiColor.textPrimary)
                             }
-                            Text("无需填问卷、无需上传拍照。依据真实出勤、训练容量与饮食数据全自动生成。")
+                            Text("不用填问卷、不用拍照。按你真实练的、举的、吃的自动生成。")
                                 .bojiType(.secondary)
                                 .foregroundStyle(BojiColor.textSecondary)
 

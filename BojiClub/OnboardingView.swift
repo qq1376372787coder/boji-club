@@ -822,7 +822,7 @@ struct OnboardingView: View {
                 }
             } else {
                 FlowSurface {
-                    Label("将按标准健身房器械编排训练", systemImage: "dumbbell")
+                    Label("按标准健身房器械安排训练", systemImage: "dumbbell")
                         .bojiType(.secondary)
                     Text("杠铃、哑铃、绳索、深蹲架、卧推凳和常见固定器械均可使用。")
                         .bojiType(.caption).foregroundStyle(.secondary)

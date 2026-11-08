@@ -95,7 +95,7 @@ struct ReportLibraryView: View {
             }.padding(ClubUI.pageInset).frame(maxWidth: ClubUI.contentWidth)
                 .frame(maxWidth: .infinity)
         }.background { ClubBackground() }.tint(ClubBrand.accent)
-            .navigationTitle("解读记录").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("AI 报告").navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showDailySheet) {
                 NavigationStack {
                     DailyReportView()

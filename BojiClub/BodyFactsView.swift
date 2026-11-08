@@ -147,7 +147,7 @@ struct BodyFactIntakeView: View {
                         .bojiType(.label).foregroundStyle(.secondary)
                 }
             }.clubManagementList132()
-            .navigationTitle("记录身体数字")
+            .navigationTitle("身体数字")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("关闭") { dismiss() } }

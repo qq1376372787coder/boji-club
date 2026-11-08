@@ -186,7 +186,7 @@ struct PlanView: View {
 
     @ViewBuilder private var planWeightChoice: some View {
         if !store.state.profile.hasConfirmedBasics {
-            Text("身体资料尚未确认；本次仅按已确认的训练条件编排，不使用示例体重。").bojiType(.label).foregroundStyle(.secondary)
+            Text("身体资料尚未确认；本次只按已确认的训练条件来排，不使用示例体重。").bojiType(.label).foregroundStyle(.secondary)
         } else {
         Text("资料体重：\(store.state.profile.weight.formatted(.number.precision(.fractionLength(0...1)))) kg").bojiType(.secondary)
         if let point = recentWeight {
@@ -471,7 +471,7 @@ struct PlanView: View {
                             .bojiType(.label).foregroundStyle(.secondary)
                     }.padding(ClubUI.pageInset)
                 }
-            }.navigationTitle("调整方案").navigationBarTitleDisplayMode(.inline)
+            }.navigationTitle("调整计划").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("取消") { showRevision = false } } }
                 .safeAreaInset(edge: .bottom) {
                     FlowDock {
@@ -607,7 +607,7 @@ struct PlanView: View {
                     }
                     if let error { FlowError(message: error) }
                 }.padding(ClubUI.pageInset)
-            }.background { ClubBackground() }.navigationTitle("核对计划变更").navigationBarTitleDisplayMode(.inline)
+            }.background { ClubBackground() }.navigationTitle("确认计划改动").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("返回核对") { adoptionPreview = nil }.disabled(applying) } }
                 .safeAreaInset(edge: .bottom) {
                     Button(applying ? "正在保存…" : "保存这些安排") { apply(value) }
@@ -830,7 +830,7 @@ struct ContinueWeekView: View {
                 if sessions.isEmpty { Text("这一周还没有保存的训练安排。先回到“我的计划”制定一份计划，或从动作库自由添加。") }
                 if let error { Text(error).foregroundStyle(.red) }
                 Button("确认安排下一周") { if selected.isEmpty { error = "请至少选择一个没有已有安排的训练日。" } else { prepareConfirmation() } }.buttonStyle(PrimaryButton())
-            }.clubListSurface().navigationTitle("下一周安排预览").navigationBarTitleDisplayMode(.inline)
+            }.clubListSurface().navigationTitle("下周安排预览").navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 guard !loaded else { return }; loaded = true; sourceDayCount = initialCycle?.dates.count ?? 7; sourceEnd = endDate; ownerID = store.editingAccountID
                 destinationStart = earliestDestinationStart

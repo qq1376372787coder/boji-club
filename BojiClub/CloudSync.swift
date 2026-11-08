@@ -509,7 +509,7 @@ enum CloudPartitionClient {
             for part in page.parts {
                 let raw = Data(part.json.utf8)
                 let digest = SHA256.hash(data: raw).map { String(format: "%02x", $0) }.joined()
-                guard requested.contains(part.key), digest == part.hash else { throw CloudSyncError.message("云端分块校验未通过，原记录保留，请重试。") }
+                guard requested.contains(part.key), digest == part.hash else { throw CloudSyncError.message("云端数据检查没通过，原记录保留，请重试。") }
                 values[part.key] = try JSONDecoder().decode(JSONValue.self, from: raw); hashes[part.key] = part.hash
                 fetched.insert(part.key)
             }

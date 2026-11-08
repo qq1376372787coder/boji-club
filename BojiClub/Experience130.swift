@@ -331,7 +331,7 @@ struct WeeklyPlanCreator130: View {
                 }
                 if let error { Text(error).foregroundStyle(.red) }
             }.clubManagementList132()
-            .navigationTitle(initialTemplate == nil ? "创建每周计划" : "修改每周安排")
+            .navigationTitle(initialTemplate == nil ? "排每周计划" : "改每周安排")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { dismiss() } } }
             .safeAreaInset(edge: .bottom) { Button("保存计划") { prepare() }.buttonStyle(.borderedProminent).frame(maxWidth: .infinity).padding().clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous)) }

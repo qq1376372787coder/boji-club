@@ -266,7 +266,7 @@ struct ManagedPlanEditor126: View {
                 }
                 if let error { Text(error).foregroundStyle(.red) }
             }
-            .navigationTitle("核对计划更改").navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("确认计划改动").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("返回编辑") { review = false }.disabled(saving) }
                 ToolbarItem(placement: .confirmationAction) { Button(saving ? "保存中…" : "确认保存") { Task { await commit() } }.disabled(saving) }

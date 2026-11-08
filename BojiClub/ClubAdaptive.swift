@@ -37,7 +37,7 @@ struct ClubAutomaticReportList: View {
                     }.buttonStyle(ClubMotionButton())
                 }
             }.padding(ClubUI.pageInset)
-        }.background { ClubBackground() }.navigationTitle("自动跟进报告").navigationBarTitleDisplayMode(.inline)
+        }.background { ClubBackground() }.navigationTitle("自动提醒报告").navigationBarTitleDisplayMode(.inline)
             .onAppear { ownerID = store.editingAccountID }
             .onChange(of: store.editingAccountID) { _, id in if id != ownerID { dismiss() } }
     }
@@ -80,7 +80,7 @@ struct ClubAutomaticReportReader: View {
                     Button("重新同步报告") { Task { await recoverReport() } }.buttonStyle(SecondaryButton())
                 }
             }.padding(ClubUI.pageInset)
-        }.background { ClubBackground() }.navigationTitle("跟进").navigationBarTitleDisplayMode(.inline)
+        }.background { ClubBackground() }.navigationTitle("提醒").navigationBarTitleDisplayMode(.inline)
             .onAppear { ownerID = store.editingAccountID; refreshProposal() }
             .task(id: jobID) { if ai.job(jobID) == nil { await recoverReport() } }
             .onReceive(store.$state) { _ in Task { @MainActor in await Task.yield(); refreshProposal() } }

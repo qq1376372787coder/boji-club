@@ -552,6 +552,29 @@
 - 批次涉及**A 表 bug 复发** → 按 A 表原编号重新打开，不另起新号；
 - 发现新问题 → 按严重度入 A 表（BUG-018 起），P0/P1 立即开问题单退回。
 
+### K-4 批次复验记录（测试验收逐批登记）
+
+**批次 0（原生 TabView + 黑话/假数据清零 + UI 断言）—— 核心通过，3 条文案补刀**（2026-11-08）
+
+| 项 | 结论 | 证据 |
+|---|---|---|
+| K1-1 编译 | ✅ | run 42496009994（head `3190189`，`dist/BojiClub-c6299db8.ipa` 37.46 MB）；测试验收独立触发 run 42496419492（含后端 prompt/音效提交 bf52084）绿，37.46 MB |
+| UI 断言改写（Chief 硬条件） | ✅ | `BojiClubUITests.swift` diff 逐条核：3 条反向断言换正向（含 `XCTAssertEqual(tabBars.buttons.count, 3)`）；9 处 `v2-mode-picker` 迁 `tabBars`；**删除的全是导航断言，业务断言一条未丢**（`modeButton("Club AI")`→`"今天"` 为标签更新非删除），符合「只删不补不收货」反向要求 |
+| K1-2 原生组件 | ✅ | 自绘胶囊 `ClubModeCapsulePicker`/`v2-mode-picker` 全库零命中；TabView 三 tab 系统渲染（界面设计走查 §1.1 一致） |
+| K1-5 黑话（批次声明范围） | ✅ | 首页 25 处 + 周报「下一周战术建议」+ 记录中心「综合看板→概览」（显示名/内部 key 分离，`displayName` 映射核对无断链） |
+| K1-5 黑话（全页面口径） | ⚠️ **3 条补刀** | **P2**：`WeeklyReportView:158`「训练出勤」、`:234`「累计出勤场次」（「出勤」为 prompt 禁用词+对照表点名项）；**P3**：引导页三句 `FirstLaunchWalkthroughView:427/558/611`（「分秒必争。」「蜕变，历历在目。」「万事俱备。」，定稿第十二节要求重写）+ 其他页「出勤」3 处 + 注释 4 处（Chief 已定下批顺手清） |
+| K1-6 每屏一主操作 | ⏳ N/A | 批次 0 未动按钮布局（首页排印归批次 1），随批次 1 核 |
+| K1-8~10 三联动 | ⏳ N/A | 三联动归批次 2 |
+| 编译阻塞附带修复 | ✅ 记录 | pbxproj ID 撞号（`700A/700B` 性能用例注册与 UITests 配置重号）由 `3190189` 修复——上轮 run 42495686440 秒败真因，非批次 0 代码问题；测试验收独立验证本地 pbxproj 括号配平、无重复 ID |
+
+**判定：批次 0 核心通过；3 条文案补刀（1 P2 + 2 P3）随批次 1 前清完，不阻塞 Chief 批批次 1。**
+
+**性能基线（baseline-5）—— 制品空跑，基线不成立**（2026-11-08，测试验收下载制品验证）
+
+- 测试验收用 git 凭据下载 artifact `performance-baseline`（10556 字节）并解压，**铁证**：`test-run.log` 尾部 `xcodebuild: error: Unable to read project 'BojiClub.xcodeproj' — The project 'BojiClub' is damaged`（跑在 `5e2cf390`，pbxproj 撞号未修版本）；`performance-tests.json` 的 `testNodes` 为空、`totalTestCount: 0`、`result: "unknown"`——**测试零执行**。
+- **假成功根因**：`ios-performance.yml` 的 test 步骤管道吞退出码（`cmd | tee` 取到 tee 的 0），与 ios-build 修过的坑同款，该文件未带 `set -o pipefail`。44 秒 = build 30s + test 14s 报错退出，10.5KB = 空 xcresult，全部对上。
+- **修复三件（@运维支付）**：①test 步骤加 `set -o pipefail`；②加「`totalTestCount == 0` 即失败」判定；③在 `3190189`（撞号已修）后重跑。跑完测试验收复验制品，**见 `testLaunchBenchmark`/`testScrollBenchmark` 真实数值才算基线成立**（Chief 口径：批次 2 合入前的稳定点取样，批次 1 收尾最科学）。
+
 ### K-3 阶段 6 整体通过条件（对应 goal）
 
 四条线（界面/交互/文案/流程）全部落地 + 一批一编译全绿 + 测试验收逐批复验通过 + 界面设计按新视觉稿走查达标 → 交 Chief 验收 → 用户真机验收签字。

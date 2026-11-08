@@ -297,7 +297,7 @@ struct TaskCenterView: View {
 
         }.clubManagementList132()
         .background(BojiColor.pageBackground)
-        .navigationTitle("处理进度")
+        .navigationTitle("进行中的事")
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await model.load(account: account) }
         .task { await model.load(account: account) }

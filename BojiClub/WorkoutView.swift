@@ -96,7 +96,7 @@ struct WorkoutView: View {
     private var presentedWorkout: some View {
         workoutContent
         .background { ClubBackground() }
-        .navigationTitle(isFuture ? "当天安排" : "训练登记")
+        .navigationTitle(isFuture ? "当天安排" : "训练")
         .onAppear {
             restOwnerID = store.editingAccountID; restDateKey = ClubDates.key(selectedDate)
             if expandedExerciseID == nil {

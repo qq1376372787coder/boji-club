@@ -71,7 +71,7 @@ struct WeeklyReportView: View {
                 // 第五层：AI 深度复盘
                 aiDeepAnalysisSection
 
-                // 第六层：下一周战术建议
+                // 第六层：下周安排
                 nextWeekActionSection
 
                 // 底部操作
@@ -231,7 +231,7 @@ struct WeeklyReportView: View {
                 }
 
                 HStack {
-                    Text("累计出勤场次")
+                    Text("练了几场")
                         .bojiType(.label)
                         .foregroundStyle(BojiColor.textSecondary)
                     Spacer()

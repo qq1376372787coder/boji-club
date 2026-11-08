@@ -415,7 +415,7 @@ struct ClubInsightTimelineView: View {
             .frame(maxWidth: .infinity)
         }
         .background { ClubBackground() }
-        .navigationTitle("洞察")
+        .navigationTitle("趋势")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if !embedded {
@@ -568,7 +568,7 @@ struct ClubAISettingsView: View {
 
         }.clubManagementList132()
             .background { ClubBackground() }
-            .navigationTitle("自动跟进")
+            .navigationTitle("自动提醒")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { DismissButton() } }
             .onAppear { ownerID = store.editingAccountID }

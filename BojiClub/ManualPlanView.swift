@@ -62,7 +62,7 @@ struct ManualPlanView: View {
                     if !loaded { Button("重新读取草稿", action: load).buttonStyle(SecondaryButton()) }
                 }.padding(ClubUI.pageInset).frame(maxWidth: ClubUI.contentWidth).frame(maxWidth: .infinity)
             }.scrollDismissesKeyboard(.interactively).background { ClubBackground() }
-                .navigationTitle("自由创建计划").navigationBarTitleDisplayMode(.inline)
+                .navigationTitle("自己排计划").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) {
                     Button("保存并关闭") { if !loaded || saveDraft() { dismiss() } }
                 } }
@@ -399,7 +399,7 @@ struct ManualPlanView: View {
                     }
                     if let error { FlowError(message: error) }
                 }.padding(ClubUI.pageInset)
-            }.background { ClubBackground() }.navigationTitle("确认计划")
+            }.background { ClubBackground() }.navigationTitle("确认这份计划")
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("返回编辑") { preview = nil } } }
                 .safeAreaInset(edge: .bottom) {
                     Button("保存到训练日历", action: { apply(value) }).buttonStyle(PrimaryButton()).padding(BojiSpace.pageInset).clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous))
