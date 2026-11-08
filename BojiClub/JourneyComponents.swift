@@ -8,7 +8,7 @@ struct ClubIconButtonStyle: ButtonStyle {
             .frame(minWidth: ClubUI.minimumTap, minHeight: ClubUI.minimumTap)
             .contentShape(Rectangle())
             .opacity(enabled ? (configuration.isPressed ? 0.72 : 1) : 0.42)
-            .scaleEffect(configuration.isPressed && enabled && !reduceMotion ? 0.96 : 1)
+            .scaleEffect(configuration.isPressed && enabled ? BojiPressSpec.rowScale : 1)   // M1 按压 0.96；减动效保留缩放
             .animation(reduceMotion ? nil : BojiMotion2.state, value: configuration.isPressed)
             .sensoryFeedback(.selection, trigger: configuration.isPressed) { _, pressed in pressed && enabled }
     }

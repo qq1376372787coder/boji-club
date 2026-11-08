@@ -649,7 +649,7 @@ extension View {
     }
 
     /// 统一的按下回弹：0.96 → 1，L1 曲线，可选触感。
-    func bojiPressable(scale: CGFloat = 0.96, haptic: BojiFeedback.Event? = .selection) -> some View {
+    func bojiPressable(scale: CGFloat = BojiPressSpec.rowScale, haptic: BojiFeedback.Event? = .selection) -> some View {
         modifier(BojiPressModifier(scale: scale, haptic: haptic))
     }
 }
@@ -663,10 +663,13 @@ private struct BojiPressModifier: ViewModifier {
     }
 }
 
-/// M7 玻璃按压统一档：scale 0.97（规格表 §2.9）。所有自绘按钮样式的按压缩放一律引用此常量，
-/// 不许页面散写 0.96/0.98/0.985——「玻璃按下必须有缩放」的反向红线靠这个常量兜住。
+/// M7/M1 按压统一档（规格表 §2.9 + 动效规格 §二）：按压缩放一律引用这里的常量，
+/// 页面与样式都不许散写 0.96/0.97/0.98/0.985——「按下必须有缩放」的反向红线靠常量兜住。
 enum BojiPressSpec {
+    /// M7 玻璃/主操作按压
     static let scale: CGFloat = 0.97
+    /// M1 行/组次块按压（动效规格 §3.2「下压 0.96」）
+    static let rowScale: CGFloat = 0.96
     static let shadowRadiusPressed: CGFloat = 16
     static let shadowRadiusIdle: CGFloat = 24
     static let shadowYPressed: CGFloat = 4
@@ -674,12 +677,13 @@ enum BojiPressSpec {
 }
 
 struct BojiPressStyle: ButtonStyle {
-    var scale: CGFloat = 0.96
+    var scale: CGFloat = BojiPressSpec.rowScale
     var haptic: BojiFeedback.Event? = .selection
     var reduceMotion: Bool = false
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed && !reduceMotion ? scale : 1)
+            // 动效规格 §二 M7 例外三条：按压是触感的可视化（功能反馈），减动效时保留缩放、时长置 0 瞬时到位
+            .scaleEffect(configuration.isPressed ? scale : 1)
             .opacity(configuration.isPressed ? 0.92 : 1)
             .animation(reduceMotion ? nil : BojiMotion2.micro, value: configuration.isPressed)
             .onChange(of: configuration.isPressed) { _, pressed in

@@ -386,7 +386,7 @@ struct ClubMotionButton: ButtonStyle {
             .foregroundStyle(configuration.role == .destructive ? Color.red : .primary)
             .frame(minHeight: ClubUI.minimumTap).contentShape(Rectangle())
             .opacity(configuration.isPressed && enabled ? 0.78 : 1)
-            .scaleEffect(configuration.isPressed && enabled && !reduceMotion ? 0.985 : 1)
+            .scaleEffect(configuration.isPressed && enabled ? BojiPressSpec.scale : 1)   // M7 按压 0.97；减动效保留缩放（瞬时到位）
             .animation(reduceMotion ? nil : BojiMotion2.state, value: configuration.isPressed)
             .sensoryFeedback(.selection, trigger: configuration.isPressed) { _, pressed in pressed && enabled }
     }

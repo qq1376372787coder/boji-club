@@ -478,7 +478,7 @@ struct BojiRowPressStylePublic: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .opacity(configuration.isPressed ? 0.6 : 1)
-            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.98 : 1)
+            .scaleEffect(configuration.isPressed ? BojiPressSpec.scale : 1)   // M7 按压 0.97；减动效保留缩放
             .animation(reduceMotion ? nil : .easeOut(duration: BojiMotion.pressDuration), value: configuration.isPressed)
     }
 }

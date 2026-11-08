@@ -170,7 +170,7 @@ private struct BojiRowPressStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .opacity(configuration.isPressed ? 0.72 : 1)
-            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.98 : 1)
+            .scaleEffect(configuration.isPressed ? BojiPressSpec.rowScale : 1)   // M1 行按压 0.96；减动效保留缩放（瞬时到位）
             .animation(reduceMotion ? nil : .bojiSnappy, value: configuration.isPressed)
             .onChange(of: configuration.isPressed) { _, pressed in
                 if pressed { BojiHaptics.tick() }
