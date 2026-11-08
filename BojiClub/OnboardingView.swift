@@ -1319,7 +1319,7 @@ private struct MemberCardCelebration: View {
                 Image(systemName: "sparkles")
                     .font(.system(size: 44, weight: .semibold))
                     .foregroundStyle(FlowPalette.silver)
-                    .symbolEffect(.celebrate, value: revealed)
+                    .symbolEffect(.bounce, value: revealed)
                     .padding(.top, 96)
                     .accessibilityHidden(true)
                     .allowsHitTesting(false)
