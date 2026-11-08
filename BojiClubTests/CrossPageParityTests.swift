@@ -472,10 +472,16 @@ final class CrossPageParityTests: XCTestCase {
 
     // MARK: - 口径唯一性守卫
 
-    /// 缺陷复现：未保存的训练场次被算进当日训练量。
-    /// 根因：Models.swift:329 的 `DayLog.volume` 不区分场次是否已保存，
-    /// 而权威口径是 `confirmedTraining.volume`（只算已确认保存的场次）。
-    /// 修法：`DayLog.volume` 改为转发 `confirmedTraining.volume`。
+    /// **用户可见的训练量只认已保存场次**——未保存的进行中场次不算「今天练了多少」。
+    ///
+    /// 现状：`TrainingRecordText.measurements`（`DailyExperience.swift:742`）已改用
+    /// `log.confirmedTraining.volume`，用户可见串正确。
+    ///
+    /// 但 `DayLog.volume`（`Models.swift:332`）**仍是宽口径**（只滤 validCompletion，不滤保存状态），
+    /// 而且**已无任何读取者**——留着就是一个名字误导的陷阱：将来有人拿它显示，
+    /// 未保存场次又会回到用户眼前。**裁定：删掉它（死代码），训练量只留 `confirmedTraining.volume` 一条路。**
+    ///
+    /// 本用例钉「用户可见串」：已保存 200、未保存 480 → 串里只出现 200。
     func testUnsavedSessionVolumeIsNotCounted() {
         let today = Date()
         let savedSession = UUID()
@@ -485,7 +491,7 @@ final class CrossPageParityTests: XCTestCase {
             Exercise(name: "哑铃卧推", muscle: "胸",
                      sets: [TrainingSet(weight: 20, reps: 10, completed: true)],
                      libraryID: "0025", workoutSessionID: savedSession),
-            // 未保存的场次：用户还在练，不该进汇总
+            // 未保存的场次：用户还在练，不该进「今天练了多少」
             Exercise(name: "杠铃深蹲", muscle: "腿",
                      sets: [TrainingSet(weight: 60, reps: 8, completed: true)],
                      libraryID: "0043", workoutSessionID: pendingSession)
@@ -495,12 +501,12 @@ final class CrossPageParityTests: XCTestCase {
             WorkoutSession(id: pendingSession, startedAt: today)   // 无 savedAt = 未保存
         ]
 
-        let confirmedVolume = day.confirmedTraining.volume
-        XCTAssertEqual(confirmedVolume, 200, accuracy: 0.5, "已确认训练量只算已保存场次")
+        XCTAssertEqual(day.confirmedTraining.volume, 200, accuracy: 0.5, "已确认训练量只算已保存场次")
 
-        let legacyVolume = day.volume
-        assertSameNumber(confirmedVolume, legacyVolume,
-                         "当日训练量双口径（DayLog.volume 需转发 confirmedTraining.volume）")
+        let strings = TrainingRecordText.measurements(day)
+        let volumeString = strings.first { $0.contains("训练量") }
+        XCTAssertEqual(volumeString, "训练量 200 kg·次", "用户可见串应只含已保存场次的量，实际：\(strings)")
+        XCTAssertFalse(strings.contains { $0.contains("480") }, "用户可见串不得出现未保存场次的量：\(strings)")
     }
 
     /// 未完成的组不得计入训练量。
