@@ -1064,6 +1064,24 @@ struct ClubAIWorkspaceIdleView: View {
         }
     }
 
+    /// M6 滚动视差进度（0…1，200pt 内走完）：视频带 0.3 倍速、缩放 1→0.96、淡出至 0.85。
+    private var heroParallaxProgress: CGFloat {
+        guard !reduceMotion else { return 0 }
+        return min(1, max(0, heroScrollY / 200))
+    }
+
+    /// M6 视差：媒体层比页面慢（在裁切框内下移），同时轻微缩放与淡出；减动效恒定不动。
+    private struct HeroParallax: ViewModifier {
+        let progress: CGFloat
+        let reduceMotion: Bool
+        func body(content: Content) -> some View {
+            content
+                .scaleEffect(reduceMotion ? 1.06 : 1.06 - 0.10 * progress)
+                .offset(y: reduceMotion ? 0 : progress * 70)
+                .opacity(reduceMotion ? 1 : 1 - 0.15 * progress)
+        }
+    }
+
     /// 第一段：视频带（甲稿权威值：有数据 238pt / 空态 200pt，300 作废）。
     /// 除品牌小字（12pt）与暂停钮（44pt 命中区）外零文字——>20pt 禁止压媒体。
     private func heroVideoBand(phase: Double, empty: Bool) -> some View {
@@ -1079,12 +1097,14 @@ struct ClubAIWorkspaceIdleView: View {
                         .fill(BojiColor.brandMist.opacity(0.55))
                 }
             }
+            .modifier(HeroParallax(progress: heroParallaxProgress, reduceMotion: reduceMotion))
             .clipped()
             .accessibilityHidden(true)
             .allowsHitTesting(false)
             // z0b 视频层（就绪后叠加）
             if let heroPlayer {
                 HeroVideoSurface(player: heroPlayer)
+                    .modifier(HeroParallax(progress: heroParallaxProgress, reduceMotion: reduceMotion))
                     .accessibilityHidden(true)
                     .allowsHitTesting(false)
             }
