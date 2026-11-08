@@ -27,6 +27,11 @@ account-server/private-cache/
 account-server/private/
 account-server/cache/apple-keys/
 
+# iOS 签名材料（证书、描述文件、私钥）——绝不入库
+*.p12
+*.mobileprovision
+ios-signing*.key
+
 # Audit-fix local verification (never packaged)
 env/
 evidence/

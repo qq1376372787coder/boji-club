@@ -11,6 +11,7 @@
   "ios": {
     "path": ".",
     "scheme": "BojiClub",
+    "bundleId": "com.bojiclub.app.dev",
     "extensions": [
       "com.bojiclub.app.dev.widget"
     ]
@@ -20,5 +21,10 @@
   },
   "reactNative": {},
   "kmp": {},
-  "mobai": {}
+  "mobai": {},
+  "profiles": {
+    "store": {
+      "distribution": "store"
+    }
+  }
 }
