@@ -259,23 +259,19 @@ jobs:
               done || true
             fi
 
-            # 清洗文件名里的非法字符（引号/冒号/星号/尖括号/竖线/控制符）：
+            # 清洗文件名里的非法字符（引号/冒号/星号/尖括号/竖线）：
             # 诊断附件名会带 `Debug description for "v2-home-primary" Any.txt`
             # 这种引号，upload-artifact 会因非法路径拒收整包（2026-11-09 修，
             # 苹果开发在用例侧也清洗，这里是导出侧的兜底）。
-            python3 - <<'PY' 2>/dev/null || true
-            import os, re
-            d = "test-results/shots"
-            illegal = re.compile(r'["*:?<>|\\\x00-\x1f]')
-            for root, dirs, files in os.walk(d, topdown=False):
-                for name in files + dirs:
-                    if illegal.search(name):
-                        new = illegal.sub("_", name)
-                        src, dst = os.path.join(root, name), os.path.join(root, new)
-                        if src != dst and not os.path.exists(dst):
-                            os.rename(src, dst)
-                            print(f"rename: {name!r} -> {new!r}")
-            PY
+            # 用 tr+sed 而不是 heredoc：YAML 块会剥掉缩进，heredoc 终止符落不到行首，
+            # 会把整个脚本文法搞挂（66afaac 踩过，70cc30e 修）。
+            find test-results/shots -depth -print 2>/dev/null | while IFS= read -r f; do
+              base=$(basename "$f")
+              clean=$(printf '%s' "$base" | tr -d '\001-\037\177' | sed -E 's/["*:?<>|\\]/_/g')
+              if [ -n "$clean" ] && [ "$clean" != "$base" ]; then
+                mv -- "$f" "$(dirname "$f")/$clean" 2>/dev/null || true
+              fi
+            done
 
             COUNT=$(find test-results/shots -type f \( -name '*.png' -o -name '*.jpg' \) | wc -l | tr -d ' ')
             echo "已导出截图: $COUNT 张"
