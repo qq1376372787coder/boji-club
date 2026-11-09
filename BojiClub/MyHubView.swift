@@ -5,6 +5,7 @@ import SwiftUI
 /// 原生 List 分组（§十二：设置要绝对清晰），本页零玻璃。
 struct MyHubView: View {
     @EnvironmentObject private var account: AccountService
+    @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var membership: MembershipService
 
     var body: some View {
@@ -16,7 +17,7 @@ struct MyHubView: View {
                             .imageScale(.large)
                             .foregroundStyle(BojiColor.textSecondary)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(account.user?.nickname ?? "薄肌成员")
+                            Text(store.state.profile.nickname.isEmpty ? "薄肌成员" : store.state.profile.nickname)
                                 .bojiType(.data)
                                 .foregroundStyle(BojiColor.textPrimary)
                             Text("账号与资料")
