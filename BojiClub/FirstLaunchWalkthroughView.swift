@@ -243,7 +243,7 @@ private struct WalkthroughAICoachSlide: View {
 
                     // Core AI glyph
                     Image(systemName: "sparkles")
-                        .bojiType(.hero)
+                        .font(.system(size: 44))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [Color.white, BojiColor.brandMist],

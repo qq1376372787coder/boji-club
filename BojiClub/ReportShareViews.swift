@@ -44,7 +44,7 @@ struct ShareCardView: View {
                     BojiBrandSignature(size:48,style:.onDark,font:.system(size:34,weight:.semibold,design:.monospaced))
                     Spacer()
                     Image(systemName: brandSymbol)
-                        .bojiType(.hero)
+                        .font(.system(size: 44))
                 }
                 .foregroundStyle(.white)
                 .overlay(alignment: .bottomLeading) {

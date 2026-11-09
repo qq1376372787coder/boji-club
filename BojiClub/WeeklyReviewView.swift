@@ -560,7 +560,7 @@ struct WeeklyReviewDetail: View {
                                     RoundedRectangle(cornerRadius: BojiRadius.inner).fill(BojiColor.inputSurface)
                                     if let photo = review.photos.first(where: { $0.pose == position }), let data = weekly.photo(photo) {
                                         ClubPhotoPreview(data: data, pixels: 600)
-                                    } else { Image(systemName: "figure.stand").bojiType(.hero).foregroundStyle(.secondary) }
+                                    } else { Image(systemName: "figure.stand").font(.system(size: 44)).foregroundStyle(.secondary) }
                                 }.frame(height: 140).clipShape(RoundedRectangle(cornerRadius: BojiRadius.inner))
                                 Text(position + (position == "侧面" ? "（可选）" : "")).bojiType(.caption)
                             }.frame(maxWidth:.infinity)

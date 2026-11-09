@@ -388,7 +388,7 @@ struct ClubChatCamera125: View {
                 NavigationStack {
                     VStack(spacing: BojiLayout.blockGap) {
                         Spacer()
-                        Image(systemName:"camera").bojiType(.hero)
+                        Image(systemName:"camera").font(.system(size: 44))
                         Text(!checked ? "正在准备相机…" : available ? "需要相机权限才能拍照" : "当前设备没有可用相机")
                             .bojiType(.section)
                         if checked && available {
