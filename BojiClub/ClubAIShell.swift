@@ -1045,6 +1045,8 @@ struct ClubAIWorkspaceIdleView: View {
             .presentationDetents([.medium, .large])
         }
         .background(BojiColor.pageBackground)
+        // R01 同款修复（ff089da 样板，本层补漏）：标识容器必须 .contain，否则 v2-ai-workspace 向下传播顶掉 v2-home-primary
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("v2-ai-workspace")
     }
 
@@ -1105,6 +1107,8 @@ struct ClubAIWorkspaceIdleView: View {
             .clipped()
             // R03-④ 位移/缩放测量锚（Chief 定量法：位移比 0.3±0.1 或缩放增量）：
             // 变换打在本层，锚必须挂这层才量得到；仅测试/审计上下文暴露，真机保持隐藏不进 VoiceOver 树。
+            // .ignore 使本层成为可访问性元素，标识才查得到（否则视图非元素，XCUI 查不到锚）。
+            .accessibilityElement(children: .ignore)
             .accessibilityIdentifier("v2-home-hero-media")
             .accessibilityHidden(ProcessInfo.processInfo.environment["BOJI_AUDIT_SCREEN"] == nil)
             .allowsHitTesting(false)
