@@ -323,7 +323,7 @@ HStack {
             .accessibilityHint(meals.map(\.name).joined(separator: "、"))
 
             if expanded {
-                ForEach(meals) { meal in
+                ForEach(Array(meals.enumerated()), id: \.element.id) { index, meal in
                     HStack(alignment: .top, spacing: BojiLayout.rowGap) {
                         Button { editing = MealNutritionEditRequest(date: selectedDate, meal: meal) } label: {
                             HStack(alignment: .top, spacing: BojiLayout.rowGap) {
@@ -344,6 +344,12 @@ HStack {
                         .accessibilityLabel("删除\(meal.name)")
                     }
                     .padding(.vertical, BojiLayout.tight)
+                    // 细线列表（甲-3）：行间 0.5pt 发丝线，末行不加、交容器底线——块间不叠双线
+                    .overlay(alignment: .bottom) {
+                        if index < meals.count - 1 {
+                            Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline)
+                        }
+                    }
                     .transition(ClubMotion.transition(reduced: reduceMotion))
                 }
             }
