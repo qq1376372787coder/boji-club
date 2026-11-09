@@ -1447,19 +1447,10 @@ struct ClubAIWorkspaceIdleView: View {
                     breakdownRow(label: "近三天练过", anchor: "练过记 20 分，没练过也记 6 分", value: b.training, of: 20)
                 }
                 .overlay(alignment: .top) { Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline) }
-                // 施工卡 §〇之三解释句定稿三行（界面设计 2026-11-09）：两句正文 + 心率下限脚注。
-                // 「连上 Apple 健康就能拿满」已删——训练项满分靠近三天真练过，与连接无关。
+                // 施工卡 §〇之三定稿：解释句只留一句——训练项与心率下限都已在锚点行说清，不重复、不单加脚注。
                 Text("就这三项相加。没同步到的那项按 0 分算，其余照常算。")
                     .bojiType(.body15)
                     .foregroundStyle(BojiColor.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("练过记 20 分，没练过也记 6 分。")
-                    .bojiType(.body15)
-                    .foregroundStyle(BojiColor.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("静息心率最低也给 8 分。")
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
                 Text("今天还没拿到睡眠和心率，先不给分。")
@@ -1498,7 +1489,8 @@ struct ClubAIWorkspaceIdleView: View {
                     .foregroundStyle(BojiColor.textTertiary)
             } else {
                 Text("\(value)/\(of)")
-                    .bojiTypeFixed(.title, monospacedDigits: true)
+                    // 施工卡 §〇之三：分值 T3 17 等宽（与标签同档，不抢 sheet 标题）
+                    .bojiTypeFixed(.data, monospacedDigits: true)
                     .foregroundStyle(BojiColor.textPrimary)
             }
         }
