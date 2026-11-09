@@ -268,8 +268,9 @@ final class BojiClubUITests: XCTestCase {
         let review = app.buttons["workout-ai-review"]
         XCTAssertTrue(review.exists && review.isHittable, "AI review must be visible immediately below the metrics")
         attachScreenshot("build125-completion", app: app)
-        for _ in 0..<3 where !app.staticTexts["额外负重训练量"].isHittable { app.swipeUp() }
-        XCTAssertTrue(app.staticTexts["额外负重训练量"].exists)
+        // 术语表 §七：「额外负重训练量」已废除，指标义统一为「训练量」（WorkoutExperience125:259）
+        for _ in 0..<3 where !app.staticTexts["训练量"].isHittable { app.swipeUp() }
+        XCTAssertTrue(app.staticTexts["训练量"].exists)
         XCTAssertTrue(app.staticTexts["完成组"].exists)
         attachScreenshot("build125-actual-only-charts", app: app)
     }
