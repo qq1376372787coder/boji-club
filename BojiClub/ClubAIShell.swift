@@ -1443,7 +1443,7 @@ struct ClubAIWorkspaceIdleView: View {
                         .foregroundStyle(BojiColor.textTertiary)
                 }
                 VStack(spacing: 0) {
-                    breakdownRow(label: "睡眠", anchor: "睡 7.5 小时记 50 分，按实际时长折算", value: b.sleep, of: 50, unsynced: b.missingSleep)
+                    breakdownRow(label: "睡眠", anchor: "睡够 7.5 小时记 50 分，按实际时长折算", value: b.sleep, of: 50, unsynced: b.missingSleep)
                     breakdownRow(label: "静息心率", anchor: "65 次/分记 30 分，越高越低，最低也记 8 分", value: b.heart, of: 30, unsynced: b.missingHeart)
                     breakdownRow(label: "近三天练过", anchor: "练过记 20 分，没练过也记 6 分", value: b.training, of: 20)
                 }
