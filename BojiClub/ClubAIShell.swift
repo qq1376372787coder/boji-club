@@ -281,7 +281,7 @@ struct ClubAIShellView: View {
         // 今天 = 一屏「今天练什么」；记录 = 时间线（批 2 重做）；计划 = 周视图（批 3 重做）；我的 = 设置与更多（批 4 重做）。
         TabView(selection: $mode) {
             NavigationStack(path: $aiPath) {
-                todayPage
+                aiWorkspace
                     .navigationTitle("今天")
                     .navigationBarTitleDisplayMode(.large)
                     .toolbar { shellToolbar(for: .clubAI) }
@@ -925,11 +925,25 @@ struct ClubAIWorkspaceIdleView: View {
     @State private var revealed = false
     @State private var heroScrollY: CGFloat = 0
     @State private var showScoreBreakdown = false
+    @State private var todayAfterExpanded = false
+    @State private var expandedTodayExerciseID: UUID?
     @ObservedObject private var flags = FeatureFlagService.shared
 
     private var today: DayLog { store.log(for: Date()) }
 
     var body: some View {
+        // 全页面新蓝图 §一（2026-11-09 推倒重来）：首页 = 「今天」一页纸，主角 = 今天练什么。
+        todayPage
+            .background(BojiColor.pageBackground)
+            .sheet(isPresented: $showScoreBreakdown) {
+                scoreBreakdownCard
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showScoreBreakdown = false } } }
+                    .presentationDetents([.medium, .large])
+            }
+    }
+
+    /// 旧首页整链（蓝图 §一 已替换；清理批删除前保留编译）。
+    private var legacyBody: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
                 // 返工·三段式 Hero：视频带（仅 12pt 品牌小字+暂停钮）→ 页面底色排印区（巨号评分+指标+建议）
@@ -1297,7 +1311,7 @@ struct ClubAIWorkspaceIdleView: View {
     private func todayPrimaryAction() {
         BojiHaptics.selection()
         BojiSound.play(.tap)
-        if today.exercises.isEmpty { showPlanWizard = true } else { homePrimaryAction() }
+        if today.exercises.isEmpty { onArrangePlan131() } else { homePrimaryAction() }
     }
 
     // MARK: - 顶部标题区
