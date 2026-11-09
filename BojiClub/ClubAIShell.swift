@@ -1254,11 +1254,11 @@ struct ClubAIWorkspaceIdleView: View {
                 // 甲-2 空态引导卡（大改稿 §② mock + 施工卡 ④ 裁决）：细边框卡 + B2 44 描边「去连接」
                 // ——同屏底部已有 B1「开始练」，「去连接」不升 B1，避免两个主操作；连接是增益不是门槛。
                 VStack(alignment: .leading, spacing: BojiLayout.tight) {
-                    Text("连上 Apple 健康")
-                        .bojiType(.data)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(BojiColor.textPrimary)
-                    Text("这里会有睡眠、心率和训练，每天早上告诉你今天该练多狠。")
+                    // 文案定稿 §19.2 场景 1：符号 + 单句 15pt（守 R5）+「去连接」44 胶囊
+                    Image(systemName: "heart.text.square")
+                        .font(.system(size: 44))
+                        .foregroundStyle(BojiColor.textTertiary)
+                    Text("连上 Apple 健康，这里有睡眠、心率和训练")
                         .bojiType(.body15)
                         .foregroundStyle(BojiColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)

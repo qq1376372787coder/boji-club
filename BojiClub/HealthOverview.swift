@@ -383,6 +383,12 @@ struct BodyOverviewView: View {
                 let points = metricSeries(.weight, daysCount: weightRange)
                 if points.isEmpty {
                     EmptyNote(title: "近 \(weightRange) 天没有体重记录", detail: "可从 Apple 健康读取历史数据，或点击记录。")
+                } else if points.count < 2 {
+                    // 文案定稿 §19.2 场景 3：单点不画趋势图（≥2 条才画），给一句下一步
+                    Text("已记录 1 次，再记 1 次就能看趋势")
+                        .bojiType(.body15)
+                        .foregroundStyle(BojiColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 } else {
                     BojiLineTrendChart(
                         points: points,
@@ -454,6 +460,9 @@ struct BodyOverviewView: View {
                 let points = metricSeries(.steps, daysCount: activityRange)
                 if points.isEmpty {
                     EmptyNote(title: "暂无步数记录", detail: "授权 Apple 健康后可自动读取每日步数与活动能量。")
+                } else if points.count < 2 {
+                    // 空态规则 §5.2：单点不画趋势图（≥2 点才画），顶栏大数字已给当前值
+                    EmptyNote(title: "已记录 1 次步数", detail: "再有 1 天记录就能看趋势。")
                 } else {
                     BojiLineTrendChart(
                         points: points,
