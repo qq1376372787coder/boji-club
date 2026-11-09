@@ -1437,7 +1437,8 @@ struct ClubAIWorkspaceIdleView: View {
             if let score = data.score, let b = data.breakdown {
                 HStack(alignment: .firstTextBaseline, spacing: 7) {
                     BojiEditorialNumber(value: "\(score)")
-                    Text("今天")
+                    // 界面设计 2026-11-09：sheet 内统一叫「状态分」（术语表唯一叫法），不叫「今天」
+                    Text("状态分")
                         .bojiType(.caption)
                         .foregroundStyle(BojiColor.textTertiary)
                 }
