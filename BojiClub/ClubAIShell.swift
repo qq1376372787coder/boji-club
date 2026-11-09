@@ -1197,7 +1197,6 @@ struct ClubAIWorkspaceIdleView: View {
     /// 空态不摆数字与 0/—，改出今天的安排句（T2 28）。文字全部在页面底色上，绝不压视频。
     private var heroTypeBlock: some View {
         let data = heroReadiness
-        let insight = ClubHomeInsightMerge.resolve(local: ClubInsightLedger.current(in: store.state, date: Date()).first, server: ai.homeInsight)
         let planLead = today.exercises.prefix(2).map(\.displayName).joined(separator: " · ")
 
         return VStack(alignment: .leading, spacing: 0) {
@@ -1229,20 +1228,37 @@ struct ClubAIWorkspaceIdleView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            // 一句话（T4 15）：绑定真实洞察，无洞察整块隐藏
-            if let insight {
-                Text(insight.title)
-                    .bojiType(.body15)
-                    .foregroundStyle(BojiColor.textSecondary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 6)
-            }
+            // C 区一句话（文案定稿 §19.1 分档句，Chief 裁决 2026-11-09）：确定性文案，
+            // 不依赖洞察/AI 服务可用性（主句不许依赖运行时数据的存在性）；洞察降级进「今天安排」次级位。
+            Text(heroOneLiner)
+                .bojiType(.body15)
+                .foregroundStyle(BojiColor.textSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.9)
+                .padding(.top, 6)
         }
         .padding(.horizontal, BojiLayout.pageInset)
         .padding(.top, 16)
         .padding(.bottom, BojiLayout.inline)
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// C 区一句话（施工卡 §一 分档句，Chief 裁决 2026-11-09）：确定性、≤14 字、永不依赖运行时数据存在性。
+    /// 判断词只用 好/一般/偏低/正好（§19.1 模板规则）；洞察不进此句，降级在「今天安排」次级位。
+    private var heroOneLiner: String {
+        if let active = activeWorkout {
+            let left = max(0, active.totalSets - active.completedSets)
+            return left > 0 ? "正在练\(active.workoutName)，还剩 \(left) 组" : "就剩最后一组，练完能看日报"
+        }
+        guard let score = heroReadiness.score else {
+            return "连上健康后，这里显示状态分"
+        }
+        if today.exercises.isEmpty {
+            return today.planCycle != nil ? "今天不用练力量，想动就拉伸" : "还没排计划，先看看现成方案"
+        }
+        if score >= 80 { return "状态正好，今天练\(today.exercises.first?.displayName ?? "推")" }
+        if score >= 60 { return "状态一般，今天轻一点" }
+        return "状态偏低，今天减量练"
     }
 
     /// 细线数据条（施工卡 §二）：数值 T2 28 + 单位与标签 T5 11，上下发丝线、列间竖发丝线；
@@ -1521,6 +1537,16 @@ struct ClubAIWorkspaceIdleView: View {
                 }
             }
             .padding(.bottom, BojiLayout.inline)
+
+            // 洞察降级位（Chief 裁决 2026-11-09）：次级小字挂在「今天安排」区，不进 C 区主句
+            if let insight = ClubHomeInsightMerge.resolve(local: ClubInsightLedger.current(in: store.state, date: Date()).first, server: ai.homeInsight) {
+                Text(insight.title)
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.bottom, BojiLayout.inline)
+            }
 
             if let active = activeWorkout {
                 // 训练进行中：巨号那句已报「完成几组」，这里只给新信息（去重）
