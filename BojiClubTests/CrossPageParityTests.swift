@@ -346,7 +346,7 @@ final class CrossPageParityTests: XCTestCase {
         let twoState = makeState(days: two)
         let twoStart = calendar.date(byAdding: .day, value: -1, to: today) ?? today
         let twoWeek = WeeklyMetricsCalculator.compute(state: twoState, start: twoStart, end: today)
-        XCTAssertEqual(twoWeek.body?.weight_change_kg, -1.0, accuracy: 0.05, "2 次测量给差值")
+        XCTAssertEqual(twoWeek.body?.weight_change_kg ?? 0, -1.0, accuracy: 0.05, "2 次测量给差值")
         XCTAssertEqual(twoWeek.body?.weight_trend, "insufficient_data", "2 次测量不给方向（阈值 3）")
 
         // 只有 1 次测量：差值也不给
