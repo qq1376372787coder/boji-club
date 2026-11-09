@@ -146,23 +146,28 @@ jobs:
           xcrun simctl boot "$UDID" 2>/dev/null || true
           xcrun simctl bootstatus "$UDID" -b
 
-      - name: 跨页一致性断言（CrossPageParityTests）
+      - name: 跨页一致性断言 + 状态分契约
         id: parity
         if: steps.guard.outputs.parity_skip != 'true'
         env:
           UDID: ${{ steps.sim.outputs.udid }}
         run: |
           # 数字统一的机器化卡口：红一条 = 本批不许过（测试验收 定的口径）。
+          # 两个类同在 BojiClubTests 目标：跨页一致性 21 条 + 状态分契约 7 条，
+          # 少跑一个类「10 用例全绿」的账就少半本（2026-11-09 补）。
+          # mkdir -p 不能省：tee 写不出文件时 pipefail 会把真绿误报成红（2026-11-09 修）。
+          mkdir -p test-results
           set -o pipefail
           xcodebuild test \
             -project BojiClub.xcodeproj \
             -scheme BojiClub \
             -destination "platform=iOS Simulator,id=$UDID" \
             -only-testing:BojiClubTests/CrossPageParityTests \
+            -only-testing:BojiClubTests/ReadinessScoreContractTests \
             -resultBundlePath test-results/parity.xcresult \
             2>&1 | tee test-results/parity-run.log || {
               echo "::error::跨页一致性断言失败（红一条不许关单）"
-              tail -60 test-results/parity-run.log >> "$GITHUB_STEP_SUMMARY"
+              tail -60 test-results/parity-run.log >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
               exit 1
             }
 
@@ -253,6 +258,24 @@ jobs:
                 fi
               done || true
             fi
+
+            # 清洗文件名里的非法字符（引号/冒号/星号/尖括号/竖线/控制符）：
+            # 诊断附件名会带 `Debug description for "v2-home-primary" Any.txt`
+            # 这种引号，upload-artifact 会因非法路径拒收整包（2026-11-09 修，
+            # 苹果开发在用例侧也清洗，这里是导出侧的兜底）。
+            python3 - <<'PY' 2>/dev/null || true
+            import os, re
+            d = "test-results/shots"
+            illegal = re.compile(r'["*:?<>|\\\x00-\x1f]')
+            for root, dirs, files in os.walk(d, topdown=False):
+                for name in files + dirs:
+                    if illegal.search(name):
+                        new = illegal.sub("_", name)
+                        src, dst = os.path.join(root, name), os.path.join(root, new)
+                        if src != dst and not os.path.exists(dst):
+                            os.rename(src, dst)
+                            print(f"rename: {name!r} -> {new!r}")
+            PY
 
             COUNT=$(find test-results/shots -type f \( -name '*.png' -o -name '*.jpg' \) | wc -l | tr -d ' ')
             echo "已导出截图: $COUNT 张"
