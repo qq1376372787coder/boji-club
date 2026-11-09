@@ -165,6 +165,10 @@ final class VisualRegressionShots: XCTestCase {
         ]
         if !screen.route.isEmpty { app.launchEnvironment["BOJI_AUDIT_SCREEN"] = screen.route }
         if let health = screen.health { app.launchEnvironment["BOJI_UI_TEST_HEALTH"] = health }
+        // 修复 AX 注入失效：系统字号参数已在 launchArguments（:34-40，挂载方式本来就对）。
+        // 真凶是审计宿主的字号钳制——BojiComponentGalleryView.swift:235 把整棵视图树钉在 .large，
+        // 只认环境开关 BOJI_AUDIT_AX=1（或路由文件尾缀 ax），测试从未设过 → AX 图与亮色像素全同。
+        if set == .ax { app.launchEnvironment["BOJI_AUDIT_AX"] = "1" }
         app.launch()
 
         // 等首屏稳定（按 model）
