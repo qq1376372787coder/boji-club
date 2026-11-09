@@ -252,6 +252,13 @@ jobs:
                 e=$(printf '%s' "$item" | jq -r '.e // empty' 2>/dev/null || true)
                 # Apple 会在名后追加 _<序号>_<UUID>，去掉这截只留可读名
                 n=$(printf '%s' "$item" | jq -r '.n // empty' 2>/dev/null | sed -E 's/_[0-9]+_[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}(\.[A-Za-z0-9]+)$/\1/' || true)
+                # suggestedHumanReadableName 不带扩展名（XCUITest 自动附件如
+                # "Synthesized Event ... AM"），直接改名会把 .txt 丢掉，留下一个
+                # 以 ".02 AM" 结尾、看着像扩展名的时间戳碎片（2026-11-09 修）。
+                ext="${e##*.}"
+                if [ -n "$ext" ] && [ "$ext" != "$e" ] && [[ "$n" != *.* ]]; then
+                  n="$n.$ext"
+                fi
                 if [ -n "$e" ] && [ -n "$n" ] && [ "$e" != "$n" ] \
                    && [ -f "test-results/shots/$e" ] && [ ! -e "test-results/shots/$n" ]; then
                   mv "test-results/shots/$e" "test-results/shots/$n"
@@ -271,6 +278,20 @@ jobs:
               if [ -n "$clean" ] && [ "$clean" != "$base" ]; then
                 mv -- "$f" "$(dirname "$f")/$clean" 2>/dev/null || true
               fi
+            done
+
+            # XCUITest 诊断碎屑清污（2026-11-09 Chief 拍板）：自动生成的时间串名
+            # （Synthesized Event / UI Snapshot，二进制 plist）与 UUID 名（无
+            # suggestedHumanReadableName 的 debug description）不是产物，直接丢弃；
+            # manifest.json、录屏 mp4、有人读名的诊断（R01-*、App UI hierarchy、
+            # Debug description for …）与 75 张矩阵图一律保留。
+            for f in test-results/shots/*; do
+              [ -f "$f" ] || continue
+              base=$(basename "$f")
+              case "$base" in
+                "Synthesized Event "*|"UI Snapshot "*|????????-????-????-????-????????????.txt)
+                  rm -f -- "$f" && echo "drop debris: $base" ;;
+              esac
             done
 
             COUNT=$(find test-results/shots -type f \( -name '*.png' -o -name '*.jpg' \) | wc -l | tr -d ' ')
