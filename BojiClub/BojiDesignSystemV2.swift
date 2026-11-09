@@ -74,13 +74,13 @@ enum BojiTypeRole: String, CaseIterable {
 
     var size: CGFloat {
         switch self {
-        case .hero: 44
+        case .hero: 28   // 档位收编（9b71c78）：44 → T2 28（文字用法；图标用法待逐步改符号尺寸）
         case .display: 28   // 档位收编（规格体系 §2.4）：34 → T2 28
         case .title: 28
         case .section: 17   // 档位收编：20 → T3 17
         case .body, .bodyStrong: 15   // 档位收编：16 → T4 15
-        case .secondary: 14
-        case .label: 13
+        case .secondary: 15   // 档位收编：14 → T4 15（层级靠 textSecondary 颜色分）
+        case .label: 11   // 档位收编：13 → T5 11
         case .caption, .eyebrow: 11
         case .data: 17
         case .body15: 15
@@ -90,13 +90,13 @@ enum BojiTypeRole: String, CaseIterable {
     /// 目标行高（pt）。SwiftUI 里换算成 lineSpacing = 目标行高 - 系统行高。
     var lineHeight: CGFloat {
         switch self {
-        case .hero: 48
+        case .hero: 34   // 随档位收编
         case .display: 34   // 随档位收编
         case .title: 34
         case .section: 22   // 随档位收编
         case .body, .bodyStrong: 22   // 随档位收编
-        case .secondary: 20
-        case .label: 18
+        case .secondary: 22   // 随档位收编（T4 15 行高）
+        case .label: 16   // 随档位收编（T5 11 行高）
         case .caption: 16
         case .eyebrow: 14
         case .data: 22

@@ -97,24 +97,24 @@ enum BojiSize {
 
 /// 字号角色。默认值即 .large（标准）动态字号下的点数，经 @ScaledMetric 随动态字号缩放。
 enum BojiFontRole {
-    case pageTitle      // 30 / SemiBold
-    case cardTitle      // 20 / SemiBold
-    case exerciseName   // 18 / SemiBold
-    case body           // 16 / Regular
-    case secondary      // 14 / Regular
-    case label          // 13 / Medium
+    case pageTitle      // 28 / SemiBold（档位收编 9b71c78）
+    case cardTitle      // 17 / SemiBold
+    case exerciseName   // 17 / SemiBold
+    case body           // 15 / Regular
+    case secondary      // 15 / Regular
+    case label          // 11 / Medium
     case bodyMetric     // 28 / SemiBold（档位收编：40 → T2 28，规格体系 §2.4）
     case timer          // 28 / SemiBold
     case setNumber      // 17 / Medium
 
     var size: CGFloat {
         switch self {
-        case .pageTitle: 30
-        case .cardTitle: 20
-        case .exerciseName: 18
-        case .body: 16
-        case .secondary: 14
-        case .label: 13
+        case .pageTitle: 28   // 档位收编（9b71c78）：30 → T2 28
+        case .cardTitle: 17   // 档位收编：20 → T3 17（卡片标题小 3pt，出图复看）
+        case .exerciseName: 17   // 档位收编：18 → T3 17
+        case .body: 15   // 档位收编：16 → T4 15
+        case .secondary: 15   // 档位收编：14 → T4 15（层级靠颜色分）
+        case .label: 11   // 档位收编：13 → T5 11（标签小 2pt，出图复看）
         case .bodyMetric: 28
         case .timer: 28
         case .setNumber: 17
