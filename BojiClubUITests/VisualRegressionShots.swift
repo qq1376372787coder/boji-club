@@ -248,8 +248,10 @@ final class VisualRegressionShots: XCTestCase {
             let count = buttons.count > 0 ? buttons.count : generic.count
             if count != 1 {
                 // run 42579267726 教训：R01 含时机修复仍 0 命中 = 真问题，不许再猜。
-                // 红时把可访问性树整体 dump 出来（含全部按钮标识），证据随图一起出。
+                // run 42584813783 教训：附件不进 job 日志流，导出一坏证据就丢。
+                // 双通道：附件（随图包）+ 控制台打印（永远在 job 日志里）。
                 let dump = "identifier=\(primaryID) count=\(count)\n" + app.debugDescription
+                print("【可访问性树诊断】\(name)\n\(dump)")
                 let diagnostic = XCTAttachment(string: dump)
                 diagnostic.name = sanitizeFilename("\(name)-可访问性树诊断")
                 diagnostic.lifetime = .keepAlways
