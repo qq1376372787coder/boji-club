@@ -313,10 +313,10 @@ final class VisualRegressionShots: XCTestCase {
         return raw.components(separatedBy: forbidden).joined(separator: "_")
     }
 
-    /// M6 视差断言化取证（测试验收提议）：同一次运行 0/100/200pt 三档取视频带 frame。
-    /// **测量通道风险**：scaleEffect/offset 可能不反映进 XCUIElement.frame——所以首轮只测量+打印
-    /// （双通道：控制台 + 附件），并给「不增」软断言（帧不随变换走时恒等也能过、不假红）；
-    /// 首轮出数确认帧响应变换后，再把容差比值（200pt 处 ≈0.96±0.1）钉成硬断言。
+    /// R03-④ 视差定量取证（Chief 定量法：位移比 0.3±0.1 / 缩放增量；「像素必须不同」是恒真命题已废）。
+    /// 测量对象是**被变换的内层媒体**（v2-home-hero-media，HeroParallax 打在它身上），
+    /// 外层容器高度恒定量不出视差。测量通道风险：offset/scaleEffect 可能不进 XCUIElement.frame——
+    /// 首轮测量+双通道打印 + 方向性软断言（通道失灵恒等可过不假红），出数后钉死硬容差。
     func testHeroParallaxFramesAtScrollDepths() {
         let app = XCUIApplication()
         app.launchArguments = ShotSet.light.launchArguments
@@ -330,8 +330,8 @@ final class VisualRegressionShots: XCTestCase {
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 20), "视差测量启动失败")
         _ = app.staticTexts.firstMatch.waitForExistence(timeout: 10)
 
-        let video = app.descendants(matching: .any)["v2-home-hero-video"].firstMatch
-        XCTAssertTrue(video.waitForExistence(timeout: 10), "视频带标识 v2-home-hero-video 应在树上")
+        let media = app.descendants(matching: .any)["v2-home-hero-media"].firstMatch
+        XCTAssertTrue(media.waitForExistence(timeout: 10), "视差测量锚 v2-home-hero-media 应在树上（审计上下文暴露）")
 
         func dragUp(_ points: CGFloat) {
             let height = Double(app.windows.firstMatch.frame.height)
@@ -341,19 +341,31 @@ final class VisualRegressionShots: XCTestCase {
             start.press(forDuration: 0.08, thenDragTo: end)
         }
 
-        var frames: [(String, CGRect)] = [("0pt", video.frame)]
-        dragUp(100); frames.append(("100pt", video.frame))
-        dragUp(100); frames.append(("200pt", video.frame))
+        var frames: [(String, CGRect)] = [("0pt", media.frame)]
+        dragUp(100); frames.append(("100pt", media.frame))
+        dragUp(100); frames.append(("200pt", media.frame))
 
-        let report = frames.map { "\($0.0): \($0.1)" }.joined(separator: "\n")
-        print("【M6 视差帧测量】v2-home-hero-video\n\(report)")
+        let f0 = frames[0].1, f100 = frames[1].1, f200 = frames[2].1
+        // 位移比：媒体随滚动的位移 ÷ 内容位移（M6 视差 0.3 倍速 → ≈0.3；同速滚动 → ≈1.0 = 视差死）
+        let displacementRatio = Double((f0.minY - f200.minY) / 200)
+        // 缩放增量：200pt 处高度 ÷ 0pt 处高度（规格 1→0.96 → ≈0.96；1.0 = 缩放死）
+        let scaleRatio = Double(f200.height / max(1, f0.height))
+
+        let report = """
+        位移比(200pt) = \(displacementRatio) （目标 ≈0.3±0.1，≈1.0 即视差未生效）
+        缩放增量(200pt/0pt) = \(scaleRatio) （目标 ≈0.96，≈1.0 即缩放未生效）
+        frames:
+        \(frames.map { "\($0.0): \($0.1)" }.joined(separator: "\n"))
+        """
+        print("【R03-④ 视差定量】\n\(report)")
         let attachment = XCTAttachment(string: report)
-        attachment.name = sanitizeFilename("M6-视差帧测量-0-100-200")
+        attachment.name = sanitizeFilename("R03-视差定量-位移比与缩放增量")
         attachment.lifetime = .keepAlways
         add(attachment)
 
-        // 软断言：高度不随滚动增大（帧通道失灵时恒等可过，不假红；通道有效时防回退变大）
-        XCTAssertGreaterThanOrEqual(frames[0].1.height + 1, frames[2].1.height,
-                                    "视频带高度不应随滚动增大（M6 缩放方向）：\(report)")
+        // 方向性软断言（通道失灵恒等可过）：位移比与缩放增量都不许朝反方向走
+        XCTAssertLessThanOrEqual(displacementRatio, 1.01, "位移比不许超过同速滚动：\(report)")
+        XCTAssertLessThanOrEqual(scaleRatio, 1.01, "缩放增量不许反向放大：\(report)")
+        _ = f100 // 三档全量打印，中间档留给出数后的增量断言
     }
 }

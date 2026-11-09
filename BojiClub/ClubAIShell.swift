@@ -1098,7 +1098,10 @@ struct ClubAIWorkspaceIdleView: View {
             }
             .modifier(HeroParallax(progress: heroParallaxProgress, reduceMotion: reduceMotion))
             .clipped()
-            .accessibilityHidden(true)
+            // R03-④ 位移/缩放测量锚（Chief 定量法：位移比 0.3±0.1 或缩放增量）：
+            // 变换打在本层，锚必须挂这层才量得到；仅测试/审计上下文暴露，真机保持隐藏不进 VoiceOver 树。
+            .accessibilityIdentifier("v2-home-hero-media")
+            .accessibilityHidden(ProcessInfo.processInfo.environment["BOJI_AUDIT_SCREEN"] == nil)
             .allowsHitTesting(false)
             // z0b 视频层（就绪后叠加）
             if let heroPlayer {
