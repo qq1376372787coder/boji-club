@@ -596,6 +596,11 @@ private struct NutritionTrendSummary: View {
     }
 }
 
+extension NutritionView {
+    /// 时间线条目编辑入口（蓝图 §四：点餐食条目 → 对应编辑页）。
+    static func editor(date: Date, meal: Meal) -> some View { MealNutritionEditor(date: date, meal: meal) }
+}
+
 #if DEBUG
 enum NutritionAuditFactory {
  static func history(date: Binding<Date>) -> some View { NutritionHistoryView(selectedDate: date) }
