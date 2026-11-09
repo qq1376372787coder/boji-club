@@ -134,7 +134,8 @@ struct RootView: View {
             case .signedOut:
                 NavigationStack { AccountEntryView().toolbar(.hidden, for: .navigationBar) }
             case .onboarding:
-                IndependentProfileOnboardingView().id(account.user?.id)
+                // 蓝图 §十四（2026-11-09 推倒重来）：首启只有 3 步（目标/频率/生成第一周计划）。
+                FirstRun3StepView().id(account.user?.id)
             case .ready:
                 if activeMemberAccountID == nil { MembershipGateView() }
                 else { mainOrAuditContent }

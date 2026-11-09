@@ -106,6 +106,10 @@ struct EmptyNote: View {
     let title: String
     let detail: String
     var symbol: String = "sparkles.rectangle.stack"
+    /// 蓝图 §十五 / 规格 §2.8之二：空态 = 一句说明 + 一个动词按钮（两者都在才渲染）。
+    /// 按钮 B2 44 描边胶囊、不占满宽；动词开头、不超过 6 个字。
+    var actionTitle: String? = nil
+    var action: (() -> Void)? = nil
     var body: some View {
         HStack(alignment: .top, spacing: BojiLayout.rowGap) {
             Image(systemName: symbol)
@@ -122,6 +126,19 @@ struct EmptyNote: View {
                     .bojiFont(.secondary)
                     .foregroundStyle(BojiColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
+                if let actionTitle, let action {
+                    Button(action: action) {
+                        Text(actionTitle)
+                            .bojiType(.body15)
+                            .frame(minWidth: 72)
+                            .frame(minHeight: BojiLayout.controlHeight)
+                            .padding(.horizontal, BojiLayout.rowGap)
+                    }
+                    .buttonStyle(SecondaryButton())
+                    .buttonBorderShape(.capsule)
+                    .padding(.top, BojiLayout.tight)
+                    .accessibilityIdentifier("empty-note-action")
+                }
             }
             Spacer(minLength: 0)
         }

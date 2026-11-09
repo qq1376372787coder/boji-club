@@ -19,6 +19,7 @@ struct ClubAutomaticReportList: View {
     @EnvironmentObject private var store: AppStore
     @Environment(\.dismiss) private var dismiss
     @State private var ownerID: Int?
+    @State private var showAutoSettings = false
     private var jobs: [AILocalJob] { ClubAutomaticReports.items(ai.jobs, deleted: Set(store.state.deletedAIJobIDs ?? [])) }
     var body: some View {
         ScrollView {
@@ -26,7 +27,11 @@ struct ClubAutomaticReportList: View {
                 Text("记录之后，持续跟进").bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
                 Text("训练解读与周度记录报告保留各自日期依据；主观感受和参数修改仍由你确认。记录变化后，旧报告是当时的观察。")
                     .bojiType(.secondary).foregroundStyle(.secondary)
-                if jobs.isEmpty { EmptyNote(title: "还没有自动跟进报告", detail: "在设置中开启。训练确认后可生成解读；完整记录周满足条件后生成周度报告。") }
+                if jobs.isEmpty {
+                    // 蓝图 §十五：空态 = 一句说明 + 一个动词按钮
+                    EmptyNote(title: "还没有自动跟进报告", detail: "在设置中开启。训练确认后可生成解读；完整记录周满足条件后生成周度报告。",
+                              actionTitle: "去设置", action: { showAutoSettings = true })
+                }
                 ForEach(jobs) { job in
                     NavigationLink { ClubAutomaticReportReader(jobID: job.id) } label: {
                         ClubCard {
@@ -38,6 +43,7 @@ struct ClubAutomaticReportList: View {
                 }
             }.padding(ClubUI.pageInset)
         }.background { ClubBackground() }.navigationTitle("自动提醒报告").navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showAutoSettings) { NavigationStack { ClubAISettingsView() } }
             .onAppear { ownerID = store.editingAccountID }
             .onChange(of: store.editingAccountID) { _, id in if id != ownerID { dismiss() } }
     }
