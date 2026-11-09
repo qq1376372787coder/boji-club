@@ -293,8 +293,8 @@ struct ClubAIShellView: View {
             .tag(ClubShellMode.clubAI)
 
             NavigationStack(path: $recordsPath131) {
-                // 分类横翻收进 hub 内部（pagedCategory 为空时自带 page 样式）。
-                ClubRecordsHub(category: $recordsCategory, embeddedInShell: true)
+                // 蓝图 §四（2026-11-09 推倒重来）：记录 = 今天的时间线，不再是分类入口。
+                TimelineRecordsView()
                     .toolbar { shellToolbar(for: .records) }
             }
             .tabItem { Label("记录", systemImage: "list.bullet.rectangle") }
@@ -927,6 +927,8 @@ struct ClubAIWorkspaceIdleView: View {
     @State private var showScoreBreakdown = false
     @State private var todayAfterExpanded = false
     @State private var expandedTodayExerciseID: UUID?
+    @State private var openNutritionDetail = false
+    @State private var nutritionDate = Date()
     @ObservedObject private var flags = FeatureFlagService.shared
 
     private var today: DayLog { store.log(for: Date()) }
@@ -935,6 +937,7 @@ struct ClubAIWorkspaceIdleView: View {
         // 全页面新蓝图 §一（2026-11-09 推倒重来）：首页 = 「今天」一页纸，主角 = 今天练什么。
         todayPage
             .background(BojiColor.pageBackground)
+            .navigationDestination(isPresented: $openNutritionDetail) { NutritionView(selectedDate: $nutritionDate) }
             .sheet(isPresented: $showScoreBreakdown) {
                 scoreBreakdownCard
                     .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showScoreBreakdown = false } } }
@@ -1266,7 +1269,14 @@ struct ClubAIWorkspaceIdleView: View {
                     todayAfterRow(label: metric.label, value: "\(metric.value) \(metric.unit)".trimmingCharacters(in: .whitespaces), chevron: false)
                 }
                 if let intake = todayIntakeLine {
-                    todayAfterRow(label: "摄入热量", value: intake, chevron: false)
+                    Button {
+                        BojiHaptics.selection()
+                        openNutritionDetail = true
+                    } label: {
+                        todayAfterRow(label: "摄入热量", value: intake, chevron: true)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("v2-home-intake")
                 }
             }
         }

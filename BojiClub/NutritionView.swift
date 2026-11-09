@@ -73,14 +73,14 @@ struct NutritionView: View {
                 DisclosureGroup("目标与营养策略") {
                     NutritionStrategyCard(date: selectedDate).padding(.top, BojiSpace.general)
                 }.bojiType(.secondary).tint(ClubBrand.accent)
-                weeklyTrend
+                // 蓝图 §六：7 日柱图移出本页（批 3 随「看结果」落位），本页只回答今天。
             }.padding(ClubUI.pageInset)
         }
         // BUG-021：底部主操作单一玻璃胶囊（B1 规格 54pt，safeAreaInset 自动为列表留位），
         // 去掉「黑钮 + 玻璃条」双层叠放与重复内边距
         .safeAreaInset(edge: .bottom, spacing: 0) {
             Button { recorder = MealEntryRequest(date: selectedDate) } label: {
-                Label("记一顿", systemImage: "plus")
+                Text("记一餐")
                     .frame(maxWidth: .infinity, minHeight: BojiLayout.actionHeight)
             }
             .clubNativeGlassButton(prominent: true)
@@ -90,7 +90,7 @@ struct NutritionView: View {
         .clubSuccessFeedback("已保存到本机", trigger: saveFeedback)
         .sensoryFeedback(.success, trigger: saveFeedback)
         .background { ClubBackground() }
-        .navigationTitle("饮食").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("今天吃了").navigationBarTitleDisplayMode(.inline)
         .onAppear { if ClubDates.isFuture(selectedDate) { selectedDate=Date() } }
         .sheet(item: $recorder) { request in MealEditorView(date: request.date, category: request.category) { saveFeedback &+= 1 } }
         .sheet(item: $pendingBatch) { job in MealBatchReviewView(jobID: job.id) { saveFeedback &+= 1 } }
@@ -128,69 +128,85 @@ HStack {
         }
     }
 
+    /// §六 饮食（2026-11-09 推倒重来）：巨号「今天吃了多少」+ 6pt 细线进度 + 三行宏量小进度。
+    /// 空值不摆 0（P0-3）：没记录只给引导不给假数字。环形甜甜圈已删（横条更易读）。
     private var dailySummary: some View {
-        let carbsTotal = log.knownMeals.reduce(0) { $0 + $1.carbs }
-        let fatTotal = log.knownMeals.reduce(0) { $0 + $1.fat }
-        return ClubCard {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("摄入概览").bojiType(.section)
-                    if let target, target.generalGuidanceOnly != true {
-                        Text("目标 \(target.caloriesMin.formatted(.number.precision(.fractionLength(0))))–\(target.caloriesMax.formatted(.number.precision(.fractionLength(0)))) kcal")
-                            .bojiType(.caption).foregroundStyle(.secondary)
-                    }
-                }
-                Spacer(minLength: 8)
-                Text("已记 \(log.meals.count) 餐")
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textSecondary)
-                    .padding(.horizontal, BojiLayout.inline).padding(.vertical, BojiLayout.tight)
-                    .background(BojiColor.inputSurface, in: Capsule())
-            }
-
-            BojiMacroDonut(protein: log.protein, carbs: carbsTotal, fat: fatTotal,
-                calorieProgress: (target?.generalGuidanceOnly != true && (target?.caloriesMax ?? 0) > 0 && !log.knownMeals.isEmpty) ? log.calories / (target?.caloriesMax ?? 1) : nil,
-                centerTitle: "摄入热量", centerValue: log.knownMeals.isEmpty ? "—" : "\(log.calories.formatted(.number.precision(.fractionLength(0)))) kcal", size: 200)
-                .frame(maxWidth: .infinity).padding(.vertical, BojiLayout.inline)
-
-            if let target, target.generalGuidanceOnly != true, target.caloriesMax > 0, !log.knownMeals.isEmpty {
-                let remaining = target.caloriesMax - log.calories
-                VStack(spacing: BojiLayout.tight) {
-                    Text(remaining >= 0 ? "距上限参考还剩约 \(Int(remaining.rounded())) kcal" : "超出上限参考约 \(Int((-remaining).rounded())) kcal")
-                        .bojiType(.label)
-                        .foregroundStyle(remaining >= 0 ? BojiColor.textSecondary : BojiColor.timerAccent)
-                    if !log.mealsComplete {
-                        Text("已记录 · 今日未标记记全")
-                            .bojiType(.caption)
-                            .foregroundStyle(BojiColor.textTertiary)
-                    } else {
-                        Text("今日已记全")
-                            .bojiType(.caption)
-                            .foregroundStyle(BojiColor.textTertiary)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, BojiLayout.tight)
-            }
-
-            BojiAdaptiveGroup(spacing: BojiLayout.inline) {
-                macroMetric("蛋白质", value: log.protein, color: BojiColor.macroProtein)
-                macroMetric("碳水", value: carbsTotal, color: BojiColor.macroCarbs)
-                macroMetric("脂肪", value: fatTotal, color: BojiColor.macroFat)
-            }
-
-            if log.unknownNutritionMeals > 0 {
-                HStack(spacing: BojiLayout.tight) {
-                    Image(systemName: "exclamationmark.circle.fill")
-                        .bojiType(.caption)
-                        .foregroundStyle(BojiColor.timerAccent)
-                    Text("有 \(log.unknownNutritionMeals) 餐未估算营养，未计入总摄入")
-                        .bojiType(.caption)
+        let calMax = (target?.generalGuidanceOnly != true) ? (target?.caloriesMax ?? 0) : 0
+        return Group {
+            if log.knownMeals.isEmpty {
+                VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                    Text("今天还没记餐")
+                        .bojiType(.section)
+                        .foregroundStyle(BojiColor.textPrimary)
+                    Text("记一餐，就能看到吃了多少、还差多少。")
+                        .bojiType(.body15)
                         .foregroundStyle(BojiColor.textSecondary)
                 }
-                .padding(.horizontal, BojiLayout.inline).padding(.vertical, BojiLayout.tight)
-                .background(BojiColor.inputSurface.opacity(0.6), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, BojiLayout.blockGap)
+            } else {
+                VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
+                    HStack(alignment: .firstTextBaseline, spacing: BojiLayout.tight) {
+                        BojiEditorialNumber(value: "\(Int(log.calories))")
+                        if calMax > 0 {
+                            Text("/ \(Int(calMax)) 千卡")
+                                .bojiType(.data)
+                                .foregroundStyle(BojiColor.textTertiary)
+                        } else {
+                            Text("千卡")
+                                .bojiType(.data)
+                                .foregroundStyle(BojiColor.textTertiary)
+                        }
+                    }
+                    if calMax > 0 {
+                        let ratio = min(1, log.calories / calMax)
+                        HStack(spacing: BojiLayout.inline) {
+                            ProgressView(value: ratio)
+                                .tint(ClubBrand.accent)
+                                .frame(height: 6)
+                                .accessibilityLabel("摄入热量进度")
+                            Text("\(Int((ratio * 100).rounded()))%")
+                                .bojiType(.caption, monospacedDigits: true)
+                                .foregroundStyle(BojiColor.textSecondary)
+                        }
+                    }
+                    macroBarRow(name: "蛋白", value: log.protein, max: target?.proteinMax ?? 0, color: BojiColor.macroProtein)
+                    macroBarRow(name: "碳水", value: log.carbs, max: carbsMax, color: BojiColor.macroCarbs)
+                    macroBarRow(name: "脂肪", value: log.fat, max: target?.fatMax ?? 0, color: BojiColor.macroFat)
+                    if let target, target.generalGuidanceOnly != true, target.caloriesMax > 0 {
+                        let remaining = target.caloriesMax - log.calories
+                        Text(remaining >= 0 ? "距上限参考还剩约 \(Int(remaining.rounded())) 千卡" : "超出上限参考约 \(Int((-remaining).rounded())) 千卡")
+                            .bojiType(.caption)
+                            .foregroundStyle(remaining >= 0 ? BojiColor.textSecondary : BojiColor.timerAccent)
+                    }
+                }
             }
+        }
+    }
+
+    /// 碳水参考上限：热量上限扣除蛋白与脂肪后的余量折算（克）。
+    private var carbsMax: Double {
+        guard let target, target.generalGuidanceOnly != true, target.caloriesMax > 0 else { return 0 }
+        return max(0, (target.caloriesMax - target.proteinMin * 4 - target.fatMin * 9) / 4)
+    }
+
+    /// 宏量三行小进度（§六）：名称与读数 T5，细条压在行下。
+    private func macroBarRow(name: String, value: Double, max maxValue: Double, color: Color) -> some View {
+        VStack(spacing: BojiLayout.tight) {
+            HStack {
+                Text(name)
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textSecondary)
+                Spacer()
+                Text(maxValue > 0
+                     ? "\(Int(value.rounded())) / \(Int(maxValue.rounded())) 克"
+                     : "\(Int(value.rounded())) 克")
+                    .bojiType(.caption, monospacedDigits: true)
+                    .foregroundStyle(BojiColor.textSecondary)
+            }
+            ProgressView(value: maxValue > 0 ? min(1, value / maxValue) : 0)
+                .tint(color)
+                .frame(height: 3)
         }
     }
 

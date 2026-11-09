@@ -104,7 +104,19 @@ struct MealEditorView: View {
         let mode = ["照片", "语音", "手动"].contains(initialEntryMode ?? "") ? initialEntryMode! : "照片"
         _entryMode = State(initialValue: mode)
         _captureMode = State(initialValue: mode == "照片")
-        _category = State(initialValue: category ?? "早餐")
+        _category = State(initialValue: category ?? Self.autoCategory(for: date))
+    }
+
+    /// 蓝图 §五「默认值必须准到用户不用改」：餐次按记录时间自动判，用户可改。
+    static func autoCategory(for date: Date) -> String {
+        let hour = Calendar.current.component(.hour, from: date)
+        switch hour {
+        case 5..<10: return "早餐"
+        case 10..<15: return "午餐"
+        case 15..<17: return "加餐"
+        case 17..<22: return "晚餐"
+        default: return "加餐"
+        }
     }
     private func total(_ key: KeyPath<FoodComponent, Double>, fallback: Double) -> Double {
         FoodComponent.total(key, components: components, fraction: fraction, fallback: fallback)
@@ -210,6 +222,12 @@ struct MealEditorView: View {
                 .onChange(of: ClubDates.key(date)) { _, _ in if prefilled?.invalidOriginalDate != nil { repairedDateConfirmed = false } }
             Text("看看日期和份量，确认后保存。").bojiType(.caption).foregroundStyle(.secondary)
         } else {
+        // 蓝图 §五 第 1 步 · 拿到食物
+        Text("1 · 拿到食物")
+            .bojiType(.caption)
+            .fontWeight(.semibold)
+            .tracking(0.8)
+            .foregroundStyle(BojiColor.textTertiary)
         Picker("记录方式", selection: Binding(get: { entryMode }, set: { mode in
             if entryMode == "语音", multipleMeals { guard invalidateTextRecognition() else { return } }
             if isBusy, let jobID { ai.markConsumed(jobID); self.jobID = nil }
@@ -455,6 +473,12 @@ struct MealEditorView: View {
     @ViewBuilder
     private var nutritionSection: some View {
         if !(entryMode == "语音" && multipleMeals) {
+            // 蓝图 §五 第 2 步 · 确认份量
+            Text("2 · 确认份量")
+                .bojiType(.caption)
+                .fontWeight(.semibold)
+                .tracking(0.8)
+                .foregroundStyle(BojiColor.textTertiary)
             mealSummary
             DisclosureGroup("食物、份量与营养明细", isExpanded: $showMealDetails131) {
                 compositionSection
@@ -470,7 +494,7 @@ struct MealEditorView: View {
             HStack(alignment: .firstTextBaseline, spacing: BojiLayout.tight) {
                 Text(total(\.calories, fallback: calories).formatted(.number.precision(.fractionLength(0))))
                     .bojiType(.display)
-                Text("kcal").bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
+                Text("千卡").bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
                 Spacer()
                 Text(sourceJobID == nil ? "饮食记录" : "估算").bojiType(.caption).foregroundStyle(.secondary)
             }
@@ -478,6 +502,23 @@ struct MealEditorView: View {
                 macro("蛋白质", total(\.protein, fallback: protein))
                 macro("碳水", total(\.carbs, fallback: carbs))
                 macro("脂肪", total(\.fat, fallback: fat))
+            }
+            // 蓝图 §五：份量一拖就行（只对识别明细折算；手动值是精确语义，不折算）
+            if !components.isEmpty {
+                VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                    HStack {
+                        Text("份量")
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.textSecondary)
+                        Spacer()
+                        Text("\(fraction.formatted(.number.precision(.fractionLength(0...2)))) 份")
+                            .bojiType(.caption, monospacedDigits: true)
+                            .foregroundStyle(BojiColor.textSecondary)
+                    }
+                    Slider(value: $fraction, in: 0.25...3, step: 0.25)
+                        .tint(ClubBrand.accent)
+                        .accessibilityLabel("份量")
+                }
             }
         }.padding(ClubUI.cardInset).background(ClubUI.surface, in: RoundedRectangle(cornerRadius: ClubUI.cardRadius, style: .continuous))
     }
@@ -557,7 +598,7 @@ struct MealEditorView: View {
                 if entryMode == "语音" && multipleMeals { showBatchReview = true }
                 else if hasNutritionValues { save() } else { confirmUnknownNutrition = true }
             } label: {
-                Text(entryMode == "语音" && multipleMeals ? "逐餐核对并保存" : "保存这餐")
+                Text(entryMode == "语音" && multipleMeals ? "逐餐核对并保存" : "保存")
             }.buttonStyle(PrimaryButton()).disabled(!canUseBottomAction)
                 .accessibilityHint(bottomActionReason ?? "保存前请核对日期、餐别和份量")
         }
