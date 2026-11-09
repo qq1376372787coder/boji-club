@@ -56,6 +56,11 @@ struct WeeklyReportView: View {
                 // 周期选择器
                 cyclePickerBar
 
+                // 蓝图 §十（2026-11-09）：一句话结论 → 三个数 → 本周最高光
+                weeklyConclusionBlock
+                weeklyNumbersRow
+                weeklyHighlightBlock
+
                 // 第一层：本周客观数据看板
                 overviewMetricsSection
 
@@ -103,6 +108,92 @@ struct WeeklyReportView: View {
                 PlanView(date: Date(), initialMode: "generate_plan")
             }
         }
+    }
+
+    // MARK: - 蓝图 §十：结论、三个数、本周最高光
+
+    private var weeklyConclusionBlock: some View {
+        Text(weeklyConclusionLine)
+            .bojiType(.title)
+            .foregroundStyle(BojiColor.textPrimary)
+            .lineLimit(3)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var weeklyConclusionLine: String {
+        if let summary = existingReview?.result?.summary, !summary.isEmpty { return summary }
+        let sessions = weeklyMetrics.training?.total_sessions ?? 0
+        if sessions >= 3 { return "这周练得扎实，节奏稳住了" }
+        if sessions >= 1 { return "这周动了几天，下周接着来" }
+        return "这周记录还少，多记两天再看结论"
+    }
+
+    private var weeklyNumbersRow: some View {
+        HStack(alignment: .firstTextBaseline, spacing: BojiLayout.sectionGap) {
+            weeklyNumberColumn(weeklyMetrics.training?.total_sessions.map { "\($0)" }, unit: "次训练")
+            weeklyNumberColumn(weeklyMetrics.nutrition?.days_with_records.map { "\($0)" }, unit: "记饭天")
+            weeklyNumberColumn(weeklyMetrics.body?.weight_change_kg.map { change in
+                (change >= 0 ? "↑" : "↓") + abs(change).formatted(.number.precision(.fractionLength(1)))
+            }, unit: "kg")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("v2-weekly-numbers")
+    }
+
+    private func weeklyNumberColumn(_ value: String?, unit: String) -> some View {
+        Group {
+            if let value, !value.isEmpty {
+                VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                    Text(value)
+                        .bojiType(.title, monospacedDigits: true)
+                        .foregroundStyle(BojiColor.textPrimary)
+                    Text(unit)
+                        .bojiType(.caption)
+                        .foregroundStyle(BojiColor.textTertiary)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// 本周最高光（§十）：PR / 连续记录 / 体重变化里最亮的一条。
+    @ViewBuilder private var weeklyHighlightBlock: some View {
+        if let line = weeklyHighlightLine {
+            VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                Text("本周最高光")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+                Text(line)
+                    .bojiType(.data)
+                    .foregroundStyle(BojiColor.textPrimary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(BojiLayout.cardInset)
+            .overlay {
+                RoundedRectangle(cornerRadius: BojiLayout.Radius.inner, style: .continuous)
+                    .stroke(BojiColor.divider, lineWidth: BojiLayout.hairline)
+            }
+            .accessibilityIdentifier("v2-weekly-highlight")
+        }
+    }
+
+    private var weeklyHighlightLine: String? {
+        if let change = weeklyMetrics.body?.weight_change_kg, change <= -0.2 {
+            return "体重朝目标走了 \(abs(change).formatted(.number.precision(.fractionLength(1)))) 公斤"
+        }
+        if let days = weeklyMetrics.nutrition?.days_with_records, days >= 7 {
+            return "七天都记了餐，记录最齐的一周"
+        }
+        if let pct = weeklyMetrics.training?.volume_change_pct, pct > 5 {
+            return "训练量比上周多了 \(Int(pct.rounded()))%"
+        }
+        if let sessions = weeklyMetrics.training?.total_sessions, sessions >= 3 {
+            return "完成了 \(sessions) 次训练，节奏稳住了"
+        }
+        return nil
     }
 
     // MARK: - 周期选择器
