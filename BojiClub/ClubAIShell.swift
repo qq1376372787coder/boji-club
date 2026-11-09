@@ -1152,6 +1152,8 @@ struct ClubAIWorkspaceIdleView: View {
         // 施工卡 §一：C1 24 圆角 + 上留 10（左右 20 由页面 pageInset 提供，不重复加）
         .clipShape(RoundedRectangle(cornerRadius: BojiLayout.Radius.card, style: .continuous))
         .padding(.top, 10)
+        // R03 视差断言/两帧测量的定位锚（测试验收提议的断言化取证）
+        .accessibilityIdentifier("v2-home-hero-video")
     }
 
     /// 细线数据条的一项（施工卡 §二：标签 T5 11 + 数值 T2 28 + 可选单位）。

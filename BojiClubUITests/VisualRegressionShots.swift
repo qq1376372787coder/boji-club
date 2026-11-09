@@ -312,4 +312,48 @@ final class VisualRegressionShots: XCTestCase {
         let forbidden = CharacterSet(charactersIn: "\"':*?/\\<>|")
         return raw.components(separatedBy: forbidden).joined(separator: "_")
     }
+
+    /// M6 视差断言化取证（测试验收提议）：同一次运行 0/100/200pt 三档取视频带 frame。
+    /// **测量通道风险**：scaleEffect/offset 可能不反映进 XCUIElement.frame——所以首轮只测量+打印
+    /// （双通道：控制台 + 附件），并给「不增」软断言（帧不随变换走时恒等也能过、不假红）；
+    /// 首轮出数确认帧响应变换后，再把容差比值（200pt 处 ≈0.96±0.1）钉成硬断言。
+    func testHeroParallaxFramesAtScrollDepths() {
+        let app = XCUIApplication()
+        app.launchArguments = ShotSet.light.launchArguments
+        app.launchEnvironment = [
+            "BOJI_PREVIEW_ACCOUNT": "complete",
+            "BOJI_PREVIEW_SKIP_GUIDE": "1",
+            "BOJI_UI_TEST_SEED": "1",
+            "BOJI_AUDIT_SCREEN": "home"
+        ]
+        app.launch()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 20), "视差测量启动失败")
+        _ = app.staticTexts.firstMatch.waitForExistence(timeout: 10)
+
+        let video = app.descendants(matching: .any)["v2-home-hero-video"].firstMatch
+        XCTAssertTrue(video.waitForExistence(timeout: 10), "视频带标识 v2-home-hero-video 应在树上")
+
+        func dragUp(_ points: CGFloat) {
+            let height = Double(app.windows.firstMatch.frame.height)
+            let fraction = Double(points) / height
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.62))
+            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: max(0.05, 0.62 - fraction)))
+            start.press(forDuration: 0.08, thenDragTo: end)
+        }
+
+        var frames: [(String, CGRect)] = [("0pt", video.frame)]
+        dragUp(100); frames.append(("100pt", video.frame))
+        dragUp(100); frames.append(("200pt", video.frame))
+
+        let report = frames.map { "\($0.0): \($0.1)" }.joined(separator: "\n")
+        print("【M6 视差帧测量】v2-home-hero-video\n\(report)")
+        let attachment = XCTAttachment(string: report)
+        attachment.name = sanitizeFilename("M6-视差帧测量-0-100-200")
+        attachment.lifetime = .keepAlways
+        add(attachment)
+
+        // 软断言：高度不随滚动增大（帧通道失灵时恒等可过，不假红；通道有效时防回退变大）
+        XCTAssertGreaterThanOrEqual(frames[0].1.height + 1, frames[2].1.height,
+                                    "视频带高度不应随滚动增大（M6 缩放方向）：\(report)")
+    }
 }
