@@ -114,7 +114,10 @@ final class VisualRegressionShots: XCTestCase {
             Screen(code: "R26", page: "弹层", state: "sheet", route: "plan-move", only: [.light]),
             // —— R27 状态分分项卡（测试验收 补拍，亮色两张）：三行两列 + 缺项「未同步」——
             Screen(code: "R27", page: "状态分", state: "有数据", route: "home", only: [.light], action: .openScoreSheet),
-            Screen(code: "R27", page: "状态分", state: "缺一项", route: "home", only: [.light], health: "heart-only", action: .openScoreSheet)
+            Screen(code: "R27", page: "状态分", state: "缺一项", route: "home", only: [.light], health: "heart-only", action: .openScoreSheet),
+            // —— R28 训练坞两形态（裁决-训练中底部坞 §五-6）：休息态/组内态各一张 ——
+            Screen(code: "R28", page: "训练中", state: "休息计时（统一坞休息态）", route: "rest", only: [.light]),
+            Screen(code: "R28b", page: "训练中", state: "组内（坞组内态）", route: "workout", only: [.light])
         ]
     }
 
@@ -169,6 +172,10 @@ final class VisualRegressionShots: XCTestCase {
         // 真凶是审计宿主的字号钳制——BojiComponentGalleryView.swift:235 把整棵视图树钉在 .large，
         // 只认环境开关 BOJI_AUDIT_AX=1（或路由文件尾缀 ax），测试从未设过 → AX 图与亮色像素全同。
         if set == .ax { app.launchEnvironment["BOJI_AUDIT_AX"] = "1" }
+        // R28/R28b（裁决 §五-6）：训练坞两形态只在「开练中」会话渲染，接种子的活跃训练开关
+        if screen.route == "workout" || screen.route == "rest" {
+            app.launchEnvironment["BOJI_PREVIEW_ACTIVE_WORKOUT"] = "1"
+        }
         app.launch()
 
         // 等首屏稳定（按 model）

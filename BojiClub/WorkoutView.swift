@@ -253,19 +253,23 @@ struct WorkoutView: View {
     private var restTaskWorkout: some View {
         restObservedWorkout
         .task(id: restEnd) {
-            guard let end = restEnd, end > Date() else { return }
+            guard let end = restEnd else { return }
+            if end <= Date() {
+                // 陈旧倒计时（上次退出残留）静默清掉，不播动效
+                endRest(); return
+            }
             do { try await Task.sleep(for: .seconds(max(0, end.timeIntervalSinceNow))) } catch { return }
-            guard !Task.isCancelled, restEnd == end, restAlerts, scenePhase == .active else { return }
-            restFeedback &+= 1
+            guard !Task.isCancelled, restEnd == end else { return }
+            if restAlerts, scenePhase == .active { restFeedback &+= 1 }
+            // 裁决 §一：休息到点自动切回组内态，「好了，下一组」左侧亮 1.5 秒后淡出
+            finishRestWithFlash()
         }
         .safeAreaInset(edge: .bottom) {
-            // 底部安全区只放休息条；结束训练在顶栏，避免双主按钮。
+            // 裁决 §五-5：坞交给系统为 tab 栏避让，禁止手写 padding 兜底。
             // 未来日期没有休息，保留保存计划入口。
-            if !log.exercises.isEmpty {
-                VStack(spacing: 0) {
-                    restDock
-                    if isFuture { futurePlanSaveDock }
-                }
+            VStack(spacing: 0) {
+                trainingDock
+                if isFuture { futurePlanSaveDock }
             }
         }
     }
@@ -587,81 +591,150 @@ struct WorkoutView: View {
             }
     }
 
-    @Environment(\.dynamicTypeSize) private var restTypeSize
-    @ViewBuilder private var restDock: some View {
+    // MARK: - 训练坞（裁决-训练中底部坞 2026-11-09：一套坞两种形态，同高 58，玻璃胶囊，系统避让 tab 栏）
+    /// 坞高常量 58（规格体系 §2.9 浮件唯一例外）；AX 下不改高不改字号，排版压不下优先拆行（裁决 §四）。
+    private enum TrainingDock { static let height: CGFloat = 58 }
+    /// 休息到点/跳过后的提示：「好了，下一组」在组内态左侧亮 1.5 秒后淡出（裁决 §一）。
+    @State private var restDoneFlash = false
+
+    @ViewBuilder private var trainingDock: some View {
+        // 组内态 = 开练后未保存；休息态/暂停态由 restEnd / restPausedRemaining 覆盖
+        if restPausedRemaining != nil || restEnd != nil || (log.workoutStartedAt != nil && log.workoutSavedAt == nil && !isFuture) {
+            HStack(spacing: BojiLayout.rowGap) {
+                trainingDockLeft
+                Spacer(minLength: BojiLayout.inline)
+                trainingDockRight
+            }
+            .padding(.horizontal, BojiLayout.rowGap)
+            .frame(maxWidth: .infinity)
+            .frame(height: TrainingDock.height)
+            .clubGlassEffect(in: Capsule())
+            .padding(.horizontal, BojiLayout.rowGap)
+        }
+    }
+
+    @ViewBuilder private var trainingDockLeft: some View {
         if let paused = restPausedRemaining {
-            VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                Label("休息已暂停 · 剩余 \(Int(ceil(paused))) 秒", systemImage: "pause.circle").bojiType(.secondary)
-                HStack {
-                    restButton("继续", symbol: "play") { restPausedRemaining = nil; restEnd = Date().addingTimeInterval(paused) }
-                    restButton("结束休息", symbol: "forward.end") { endRest() }
-                }
-            }.padding(BojiLayout.rowGap).clubGlassEffect(in: RoundedRectangle(cornerRadius: 20)).padding(.horizontal, BojiLayout.rowGap)
+            // 暂停态：右侧「继续」是唯一主操作（裁决 §三）
+            VStack(alignment: .leading, spacing: 1) {
+                Text("\(Int(ceil(paused))) 秒")
+                    .bojiTypeFixed(.title, monospacedDigits: true)
+                    .foregroundStyle(BojiColor.textPrimary)
+                Text("休息已暂停")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+            }
         } else if let end = restEnd {
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 let remaining = max(0, Int(ceil(end.timeIntervalSince(context.date))))
-                VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                    HStack(spacing: BojiLayout.rowGap) {
-                        // 拍板 #3：环形进度 + 大字时间（Reduce Motion 下为静态环）
-                        ZStack {
-                            Circle().stroke(BojiColor.brandMist, lineWidth: 5)
-                            Circle()
-                                .trim(from: 0, to: restTotal > 0 ? max(0, min(1, Double(remaining) / restTotal)) : 0)
-                                .stroke(ClubBrand.accent, style: StrokeStyle(lineWidth: 5, lineCap: .round))
-                                .rotationEffect(.degrees(-90))
-                                .animation(reduceMotion ? nil : .linear(duration: 0.9), value: remaining)
+                // 裁决 §三：−15 秒/+30 秒/暂停收进点按倒计时的系统 Menu（点时间调时间）
+                Menu {
+                    Button("−15 秒") { BojiHaptics.tick(); BojiSound.play(.tap); restEnd = max(Date(), end.addingTimeInterval(-15)) }
+                    Button("+30 秒") { BojiHaptics.tick(); BojiSound.play(.tap); restEnd = end.addingTimeInterval(30) }
+                    Button("暂停休息") { BojiHaptics.tick(); BojiSound.play(.tap); restPausedRemaining = max(0, end.timeIntervalSinceNow); restEnd = nil }
+                } label: {
+                    HStack(spacing: BojiLayout.tight) {
+                        dockRing(remaining: remaining)
+                        VStack(alignment: .leading, spacing: 1) {
                             Text(remaining > 0 ? String(format: "%02d:%02d", remaining / 60, remaining % 60) : "完成")
-                                .bojiFont(.cardTitle, monospacedDigits: true)
+                                .bojiTypeFixed(.title, monospacedDigits: true)
                                 .foregroundStyle(BojiColor.textPrimary)
-                            // 17.1：休息最后 3 秒——S5 极轻木鱼 + tick 触感 + 数字微脉冲（减动效只留声音与触感）
+                                // 17.1：最后 3 秒数字微脉冲 + tick + S5（减动效只留声音与触感）
                                 .scaleEffect(!reduceMotion && (1...3).contains(remaining) ? 1.06 : 1)
                                 .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: remaining)
                                 .onChange(of: remaining) { _, new in
                                     if (1...3).contains(new) {
                                         BojiHaptics.tick(); BojiSound.play(.restTick)
                                     } else if new == 0 {
-                                        // 结束：「好了，下一组」文案在下方状态行，S2 轻收
+                                        // S2 轻收；切回组内态由 .task(id: restEnd) 收口
                                         BojiSound.play(.setDone)
                                     }
                                 }
+                            Text("组间休息")
+                                .bojiType(.caption)
+                                .foregroundStyle(BojiColor.textTertiary)
                         }
-                        .frame(width: 84, height: 84)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("组间休息").bojiType(.label).foregroundStyle(BojiColor.textPrimary)
-                            Text(remaining > 0 ? "保持呼吸 · 准备下一组" : "好了，下一组")
-                                .bojiType(.caption).foregroundStyle(BojiColor.textTertiary)
-                        }
-                        Spacer()
                     }
-                    if restTypeSize.isAccessibilitySize {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: BojiLayout.inline) { restActions(end: end, remaining: remaining) }
-                    } else { HStack(spacing: BojiLayout.tight) { restActions(end: end, remaining: remaining) } }
                 }
-                .padding(BojiLayout.rowGap).frame(maxWidth: .infinity, alignment: .leading)
-                .clubGlassEffect(in: RoundedRectangle(cornerRadius: 20))
-                .padding(.horizontal, BojiLayout.rowGap).padding(.bottom, BojiLayout.tight)
+                .menuIndicator(.hidden)
+            }
+        } else {
+            // 组内态：已用时 + 还剩 N 组，纯信息条（裁决 §一/§二）
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                VStack(alignment: .leading, spacing: 1) {
+                    if restDoneFlash {
+                        Text("好了，下一组")
+                            .bojiTypeFixed(.title, monospacedDigits: true)
+                            .foregroundStyle(BojiColor.textPrimary)
+                    } else if let start = log.workoutStartedAt {
+                        Text("已用时 \(Self.dockElapsed(start: start, now: context.date))")
+                            .bojiTypeFixed(.title, monospacedDigits: true)
+                            .foregroundStyle(BojiColor.textPrimary)
+                    }
+                    Text("还剩 \(max(0, log.totalSets - log.completedSets)) 组")
+                        .bojiType(.caption)
+                        .foregroundStyle(BojiColor.textTertiary)
+                }
             }
         }
     }
-    @ViewBuilder private func restActions(end: Date, remaining: Int) -> some View {
-        if remaining > 0 {
-            restButton("−15秒", symbol: "minus") { restEnd = max(Date(), end.addingTimeInterval(-15)) }
-            restButton("+30秒", symbol: "plus") { restEnd = end.addingTimeInterval(30) }
-            restButton("暂停", symbol: "pause") { restPausedRemaining = max(0, end.timeIntervalSinceNow); restEnd = nil }
+
+    /// 裁决 §三：休息态右侧只留「下一组」；暂停态只留「继续」；组内态无按钮（完成入口唯一 = 组次行勾选圈）。
+    @ViewBuilder private var trainingDockRight: some View {
+        if let paused = restPausedRemaining {
+            dockButton("继续") {
+                BojiHaptics.tick(); BojiSound.play(.tap)
+                restPausedRemaining = nil
+                restEnd = Date().addingTimeInterval(paused)
+            }
+        } else if restEnd != nil {
+            dockButton("下一组") {
+                // 裁决 §一：跳过与休息结束同拍——S2 轻收 + latch 触感
+                BojiHaptics.latch(); BojiSound.play(.setDone, delay: 0.055)
+                finishRestWithFlash()
+            }
         }
-        restButton("跳过", symbol: "forward.end") { endRest() }
     }
-    private func restButton(_ title: String, symbol: String, action: @escaping () -> Void) -> some View {
-        Button(action: {
-            // S1 轻触与休息控制同拍（设计表：tick + S1 ≤40ms）
-            BojiHaptics.tick(); BojiSound.play(.tap)
-            action()
-        }) {
-            Label(title, systemImage: symbol).labelStyle(.titleAndIcon)
-                .bojiType(.caption).frame(maxWidth: .infinity, minHeight: 44)
-                .fixedSize(horizontal: false, vertical: true)
-        }.buttonStyle(.bordered).buttonBorderShape(.capsule)
+
+    /// 坞内玻璃按钮 44 高（裁决 §一「B1 44 玻璃」：58 坞内定高例外，登记在裁决文件）。
+    private func dockButton(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .bojiType(.body15)
+                .padding(.horizontal, 19)
+                .frame(height: 44)
+        }
+        .clubNativeGlassButton(prominent: true)
     }
+
+    /// 环形 24pt / 线宽 3（裁决 §五-3：84→24 降为状态指示器）。
+    private func dockRing(remaining: Int) -> some View {
+        ZStack {
+            Circle().stroke(BojiColor.brandMist, lineWidth: 3)
+            Circle()
+                .trim(from: 0, to: restTotal > 0 ? max(0, min(1, Double(remaining) / restTotal)) : 0)
+                .stroke(ClubBrand.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .animation(reduceMotion ? nil : .linear(duration: 0.9), value: remaining)
+        }
+        .frame(width: 24, height: 24)
+    }
+
+    private static func dockElapsed(start: Date, now: Date) -> String {
+        let seconds = max(0, Int(now.timeIntervalSince(start)))
+        return String(format: "%d:%02d", seconds / 60, seconds % 60)
+    }
+
+    /// 休息结束/跳过：清倒计时 + 组内态左侧「好了，下一组」亮 1.5 秒后淡出。
+    private func finishRestWithFlash() {
+        endRest()
+        restDoneFlash = true
+        Task {
+            try? await Task.sleep(for: .seconds(1.5))
+            withAnimation(.easeOut(duration: 0.3)) { restDoneFlash = false }
+        }
+    }
+
     private func endRest() {
         restEnd = nil; restPausedRemaining = nil
         ClubRestStorage.savePaused(nil, owner: restOwnerID ?? 0, date: selectedDate, sessionID: day.activeWorkoutSessionID)
