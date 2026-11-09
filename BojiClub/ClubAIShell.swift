@@ -303,7 +303,8 @@ struct ClubAIShellView: View {
             .tag(ClubShellMode.records)
 
             NavigationStack(path: $trainingPath) {
-                ClubPlanHub(selectedDate: $selectedDate, openWorkout: startTrainingFromPlan, embeddedInShell: true, scrollAnchor: $trainingScrollAnchor, calendarExpanded: $calendarExpanded)
+                // 蓝图 §十一（2026-11-09 推倒重来）：计划 = 这周练什么（周视图）。
+                PlanWeekView()
                     .toolbar { shellToolbar(for: .training) }
             }
             .tabItem { Label("计划", systemImage: "calendar") }
@@ -929,6 +930,7 @@ struct ClubAIWorkspaceIdleView: View {
     @State private var expandedTodayExerciseID: UUID?
     @State private var openNutritionDetail = false
     @State private var nutritionDate = Date()
+    @State private var openResultsDetail = false
     @ObservedObject private var flags = FeatureFlagService.shared
 
     private var today: DayLog { store.log(for: Date()) }
@@ -938,6 +940,7 @@ struct ClubAIWorkspaceIdleView: View {
         todayPage
             .background(BojiColor.pageBackground)
             .navigationDestination(isPresented: $openNutritionDetail) { NutritionView(selectedDate: $nutritionDate) }
+            .navigationDestination(isPresented: $openResultsDetail) { WeekResultsView() }
             .sheet(isPresented: $showScoreBreakdown) {
                 scoreBreakdownCard
                     .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showScoreBreakdown = false } } }
@@ -1278,6 +1281,14 @@ struct ClubAIWorkspaceIdleView: View {
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("v2-home-intake")
                 }
+                Button {
+                    BojiHaptics.selection()
+                    openResultsDetail = true
+                } label: {
+                    todayAfterRow(label: "看结果", value: "这周", chevron: true)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("v2-home-results")
             }
         }
     }

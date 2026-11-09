@@ -1136,6 +1136,18 @@ final class AppStore: ObservableObject {
         if persist(changedDates: frozen) { return true }; state = previous; return false
     }
 
+    /// 日报「应用」（蓝图 §九）：一键落一条调整后的饮食目标；口径同 saveProfile——今天生效、历史不回写、可再改。
+    @discardableResult
+    func applyNutritionTarget(_ target: NutritionTarget) -> Bool {
+        let previous = state
+        let today = ClubDates.key(Date())
+        state.nutritionTarget = target
+        if state.days[today] != nil { state.days[today]?.nutritionTarget = target }
+        if persist(changedDates: [today]) { return true }
+        state = previous
+        return false
+    }
+
 #if DEBUG
     @discardableResult
     func addExercise(_ guide: ExerciseGuide, on date: Date) -> Bool {

@@ -60,14 +60,15 @@ struct DailyReportView: View {
                 // 日期切换器
                 dateNavigationBar
 
-                // 第一层：今日客观真实数据看板（数据优先）
-                dailyMetricsSection
+                // 蓝图 §九（2026-11-09 推倒重来）：一句话结论 → 三个数 → 可应用建议 → 完整分析
+                conclusionBlock
+                dailyNumbersRow
 
-                // 第二层：AI 今日分析与亮点点评
-                aiAnalysisSection
-
-                // 第三层：明日建议
+                // 明天可以这样（每条可应用）
                 recommendationsSection
+
+                // 完整分析（AI 正文，读的）
+                aiAnalysisSection
 
                 // 底部操作区
                 bottomActionBar
@@ -92,6 +93,17 @@ struct DailyReportView: View {
         }
         .sheet(item: $shareDraft) { draft in
             ShareCardPreview(draft: draft)
+        }
+        .confirmationDialog("把建议应用到目标和计划？", isPresented: $confirmApplyAll, titleVisibility: .visible) {
+            Button("应用") {
+                for suggestion in suggestions where !appliedSuggestionIDs.contains(suggestion.id) {
+                    applySuggestion(suggestion)
+                }
+            }
+            Button("取消", role: .cancel) {}
+        }
+        .sheet(isPresented: $showPlanAdjust) {
+            PlanCreationSheet(date: ClubDates.calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate)
         }
         .onAppear {
             if let initial = initialDateKey, let d = ClubDates.date(fromKey: initial) {
@@ -400,89 +412,210 @@ struct DailyReportView: View {
     }
 
     // MARK: - 明日建议
+    // MARK: - 蓝图 §九：结论、三个数、可应用建议
+
+    /// 一句话结论（T2 28）：AI 结论优先；没有分析时用确定性分档句（不依赖运行时数据存在性）。
+    private var conclusionBlock: some View {
+        Text(conclusionLine)
+            .bojiType(.title)
+            .foregroundStyle(BojiColor.textPrimary)
+            .lineLimit(3)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var conclusionLine: String {
+        if let summary = activeJob?.result?.summary, !summary.isEmpty { return summary }
+        let trained = (metrics.training?.completed_sets ?? 0) > 0
+        let ate = (metrics.nutrition?.calories ?? 0) > 0
+        if trained && ate { return "今天练得够，也记了吃的" }
+        if trained { return "今天练得够，吃少了点" }
+        if ate { return "今天没练，吃得还行" }
+        return "今天动静都不多，明天补上"
+    }
+
+    /// 三个数（T2 28 + T5 单位，§20.4）：训练量 / 摄入热量 / 体重；空值不渲染（P0-3）。
+    private var dailyNumbersRow: some View {
+        HStack(alignment: .firstTextBaseline, spacing: BojiLayout.sectionGap) {
+            numberColumn(metrics.training?.total_volume_kg.map { "\(Int($0))" }, unit: "kg·次")
+            numberColumn(metrics.nutrition?.calories.map { "\(Int($0))" }, unit: "千卡")
+            numberColumn(metrics.body?.weight_kg.map { $0.formatted(.number.grouping(.never).precision(.fractionLength(0...1))) }, unit: "kg")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("v2-report-numbers")
+    }
+
+    private func numberColumn(_ value: String?, unit: String) -> some View {
+        Group {
+            if let value, !value.isEmpty {
+                VStack(alignment: .leading, spacing: BojiLayout.tight) {
+                    Text(value)
+                        .bojiType(.title, monospacedDigits: true)
+                        .foregroundStyle(BojiColor.textPrimary)
+                    Text(unit)
+                        .bojiType(.caption)
+                        .foregroundStyle(BojiColor.textTertiary)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// 可应用建议（§九「建议必须可应用」）：确定性生成，应用即改饮食目标 / 走计划调整。
+    private struct DailySuggestion: Identifiable {
+        enum Kind { case nutrition, training }
+        let id: String
+        let title: String
+        let detail: String
+        let kind: Kind
+    }
+
+    private var suggestions: [DailySuggestion] {
+        var list: [DailySuggestion] = []
+        if let target = store.nutritionTarget(on: currentDate), target.generalGuidanceOnly != true {
+            let raised = (target.proteinMin + 10).rounded()
+            list.append(DailySuggestion(
+                id: "protein",
+                title: "蛋白质目标上调到 \(Int(raised)) 克",
+                detail: "比现在高 10 克，给明天的餐食留点余量",
+                kind: .nutrition
+            ))
+        }
+        let tomorrowKey = ClubDates.key(ClubDates.calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate)
+        if let tomorrow = store.state.days[tomorrowKey], !tomorrow.exercises.isEmpty {
+            list.append(DailySuggestion(
+                id: "training",
+                title: "明天的训练按状态调一调",
+                detail: "睡得够就按原安排，觉得累就减点量",
+                kind: .training
+            ))
+        }
+        return Array(list.prefix(2))
+    }
+
+    @State private var appliedSuggestionIDs: Set<String> = []
+    @State private var confirmApplyAll = false
+    @State private var showPlanAdjust = false
+
+    private func applySuggestion(_ suggestion: DailySuggestion) {
+        switch suggestion.kind {
+        case .nutrition:
+            guard var target = store.nutritionTarget(on: currentDate) else { return }
+            target.proteinMin = (target.proteinMin + 10).rounded()
+            target.proteinMax = (target.proteinMax + 10).rounded()
+            if store.applyNutritionTarget(target) {
+                appliedSuggestionIDs.insert(suggestion.id)
+                BojiHaptics.success()
+                BojiSound.play(.setDone)
+            }
+        case .training:
+            showPlanAdjust = true
+            appliedSuggestionIDs.insert(suggestion.id)
+            BojiHaptics.selection()
+            BojiSound.play(.tap)
+        }
+    }
+
     private var recommendationsSection: some View {
         Group {
-            if let job = activeJob, let result = job.result,
-               let recs = result.recommendations, !recs.isEmpty {
+            if !suggestions.isEmpty {
                 VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
-                    HStack {
-                        Image(systemName: "arrow.right.circle")
-                            .foregroundStyle(BojiColor.brandGold)
-                        Text("明日行动建议")
-                            .bojiType(.body)
-                            .foregroundStyle(BojiColor.textPrimary)
-                    }
-
-                    VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                        ForEach(recs, id: \.self) { rec in
-                            HStack(alignment: .top, spacing: BojiLayout.inline) {
-                                Image(systemName: "circle.fill")
-                                    .bojiType(.caption)
-                                    .foregroundStyle(BojiColor.brandGold)
-                                    .padding(.top, BojiLayout.tight)
-                                Text(rec)
-                                    .bojiType(.label)
-                                    .foregroundStyle(BojiColor.textPrimary)
-                                    .lineSpacing(3)
-                            }
-                        }
-                    }
-                    .padding(BojiLayout.rowGap)
-                    .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                }
-            } else if let recovery = activeJob?.result?.recovery, !recovery.isEmpty {
-                VStack(alignment: .leading, spacing: BojiLayout.inline) {
-                    HStack {
-                        Image(systemName: "arrow.right.circle")
-                            .foregroundStyle(BojiColor.brandGold)
-                        Text("恢复与下一步")
-                            .bojiType(.body)
-                            .foregroundStyle(BojiColor.textPrimary)
-                    }
-
-                    Text(recovery)
-                        .bojiType(.label)
+                    Text("明天可以这样")
+                        .bojiType(.data)
                         .foregroundStyle(BojiColor.textPrimary)
-                        .lineSpacing(3)
-                        .padding(BojiLayout.rowGap)
-                        .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    ForEach(suggestions) { suggestion in
+                        suggestionCard(suggestion)
+                    }
                 }
             }
         }
     }
 
-    // MARK: - 底部操作栏
+    @ViewBuilder private func suggestionCard(_ suggestion: DailySuggestion) -> some View {
+        let applied = appliedSuggestionIDs.contains(suggestion.id)
+        VStack(alignment: .leading, spacing: BojiLayout.tight) {
+            Text(suggestion.title)
+                .bojiType(.body15)
+                .foregroundStyle(BojiColor.textPrimary)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack(alignment: .firstTextBaseline) {
+                Text(suggestion.detail)
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textSecondary)
+                    .lineLimit(2)
+                Spacer()
+                if applied {
+                    Label("已应用", systemImage: "checkmark.circle.fill")
+                        .bojiType(.caption)
+                        .foregroundStyle(ClubBrand.accent)
+                } else {
+                    Button {
+                        applySuggestion(suggestion)
+                    } label: {
+                        Text("应用")
+                            .bojiType(.body15)
+                            .frame(minWidth: 64)
+                            .frame(minHeight: BojiLayout.controlHeight)
+                    }
+                    .buttonStyle(SecondaryButton())
+                    .buttonBorderShape(.capsule)
+                    .accessibilityIdentifier("v2-report-apply-" + suggestion.id)
+                }
+            }
+        }
+        .padding(BojiLayout.cardInset)
+        .overlay {
+            RoundedRectangle(cornerRadius: BojiLayout.Radius.inner, style: .continuous)
+                .stroke(BojiColor.divider, lineWidth: BojiLayout.hairline)
+        }
+    }
+
+    // MARK: - 底部操作栏（§九：B1「应用」为唯一主操作；生成/刷新降为文字链）
     private var bottomActionBar: some View {
         VStack(spacing: BojiLayout.inline) {
             if isFuture {
                 Text("未来日期无法生成日报，请返回今天或历史日期。")
                     .bojiType(.caption)
                     .foregroundStyle(BojiColor.textTertiary)
-            } else {
+            } else if !suggestions.isEmpty {
                 Button {
-                    generateReport()
+                    BojiHaptics.selection()
+                    BojiSound.play(.tap)
+                    confirmApplyAll = true
                 } label: {
-                    HStack {
-                        if isGenerating {
-                            ProgressView().tint(.black)
-                        } else {
-                            Image(systemName: activeJob != nil ? "arrow.clockwise" : "wand.and.stars")
-                        }
-                        Text(activeJob != nil ? "刷新今日分析" : "生成今日日报分析")
+                    Text("应用\(suggestions.count >= 2 ? "这两条" : "这条")")
+                        .frame(maxWidth: .infinity, minHeight: BojiLayout.actionHeight)
+                        .contentShape(Rectangle())
+                }
+                .clubNativeGlassButton(prominent: true)
+                .accessibilityIdentifier("v2-report-primary")
+                .disabled(appliedSuggestionIDs.count >= suggestions.count)
+            }
+            Button {
+                generateReport()
+            } label: {
+                HStack(spacing: BojiLayout.tight) {
+                    if isGenerating {
+                        ProgressView()
+                    } else {
+                        Image(systemName: activeJob != nil ? "arrow.clockwise" : "wand.and.stars")
                     }
-                    .bojiType(.body)
-                    .foregroundStyle(.black)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .background(BojiColor.brandGold, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    Text(activeJob != nil ? "刷新今日分析" : "生成今日分析")
                 }
-                .disabled(isGenerating || pendingJob != nil)
+                .bojiType(.body15)
+                .tint(ClubBrand.accent)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(minHeight: BojiLayout.controlHeight)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(isGenerating || pendingJob != nil)
 
-                if let err = errorMessage {
-                    Text(err)
-                        .bojiType(.caption)
-                        .foregroundStyle(.red)
-                }
+            if let err = errorMessage {
+                Text(err)
+                    .bojiType(.caption)
+                    .foregroundStyle(.red)
             }
         }
         .padding(.top, BojiLayout.inline)
