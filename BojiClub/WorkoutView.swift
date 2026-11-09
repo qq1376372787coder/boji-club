@@ -472,7 +472,7 @@ struct WorkoutView: View {
                 .animation(BojiMotion2.progress, value: log.completedSets)
                 .accessibilityLabel("训练完成进度")
             if hasFinished {
-                Text("按记完的组算总重量")
+                Text("按记完的组算训练量")
                     .bojiFont(.label).foregroundStyle(BojiColor.textSecondary)
             }
             if log.completedSets == 0 && !hasFinished {

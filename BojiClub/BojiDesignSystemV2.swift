@@ -75,10 +75,10 @@ enum BojiTypeRole: String, CaseIterable {
     var size: CGFloat {
         switch self {
         case .hero: 44
-        case .display: 34
+        case .display: 28   // 档位收编（规格体系 §2.4）：34 → T2 28
         case .title: 28
-        case .section: 20
-        case .body, .bodyStrong: 16
+        case .section: 17   // 档位收编：20 → T3 17
+        case .body, .bodyStrong: 15   // 档位收编：16 → T4 15
         case .secondary: 14
         case .label: 13
         case .caption, .eyebrow: 11
@@ -91,10 +91,10 @@ enum BojiTypeRole: String, CaseIterable {
     var lineHeight: CGFloat {
         switch self {
         case .hero: 48
-        case .display: 40
+        case .display: 34   // 随档位收编
         case .title: 34
-        case .section: 26
-        case .body, .bodyStrong: 24
+        case .section: 22   // 随档位收编
+        case .body, .bodyStrong: 22   // 随档位收编
         case .secondary: 20
         case .label: 18
         case .caption: 16

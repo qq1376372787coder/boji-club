@@ -150,7 +150,7 @@ HStack {
 
             BojiMacroDonut(protein: log.protein, carbs: carbsTotal, fat: fatTotal,
                 calorieProgress: (target?.generalGuidanceOnly != true && (target?.caloriesMax ?? 0) > 0 && !log.knownMeals.isEmpty) ? log.calories / (target?.caloriesMax ?? 1) : nil,
-                centerTitle: "已摄入", centerValue: log.knownMeals.isEmpty ? "—" : "\(log.calories.formatted(.number.precision(.fractionLength(0)))) kcal", size: 200)
+                centerTitle: "摄入热量", centerValue: log.knownMeals.isEmpty ? "—" : "\(log.calories.formatted(.number.precision(.fractionLength(0)))) kcal", size: 200)
                 .frame(maxWidth: .infinity).padding(.vertical, BojiLayout.inline)
 
             if let target, target.generalGuidanceOnly != true, target.caloriesMax > 0, !log.knownMeals.isEmpty {

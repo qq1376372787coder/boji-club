@@ -103,7 +103,7 @@ enum BojiFontRole {
     case body           // 16 / Regular
     case secondary      // 14 / Regular
     case label          // 13 / Medium
-    case bodyMetric     // 40 / SemiBold
+    case bodyMetric     // 28 / SemiBold（档位收编：40 → T2 28，规格体系 §2.4）
     case timer          // 28 / SemiBold
     case setNumber      // 17 / Medium
 
@@ -115,7 +115,7 @@ enum BojiFontRole {
         case .body: 16
         case .secondary: 14
         case .label: 13
-        case .bodyMetric: 40
+        case .bodyMetric: 28
         case .timer: 28
         case .setNumber: 17
         }
@@ -696,6 +696,10 @@ struct SmartWeightStepper: View {
                     .foregroundStyle(BojiColor.textPrimary)
             }
         }
+        // 步进器裁决（界面设计 2026-11-09，§7.3 定死）：本体高 44（R1 档）/ 圆角 C2 12 /
+        // 与重量输入框同行（48 高）垂直居中；只许系统 Stepper，禁自绘胶囊与加减号。
+        .frame(minHeight: 44)
+        .background(BojiColor.inputSurface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .accessibilityLabel("重量")
         .accessibilityValue(currentWeight.formatted(.number.grouping(.never).precision(.fractionLength(0...1))))
     }
