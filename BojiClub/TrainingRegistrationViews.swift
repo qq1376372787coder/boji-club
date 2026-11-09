@@ -226,10 +226,11 @@ struct TrainingSetRowView: View {
                 in: RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous)
             )
             .overlay {
+                // 甲-2：组次块常态也带细边框（mock §③ .s2），活跃组与快调态描边加重
                 RoundedRectangle(cornerRadius: BojiRadius.input, style: .continuous)
                     .stroke(
-                        isQuickAdjusting ? BojiColor.timerAccent : (isActive ? BojiColor.outline : .clear),
-                        lineWidth: isQuickAdjusting ? 1.5 : 1.2
+                        isQuickAdjusting ? BojiColor.timerAccent : (isActive ? BojiColor.outline : BojiColor.divider),
+                        lineWidth: isQuickAdjusting ? 1.5 : (isActive ? 1.2 : BojiLayout.hairline)
                     )
             }
             .animation(reduceMotion ? nil : .bojiSnappy, value: trainingSet.validCompletion)

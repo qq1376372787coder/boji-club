@@ -80,7 +80,8 @@ enum BojiRadius {
     static let image: CGFloat = 22
     /// 内嵌容器统一圆角：吞并此前散落的 12/14/15/18/20。
     static let inner: CGFloat = 16
-    static let input = inner
+    // 口径：规格体系 §2.8 C2 = 12pt（输入框、小色块、组次块）；原 = inner(16) 是表外档位，收档改正。
+    static let input: CGFloat = 12
     static let capsule: CGFloat = 999
 }
 

@@ -408,19 +408,32 @@ struct WorkoutView: View {
     /// 开始训练后把进度摘要收成一行，让第一组输入留在首屏，而不是被说明卡挤出屏幕。
     private var startedProgressStrip: some View {
         VStack(alignment: .leading, spacing: BojiLayout.inline) {
-            // 甲-2（动效规格 §3.2）：巨号「0 / N 组」当主角，下方一句换新信息，不再重复「训练进行中」
+            // 甲-2（动效规格 §3.2 + 大改稿 §③）：巨号「0 / N 组」当主角，分母 T3 17 弱化
             HStack(alignment: .firstTextBaseline, spacing: BojiLayout.tight) {
                 BojiEditorialNumber(value: "0", scale: .display, tint: BojiColor.textPrimary)
-                Text("/ \(log.totalSets) 组").bojiType(.title).foregroundStyle(BojiColor.textTertiary)
+                Text("/ \(log.totalSets) 组").bojiType(.data).foregroundStyle(BojiColor.textTertiary)
             }
-            Text(log.totalSets > 0 ? "还剩 \(log.totalSets) 组 · 一组一组来" : "就剩最后一组")
+            Text(remainingLine)
                 .bojiType(.body15)
                 .foregroundStyle(BojiColor.textSecondary)
             ProgressView(value: 0, total: Double(max(1, log.totalSets)))
                 .tint(ClubBrand.accent)
+                .frame(height: 6)
                 .accessibilityLabel("训练完成进度")
         }
         .bojiCard()
+    }
+
+    /// 甲-2 §⑤：「还剩 N 组 · 约 M 分钟」——估算按已完成组的平均耗时推断（墙钟口径，含组间休息）；
+    /// 已完成不足 2 组时估不准，只显示「还剩 N 组」。暂停时长暂不扣除（误差个位数分钟，可接受）。
+    private var remainingLine: String {
+        let remaining = max(0, log.totalSets - log.completedSets)
+        guard remaining > 0 else { return "就剩最后一组" }
+        guard log.completedSets >= 2, let start = log.workoutStartedAt else { return "还剩 \(remaining) 组" }
+        let elapsed = (log.workoutEndedAt ?? Date()).timeIntervalSince(start)
+        guard elapsed > 0 else { return "还剩 \(remaining) 组" }
+        let minutes = max(1, Int((elapsed / Double(log.completedSets) * Double(remaining) / 60).rounded()))
+        return "还剩 \(remaining) 组 · 约 \(minutes) 分钟"
     }
 
     /// 顶部进度摘要：真实完成数据；总训练量按已完成组计算。2+3 §2.2：巨号完成组数当主角，分母弱化。
@@ -431,13 +444,15 @@ struct WorkoutView: View {
                     HStack(alignment: .firstTextBaseline, spacing: BojiLayout.tight) {
                         BojiEditorialNumber(value: "\(log.completedSets)", scale: .display, tint: BojiColor.textPrimary)
                         Text("/ \(log.totalSets) 组")
-                            .bojiType(.title)
+                            .bojiType(.data)
                             .foregroundStyle(BojiColor.textTertiary)
                     }
+                    // 甲-2 §⑤：训练中的下行换成新信息「还剩 N 组 · 约 M 分钟」，不再复读「正在练」；
+                    // 保存/结束/未开始三个状态各自有信息量，保持原句。
                     Text(log.workoutSavedAt != nil ? "训练已保存"
                          : log.workoutEndedAt != nil ? "训练已结束 · 点按确认保存"
-                         : log.workoutStartedAt == nil && log.completedSets == 0 ? "先核对动作与目标" : "正在练")
-                        .bojiType(.bodyStrong).foregroundStyle(BojiColor.textSecondary)
+                         : log.workoutStartedAt == nil && log.completedSets == 0 ? "先核对动作与目标" : remainingLine)
+                        .bojiType(.body15).foregroundStyle(BojiColor.textSecondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: BojiLayout.tight) {
@@ -449,6 +464,7 @@ struct WorkoutView: View {
             }
             ProgressView(value: Double(log.completedSets), total: Double(max(1, log.totalSets)))
                 .tint(ClubBrand.accent)
+                .frame(height: 6)
                 .animation(BojiMotion2.progress, value: log.completedSets)
                 .accessibilityLabel("训练完成进度")
             if hasFinished {

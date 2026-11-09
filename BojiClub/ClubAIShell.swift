@@ -1251,6 +1251,8 @@ struct ClubAIWorkspaceIdleView: View {
         let metrics = heroReadiness.metrics
         return Group {
             if metrics.isEmpty {
+                // 甲-2 空态引导卡（大改稿 §② mock + 施工卡 ④ 裁决）：细边框卡 + B2 44 描边「去连接」
+                // ——同屏底部已有 B1「开始练」，「去连接」不升 B1，避免两个主操作；连接是增益不是门槛。
                 VStack(alignment: .leading, spacing: BojiLayout.tight) {
                     Text("连上 Apple 健康")
                         .bojiType(.data)
@@ -1261,16 +1263,24 @@ struct ClubAIWorkspaceIdleView: View {
                         .foregroundStyle(BojiColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                     Button("去连接", action: onOpenPermissions)
-                        .clubNativeGlassButton()
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+                        .bojiType(.body15)
                         .frame(maxWidth: .infinity, minHeight: BojiLayout.controlHeight)
                         .padding(.top, BojiLayout.tight)
                 }
                 .padding(BojiLayout.cardInset)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .overlay {
-                    RoundedRectangle(cornerRadius: BojiLayout.Radius.inner, style: .continuous)
+                    RoundedRectangle(cornerRadius: BojiLayout.Radius.card, style: .continuous)
                         .stroke(BojiColor.divider, lineWidth: BojiLayout.hairline)
                 }
+                // 不挡路的次要出口（mock §② .ghost）：灰字一行，主操作仍是底部「开始练」
+                Text("也可以直接开始练，之后补都行")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, BojiLayout.tight)
             } else {
                 // 细线数据条走唯一指标组件（规格表 §2.6），跨页同名指标同一档同一字重
                 MetricRowGroup(metrics: metrics.map {

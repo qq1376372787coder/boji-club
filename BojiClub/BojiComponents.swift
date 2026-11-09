@@ -203,7 +203,8 @@ struct BojiSegmentedProgress: View {
 enum BojiSetTable {
     static let numberColumn: CGFloat = 28
     static let completeColumn: CGFloat = 60
-    static let rowMinHeight: CGFloat = 48
+    // 规格体系 §2.8/§2.9：组次块 44 高（原 48 与输入框同高，表外）——完成态只变底色不改尺寸。
+    static let rowMinHeight: CGFloat = 44
     static let rowSpacing: CGFloat = 8
 }
 
