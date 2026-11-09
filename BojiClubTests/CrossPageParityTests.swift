@@ -289,10 +289,10 @@ final class CrossPageParityTests: XCTestCase {
 
     // MARK: - D6 体重变化：首页 = 周报 = 趋势
 
-    /// 统一口径：最近 7 次有效测量的首尾差（口径表 §四裁定）。
-    /// 首页现在是 14 天窗口首尾差（ProductArchitecture.swift:457/526），
-    /// 周报是区间首尾差且趋势判定阈值 3 次与差值阈值 2 次不一致（WeeklyReportView.swift:556-567），
-    /// 趋势页是月桶平均（TrendAnalysis.swift:508）——三套算法，必须收敛成一个。
+    /// 统一口径：同一时间窗口内的首尾差（口径表 §四 / §4.4 裁定：窗口不必统一，但必须标明）。
+    /// 现状（已收敛）：首页 = 近 14 天窗口首尾差（`ProductArchitecture.swift:457/526`），
+    /// 周报 = 本周期首尾差（`WeeklyMetricsCalculator`，阈值 ≥2 给差值 / ≥3 给方向），
+    /// 趋势 = 按桶聚合（`ReviewTrendRules.series`）——三处算法一致，本用例钉同值。
     func testD6_WeightChangeIsUnifiedAcrossPages() {
         let today = Date()
         let calendar = ClubDates.calendar
@@ -498,13 +498,8 @@ final class CrossPageParityTests: XCTestCase {
 
     /// **用户可见的训练量只认已保存场次**——未保存的进行中场次不算「今天练了多少」。
     ///
-    /// 现状：`TrainingRecordText.measurements`（`DailyExperience.swift:742`）已改用
-    /// `log.confirmedTraining.volume`，用户可见串正确。
-    ///
-    /// 但 `DayLog.volume`（`Models.swift:332`）**仍是宽口径**（只滤 validCompletion，不滤保存状态），
-    /// 而且**已无任何读取者**——留着就是一个名字误导的陷阱：将来有人拿它显示，
-    /// 未保存场次又会回到用户眼前。**裁定：删掉它（死代码），训练量只留 `confirmedTraining.volume` 一条路。**
-    ///
+    /// 现状：`TrainingRecordText.measurements`（`DailyExperience.swift:742`）走 `log.confirmedTraining.volume`，
+    /// 用户可见串正确；`DayLog.volume` 宽口径属性已删（口径表 §八第 16 条，全库零读取者）。
     /// 本用例钉「用户可见串」：已保存 200、未保存 480 → 串里只出现 200。
     func testUnsavedSessionVolumeIsNotCounted() {
         let today = Date()
@@ -636,7 +631,8 @@ final class CrossPageParityTests: XCTestCase {
     ///   ② 非空时把 `bodyWeight` **再追加一份**取 max——legacy 条时间戳更新时会**盖掉真测量值**
     ///
     /// 用户可见：计划中心显示的体重可能与其它页不同，甚至被一条旧镜像值覆盖。
-    /// 修法：改成 `BodyWeightReading.rows(of: day)` 一行（剔墓碑/剔非法/排序都现成）。
+    /// 修法（已落，`9626d0c`）：改走 `BodyWeightReading.rows(of: day)`——剔墓碑/剔非法/排序都现成。
+    /// 本用例转绿即收敛完成；若有人把计划中心改回自拼，本用例转红。
     func testAllWeightReadersAgree() {
         let today = Date()
         let dayStart = ClubDates.calendar.startOfDay(for: today)
@@ -671,12 +667,11 @@ final class CrossPageParityTests: XCTestCase {
 
     /// **第 7 条：日报的体重 / 体脂 / 腰围必须来自同一条测量**（测试验收要求配断言，否则只改不验）。
     ///
-    /// 现状（半收敛）：`Models.swift:371` 体重走 `BodyWeightReading.latest`，
-    /// 但 `:372/:373` 体脂/腰围仍读 `bodyWeight` 镜像字段。
-    /// 云端合并 / 健康导入路径下镜像可能过期 → 同一条日报「体重是新的、体脂是旧的」。
+    /// 现状（已收敛，`9626d0c`）：`Models.swift:371-373` 三字段全走 `BodyWeightReading.latest / latestEntry`，
+    /// 镜像字段不再参与显示。
     ///
-    /// 修法：加 `BodyWeightReading.latestEntry(_:)`，三字段都取 `rows(of:).last`。
-    /// 本用例在「镜像与真测量不一致」的夹具下，钉死三字段同源。
+    /// 本用例在「镜像与真测量不一致」的夹具下，钉死三字段同源——
+    /// 若有人把体脂/腰围改回读 `bodyWeight` 镜像，本用例转红。
     func testDailyReportBodyMetricsComeFromSameEntry() {
         let today = Date()
         let dayStart = ClubDates.calendar.startOfDay(for: today)
