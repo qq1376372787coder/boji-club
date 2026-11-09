@@ -557,21 +557,19 @@ final class CrossPageParityTests: XCTestCase {
         XCTAssertEqual(day.confirmedTraining.completedSets, 1, "但完成组数要算")
     }
 
-    /// **两条体重读法必须同结果**——否则记录页与趋势/周报会读出不同的体重，
-    /// 正是用户骂的「面板和日报对不上」。
+    /// **体重读法唯一（口径表 §四，Chief 裁定走①）**：`BodyWeightHistory.points` 直接委托
+    /// `BodyWeightReading.rows`（`DailyExperience.swift:313`，`9626d0c` 收敛），只留一个实现。
     ///
-    /// 现状（`7a276b1` 后）并存两个实现：
-    ///   · `BodyWeightHistory.points`（DailyExperience.swift:297）——记录页/首页体重历史
-    ///   · `BodyWeightReading.rows`（DailyExperience.swift:282）——趋势/周报/阶段/平台期
+    /// 本用例是**防回归钉子**，不是缺陷复现——收敛后两读法是同一个函数，五个用例
+    /// （legacy 单条 / 空数组 / 多条 / 日内乱序 / 墓碑大写）数学上必然相等。
+    /// 若有人把 `points` 改回自拼实现（旧形态的三处分歧：空数组回落不同 / 墓碑大小写不同 /
+    /// 日内排序不同），本用例转红。
     ///
-    /// 测试验收源码复核出**三处分歧**（本用例逐条钉住）：
-    ///   ① 空数组：`points` 用 `bodyMeasurements ?? [bodyWeight]`（空数组非 nil → 不回落）；
-    ///      `rows` 用 `bodyMeasurements?.isEmpty == false ? … : [bodyWeight]`（空数组 → 回落单条）
-    ///   ② 墓碑大小写：`rows` 对 `deletedBodyMeasurementIDs` 做 `.lowercased()`，`points` 没做
-    ///   ③ 日内排序：`rows` 按 `recordedAt` 排序，`points` 保持数组原序（首尾差会取反）
-    ///
-    /// Chief 裁定走①：`BodyWeightHistory.points` 直接走 `BodyWeightReading.rows`，只留一个实现；
-    /// 三处分歧随之自动消掉。本用例转绿即为收敛完成的证据。
+    /// 历史背景（修复前形态，供后来者理解为什么要有这条钉子）：
+    /// `points` 曾自拼 `bodyMeasurements ?? [bodyWeight]`（空数组不回落）、不做墓碑小写比对、
+    /// 保持数组原序；`rows` 语义是「nil 才回落、[] 不回落、墓碑小写、按 recordedAt 排序」。
+    /// 两套实现同源不同果 → 同一天记录页与趋势页读出不同的体重（用户骂的「面板和日报对不上」）。
+    /// `9626d0c` 后只有 `rawRows` 一个实现，本用例钉住它。
     func testBothWeightReadersAgree() {
         let today = Date()
         let dayStart = ClubDates.calendar.startOfDay(for: today)
