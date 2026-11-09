@@ -245,6 +245,15 @@ final class VisualRegressionShots: XCTestCase {
                 _ = generic.firstMatch.waitForExistence(timeout: 2)
             }
             let count = buttons.count > 0 ? buttons.count : generic.count
+            if count != 1 {
+                // run 42579267726 教训：R01 含时机修复仍 0 命中 = 真问题，不许再猜。
+                // 红时把可访问性树整体 dump 出来（含全部按钮标识），证据随图一起出。
+                let dump = "identifier=\(primaryID) count=\(count)\n" + app.debugDescription
+                let diagnostic = XCTAttachment(string: dump)
+                diagnostic.name = sanitizeFilename("\(name)-可访问性树诊断")
+                diagnostic.lifetime = .keepAlways
+                add(diagnostic)
+            }
             XCTAssertEqual(count, 1, "\(name) 主操作（\(primaryID)）应恰好 1 个，实际 \(count)")
         }
 
@@ -282,15 +291,22 @@ final class VisualRegressionShots: XCTestCase {
     // MARK: - 出图
 
     private func snapshot(name: String, app: XCUIApplication) {
+        let safe = sanitizeFilename(name)
         let screenshot = XCUIScreen.main.screenshot()
         let attachment = XCTAttachment(screenshot: screenshot)
-        attachment.name = name
+        attachment.name = safe
         attachment.lifetime = .keepAlways
         add(attachment)
 
         if let dir = ProcessInfo.processInfo.environment["BOJI_SHOTS_DIR"] {
-            let url = URL(fileURLWithPath: dir).appendingPathComponent(name).appendingPathExtension("png")
+            let url = URL(fileURLWithPath: dir).appendingPathComponent(safe).appendingPathExtension("png")
             try? screenshot.pngRepresentation.write(to: url)
         }
+    }
+
+    /// 附件/文件名清洗（run 42579267726 教训）：引号/冒号/星号等字符会让制品导出与上传失败，一律换掉。
+    private func sanitizeFilename(_ raw: String) -> String {
+        let forbidden = CharacterSet(charactersIn: "\"':*?/\\<>|")
+        return raw.components(separatedBy: forbidden).joined(separator: "_")
     }
 }
