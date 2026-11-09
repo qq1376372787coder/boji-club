@@ -284,6 +284,9 @@ struct ClubAIShellView: View {
                     .toolbar { shellToolbar(for: .clubAI) }
             }
             .tabItem { Label("今天", systemImage: "house") }
+            // R01 教训（诊断树 L119）：标识容器必须 .contain 成独立元素，否则标识向下传播顶掉子级
+            // （主按钮的 v2-home-primary 曾被这层顶成 v2-tab-today）。样板：v2-home-metrics。
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("v2-tab-today")
             .tag(ClubShellMode.clubAI)
 
@@ -294,6 +297,7 @@ struct ClubAIShellView: View {
                     .toolbar { shellToolbar(for: .training) }
             }
             .tabItem { Label("训练", systemImage: "figure.strengthtraining.traditional") }
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("v2-tab-training")
             .tag(ClubShellMode.training)
 
@@ -303,6 +307,7 @@ struct ClubAIShellView: View {
                     .toolbar { shellToolbar(for: .records) }
             }
             .tabItem { Label("记录", systemImage: "list.bullet.rectangle") }
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("v2-tab-records")
             .tag(ClubShellMode.records)
         }
@@ -1622,6 +1627,7 @@ struct ClubAIWorkspaceIdleView: View {
             }
             .padding(.top, BojiLayout.inline)
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("v2-home-mission")
     }
 
@@ -1724,6 +1730,7 @@ struct ClubAIWorkspaceIdleView: View {
             RoundedRectangle(cornerRadius: BojiRadius.card, style: .continuous)
                 .stroke(BojiColor.outline, lineWidth: 0.5)
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("v2-home-fuel-card")
     }
 
