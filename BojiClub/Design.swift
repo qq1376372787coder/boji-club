@@ -270,7 +270,12 @@ private struct BojiGlassFallbackButtonStyle: ButtonStyle {
         let pressed = configuration.isPressed
         ZStack {
             if prominent {
-                configuration.label.buttonStyle(.borderedProminent)
+                // 规范 §1 降级=磨砂（界面设计 2026-11-09 裁定）：.regularMaterial 底 + 0.5pt 描边 + tint 文字。
+                // 原 .borderedProminent 实色违反「降级磨砂」定义——截图实测实心 #414D63 的根因形态。
+                configuration.label
+                    .foregroundStyle(Color.accentColor)
+                    .background(.regularMaterial, in: Capsule())
+                    .overlay(Capsule().stroke(Color.accentColor.opacity(0.35), lineWidth: 0.5))
             } else {
                 configuration.label.buttonStyle(.bordered)
             }

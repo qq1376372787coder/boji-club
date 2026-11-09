@@ -173,6 +173,8 @@ final class VisualRegressionShots: XCTestCase {
         // 真凶是审计宿主的字号钳制——BojiComponentGalleryView.swift:235 把整棵视图树钉在 .large，
         // 只认环境开关 BOJI_AUDIT_AX=1（或路由文件尾缀 ax），测试从未设过 → AX 图与亮色像素全同。
         if set == .ax { app.launchEnvironment["BOJI_AUDIT_AX"] = "1" }
+        // 玻璃降级定性（界面设计裁定）：打印环境开关，判「实心按钮」是降级分支被触发还是样式缺陷
+        print("【玻璃降级环境】reduceTransparency=\(UIAccessibility.isReduceTransparencyEnabled) contrast=\(UIScreen.main.traitCollection.accessibilityContrast.rawValue) set=\(set.rawValue)")
         // R28/R28b（裁决 §五-6）：训练坞两形态只在「开练中」会话渲染，接种子的活跃训练开关
         if screen.route == "workout" || screen.route == "rest" {
             app.launchEnvironment["BOJI_PREVIEW_ACTIVE_WORKOUT"] = "1"
