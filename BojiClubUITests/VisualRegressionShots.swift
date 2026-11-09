@@ -169,6 +169,10 @@ final class VisualRegressionShots: XCTestCase {
 
         // 等首屏稳定（按 model）
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 20), "\(screen.code) 启动失败")
+        // 判定轮教训（run 42530140469 R01 0 命中）：runningForeground 只等进程态，不等 SwiftUI 首帧。
+        // 首页是全 App 最重一屏（品牌视频 + 种子数据 + AI 刷新），查询早于首帧会取到空树假红/假绿。
+        // 先等任一文字上屏（可访问性树就绪）再断言与截图；等不到后续断言照样红，不弱化。
+        _ = app.staticTexts.firstMatch.waitForExistence(timeout: 10)
 
         if screen.action == .focusTextField {
             let field = app.textFields.firstMatch
@@ -216,14 +220,19 @@ final class VisualRegressionShots: XCTestCase {
                        "\(name) 疑似截断")
 
         // 4) 每屏唯一主操作（有登记文案或标识的页面才判）
+        // 计数前先等元素上屏（同上 R01 教训）：等不到超时后 count=0 断言照样红，判据不弱化。
         if let primary = screen.primary {
-            let count = app.buttons.matching(NSPredicate(format: "label == %@", primary)).count
-            XCTAssertEqual(count, 1, "\(name) 主操作「\(primary)」应恰好 1 个，实际 \(count)")
+            let query = app.buttons.matching(NSPredicate(format: "label == %@", primary))
+            _ = query.firstMatch.waitForExistence(timeout: 10)
+            XCTAssertEqual(query.count, 1, "\(name) 主操作「\(primary)」应恰好 1 个，实际 \(query.count)")
         }
         if let primaryID = screen.primaryID {
             // 玻璃 buttonStyle 会把标识留在 label 层：按钮查不到时按同名可交互元素再查一次
             let buttons = app.buttons.matching(identifier: primaryID)
             let generic = app.descendants(matching: .any).matching(identifier: primaryID)
+            if !buttons.firstMatch.waitForExistence(timeout: 10) {
+                _ = generic.firstMatch.waitForExistence(timeout: 2)
+            }
             let count = buttons.count > 0 ? buttons.count : generic.count
             XCTAssertEqual(count, 1, "\(name) 主操作（\(primaryID)）应恰好 1 个，实际 \(count)")
         }
