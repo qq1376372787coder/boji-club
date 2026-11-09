@@ -147,7 +147,14 @@ struct RootView: View {
         let auditScreen = ProcessInfo.processInfo.environment["BOJI_AUDIT_SCREEN"] ?? ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("-audit:") })?.replacingOccurrences(of: "-audit:", with: "")
         // 暗色注入双保险（测试验收实测 -AppleInterfaceStyle 对 SwiftUI 层不生效）：
         // 启动参数经 NSArgumentDomain 读回，显式钉 colorScheme；真机无此参数 = 不干预。
-        let forcedScheme: ColorScheme? = UserDefaults.standard.string(forKey: "AppleInterfaceStyle") == "Dark" ? .dark : nil
+        // 蓝图 §十二「外观」：0 跟随系统 / 1 浅色 / 2 深色；未设置时保留调试暗色钩子。
+        let forcedScheme: ColorScheme? = {
+            switch UserDefaults.standard.integer(forKey: "boji.appearance") {
+            case 1: return .light
+            case 2: return .dark
+            default: return UserDefaults.standard.string(forKey: "AppleInterfaceStyle") == "Dark" ? .dark : nil
+            }
+        }()
         if let screen = auditScreen {
             BojiAuditHost(initialScreen: screen)
                 .preferredColorScheme(forcedScheme)

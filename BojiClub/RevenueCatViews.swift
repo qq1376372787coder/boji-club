@@ -126,12 +126,17 @@ struct MembershipView: View {
         }
     }
 
+    /// 蓝图 §十三（2026-11-09）：权益只列 3 条，读得完；购买逻辑零改动。
     private var header: some View {
-        VStack(alignment: .leading, spacing: BojiLayout.inline) {
-            BojiBrandSignature(size:28)
-            Text("薄肌俱乐部 Pro").bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
-            Text("训练计划、饮食记录与每周总结。")
-                .bojiType(.secondary).foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
+            Text("薄肌俱乐部 · 会员")
+                .bojiType(.title)
+                .foregroundStyle(BojiColor.textPrimary)
+            VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
+                membershipBenefitRow("AI 日报与周报")
+                membershipBenefitRow("训练计划自动调整")
+                membershipBenefitRow("无限历史")
+            }
             HStack(spacing: BojiLayout.inline) {
                 Button("使用条款 (EULA)") { legalDocument = .terms }
                 Text("·").foregroundStyle(BojiColor.textTertiary)
@@ -142,6 +147,16 @@ struct MembershipView: View {
             .bojiType(.caption)
             .foregroundStyle(BojiColor.textSecondary)
             .padding(.top, 0)
+        }
+    }
+
+    private func membershipBenefitRow(_ title: String) -> some View {
+        HStack(spacing: BojiLayout.inline) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(ClubBrand.accent)
+            Text(title)
+                .bojiType(.data)
+                .foregroundStyle(BojiColor.textPrimary)
         }
     }
 

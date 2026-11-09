@@ -108,22 +108,41 @@ struct ClubReply130: View {
 struct SettingsHub130: View {
     @EnvironmentObject private var account: AccountService
     @State private var showWalkthrough = false
+    // 蓝图 §十二（2026-11-09）：设置只放设置——音效与触感、外观为独立分组，功能入口全部移出。
+    @AppStorage(BojiSound.enabledDefaultsKey) private var soundEnabled = true
+    @AppStorage("boji.appearance") private var appearance = 0
     var body: some View {
         List {
             Section {
                 NavigationLink { AccountSettings132().clubPushDestination132() } label: { Label("账号", systemImage: "person.crop.circle") }
-                NavigationLink { MembershipView().clubPushDestination132() } label: { Label("会员与订阅", systemImage: "crown") }
             }
-            Section("偏好") {
+            Section("通知") {
                 NavigationLink { NotificationSettingsView().clubPushDestination132() } label: { Text("通知与提醒") }
-                NavigationLink { ClubAISettingsView().clubPushDestination132() } label: { Text("跟进") }
             }
-            Section("数据与隐私") {
-                NavigationLink { HealthConnectionsView(date: Date()).clubPushDestination132() } label: { Text("健康与设备") }
+            Section("健康数据") {
+                NavigationLink { HealthConnectionsView(date: Date()).clubPushDestination132() } label: { Text("连接 Apple 健康") }
+            }
+            Section("音效与触感") {
+                Toggle("互动音效", isOn: $soundEnabled)
+                Text("完成一组、打破纪录这些时刻会带短音。手机静音时，音效自动让位给震动。")
+                    .bojiType(.caption)
+                    .foregroundStyle(BojiColor.textTertiary)
+            }
+            Section("外观") {
+                Picker("外观", selection: $appearance) {
+                    Text("跟随系统").tag(0)
+                    Text("浅色").tag(1)
+                    Text("深色").tag(2)
+                }
+            }
+            Section("隐私与数据") {
                 NavigationLink { CloudStorageUsageView().clubPushDestination132() } label: { Text("空间与同步") }
                 NavigationLink { ClubCloudPrivacyView130().clubPushDestination132(ownsNavigationContainer: false) } label: { Text("AI 与隐私") }
             }
-            Section("帮助") {
+            Section("关于") {
+                NavigationLink { MemberFeedbackHub128().clubPushDestination132(ownsNavigationContainer: false) } label: { Text("意见反馈") }
+                NavigationLink { ClubUsageGuideView(firstVisitAccountID: account.user?.id).clubPushDestination132() } label: { Text("使用帮助") }
+                NavigationLink { AboutSettings132() } label: { Text("关于薄肌俱乐部") }
                 Button {
                     showWalkthrough = true
                 } label: {
@@ -136,9 +155,6 @@ struct SettingsHub130: View {
                     }
                 }
                 .foregroundStyle(BojiColor.textPrimary)
-                NavigationLink { MemberFeedbackHub128().clubPushDestination132(ownsNavigationContainer: false) } label: { Text("意见反馈") }
-                NavigationLink { ClubUsageGuideView(firstVisitAccountID: account.user?.id).clubPushDestination132() } label: { Text("使用帮助") }
-                NavigationLink { AboutSettings132() } label: { Text("关于薄肌俱乐部") }
             }
         }.clubManagementList132()
             .navigationTitle("设置").navigationBarTitleDisplayMode(.inline)

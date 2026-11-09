@@ -313,7 +313,8 @@ struct ClubAIShellView: View {
             .tag(ClubShellMode.training)
 
             NavigationStack {
-                ProfileView()
+                // 蓝图 §十七（2026-11-09 推倒重来）：我的 = 设置 / 会员 / 更多。
+                MyHubView()
                     .toolbar { shellToolbar(for: .profile) }
             }
             .tabItem { Label("我的", systemImage: "person.crop.circle") }
