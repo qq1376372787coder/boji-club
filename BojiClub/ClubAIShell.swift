@@ -41,7 +41,7 @@ final class FeatureFlagService: ObservableObject {
     }
 }
 
-enum ClubShellMode: Hashable { case clubAI, training, records }
+enum ClubShellMode: Hashable { case clubAI, training, records, profile }
 enum ClubSidebarRoute: String, Identifiable {
     // 拍板 #5：`aiMemory`（记忆页浏览入口）随对话下线，收敛为偏好数据所在的
     // 「AI 记录与授权」；记忆页仅保留该页内一处行权入口。
@@ -92,6 +92,8 @@ struct ClubAIShellView: View {
     }()
     @State private var sidebarRoute: ClubSidebarRoute?
     @State private var showHubSection: String?
+    @State private var todayAfterExpanded = false
+    @State private var expandedTodayExerciseID: UUID?
     @State private var mealEntryRoute: ClubComposerMealRoute?
     @State private var bodyEntryRoute: ClubDateRoute?
     @State private var showExerciseLibrary = false
@@ -275,31 +277,20 @@ struct ClubAIShellView: View {
     }
 
     private var navigationWorkspace: some View {
-        // 原生 TabView 三 tab（2+3 规格表 §1.1）：今天/训练/记录，tab bar 由系统渲染（iOS 26 悬浮玻璃）。
+        // 全页面新蓝图 §十七（2026-11-09）：四栏 Tab——今天/记录/计划/我的。
+        // 今天 = 一屏「今天练什么」；记录 = 时间线（批 2 重做）；计划 = 周视图（批 3 重做）；我的 = 设置与更多（批 4 重做）。
         TabView(selection: $mode) {
             NavigationStack(path: $aiPath) {
-                aiWorkspace
+                todayPage
                     .navigationTitle("今天")
                     .navigationBarTitleDisplayMode(.large)
                     .toolbar { shellToolbar(for: .clubAI) }
             }
             .tabItem { Label("今天", systemImage: "house") }
             // R01 教训（诊断树 L119）：标识容器必须 .contain 成独立元素，否则标识向下传播顶掉子级
-            // （主按钮的 v2-home-primary 曾被这层顶成 v2-tab-today）。样板：v2-home-metrics。
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("v2-tab-today")
             .tag(ClubShellMode.clubAI)
-
-            NavigationStack(path: $trainingPath) {
-                // BUG-020：坞挂进训练 tab 内容层（safeAreaInset 自动为 tab 栏让位），不再叠压 tab 栏
-                ClubPlanHub(selectedDate: $selectedDate, openWorkout: startTrainingFromPlan, embeddedInShell: true, scrollAnchor: $trainingScrollAnchor, calendarExpanded: $calendarExpanded)
-                    .clubBottomBar { bottomDock }
-                    .toolbar { shellToolbar(for: .training) }
-            }
-            .tabItem { Label("训练", systemImage: "figure.strengthtraining.traditional") }
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("v2-tab-training")
-            .tag(ClubShellMode.training)
 
             NavigationStack(path: $recordsPath131) {
                 // 分类横翻收进 hub 内部（pagedCategory 为空时自带 page 样式）。
@@ -310,6 +301,24 @@ struct ClubAIShellView: View {
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("v2-tab-records")
             .tag(ClubShellMode.records)
+
+            NavigationStack(path: $trainingPath) {
+                ClubPlanHub(selectedDate: $selectedDate, openWorkout: startTrainingFromPlan, embeddedInShell: true, scrollAnchor: $trainingScrollAnchor, calendarExpanded: $calendarExpanded)
+                    .toolbar { shellToolbar(for: .training) }
+            }
+            .tabItem { Label("计划", systemImage: "calendar") }
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("v2-tab-plans")
+            .tag(ClubShellMode.training)
+
+            NavigationStack {
+                ProfileView()
+                    .toolbar { shellToolbar(for: .profile) }
+            }
+            .tabItem { Label("我的", systemImage: "person.crop.circle") }
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("v2-tab-profile")
+            .tag(ClubShellMode.profile)
         }
     }
 
@@ -331,7 +340,7 @@ struct ClubAIShellView: View {
             } else if tab == .training {
                 Button { showTrainingPlans = true } label: { Image(systemName: "calendar") }
                     .accessibilityLabel("管理训练计划").accessibilityIdentifier("v2-context-action")
-            } else {
+            } else if tab == .records {
                 Menu {
                     Button("记录饮食") { openMeal("手动") }
                     Button("记录身体数据") { bodyEntryRoute = ClubDateRoute(date: Date()) }
@@ -1048,6 +1057,247 @@ struct ClubAIWorkspaceIdleView: View {
         // R01 同款修复（ff089da 样板，本层补漏）：标识容器必须 .contain，否则 v2-ai-workspace 向下传播顶掉 v2-home-primary
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("v2-ai-workspace")
+    }
+
+    // MARK: - 今天（全页面新蓝图 §一，2026-11-09 推倒重来：一屏回答「今天练什么」）
+    /// 主角 = 今天练什么（T1 88 巨号）；动作清单细线；「今天之后」收起次要信息；
+    /// 唯一主操作 = 底部 B1 玻璃胶囊（§20.2：本屏唯一玻璃件）。
+
+    private var todayPage: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                todayHero
+                if !today.exercises.isEmpty {
+                    todayHairline.padding(.top, BojiLayout.blockGap)
+                    todayPlanList
+                    todayHairline.padding(.top, BojiLayout.tight)
+                }
+                todayAfterSection
+            }
+            .padding(.horizontal, BojiLayout.pageInset)
+            .padding(.top, BojiLayout.rowGap)
+            .padding(.bottom, BojiLayout.actionClearance)
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            Button(action: todayPrimaryAction) {
+                Text(todayPrimaryLabel)
+                    .frame(maxWidth: .infinity, minHeight: BojiLayout.actionHeight)
+                    .contentShape(Rectangle())
+                    // 玻璃 buttonStyle 会包一层，标识放 label 内层才查得到（巡检 R01 断言用）
+                    .accessibilityIdentifier("v2-home-primary")
+            }
+            .clubNativeGlassButton(prominent: true)
+            .accessibilityIdentifier("v2-home-primary")
+            .padding(.horizontal, BojiLayout.pageInset)
+            .padding(.bottom, BojiLayout.inline)
+        }
+    }
+
+    private var todayHairline: some View {
+        Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline)
+    }
+
+    /// 主角法则（§总原则）：最大字 = 用户此刻的目标「今天练什么」，不是系统度量。
+    @ViewBuilder private var todayHero: some View {
+        VStack(alignment: .leading, spacing: BojiLayout.Rhythm.eyebrowToTitle) {
+            Text("今天 · \(ClubDates.label(Date(), format: "M月d日 EEEE"))\(todayWeekLabel)")
+                .bojiType(.caption)
+                .foregroundStyle(BojiColor.textTertiary)
+            if today.exercises.isEmpty {
+                BojiEditorialNumber(value: "今天还没有安排", wrap: true)
+                Text("先定个目标，我们帮你排")
+                    .bojiType(.body15)
+                    .foregroundStyle(BojiColor.textSecondary)
+                    .padding(.top, BojiLayout.Rhythm.titleToMeta)
+            } else {
+                BojiEditorialNumber(value: "今天练\(todayFocusLabel)", wrap: true)
+                Text("\(today.exercises.count) 个动作 · 约 \(todayMinutes) 分钟")
+                    .bojiType(.body15)
+                    .foregroundStyle(BojiColor.textSecondary)
+                    .padding(.top, BojiLayout.Rhythm.titleToMeta)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("v2-home-hero")
+    }
+
+    /// 训练主题优先取计划会话名（如「上肢推」），退化到肌群摘要。
+    private var todayFocusLabel: String {
+        if let label = todaySessionLabel { return label }
+        var muscles: [String] = []
+        for exercise in today.exercises where !exercise.muscle.isEmpty && !muscles.contains(exercise.muscle) {
+            muscles.append(exercise.muscle)
+        }
+        return muscles.isEmpty ? "力量" : muscles.prefix(2).joined(separator: "、")
+    }
+
+    private var todaySessionLabel: String? {
+        let key = ClubDates.key(Date())
+        guard let versions = today.planVersions else { return nil }
+        for version in versions.reversed() {
+            if let session = version.sessions.first(where: { $0.date == key }),
+               !session.label.isEmpty, session.label != "训练安排" {
+                return session.label
+            }
+        }
+        return nil
+    }
+
+    private var todayWeekLabel: String {
+        guard let cycle = today.planCycle else { return "" }
+        let all = TrainingCycle.available(days: store.state.days).sorted { $0.start < $1.start }
+        guard let index = all.firstIndex(where: { $0.start == cycle.start }) else { return "" }
+        return " · 第\(index + 1) 周"
+    }
+
+    private var todayMinutes: Int { store.state.profile.sessionMinutes ?? 45 }
+
+    /// 动作清单（§一）：编号 T5 + 名称 T3 + 组次 T5 右对齐，发丝线分隔；点按展开「上次」一行。
+    private var todayPlanList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(today.exercises.enumerated()), id: \.element.id) { index, exercise in
+                VStack(alignment: .leading, spacing: 0) {
+                    Button {
+                        BojiHaptics.selection()
+                        withAnimation(reduceMotion ? nil : BojiMotion.cardExpand(reduceMotion: reduceMotion)) {
+                            expandedTodayExerciseID = expandedTodayExerciseID == exercise.id ? nil : exercise.id
+                        }
+                    } label: {
+                        HStack(alignment: .firstTextBaseline, spacing: BojiLayout.inline) {
+                            Text(String(format: "%02d", index + 1))
+                                .bojiType(.caption, monospacedDigits: true)
+                                .foregroundStyle(BojiColor.textTertiary)
+                            Text(exercise.displayName)
+                                .bojiType(.data)
+                                .foregroundStyle(BojiColor.textPrimary)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: BojiLayout.inline)
+                            Text(todaySetSummary(exercise))
+                                .bojiType(.caption, monospacedDigits: true)
+                                .foregroundStyle(BojiColor.textSecondary)
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 11))
+                                .foregroundStyle(BojiColor.textTertiary)
+                                .rotationEffect(.degrees(expandedTodayExerciseID == exercise.id ? 180 : 0))
+                        }
+                        .frame(minHeight: BojiLayout.controlHeight)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("v2-home-plan-row")
+                    if expandedTodayExerciseID == exercise.id {
+                        Text(todayLastTimeLine(exercise))
+                            .bojiType(.caption)
+                            .foregroundStyle(BojiColor.textTertiary)
+                            .frame(minHeight: BojiLayout.controlHeight)
+                    }
+                }
+                if index < today.exercises.count - 1 { todayHairline }
+            }
+        }
+    }
+
+    private func todaySetSummary(_ exercise: Exercise) -> String {
+        guard let first = exercise.sets.first else { return "" }
+        if first.durationSeconds != nil {
+            return "\(exercise.sets.count)×\(first.durationSeconds ?? 0)秒"
+        }
+        return "\(exercise.sets.count)×\(first.reps)"
+    }
+
+    private func todayLastTimeLine(_ exercise: Exercise) -> String {
+        if let previous = store.lastCompletedSet(matching: exercise, before: Date()) {
+            if previous.durationSeconds != nil { return "上次 \(previous.durationSeconds ?? 0) 秒" }
+            let weight = previous.weight.formatted(.number.grouping(.never).precision(.fractionLength(0...1)))
+            return "上次 \(weight)kg × \(previous.reps) 次"
+        }
+        return "第一次练这个动作"
+    }
+
+    /// 「今天之后」（§一，收起）：状态分/睡眠/心率/摄入热量——次要信息不让位给主操作。
+    @ViewBuilder private var todayAfterSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                BojiHaptics.selection()
+                withAnimation(reduceMotion ? nil : BojiMotion.cardExpand(reduceMotion: reduceMotion)) {
+                    todayAfterExpanded.toggle()
+                }
+            } label: {
+                HStack(spacing: BojiLayout.tight) {
+                    Image(systemName: todayAfterExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 11))
+                        .foregroundStyle(BojiColor.textTertiary)
+                    Text("今天之后")
+                        .bojiType(.caption)
+                        .foregroundStyle(BojiColor.textTertiary)
+                    Spacer()
+                }
+                .frame(minHeight: BojiLayout.controlHeight)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("v2-home-after-toggle")
+            if todayAfterExpanded {
+                if let score = heroReadiness.score {
+                    Button { BojiHaptics.selection(); showScoreBreakdown = true } label: {
+                        todayAfterRow(label: "状态分", value: "\(score)", chevron: true)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("v2-home-score-detail")
+                }
+                ForEach(heroReadiness.metrics, id: \.label) { metric in
+                    todayAfterRow(label: metric.label, value: "\(metric.value) \(metric.unit)".trimmingCharacters(in: .whitespaces), chevron: false)
+                }
+                if let intake = todayIntakeLine {
+                    todayAfterRow(label: "摄入热量", value: intake, chevron: false)
+                }
+            }
+        }
+    }
+
+    private func todayAfterRow(label: String, value: String, chevron: Bool) -> some View {
+        HStack(spacing: BojiLayout.inline) {
+            Text(label)
+                .bojiType(.caption)
+                .foregroundStyle(BojiColor.textSecondary)
+            Spacer()
+            Text(value)
+                .bojiType(.caption, monospacedDigits: true)
+                .foregroundStyle(BojiColor.textPrimary)
+            if chevron {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11))
+                    .foregroundStyle(BojiColor.textTertiary)
+            }
+        }
+        .frame(minHeight: BojiLayout.controlHeight)
+        .overlay(alignment: .bottom) { todayHairline }
+        .contentShape(Rectangle())
+    }
+
+    /// 术语表 §七：唯一叫法「摄入热量」（已废除 摄入/已摄入/热量）；无记录不渲染（空值不摆 0）。
+    private var todayIntakeLine: String? {
+        guard !today.knownMeals.isEmpty else { return nil }
+        let calories = Int(today.calories)
+        if let target = today.nutritionTarget?.caloriesMax ?? store.state.nutritionTarget?.caloriesMax {
+            return "\(calories) / \(Int(target)) 千卡"
+        }
+        return "\(calories) 千卡"
+    }
+
+    /// 本屏唯一主操作（G5 定稿 + 蓝图 §一 空态）：没安排 → 生成计划；否则沿用 开始练/继续练/记一顿。
+    private var todayPrimaryLabel: String {
+        if today.exercises.isEmpty { return "生成计划" }
+        return homePrimaryLabel
+    }
+
+    private func todayPrimaryAction() {
+        BojiHaptics.selection()
+        BojiSound.play(.tap)
+        if today.exercises.isEmpty { showPlanWizard = true } else { homePrimaryAction() }
     }
 
     // MARK: - 顶部标题区

@@ -175,6 +175,8 @@ struct BojiEditorialNumber: View {
     var scale: EditorialScale = .display
     /// 数字颜色；默认主文字色。
     var tint: Color = BojiColor.textPrimary
+    /// 巨号文本换行（如「今天练上肢推」这类非数字主角）；数字默认单行。
+    var wrap: Bool = false
     /// 展示字任何档位都是 88/76/52（D3 终裁 + 哨兵⑥）；溢出用版式解决，不用字号解决。
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// M8 数字叙事：整数位进场从 0 滚到终值（0.35s），减动效直落终值。
@@ -220,7 +222,7 @@ struct BojiEditorialNumber: View {
                 .monospacedDigit()
                 .kerning(scale.tracking * (effectiveSize / scale.size))
                 .foregroundStyle(tint)
-                .lineLimit(1)
+                .lineLimit(wrap ? 3 : 1)
                 .contentTransition(.numericText())
                 .onAppear {
                     shownValue = reduceMotion ? value : (rollsFromZero ? "0" : value)

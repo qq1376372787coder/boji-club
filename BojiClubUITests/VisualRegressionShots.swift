@@ -319,7 +319,10 @@ final class VisualRegressionShots: XCTestCase {
     /// 测量对象是**被变换的内层媒体**（v2-home-hero-media，HeroParallax 打在它身上），
     /// 外层容器高度恒定量不出视差。测量通道风险：offset/scaleEffect 可能不进 XCUIElement.frame——
     /// 首轮测量+双通道打印 + 方向性软断言（通道失灵恒等可过不假红），出数后钉死硬容差。
-    func testHeroParallaxFramesAtScrollDepths() {
+    func testHeroParallaxFramesAtScrollDepths() throws {
+        // 蓝图 §一（2026-11-09）：首页视频带已删，M6 视差对象随之移除，锚 v2-home-hero-media 不复存在。
+        // 批 5 动效收尾重建「大标题收缩」锚后恢复定量断言；此处显式跳过，不假绿。
+        throw XCTSkip("蓝图 §一 视频带已删，M6 视差锚待批 5 动效收尾重建")
         let app = XCUIApplication()
         app.launchArguments = ShotSet.light.launchArguments
         app.launchEnvironment = [

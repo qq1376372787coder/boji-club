@@ -35,6 +35,9 @@ struct WorkoutView: View {
     @State private var restFeedback = 0
     @State private var actionError: String?
     @State private var confirmCancelWorkout = false
+    @State private var editingOneSet: TrainingSet?
+    @State private var oneSetTimerRequest: OneSetTimerRequest?
+    @State private var weightStep = 2.5
     @AppStorage("acknowledged_returning_workout_date") private var ackReturningDate: String = ""
     private func finishWorkout() {
         let showCompletion = !hasFinished
@@ -83,6 +86,22 @@ struct WorkoutView: View {
     }
 
     private var workoutContent: some View {
+        // 全页面新蓝图 §二（2026-11-09 推倒重来）：一屏一组——只回答「这一组做多少」。
+        Group {
+            if restPausedRemaining != nil || restEnd != nil {
+                restTakeover
+            } else if !isFuture && !log.exercises.isEmpty && allSetsDone && !hasFinished {
+                allDonePanel
+            } else if !isFuture && !log.exercises.isEmpty && !hasFinished {
+                oneSetScreen
+            } else {
+                legacyWorkoutContent
+            }
+        }
+    }
+
+    /// 旧版整列表（未开始/未来日期/已保存的修改场景保留，功能不减）。
+    private var legacyWorkoutContent: some View {
         ScrollView {
             VStack(spacing: BojiLayout.cardInset) {
                 Text(ClubDates.label(selectedDate, format: "M月d日 EEEE"))
@@ -94,10 +113,286 @@ struct WorkoutView: View {
         }.scrollDismissesKeyboard(.interactively)
     }
 
+    private struct OneSetTimerRequest: Identifiable {
+        let id = UUID()
+        let set: TrainingSet
+        let exerciseID: UUID
+    }
+
+    // MARK: - 一屏一组（蓝图 §二：这一组做多少）
+    private var allSetsDone: Bool { log.totalSets > 0 && log.completedSets >= log.totalSets }
+    private var currentExercise: Exercise? {
+        log.exercises.first(where: { $0.sets.contains { !$0.validCompletion } })
+    }
+    private var currentSet: TrainingSet? {
+        currentExercise?.sets.first(where: { !$0.validCompletion })
+    }
+    private func exerciseContaining(_ set: TrainingSet) -> Exercise? {
+        log.exercises.first(where: { $0.sets.contains { $0.id == set.id } })
+    }
+    private func setNumber(_ exercise: Exercise, _ set: TrainingSet) -> Int {
+        (exercise.sets.firstIndex(where: { $0.id == set.id }) ?? 0) + 1
+    }
+    private func bigNumberText(_ set: TrainingSet) -> String {
+        if let seconds = set.durationSeconds { return "\(seconds)秒" }
+        let weight = set.weight.formatted(.number.grouping(.never).precision(.fractionLength(0...1)))
+        return "\(weight)kg × \(set.reps)次"
+    }
+    private func previousLine(_ exercise: Exercise) -> String {
+        if let previous = store.lastCompletedSet(matching: exercise, before: selectedDate) {
+            if let seconds = previous.durationSeconds { return "上次：\(seconds) 秒" }
+            let weight = previous.weight.formatted(.number.grouping(.never).precision(.fractionLength(0...1)))
+            return "上次：\(weight)kg × \(previous.reps) 次"
+        }
+        return "第一次练这个动作"
+    }
+
+    @ViewBuilder private var oneSetScreen: some View {
+        if let exercise = currentExercise, let set = currentSet {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("第 \(setNumber(exercise, set)) 组 / 共 \(exercise.sets.count) 组")
+                        .bojiType(.caption, monospacedDigits: true)
+                        .foregroundStyle(BojiColor.textTertiary)
+                        .padding(.top, BojiLayout.rowGap)
+
+                    Button {
+                        BojiHaptics.selection()
+                        editingOneSet = set
+                    } label: {
+                        BojiEditorialNumber(value: bigNumberText(set), wrap: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("v2-workout-set-numbers")
+                    .accessibilityLabel("这一组的重量与次数，点按修改")
+                    .padding(.top, BojiLayout.Rhythm.eyebrowToTitle)
+
+                    Text(previousLine(exercise))
+                        .bojiType(.body15)
+                        .foregroundStyle(BojiColor.textSecondary)
+                        .frame(minHeight: BojiLayout.controlHeight)
+                        .padding(.top, BojiLayout.Rhythm.titleToMeta)
+
+                    Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline)
+                        .padding(.top, BojiLayout.blockGap)
+
+                    // 完成即折叠一行（§二）；点按可更正
+                    ForEach(Array(exercise.sets.enumerated()), id: \.element.id) { index, finished in
+                        if finished.validCompletion {
+                            Button {
+                                BojiHaptics.selection()
+                                editingOneSet = finished
+                            } label: {
+                                HStack(spacing: BojiLayout.inline) {
+                                    Text("第\(index + 1)组")
+                                        .bojiType(.caption, monospacedDigits: true)
+                                        .foregroundStyle(BojiColor.textTertiary)
+                                    Text(bigNumberText(finished))
+                                        .bojiType(.caption, monospacedDigits: true)
+                                        .foregroundStyle(BojiColor.textSecondary)
+                                    Spacer()
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundStyle(ClubBrand.accent)
+                                }
+                                .frame(minHeight: BojiLayout.controlHeight)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .overlay(alignment: .bottom) {
+                                Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, BojiLayout.pageInset)
+                .padding(.bottom, BojiLayout.actionClearance)
+            }
+        }
+    }
+
+    /// §二 全部组完成：「这一练完了」+ 汇总 + B1「完成训练」（B1 在 bottomPrimaryBar）。
+    private var allDonePanel: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            BojiEditorialNumber(value: "这一练\n完了", wrap: true)
+            let volume = Int(log.exercises.flatMap(\.sets).filter(\.validCompletion).reduce(0) { $0 + $1.volume })
+            Text("\(log.exercises.count) 个动作 · \(log.completedSets) 组 · \(volume) kg·次")
+                .bojiType(.body15)
+                .foregroundStyle(BojiColor.textSecondary)
+                .padding(.top, BojiLayout.Rhythm.titleToMeta)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, BojiLayout.pageInset)
+        .padding(.top, BojiLayout.sectionGap)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("v2-workout-all-done")
+    }
+
+    /// §二 组间休息：整屏接管，零玻璃（§20.2「休息是冥想时刻」）。
+    @ViewBuilder private var restTakeover: some View {
+        ZStack {
+            BojiColor.pageBackground.ignoresSafeArea()
+            VStack(spacing: 0) {
+                Spacer()
+                Text("休息")
+                    .bojiType(.body15)
+                    .foregroundStyle(BojiColor.textSecondary)
+                if let paused = restPausedRemaining {
+                    let total = Int(ceil(paused))
+                    BojiEditorialNumber(value: String(format: "%02d:%02d", total / 60, total % 60))
+                        .padding(.top, BojiLayout.Rhythm.eyebrowToTitle)
+                    Text("休息已暂停")
+                        .bojiType(.body15)
+                        .foregroundStyle(BojiColor.textSecondary)
+                        .padding(.top, BojiLayout.Rhythm.titleToMeta)
+                    restSecondaryButton("继续") {
+                        BojiHaptics.tick(); BojiSound.play(.tap)
+                        restPausedRemaining = nil
+                        restEnd = Date().addingTimeInterval(paused)
+                    }
+                    .padding(.top, BojiLayout.blockGap)
+                } else if let end = restEnd {
+                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                        let remaining = max(0, Int(ceil(end.timeIntervalSince(context.date))))
+                        BojiEditorialNumber(value: String(format: "%02d:%02d", remaining / 60, remaining % 60))
+                            .scaleEffect(!reduceMotion && (1...3).contains(remaining) ? 1.06 : 1)
+                            .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: remaining)
+                            .onChange(of: remaining) { _, new in
+                                // 20.3 训练中三联动：最后 3 秒数字微脉冲 + tick + S5
+                                if (1...3).contains(new) {
+                                    BojiHaptics.tick(); BojiSound.play(.restTick)
+                                } else if new == 0 {
+                                    BojiSound.play(.setDone)
+                                }
+                            }
+                    }
+                    .padding(.top, BojiLayout.Rhythm.eyebrowToTitle)
+                    Text("下一组 \(currentSet.map(bigNumberText) ?? "")")
+                        .bojiType(.body15)
+                        .foregroundStyle(BojiColor.textSecondary)
+                        .padding(.top, BojiLayout.Rhythm.titleToMeta)
+                    HStack(spacing: BojiLayout.cardGap) {
+                        restSecondaryButton("跳过") {
+                            BojiHaptics.latch(); BojiSound.play(.setDone, delay: 0.055)
+                            endRest()
+                        }
+                        restSecondaryButton("+30秒") {
+                            BojiHaptics.tick(); BojiSound.play(.tap)
+                            restEnd = end.addingTimeInterval(30)
+                        }
+                    }
+                    .padding(.top, BojiLayout.blockGap)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, BojiLayout.pageInset)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("v2-workout-rest")
+    }
+
+    /// 休息屏的 B2 44 描边（§20.2：休息零玻璃，只有两个 B2）。
+    private func restSecondaryButton(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .bojiType(.body15)
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: BojiLayout.controlHeight)
+        }
+        .buttonStyle(SecondaryButton())
+        .buttonBorderShape(.capsule)
+    }
+
+    /// 底部唯一主操作（§20.2：今天/训练中全屏唯一玻璃件 = B1 54）。
+    @ViewBuilder private var bottomPrimaryBar: some View {
+        if restPausedRemaining != nil || restEnd != nil {
+            // 休息整屏自带按钮，零玻璃
+            EmptyView()
+        } else if !isFuture && !log.exercises.isEmpty && !hasFinished {
+            oneSetActionButton(title: allSetsDone ? "完成训练" : "记完这组") {
+                if allSetsDone { requestFinish() } else { completeCurrentSet() }
+            }
+        } else if isFuture {
+            futurePlanSaveDock
+        }
+    }
+
+    private func oneSetActionButton(title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .frame(maxWidth: .infinity, minHeight: BojiLayout.actionHeight)
+                .contentShape(Rectangle())
+                .accessibilityIdentifier("v2-workout-primary")
+        }
+        .clubNativeGlassButton(prominent: true)
+        .accessibilityIdentifier("v2-workout-primary")
+        .padding(.horizontal, BojiLayout.pageInset)
+        .padding(.bottom, BojiLayout.inline)
+    }
+
+    /// 记完这组（§二主操作）：勾选 bounce + latch 震动 + S2 音效同一帧（§20.3）。
+    private func completeCurrentSet() {
+        guard let set = currentSet else { return }
+        // 计时组走计时页（原生计时流程保留）
+        if set.durationSeconds != nil {
+            if let exercise = currentExercise {
+                oneSetTimerRequest = OneSetTimerRequest(set: set, exerciseID: exercise.id)
+            }
+            return
+        }
+        var updated = set
+        updated.completed = true
+        if updated.reps <= 0 { updated.reps = 10 }
+        updateOneSet(set, updated: updated)
+    }
+
+    @discardableResult
+    private func updateOneSet(_ set: TrainingSet, updated: TrainingSet) -> Bool {
+        guard let exercise = exerciseContaining(set) else { return false }
+        guard store.updateSet(updated, exerciseID: exercise.id, on: selectedDate) else {
+            actionError = store.takeMessage(fallback: "保存失败，原记录保留，请重试。")
+            return false
+        }
+        if updated.completed && !set.completed {
+            BojiHaptics.latch()
+            BojiSound.play(.setDone)
+            let savedSets = store.log(for: selectedDate).trainingLog.exercises.first(where: { $0.id == exercise.id })?.sets ?? []
+            // 智能记忆预填：下一组未输入时，预填本组的负重与次数
+            if let nextSet = savedSets.first(where: { !$0.validCompletion && $0.id != set.id && $0.actualEntered != true }),
+               updated.weight > 0, nextSet.weight == 0 {
+                var prefilled = nextSet
+                prefilled.weight = updated.weight
+                prefilled.reps = updated.reps
+                _ = store.updateSet(prefilled, exerciseID: exercise.id, on: selectedDate)
+            }
+            let dayLog = store.log(for: selectedDate).trainingLog
+            let restSeconds = exercise.restSeconds ?? self.restSeconds
+            if restSeconds > 0 && dayLog.completedSets < dayLog.totalSets && (Calendar.current.isDateInToday(selectedDate) || WorkoutTiming.isOngoing(dayLog, on: selectedDate)) {
+                restTotal = TimeInterval(restSeconds)
+                restEnd = Date().addingTimeInterval(TimeInterval(restSeconds))
+            } else {
+                restEnd = nil
+            }
+        }
+        return true
+    }
+
+    private func requestFinish() {
+        if hasFinished { finishWorkout() }
+        else {
+            finishReviewOwner = store.editingAccountID
+            finishReviewSession = day.activeWorkoutSessionID
+            confirmFinish = true
+        }
+    }
+
     private var presentedWorkout: some View {
         workoutContent
         .background { ClubBackground() }
-        .navigationTitle(isFuture ? "当天安排" : "训练")
+        .navigationTitle(isFuture ? "当天安排" : (currentExercise?.displayName ?? "训练"))
         .onAppear {
             restOwnerID = store.editingAccountID; restDateKey = ClubDates.key(selectedDate)
             if expandedExerciseID == nil {
@@ -171,6 +466,34 @@ struct WorkoutView: View {
             }
         }
         .sheet(item: $completion) { snapshot in WorkoutCompletionView(snapshot: snapshot) }
+        .sheet(item: $editingOneSet) { set in
+            let exercise = exerciseContaining(set)
+            let setIndex = exercise?.sets.firstIndex(where: { $0.id == set.id }) ?? 0
+            let previous = exercise?.sets.prefix(setIndex).last(where: { $0.validCompletion })
+            let history = exercise.flatMap { store.lastCompletedSet(matching: $0, before: selectedDate) }
+            return TrainingSetEditPanel(
+                original: set,
+                number: setIndex + 1,
+                previous: previous,
+                canUsePrevious: previous.map { ($0.durationSeconds == nil) == (set.durationSeconds == nil) && !set.completed } ?? false,
+                history: history,
+                canUseHistory: history.map { ($0.durationSeconds == nil) == (set.durationSeconds == nil) && !set.completed } ?? false,
+                weightStep: $weightStep,
+                allowTimer: !ClubDates.isFuture(selectedDate),
+                isPlanTarget: ClubDates.isFuture(selectedDate),
+                save: { updated in updateOneSet(set, updated: updated) },
+                startTimer: { pending in oneSetTimerRequest = exercise.map { OneSetTimerRequest(set: pending, exerciseID: $0.id) } },
+                performDelete: {
+                    guard let target = exerciseContaining(set) else { return false }
+                    return store.removeSet(set.id, exerciseID: target.id, on: selectedDate)
+                }
+            )
+        }
+        .sheet(item: $oneSetTimerRequest) { request in
+            TimedTrainingSetView(date: selectedDate, exerciseID: request.exerciseID, original: request.set) { updated in
+                updateOneSet(request.set, updated: updated)
+            }
+        }
         .sheet(isPresented: $confirmFinish) {
             WorkoutFinishReview125(completed: log.completedSets, total: log.totalSets, confirm: {
                 guard store.editingAccountID == finishReviewOwner, day.activeWorkoutSessionID == finishReviewSession else {
@@ -265,12 +588,8 @@ struct WorkoutView: View {
             finishRestWithFlash()
         }
         .safeAreaInset(edge: .bottom) {
-            // 裁决 §五-5：坞交给系统为 tab 栏避让，禁止手写 padding 兜底。
-            // 未来日期没有休息，保留保存计划入口。
-            VStack(spacing: 0) {
-                trainingDock
-                if isFuture { futurePlanSaveDock }
-            }
+            // 蓝图 §二（2026-11-09）：底部坞废止，只留唯一主操作 B1；系统为 tab 栏避让。
+            bottomPrimaryBar
         }
     }
 
@@ -1219,21 +1538,22 @@ struct WorkoutCompletionView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: BojiLayout.blockGap) {
-                    completionHeading
-                    if let saved = completedSnapshot {
-                        Button("训练总结", systemImage: "bubble.left.and.text.bubble.right") {
-                            ClubAIEntryContext.open(owner: snapshot.ownerID, date: snapshot.date, sessionID: saved.sessionID)
-                        }.buttonStyle(.bordered).buttonBorderShape(.capsule).controlSize(.regular)
-                            .tint(ClubBrand.accent).frame(maxWidth: .infinity).frame(minHeight: 44)
-                            .accessibilityIdentifier("workout-ai-review")
-                    }
+                    celebrationCard
+                    completionActions
                     healthActions
-                    completionSummary
-                    Button("完成") { dismiss() }.buttonStyle(SecondaryButton())
                     DisclosureGroup("补记与更多") {
                         VStack(alignment: .leading, spacing: BojiLayout.cardInset) {
+                            if let saved = completedSnapshot {
+                                Button("训练总结", systemImage: "bubble.left.and.text.bubble.right") {
+                                    ClubAIEntryContext.open(owner: snapshot.ownerID, date: snapshot.date, sessionID: saved.sessionID)
+                                }.buttonStyle(.bordered).buttonBorderShape(.capsule).controlSize(.regular)
+                                    .tint(ClubBrand.accent).frame(maxWidth: .infinity).frame(minHeight: 44)
+                                    .accessibilityIdentifier("workout-ai-review")
+                            }
                             dailyRecordCard
                             Button("在 Club AI 解读这一天") { if let owner = store.editingAccountID { let scope = ClubReviewScope.make(.daily, through: snapshot.date); ClubAIRoute.open(owner: owner, question: scope.prompt, scope: scope) } }
+                            Text(ClubDates.label(snapshot.date) + " · " + store.syncStatus.label)
+                                .bojiType(.caption).foregroundStyle(.secondary)
                         }
                         .padding(.top, BojiSpace.general)
                     }
@@ -1268,18 +1588,101 @@ struct WorkoutCompletionView: View {
         guard let id = snapshot.sessionID ?? ClubWorkoutSummaryRules.available(state: store.state, date: snapshot.date).last else { return nil }
         return .make(owner: snapshot.ownerID, date: snapshot.date, sessionID: id, day: day)
     }
-    @ViewBuilder private var completionHeading: some View {
-        let saved = completedSnapshot
-        WorkoutCelebration125(facts: WorkoutFacts125(training),
-            duration: saved?.activeDuration.map(WorkoutTiming.durationLabel) ?? "未记录")
-        Text(ClubDates.label(snapshot.date) + " · " + store.syncStatus.label)
-            .bojiType(.caption).foregroundStyle(.secondary)
+    /// §三 训练完成（2026-11-09 推倒重来）：庆祝玻璃大卡（§20.2 全 App 唯一玻璃大卡）+ 记一餐 B1 + 看这次详情文字链。
+    @ViewBuilder private var celebrationCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            BojiEditorialNumber(value: "练完了", wrap: true)
+            Text(conclusionLine)
+                .bojiType(.body15)
+                .foregroundStyle(BojiColor.textSecondary)
+                .padding(.top, BojiLayout.Rhythm.titleToMeta)
+            HStack(alignment: .firstTextBaseline, spacing: BojiLayout.sectionGap) {
+                statColumn(value: "\(Int(training.confirmedTraining.volume))", unit: "kg·次")
+                statColumn(value: "\(training.confirmedTraining.completedSets)", unit: "组")
+                if let minutes = completedMinutes {
+                    statColumn(value: "\(minutes)", unit: "分钟")
+                }
+            }
+            .padding(.top, BojiLayout.blockGap)
+        }
+        .padding(BojiLayout.cardInset)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .clubGlassEffect(in: RoundedRectangle(cornerRadius: BojiLayout.Radius.card, style: .continuous))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("v2-completion-celebration")
+        .onAppear {
+            // §20.3 庆：heavyDrop + S4 workout_done，一次性
+            BojiHaptics.heavyDrop()
+            BojiSound.play(.workoutDone)
+        }
     }
-    @ViewBuilder private var completionSummary: some View {
-        if let saved = completedSnapshot {
-            WorkoutCharts125(facts: WorkoutFacts125(training))
-            NavigationLink("本次训练记录") { ClubWorkoutSummaryView(date: snapshot.date, sessionID: saved.sessionID) }
-                .bojiType(.secondary).frame(minHeight:44)
+
+    private func statColumn(value: String, unit: String) -> some View {
+        VStack(alignment: .leading, spacing: BojiLayout.tight) {
+            Text(value)
+                .bojiType(.title, monospacedDigits: true)
+                .foregroundStyle(BojiColor.textPrimary)
+            Text(unit)
+                .bojiType(.caption)
+                .foregroundStyle(BojiColor.textTertiary)
+        }
+    }
+
+    /// 人话结论（§三）：和上一次真实训练比。
+    private var conclusionLine: String {
+        let volume = training.confirmedTraining.volume
+        let key = ClubDates.key(snapshot.date)
+        let previous = store.state.days
+            .filter { $0.key < key }
+            .values
+            .compactMap { day -> Double? in day.confirmedTraining.hasTraining ? day.confirmedTraining.volume : nil }
+            .max() ?? 0
+        if previous <= 0 { return "近期最实在的一次，记下了" }
+        if volume > previous { return "今天练得比上次多一点" }
+        if volume == previous { return "和上次一样稳" }
+        return "今天量少一点，也是好训练"
+    }
+
+    private var muscleLine: String {
+        var muscles: [String] = []
+        for exercise in training.exercises
+        where exercise.sets.contains(where: \.validCompletion) && !exercise.muscle.isEmpty && !muscles.contains(exercise.muscle) {
+            muscles.append(exercise.muscle)
+        }
+        return muscles.isEmpty ? "" : "练了：" + muscles.joined(separator: "、")
+    }
+
+    private var completedMinutes: Int? {
+        guard let duration = completedSnapshot?.activeDuration else { return nil }
+        return max(1, Int((duration / 60).rounded()))
+    }
+
+    @ViewBuilder private var completionActions: some View {
+        VStack(alignment: .leading, spacing: BojiLayout.rowGap) {
+            Rectangle().fill(BojiColor.divider).frame(height: BojiLayout.hairline)
+            if !muscleLine.isEmpty {
+                Text(muscleLine)
+                    .bojiType(.body15)
+                    .foregroundStyle(BojiColor.textSecondary)
+            }
+            Button {
+                BojiHaptics.selection()
+                BojiSound.play(.tap)
+                showMeal = true
+            } label: {
+                Text("记一餐")
+                    .frame(maxWidth: .infinity, minHeight: BojiLayout.actionHeight)
+                    .contentShape(Rectangle())
+            }
+            .clubNativeGlassButton(prominent: true)
+            .accessibilityIdentifier("v2-completion-primary")
+            if let saved = completedSnapshot {
+                NavigationLink("看这次详情") { ClubWorkoutSummaryView(date: snapshot.date, sessionID: saved.sessionID) }
+                    .bojiType(.body15)
+                    .tint(ClubBrand.accent)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(minHeight: BojiLayout.controlHeight)
+            }
         }
     }
     @ViewBuilder private var healthActions: some View {
