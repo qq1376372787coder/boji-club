@@ -271,7 +271,7 @@ struct MetricValue: View {
                         .kerning(-1)
                         .foregroundStyle(tint)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.75)
+                    // 界面设计裁决：字号在任何档位不缩——溢出用版式解决，不用字号解决（原 minimumScaleFactor(0.75) 已删）
                     if let unit, !unit.isEmpty {
                         Text(unit)
                             .bojiType(.caption)
