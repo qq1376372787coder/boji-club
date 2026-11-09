@@ -753,24 +753,27 @@ final class ReadinessScoreContractTests: XCTestCase {
             return rhr <= 65 ? 30 : max(8, 30 - (rhr - 65) * 0.8)
         }()
         let trainingPoints: Double = trainedRecently ? 20 : 6
-        let total = Int(min(100, max(0, sleepPoints + heartPoints + trainingPoints)))
+        let sleepInt = Int(sleepPoints.rounded())
+        let heartInt = Int(heartPoints.rounded())
+        let trainingInt = Int(trainingPoints)
+        // 口径表 §5.5 裁定（`7a276b1` 已落 App 侧）：总分 = 已取整分项相加，三项与总分同源。
+        let total = min(100, max(0, sleepInt + heartInt + trainingInt))
         return Breakdown(total: total,
-                         sleep: Int(sleepPoints.rounded()),
-                         heart: Int(heartPoints.rounded()),
-                         training: Int(trainingPoints))
+                         sleep: sleepInt,
+                         heart: heartInt,
+                         training: trainingInt)
     }
 
     /// 契约一：分项之和必须等于巨号总分（用户会自己加，加不上就是 bug）。
     ///
-    /// ⚠️ **这条现在会红**（12 个用例中 3 个对不上），是缺陷复现：
-    /// 根因在 `ClubAIShell.swift:1440`——
-    ///     total = Int(min(100, max(0, sleepPoints + heartPoints + trainingPoints)))
-    /// 总分对**未取整的 Double 求和**再截断，而分项显示各自 `.rounded()` 后取整，
-    /// 两者取整时机不同 → 分项加起来比巨号多 1。
-    /// 例：睡 420 分（7 小时）、心率 58、近三天没练过
-    ///     分项显示 47 + 30 + 6 = 83，但巨号显示 82（Double 和 82.67 截断）。
-    /// 修法：总分改由**已取整的分项**相加得出（`total = sleep + heart + training`），
-    /// 三项与总分同源取整，加起来必然相等。
+    /// **已修，防回归**（`7a276b1` 落 App 侧；本参考实现同步对齐）。判定轮 `42584813783` 曾因
+    /// 参考实现落后报 3 红（分项之和比总分多 1）——那不是 App 缺陷，是测试自己的基线没跟上，
+    /// 分类 2（用例断旧行为），改用例不改代码（测试验收裁定）。
+    ///
+    /// **局限（如实写清）**：`scoreBreakdown` 是视图私有方法，本用例在抽函数前只钉
+    /// 「参考实现描述的规格自洽」，**钉不住 App 输出**——若 App 改回未取整求和，本用例不会红。
+    /// 终态（随甲-4）：苹果开发把 `scoreBreakdown` 抽成 `ReadinessScore.breakdown(...)` 纯函数，
+    /// 本用例直调真实现，参考实现整段退役——届时「唯一实现」才真正成立。
     func testBreakdownComponentsSumToTotal() {
         let cases: [(sleep: Double?, heart: Double?, trained: Bool)] = [
             (450, 60, true), (450, 65, true), (300, 55, true), (510, 72, true),
