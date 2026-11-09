@@ -52,7 +52,8 @@ final class VisualRegressionShots: XCTestCase {
         let seed: String
         /// 只在指定套里拍；nil = 三套都拍
         let only: Set<ShotSet>?
-        /// 向上滚动的精确像素量（0 = 不滚；用坐标拖拽实现，不用 swipe——手滑量不可控，R03a/R03b 要可比）
+        /// 向上滚动的精确像素量（0 = 不滚；用坐标拖拽实现，不用 swipe——手滑量不可控，R03 两帧才可比）。
+        /// R03 两帧验 M6 视差随滚动递增；收缩玻璃条组件已删（甲-2 批，`63e0b27` 起），不是验收点。
         let scrollBy: CGFloat
         /// 本屏唯一主操作的可见文案（有就断言同屏只有一个）
         let primary: String?
