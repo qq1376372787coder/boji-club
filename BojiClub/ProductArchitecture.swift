@@ -632,7 +632,7 @@ struct ClubRecordsExecutiveDashboard: View {
                             )
                         }
                         telemetryMetric(
-                            title: "练完动作",
+                            title: "完成动作",
                             value: "\(todayConfirmed.exercises.count)",
                             unit: "项",
                             icon: "dumbbell.fill",
@@ -695,16 +695,18 @@ struct ClubRecordsExecutiveDashboard: View {
 
                 VStack(spacing: BojiLayout.inline) {
                     HStack(alignment: .firstTextBaseline) {
-                        Text(todayLog.knownMeals.isEmpty ? "—" : "\(Int(todayCalories))")
-                            .bojiType(.title)
-                            .foregroundStyle(BojiColor.textPrimary)
-                        Text(targetCalories.map { "/ \(Int($0)) kcal" } ?? "kcal · 尚无个性化目标")
-                            .bojiType(.secondary)
-                            .foregroundStyle(BojiColor.textTertiary)
+                        // §2.6 收编：摄入热量数字走 MetricValue（T2 28），空值整块不渲染（原 .title 自拼 +「—」废）
+                        MetricValue(value: todayLog.knownMeals.isEmpty ? nil : "\(Int(todayCalories))",
+                                    unit: "kcal", label: "摄入热量")
                         Spacer()
-                        Text(calorieRatio.map { "\(Int($0 * 100))%" } ?? "记录未齐")
-                            .bojiType(.caption)
-                            .foregroundStyle(BojiColor.textSecondary)
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(targetCalories.map { "目标 \(Int($0)) kcal" } ?? "尚无个性化目标")
+                                .bojiType(.caption)
+                                .foregroundStyle(BojiColor.textTertiary)
+                            Text(calorieRatio.map { "\(Int($0 * 100))%" } ?? "记录未齐")
+                                .bojiType(.caption)
+                                .foregroundStyle(BojiColor.textSecondary)
+                        }
                     }
 
                     ProgressView(value: min(1.0, max(0.0, calorieRatio ?? 0.0)), total: 1.0)
@@ -885,22 +887,11 @@ struct ClubRecordsExecutiveDashboard: View {
 
     private func telemetryMetric(title: String, value: String, unit: String, icon: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: BojiLayout.tight) {
-            HStack(spacing: BojiLayout.tight) {
-                Image(systemName: icon)
-                    .bojiType(.caption)
-                    .foregroundStyle(color)
-                Text(title)
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
-            }
-            HStack(alignment: .firstTextBaseline, spacing: 0) {
-                Text(value)
-                    .bojiType(.body)
-                    .foregroundStyle(BojiColor.textPrimary)
-                Text(unit)
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
-            }
+            Image(systemName: icon)
+                .bojiType(.caption)
+                .foregroundStyle(color)
+            // §2.6 跨页收编：数字 T2 28 + 单位/标签 T5 只走 MetricValue，页面不自拼（原 .body 16 自拼已废）
+            MetricValue(value: value, unit: unit, label: title)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(BojiLayout.inline)
@@ -909,17 +900,8 @@ struct ClubRecordsExecutiveDashboard: View {
 
     private func macroPill(label: String, value: Double, unit: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(label)
-                .bojiType(.caption)
-                .foregroundStyle(BojiColor.textTertiary)
-            HStack(alignment: .firstTextBaseline, spacing: 0) {
-                Text(todayLog.knownMeals.isEmpty ? "—" : "\(Int(value))")
-                    .bojiType(.secondary)
-                    .foregroundStyle(color)
-                Text(unit)
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
-            }
+            // §2.6 收编：数字走 MetricValue，空值整块不渲染（原 .secondary 自拼 +「—」废）
+            MetricValue(value: todayLog.knownMeals.isEmpty ? nil : "\(Int(value))", unit: unit, label: label, tint: color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, BojiLayout.inline)

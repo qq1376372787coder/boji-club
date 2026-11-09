@@ -156,21 +156,24 @@ struct WeeklyReportView: View {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: BojiLayout.rowGap) {
                 metricTile(
                     title: "练了几天",
-                    value: "\(t?.training_days ?? 0) 天",
+                    value: "\(t?.training_days ?? 0)",
+                    unit: "天",
                     subtext: "累计 \(t?.total_completed_sets ?? 0) 组完成",
                     symbol: "figure.strengthtraining.traditional"
                 )
 
                 metricTile(
                     title: "训练量",
-                    value: "\(Int(t?.total_volume_kg ?? 0)) kg·次",
+                    value: t?.total_volume_kg.map { "\(Int($0))" },
+                    unit: "kg·次",
                     subtext: formatChangePct(t?.volume_change_pct),
                     symbol: "chart.line.uptrend.xyaxis"
                 )
 
                 metricTile(
                     title: "日均热量",
-                    value: n?.average_calories != nil ? "\(Int(n!.average_calories!)) kcal" : "—",
+                    value: n?.average_calories.map { "\(Int($0))" },
+                    unit: "kcal",
                     subtext: "记满 \(n?.complete_days_count ?? 0) 天",
                     symbol: "fork.knife"
                 )
@@ -178,6 +181,7 @@ struct WeeklyReportView: View {
                 metricTile(
                     title: "体重走向",
                     value: formatWeightTrend(b?.weight_trend),
+                    unit: nil,
                     subtext: formatWeightChange(b?.weight_change_kg),
                     symbol: "scalemass"
                 )
@@ -185,19 +189,13 @@ struct WeeklyReportView: View {
         }
     }
 
-    private func metricTile(title: String, value: String, subtext: String, symbol: String) -> some View {
+    private func metricTile(title: String, value: String?, unit: String?, subtext: String, symbol: String) -> some View {
         VStack(alignment: .leading, spacing: BojiLayout.tight) {
-            HStack {
-                Image(systemName: symbol)
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
-                Text(title)
-                    .bojiType(.caption)
-                    .foregroundStyle(BojiColor.textTertiary)
-            }
-            Text(value)
-                .bojiType(.body)
-                .foregroundStyle(BojiColor.textPrimary)
+            Image(systemName: symbol)
+                .bojiType(.caption)
+                .foregroundStyle(BojiColor.textTertiary)
+            // §2.6 收编：数字 T2 28 + 单位/标签 T5 只走 MetricValue；空值整块不渲染（原「—」废）
+            MetricValue(value: value, unit: unit, label: title)
             Text(subtext)
                 .bojiType(.caption)
                 .foregroundStyle(BojiColor.textSecondary)
