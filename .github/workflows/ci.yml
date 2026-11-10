@@ -32,11 +32,15 @@ jobs:
             fi
           done
           xcodebuild -version
-      - name: Compile the app for the simulator SDK
+      - name: Compile the app (device SDK — needs no simulator runtime)
+        # 用设备 SDK 编译：模拟器运行时与 SDK 版本必须严格匹配，而 runner 镜像里
+        # 预装的运行时往往比当前 Xcode 的 SDK 旧，模拟器 SDK 因此直接编译失败。
+        # 设备 SDK 不依赖任何运行时，最适合作为"能不能编译"的判据。
         run: |
           xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
-            -destination 'generic/platform=iOS Simulator' -configuration Debug build \
-            | tee build.log | grep -E "error:|warning:|BUILD" || true
+            -destination 'generic/platform=iOS' -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            build | tee build.log | grep -E "error:|BUILD" || true
           grep -q "BUILD SUCCEEDED" build.log
 
   checks:

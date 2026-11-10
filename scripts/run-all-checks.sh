@@ -43,8 +43,10 @@ resolve_test_destination() {
   printf 'generic/platform=iOS Simulator'
 }
 
-# 编译阶段用 generic 目的地：只需要模拟器 SDK，不需要具体机型。
-BUILD_DESTINATION='generic/platform=iOS Simulator'
+# 编译阶段用设备 SDK：模拟器运行时必须与 SDK 版本严格匹配，runner 镜像里预装的
+# 运行时常常更旧，模拟器 SDK 会直接报 "No simulator runtime version available"。
+# 设备 SDK 不依赖运行时，只用来回答"能不能编译"。
+BUILD_DESTINATION='generic/platform=iOS'
 
 run_rules() {
   echo "== [2/5] Swift 规则回归链（54 个 harness） =="
@@ -78,7 +80,9 @@ report_simulators
 echo "== [3/5] 主应用编译检查（模拟器 Debug） =="
 set -o pipefail
 xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
-  -destination "$BUILD_DESTINATION" -configuration Debug build 2>&1 | tee "$OUT/build.log" | grep -E "error:|BUILD" || true
+  -destination "$BUILD_DESTINATION" -configuration Debug \
+  CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+  build 2>&1 | tee "$OUT/build.log" | grep -E "error:|BUILD" || true
 grep -q "BUILD SUCCEEDED" "$OUT/build.log"
 
 TEST_DESTINATION="$(resolve_test_destination)"
