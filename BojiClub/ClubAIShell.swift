@@ -344,7 +344,8 @@ struct ClubAIShellView: View {
                     onRecordMeal: { openMeal("手动") },
                     onDailyReport: { openReportLibrary(.daily) },
                     onWeeklyReview: { openReportLibrary(.weekly) },
-                    onFoodRecognition: { openMeal("照片") })
+                    onFoodRecognition: { openMeal("照片") },
+                    onOpenData: { mode = .records })
             }
         }
     }
@@ -759,6 +760,8 @@ struct ClubAIWorkspaceIdleView: View {
     let onDailyReport: () -> Void
     let onWeeklyReview: () -> Void
     let onFoodRecognition: () -> Void
+    /// v3 原型顶部右侧「看数据 ›」：直达记录 Tab 的数据面板。
+    var onOpenData: () -> Void = {}
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var ai: AIService
     @EnvironmentObject private var clubSeason: ClubSeasonService
@@ -807,12 +810,28 @@ struct ClubAIWorkspaceIdleView: View {
                         Text(todayLabel).font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
                     }
                     Spacer(minLength: 8)
+                    // v3 原型：顶部右侧「看数据 ›」胶囊，落点是记录 Tab 的数据面板。
+                    Button(action: onOpenData) {
+                        HStack(spacing: 2) {
+                            Text("看数据").font(BojiV2.caption)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                        }
+                        .foregroundStyle(BojiV2.textPrimary)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.white.opacity(0.75), in: Capsule())
+                        .overlay { Capsule().strokeBorder(Color.white.opacity(0.95), lineWidth: 1) }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("v2-home-data")
                     ZStack {
                         Circle().fill(BojiV2.accentFill)
                         Image(systemName: "person.crop.circle")
                             .font(.system(size: 22)).foregroundStyle(BojiV2.accent)
                     }
                     .frame(width: 36, height: 36)
+                    .accessibilityHidden(true)
                 }
                 .padding(.horizontal, BojiV2.titleInset)
                 .padding(.top, 12)
@@ -929,7 +948,7 @@ struct ClubAIWorkspaceIdleView: View {
                             Text(generated ? "今日日报已生成" : "日报还没生成")
                                 .font(BojiV2.bodyEm).foregroundStyle(BojiV2.textPrimary)
                             Text(generated ? "点击查看或重新生成"
-                                 : hasRecords ? "已有今日记录 · 可立即生成" : "记录训练、饮食或称重后可生成")
+                                 : hasRecords ? "已有今日记录 · 可立即生成" : "每晚 22:00 自动生成")
                                 .font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
                         }
                         Spacer(minLength: 8)
