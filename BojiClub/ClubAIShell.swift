@@ -1052,7 +1052,7 @@ struct ClubAIWorkspaceIdleView: View {
                 .padding(.horizontal, BojiV2.titleInset)
                 .padding(.top, 12)
                 heroVisual
-                if activeWorkout != nil || !today.exercises.isEmpty { trainingCard }
+                todayFocusCard
                 if flags.aiEnabled {
                     aiFeatureCard
                     Group {
@@ -1113,23 +1113,112 @@ struct ClubAIWorkspaceIdleView: View {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("漂浮的健身用品插图")
     }
-    private var trainingCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(activeWorkout == nil ? "今日训练" : "进行中的训练").font(.subheadline).foregroundStyle(.secondary)
-            Text(activeWorkout?.workoutName ?? (today.trainingLog.hasConfirmedTraining ? "今天的训练已保存" : today.trainingLog.exercises.prefix(2).map(\.name).joined(separator: " · ")))
-                .font(.headline)
-            Text(activeWorkout.map { "\($0.dateKey) · \($0.completedSets)/\($0.totalSets) 组" } ?? "\(today.trainingLog.exercises.count) 个动作")
-                .font(.subheadline).foregroundStyle(.secondary)
-            HStack(spacing: 16) {
-                Button(activeWorkout != nil ? "继续训练" : today.trainingLog.hasConfirmedTraining ? "查看训练" : "开始训练", action: onStartTraining)
-                    .clubNativeGlassButton(prominent: true).tint(BojiColor.brandMist).foregroundStyle(BojiColor.brandContent).frame(minHeight: 44)
-                Button("查看计划") { onOpenHub("训练计划") }.buttonStyle(.borderless)
-            }.tint(ClubBrand.accent)
+    /// v3 原型首页底部大玻璃卡：今日训练焦点 + 环形完成度 + 三格数据 + 日报行 + 主按钮。
+    ///
+    /// 环形进度只表示「已确认完成组 / 今日安排组」，不引入设计稿里那个没有数据
+    /// 来源的综合评分。三格数据全部取自当天记录本身，缺失时显示占位而不是 0。
+    private var todayFocusCard: some View {
+        let total = today.totalSets
+        let completed = today.completedSets
+        let report = todayReport
+        let generated = report?.status == "succeeded"
+        let hasRecords = DailyReportEligibility.hasRecords(today)
+        return VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(focusTitle).font(BojiV2.title).foregroundStyle(BojiV2.textPrimary)
+                Text(focusSubtitle).font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+            }
+            BojiGlassCard(radius: BojiV2.glassDockRadius, padding: BojiV2.glassPadding) {
+                VStack(spacing: 18) {
+                    HStack(alignment: .center, spacing: 16) {
+                        ZStack {
+                            BojiProgressRing(progress: completionProgress, lineWidth: 8)
+                            VStack(spacing: 0) {
+                                Text("\(completed)").bojiNumeral(34)
+                                    .foregroundStyle(BojiV2.textPrimary)
+                                Text("/ \(total)").font(BojiV2.microEm)
+                                    .foregroundStyle(BojiV2.textSecondary)
+                            }
+                        }
+                        .frame(width: 92, height: 92)
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("今日训练完成度").font(BojiV2.bodyEm)
+                                .foregroundStyle(BojiV2.textPrimary)
+                            Text(total > 0 ? "已确认 \(completed) / \(total) 组" : "今天还没有安排组次")
+                                .font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+                            if let snapshot = activeWorkout {
+                                Text(snapshot.isPaused ? "训练已暂停" : "训练进行中")
+                                    .font(BojiV2.micro).foregroundStyle(BojiV2.accent)
+                            }
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    BojiStatStrip(items: [
+                        BojiStatStrip.Item(value: "\(completed)", label: "训练组"),
+                        BojiStatStrip.Item(value: calorieValue, label: "摄入 kcal"),
+                        BojiStatStrip.Item(value: weightValue, label: "体重 kg")
+                    ])
+                    Rectangle().fill(BojiV2.hairline).frame(height: 1)
+                    HStack(alignment: .center, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(generated ? "今日日报已生成" : "日报还没生成")
+                                .font(BojiV2.bodyEm).foregroundStyle(BojiV2.textPrimary)
+                            Text(generated ? "点击查看或重新生成"
+                                 : hasRecords ? "已有今日记录 · 可立即生成" : "记录训练、饮食或称重后可生成")
+                                .font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+                        }
+                        Spacer(minLength: 8)
+                        Button(generated ? "查看" : "生成分析") { onDailyReport() }
+                            .font(BojiV2.bodyEm).foregroundStyle(BojiV2.accent)
+                            .frame(minHeight: 44)
+                    }
+                    BojiPrimaryButton(title: activeWorkout != nil ? "继续训练" : "开始训练") { onStartTraining() }
+                }
+            }
+            .accessibilityIdentifier("v2-today-focus-card")
         }
-        .padding(20).frame(maxWidth: .infinity, alignment: .leading)
-        .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: 22))
-        .overlay { RoundedRectangle(cornerRadius: 22).stroke(BojiColor.outline, lineWidth: 0.5) }
-        .accessibilityIdentifier("v2-today-training")
+        .padding(.horizontal, BojiV2.cardInset)
+    }
+    /// 今日训练焦点：用动作肌群概括（保持记录顺序，不用 Set 的随机序），没有安排时给一句事实描述。
+    private var focusTitle: String {
+        if activeWorkout != nil { return "进行中的训练" }
+        var seen = Set<String>()
+        let muscles = today.exercises.map(\.muscle).filter { !$0.isEmpty && seen.insert($0).inserted }
+        guard !muscles.isEmpty else { return today.exercises.isEmpty ? "今天还没有安排" : "今天的训练" }
+        return "今天练" + muscles.prefix(3).joined(separator: " · ")
+    }
+    private var focusSubtitle: String {
+        if let snapshot = activeWorkout { return "\(snapshot.completedSets)/\(snapshot.totalSets) 组 · 点击继续" }
+        let count = today.exercises.count
+        guard count > 0 else { return "从一条记录开始，也很好。" }
+        return "\(count) 个动作 · \(today.totalSets) 组"
+    }
+    private var completionProgress: Double {
+        let total = today.totalSets
+        guard total > 0 else { return 0 }
+        return Double(today.completedSets) / Double(total)
+    }
+    /// 当天实测体重优先；没有实测时退回资料体重，取不到才占位。
+    private var weightValue: String {
+        if let kg = today.bodyWeight?.kilograms, kg > 0 { return String(format: "%.1f", kg) }
+        let profile = store.state.profile.weight
+        return profile > 0 ? String(format: "%.1f", profile) : "—"
+    }
+    private var calorieValue: String {
+        let kcal = today.calories
+        guard kcal > 0 else { return "—" }
+        return Self.calorieFormatter.string(from: NSNumber(value: kcal.rounded())) ?? "—"
+    }
+    private static let calorieFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        formatter.groupingSeparator = ","
+        return formatter
+    }()
+    private var todayReport: AILocalJob? {
+        ReportHistory.visible(ai.jobs, dateKey: ClubDates.key(Date()),
+                             deleted: Set(store.state.deletedAIJobIDs ?? [])).first
     }
     /// AI 收拢后的四个功能入口：每日分析 / 每周复盘 / AI 食物识别 / AI 计划生成。
     /// 自由对话已下线，这里是 App 内唯一的 AI 功能入口集合。

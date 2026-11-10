@@ -124,6 +124,21 @@ final class BojiClubUITests: XCTestCase {
         attachScreenshot("home-ai-features", app: app)
     }
 
+    func testHomeSummaryCardShowsConfirmedVolumeOnly() {
+        let app = launch()
+        let card = app.descendants(matching: .any)["v2-today-focus-card"].firstMatch
+        XCTAssertTrue(card.waitForExistence(timeout: 8), "首页必须给出今日训练摘要大卡")
+        XCTAssertTrue(app.staticTexts["今日训练完成度"].exists, "摘要卡必须说明环形进度的含义，而不是综合评分")
+        XCTAssertTrue(app.staticTexts["日报还没生成"].exists || app.staticTexts["今日日报已生成"].exists,
+                      "摘要卡必须给出日报状态")
+        XCTAssertTrue(app.buttons["开始训练"].exists, "摘要卡必须保留开始训练主按钮")
+        // 三格数据的标签也要在，缺数据时用占位而不是 0。
+        for label in ["训练组", "摄入 kcal", "体重 kg"] {
+            XCTAssertTrue(app.staticTexts[label].exists, "摘要卡必须包含 \(label)")
+        }
+        attachScreenshot("home-summary-card", app: app)
+    }
+
     func testDailyReportEntryOpensReportLibraryFilteredToDaily() {
         let app = launch()
         app.buttons["每日分析"].firstMatch.tap()
