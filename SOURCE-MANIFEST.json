@@ -3,7 +3,7 @@
   "build": 136,
   "revision": "s2-design-system-v2-and-ci-unblock-20261111",
   "status": "AI 收拢与界面改造周期：v2 设计系统底座（Token/组件/动效）与 CI 分层（规则链独立为非阻塞 job）。",
-  "generated": "2026-11-10T19:13:20Z",
+  "generated": "2026-11-10T19:13:37Z",
   "fileCount": 1215,
   "totalBytes": 39039411,
   "excluded": [

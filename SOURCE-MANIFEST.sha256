@@ -1,5 +1,5 @@
 fb72760261dbede6dd06d957f8004443e4cc7c279af7e46775a91dcad95cfcb3  ./.gitattributes
-802373da24c6f15ca8a8e3d7cbc2aed5827fab71c153388d6970b84b6d2f582d  ./.github/workflows/ci.yml
+3a339d5dc7d4ca093c9e4561ef1d714bb6c9e6b1723a550b89d121da15de0010  ./.github/workflows/ci.yml
 8e9d81f2b3b73af1cf1727ffe550309a49acf15bbec804f04b67eaeb74987f1b  ./.gitignore
 fee1b9ffe2330ba67a5b8bad3718e4ef73347bde87c73461196ecf8c6532680a  ./0.13.67-修改说明.md
 06038d2aa9d8dbab2b6564eb9e33e4cf7e810944e8e0ddc0dedee7d574b5488c  ./0.13.68-修改说明.md
@@ -42,7 +42,7 @@ a3c268982383bbcb0d3e513042857b5439021b024db02796113369aa004a446e  ./BUILD134_NAT
 ac5c9ff59a56a0c386bbcfec775cbc6455d2b5ae23044450b229cd162ef2cfee  ./BUILD135_NATURAL_EXPERIENCE.md
 22c85b5debe3d895d1b00c0a5e60ec556a21e3be313cdf0d3e6be1cd639beee6  ./BUILDFIX-V45-20261010.md
 ec34328b26f9e6c5c5c7a691e1942e92c5397a76eb1038664bc8b198c0643feb  ./BUILDFIX-V51-20261011.md
-2d80e27ce39eb902a4ab5aa922ab9df5dcca49f9d808f23008345699753ac35e  ./BojiClub.xcodeproj/project.pbxproj
+c4175e6ed8a1ba5567c387ecd83939ceb86109488895e59c7561545d063e8b1f  ./BojiClub.xcodeproj/project.pbxproj
 5c2b91b67a72f0c341d6fa0eda978eee611ff4a1efee3017a5617c46284973b3  ./BojiClub.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 e5aa7c2d1342c3200fec436edecb9bf2533ebddf0a5bfe2bfc56eaba4c895287  ./BojiClub.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 f91767377248fe891c7dc0332b3de231e74f42d3efbe5bb9834b8aeecd17e63e  ./BojiClub.xcodeproj/xcshareddata/xcschemes/BojiClub-TestFlight.xcscheme
@@ -81,6 +81,9 @@ ee81433ddfd7346793e790653caea0a08d8de4b39d35c320c40eef89aa0bc4c6  ./BojiClub/Boj
 6cd5dd8a70272a2b4330e029e4becb3de0ed3f1725d03515fdacc4bfc96792d4  ./BojiClub/BojiClubApp.swift
 fe2af9064f1dfcf16c9d888adae73cc395c98ee931a58e8e8de45b1686b7bb04  ./BojiClub/BojiComponentGalleryView.swift
 cd895d05ce4a1699b230089fb9749eb1d21be84ea256b11eb3f7c8a39bc9bb00  ./BojiClub/BojiComponents.swift
+5a7a7cd752346c0e22b29a5e07ef560f4052c1b8c2c43b72aaedda60e1695d62  ./BojiClub/BojiComponentsV2.swift
+00c07351e69b3ed963bc4fd5c11323e2830543603dbbab99266b88d6d055aca7  ./BojiClub/BojiDesignSystemV2.swift
+2536831a42d1bfaf4333cbbf2b9eff2b4f10c00c4a6af17f1949d310dc8b9e43  ./BojiClub/BojiMotion.swift
 3e472352684c2d065303e2e6e01cf4c5e5cfdb9b3c8c0e924e9d9954ac47490c  ./BojiClub/ChatStability127.swift
 33e4139ac281abc1517b2a733cc78be775f567651c1d37c276102f804fdde892  ./BojiClub/CloudSync.swift
 f0ac1cabc7b5523893f3e7b3061fce39424e39fe307c8447932e4898176bc098  ./BojiClub/ClubAIMemoryView.swift
@@ -431,7 +434,7 @@ e1eeff386fe2c416dabdb2de6d8b381fce656893d999db370000cd5230eaa2d1  ./account-serv
 58be579a7b2c4df554f84b4b37df320724571a76e9771860c555d9d1eb8b44d3  ./account-server/resources/action-exercise-catalog.json
 cc831bb8cdfe3d4670fbe2a3222ee90dbbab282dbc5a213e6288c8abc662db08  ./account-server/revenuecat-config.example.php
 4ae6cfb3e86ed4fff606ed1ec5b6f1cd6c20b2c443e462e801379f19f9d655cf  ./account-server/revenuecat-member-checks.sql
-84e7376d80e0c258bf8b3115ef58307e14f1c53bbeff70e86254158838165b12  ./account-server/schema-loader.php
+d605331899ff6a031aaa0f6d9cebbe31328992e134e35ee4f3e5ced1f84da371  ./account-server/schema-loader.php
 586c45ccdd76cdddd4233e0d30cb4232fd3e89277765a942da3236eb26400604  ./account-server/schema.sql
 fa32c9a46d14a4787d3daae590d315d8f5a55e1b2d8c8787644fc0fc91080835  ./account-server/seed-club-keepsakes.sql
 8b54ed1ca965eed219116d0788c0385472a10b4b0314b34dd9389185220b34a4  ./account-server/sync-schema-v59.sql
@@ -499,6 +502,7 @@ e840ade538c91b5f741b9ecc46365bf3f58cc912660957a5f5e734ff4f0612d3  ./build112-dep
 ae7fc3693521af14f335c689f0db575c9daccc055efe6914cee44b212621a0e1  ./coach-deployment.json
 ce07a10e91a086ea19a7d6b6a1e2d2bae7b95f248b13760ce5e402b7c3b7d20d  ./coach-live-smoke.json
 801c74d072ff9a7f333d28a001173170a638797073253f1b985c81fc1f58c610  ./coach-verification.json
+24acecf03862b5ae7be261e76114c41272b4a074a056a4283a2e147cf6af5346  ./docs/KNOWN-CI-ISSUES.md
 81211f9dde91bc1b3fc80ada19c9f4ad06ad1dbe4421dd78339e5c1b40817429  ./docs/action-system-build116/changed-files.csv
 bedeaffee1034df1a4b47d36021561da29fc0115777061129713a898bfa0d29c  ./docs/action-system-build116/filename-repairs.json
 cec08b0be4d6dc80fa15a1723ee850134e1342ef99b1f21ad530c7b7d949bb08  ./docs/action-system-build116/verification.txt
@@ -894,7 +898,7 @@ f8b56aa9b3ddcab48a3dfe9a030d5076caf33522b6333fbb746318e868b1c367  ./scripts/enab
 5158052c9f1ad52d7efc93a7bcd97f9eb37453152370f08dd4d0c7c6ffb0a9eb  ./scripts/generate-feedback128-fixtures.swift
 42a38e645ebce8c3833dc96ae1252805addc3ed002fe8ebe8dd78c92fe4c141f  ./scripts/import-usda-foods.py
 e5e2fa1151ec2af6b22871eb7570278011ad8712f54a883c8ad98c7848645bed  ./scripts/php_parse_check.py
-924d7e0a8e29e91e99d4f7e9a1680734b969816386df80ab8818cebabf23b741  ./scripts/run-all-checks.sh
+1627e94e3398f386dc8ae0dd801044e82031192d10423cd7c43733e4b1da0524  ./scripts/run-all-checks.sh
 7f1ef2ff3513b87ec664800cde0eb7659520e605220a6f70023f3065d826f46f  ./shared/prompts/PROMPT_VERSION.json
 b1bab330a51fb157f080ea2d288640d7714ca925d6de72abe948f3c3a7d5fac8  ./shared/prompts/context_continue.v1.md
 b3b72882a0cb185016824678a49bb47d46499819818aee474f2e6372a71b8000  ./shared/prompts/draft_correction.v1.md
@@ -1015,7 +1019,7 @@ bf3d71aac8ba955573d9de01fb78e21574399ee90541fa21fa4ab900a14c15a1  ./tests/run_pr
 0f98b87ce98a8e0531ed2822ef1b70dd6e50b19214fe47037a8f83e0771a3a45  ./tests/run_repair_v76.sh
 bc2e90ca1862b916e947b4c772f111ca7b5cfcada6559c7ba34616d2cadd89e2  ./tests/run_repair_v77.sh
 b5ff94299829dea6bb69d6adb34c88b62f15f3b1dd48b77d5d274b1b80c13935  ./tests/run_retry_v106.sh
-4b8a9cfd7b78b20afe56e126f1ec28eaa61d1d7af81b4c9b2b30a68ee8e582e8  ./tests/run_swift_regressions.py
+02c418cb70eac0e039962b4fd2daebc01b93e5e5002724f8a5e22792656268f2  ./tests/run_swift_regressions.py
 f7474be8761d4713efb84ac6135ca850aabc1a80cf576993cf076cf72f5a499b  ./tests/run_training_commands.sh
 2fc52f1d8911d2f3c393e8f6daadfb932b13e6486621f4631f83ae25d5028890  ./tests/run_upgrade_offline.py
 93ff9965607580199e6bf13a32f0501e425e49b6f242f4a6410730b8b10ac617  ./tests/run_upgrade_v140.sh
@@ -1156,7 +1160,7 @@ e1667641991ff65a73e7ae77e510edea9eedb6e1e22d46d568393460343b0d9b  ./tests/test_r
 23d380092d866447be8d3c9fe3e74901e11e550d34eeed295160bc594e88746d  ./tests/test_revenuecat_v60.php
 19d40e828c3c4a4fe2bf9c0c48767e198914a2a1093e34dfade013e874987141  ./tests/test_router122.py
 a6f3600eb711860a799c3b51b99d92b8c9676b7236fe1378f81109a9d1e7217f  ./tests/test_router125.py
-838102ffc29e355590c2952213334caab2f5b302efd33f88bf1d0d348e3336ce  ./tests/test_schema_portability.php
+12c6d752ed7156d58a4c690706907d8d15fc2fcde17930250347cd5619db15e5  ./tests/test_schema_portability.php
 65287705ed6fda78bda61f69ca331a6d6199ce173c007a3a06124eea28a84a0c  ./tests/test_storage_timezone.py
 b2e6a6a5028cbf90cc75636b5bec3bf22d3e5d48db5b3bc3e293c6b1772f94b1  ./tests/test_testflight_v61.py
 4ce1a4ba51eaddb28b20ba29c480a7c9bc09298f848e8b12f696683c2ce095fa  ./tests/test_throughput.py
