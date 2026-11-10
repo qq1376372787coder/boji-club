@@ -2,6 +2,11 @@ import SwiftUI
 
 enum ReportLibraryKind: String, CaseIterable, Hashable { case all = "全部", daily = "日报", weekly = "周报", workout = "训练解读", phase = "阶段报告" }
 
+/// `.sheet(item:)` 的载荷必须可标识，而 `String` 不满足 `Identifiable`。
+struct AIReportJobRoute: Identifiable {
+    let id: String
+}
+
 private enum ReportLibraryEntry: Identifiable {
     case daily(AILocalJob), weekly(WeeklyReview), followup(AILocalJob), phase(PhaseReport)
     var id: String {
@@ -34,7 +39,7 @@ struct ReportLibraryView: View {
     @State private var selectedDate = Date()
     @State private var ownerID: Int?
     /// 日报：直接走 report 管线（kind == "report"），不经过对话。
-    @State private var dailyJobID: String?
+    @State private var dailyRoute: AIReportJobRoute?
     @State private var dailyError: String?
     /// 周报：打开专属的每周回顾中心，而不是对话。
     @State private var showWeeklyCenter = false
@@ -98,9 +103,9 @@ struct ReportLibraryView: View {
                 .frame(maxWidth: .infinity)
         }.background { ClubBackground() }.tint(ClubBrand.accent)
             .navigationTitle("AI 解读档案").navigationBarTitleDisplayMode(.inline)
-            .sheet(item: $dailyJobID) { jobID in
+            .sheet(item: $dailyRoute) { route in
                 NavigationStack {
-                    AIReportReaderView(jobID: jobID)
+                    AIReportReaderView(jobID: route.id)
                         .background { ClubBackground() }
                         .navigationTitle("日报")
                         .navigationBarTitleDisplayMode(.inline)
@@ -257,7 +262,7 @@ struct ReportLibraryView: View {
                 dailyError = "账号已切换，这份日报没有生成；请重新打开后再试。"; return
             }
             dailyError = nil
-            dailyJobID = jobID
+            dailyRoute = AIReportJobRoute(id: jobID)
         } catch { dailyError = AppErrorText.message(error) }
     }
     private func generatePhaseReport() {

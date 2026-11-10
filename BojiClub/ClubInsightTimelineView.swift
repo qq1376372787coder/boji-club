@@ -334,7 +334,7 @@ struct ClubInsightTimelineView: View {
     @State private var settings = false
     @State private var reading = "未归档"
     /// 日报走 report 管线直连；周报打开专属复盘页。自由对话已下线。
-    @State private var dailyJobID: String?
+    @State private var dailyRoute: AIReportJobRoute?
     @State private var dailyError: String?
     @State private var showWeeklyCenter = false
 
@@ -432,8 +432,8 @@ struct ClubInsightTimelineView: View {
         .onChange(of: rangeDays) { _, _ in visible = 30 }
         .onChange(of: reading) { _, _ in visible = 30 }
         .sheet(isPresented: $settings) { ClubAISettingsView() }
-        .sheet(item: $dailyJobID) { jobID in
-            NavigationStack { AIReportReaderView(jobID: jobID) }
+        .sheet(item: $dailyRoute) { route in
+            NavigationStack { AIReportReaderView(jobID: route.id) }
         }
         .sheet(isPresented: $showWeeklyCenter) { WeeklyReviewCenter().background { ClubBackground() } }
     }
@@ -454,7 +454,7 @@ struct ClubInsightTimelineView: View {
                 dailyError = "账号已切换，这份日报没有生成；请重新打开后再试。"; return
             }
             dailyError = nil
-            dailyJobID = jobID
+            dailyRoute = AIReportJobRoute(id: jobID)
         } catch { dailyError = AppErrorText.message(error) }
     }
 
