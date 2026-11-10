@@ -18,18 +18,63 @@ declare(strict_types=1);
  * bad statement from silently aborting the rest of the file.
  */
 
-/** Split a schema file into executable statements; comment-only lines are dropped. */
+/**
+ * Split a schema file into executable statements.
+ *
+ * The scanner is quote- and comment-aware: a ';' inside a string literal or
+ * inside a "--" / "#" / "/* */" comment does not end a statement, and the
+ * comments themselves are dropped.
+ *
+ * Do not split on a regular expression such as \R here. In PCRE without the
+ * UTF mode \R also matches the byte 0x85 (NEL), and 0x85 occurs as a
+ * continuation byte inside ordinary UTF-8 Chinese characters — "光" is
+ * E5 85 89. Splitting there cut a comment line in half, so its text leaked
+ * into the next statement and the server answered with a syntax error.
+ */
 function bojiSchemaStatements(string $sql): array {
-    $kept = [];
-    foreach (preg_split('/\R/', $sql) ?: [] as $line) {
-        if (preg_match('/^\s*--/', $line)) continue;
-        $kept[] = $line;
-    }
     $statements = [];
-    foreach (explode(';', implode("\n", $kept)) as $part) {
-        $trimmed = trim($part);
-        if ($trimmed !== '') $statements[] = $trimmed;
+    $current = '';
+    $length = strlen($sql);
+    $quote = null;
+    for ($pos = 0; $pos < $length; $pos++) {
+        $char = $sql[$pos];
+        if ($quote !== null) {
+            $current .= $char;
+            if ($char === '\\' && $pos + 1 < $length) { $current .= $sql[++$pos]; continue; }
+            if ($char === $quote) $quote = null;
+            continue;
+        }
+        // Line comment: MySQL requires whitespace after the second dash.
+        if ($char === '-' && substr($sql, $pos, 2) === '--') {
+            $after = $sql[$pos + 2] ?? "\n";
+            if ($after === ' ' || $after === "\t" || $after === "\n" || $after === "\r") {
+                while ($pos < $length && $sql[$pos] !== "\n") $pos++;
+                $current .= "\n";
+                continue;
+            }
+        }
+        if ($char === '#') {
+            while ($pos < $length && $sql[$pos] !== "\n") $pos++;
+            $current .= "\n";
+            continue;
+        }
+        if ($char === '/' && substr($sql, $pos, 2) === '/*') {
+            $end = strpos($sql, '*/', $pos + 2);
+            $pos = $end === false ? $length : $end + 1;
+            $current .= ' ';
+            continue;
+        }
+        if ($char === "'" || $char === '"' || $char === '`') { $quote = $char; $current .= $char; continue; }
+        if ($char === ';') {
+            $trimmed = trim($current);
+            if ($trimmed !== '') $statements[] = $trimmed;
+            $current = '';
+            continue;
+        }
+        $current .= $char;
     }
+    $trimmed = trim($current);
+    if ($trimmed !== '') $statements[] = $trimmed;
     return $statements;
 }
 

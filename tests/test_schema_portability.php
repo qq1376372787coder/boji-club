@@ -60,4 +60,30 @@ $again = bojiSchemaPortableStatement($db, $probe);
 ok($again==='','an existing column makes the statement a no-op');
 $db->exec('DROP TABLE boji_portability_probe');
 
+// Statement splitting must be quote- and comment-aware.
+//
+// A naive split on ';' broke the real schema.sql: one comment line contained a
+// semicolon, so the text after it became a separate statement and the server
+// answered with a syntax error. The same class of bug appears when a regex
+// such as \R is used to split lines, because in PCRE without the UTF mode \R
+// also matches the byte 0x85 — which occurs as a continuation byte inside
+// ordinary Chinese characters ("光" is E5 85 89).
+$split = bojiSchemaStatements(
+    "-- 说明：这里有一个分号；不该切开\n".
+    "CREATE TABLE a (id INT);\n".
+    "# 井号注释；也不该切开\n".
+    "INSERT INTO a VALUES ('含分号；的字符串');\n".
+    "-- (曝光→接受→执行→结果 chain)\n".
+    "/* 块注释；也不该切开 */\n".
+    "ALTER TABLE a ADD COLUMN x INT;"
+);
+ok(count($split)===3,'only real statement ends split the file');
+ok(str_starts_with($split[0],'CREATE TABLE a'),'the first statement is the CREATE TABLE');
+ok(str_contains($split[1],"'含分号；的字符串'"),'a semicolon inside a string literal does not end the statement');
+ok(str_starts_with($split[2],'ALTER TABLE a'),'comments between statements are dropped');
+
+// The byte 0x85 must never be treated as a line break.
+$nel = bojiSchemaStatements("-- 曝光→接受 chain\nSELECT 1;");
+ok(count($nel)===1 && str_starts_with($nel[0],'SELECT 1'),'a Chinese character containing 0x85 does not split the statement');
+
 echo "Schema portability: $checks assertions passed\n";
