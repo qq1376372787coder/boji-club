@@ -951,7 +951,12 @@ struct ClubAIWorkspaceIdleView: View {
     }
     @State private var greetingSeed = Int.random(in: 0..<1000)
     private var greeting: String {
-        let options = activeWorkout != nil ? ["训练进行得怎么样？", "这一组，按自己的节奏来。"] : today.exercises.isEmpty ? ["今天，想先聊点什么？", "从一条记录开始，也很好。", "想聊聊最近的训练吗？"] : ["准备好，开始今天的训练吗？", "今天，想先聊点什么？", "看看今天的安排？"]
+        // 自由对话已下线：问候语不再往聊天引导。
+        let options = activeWorkout != nil
+            ? ["这一组，按自己的节奏来。", "训练进行得怎么样？"]
+            : today.exercises.isEmpty
+            ? ["今天休息，先把状态养回来。", "从一条记录开始，也很好。"]
+            : ["准备好，开始今天的训练吗？", "看看今天的安排？"]
         return options[greetingSeed % options.count]
     }
     // Revalidate against current candidates even before onChange runs: withdrawn/other-owner text never renders.
@@ -961,13 +966,23 @@ struct ClubAIWorkspaceIdleView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                VStack(spacing: 10) {
-                    BojiBrandMark(size:64)
-                    Text("薄肌俱乐部").font(.caption).tracking(2).foregroundStyle(.secondary)
-                    Text(isNewUser ? "嗨，我是 Club AI" : greeting).font(.title2.weight(.medium))
-                    if isNewUser { Text("想安排训练，还是先记录今天的饮食？").font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center) }
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(isNewUser ? "嗨，我是 Club AI" : greeting)
+                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(BojiV2.textPrimary)
+                        Text(todayLabel).font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+                    }
+                    Spacer(minLength: 8)
+                    ZStack {
+                        Circle().fill(BojiV2.accentFill)
+                        Image(systemName: "person.crop.circle")
+                            .font(.system(size: 22)).foregroundStyle(BojiV2.accent)
+                    }
+                    .frame(width: 36, height: 36)
                 }
-                .frame(maxWidth: .infinity).padding(.top, 24).padding(.bottom, 12)
+                .padding(.horizontal, BojiV2.titleInset)
+                .padding(.top, 12)
+                heroVisual
                 if activeWorkout != nil || !today.exercises.isEmpty { trainingCard }
                 if flags.aiEnabled {
                     aiFeatureCard
@@ -1010,6 +1025,24 @@ struct ClubAIWorkspaceIdleView: View {
                 Button("补充资料", action: onOpenProfile).frame(minHeight: 44)
             }
         }.buttonStyle(.borderless).tint(ClubBrand.accent)
+    }
+    private static let dayLabelFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "zh_CN")
+        formatter.dateFormat = "M月d日 EEEE"
+        return formatter
+    }()
+    private var todayLabel: String { Self.dayLabelFormatter.string(from: Date()) }
+
+    /// 首页主视觉：6 层漂浮立体小物（设计稿 §6 / §8 M1–M3）。
+    /// 素材是 Apple clay/glass 风格的透明 PNG，各层独立漂浮，按景深做陀螺仪视差。
+    private var heroVisual: some View {
+        HeroLayersView(layers: HeroLayer.home, size: CGSize(width: 340, height: 250))
+            .frame(maxWidth: .infinity)
+            .bojiHeroEntrance()
+            .padding(.vertical, 4)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("漂浮的健身用品插图")
     }
     private var trainingCard: some View {
         VStack(alignment: .leading, spacing: 12) {
