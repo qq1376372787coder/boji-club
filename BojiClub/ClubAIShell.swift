@@ -23,7 +23,9 @@ final class FeatureFlagService: ObservableObject {
     }
 }
 
-enum ClubShellMode: Hashable { case clubAI, training, records }
+/// 四个顶层工作区，对应 v3 原型的四个 Tab：主页 / 训练 / 记录 / 我的。
+/// `.clubAI` 是主页（AI 收拢后这里只放日报、周报、AI 食物识别、AI 计划生成四个入口）。
+enum ClubShellMode: Hashable { case clubAI, training, records, profile }
 enum ClubSidebarRoute: String, Identifiable {
     case records, tasks, club, aiMemory, profile, settings, feedback
     var id: String { rawValue }
@@ -216,7 +218,12 @@ struct ClubAIShellView: View {
         .background { ClubBackground() }
     }
 
+    /// iPad（regular）继续用侧栏 + 详情列；iPhone（compact）用 v3 原型的四个 Tab。
     @ViewBuilder private var navigationWorkspace: some View {
+        if horizontalSizeClass == .regular { regularWorkspace } else { tabWorkspace }
+    }
+
+    @ViewBuilder private var regularWorkspace: some View {
         if mode == .clubAI {
             NavigationStack(path: $aiPath) {
                 aiWorkspace
@@ -231,6 +238,12 @@ struct ClubAIShellView: View {
                     .navigationBarTitleDisplayMode(.inline)
             }
             .clubBottomBar { bottomDock }
+        } else if mode == .profile {
+            NavigationStack {
+                ProfileView(routeToKeepsakeVault: $keepsakeRoute)
+                    .toolbar { rootToolbar }
+                    .navigationBarTitleDisplayMode(.inline)
+            }.clubBottomBar { bottomDock }
         } else {
             NavigationStack(path: $recordsPath131) {
                 ClubRecordsHub(category: $recordsCategory, embeddedInShell: true)
@@ -240,6 +253,49 @@ struct ClubAIShellView: View {
         }
     }
 
+    /// v3 原型的四 Tab 外壳：主页 / 训练 / 记录 / 我的。
+    /// 每个 Tab 各自持有 NavigationStack；底部 mini 训练条用 safeAreaInset 落在 TabBar 之上。
+    private var tabWorkspace: some View {
+        TabView(selection: $mode) {
+            NavigationStack(path: $aiPath) {
+                aiWorkspace
+                    .clubBottomBar { bottomDock }
+                    .toolbar { rootToolbar }
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .tabItem { Label("主页", systemImage: "house") }
+            .tag(ClubShellMode.clubAI)
+
+            NavigationStack(path: $trainingPath) {
+                ClubPlanHub(selectedDate: $selectedDate, openWorkout: startTrainingFromPlan, embeddedInShell: true, scrollAnchor: $trainingScrollAnchor, calendarExpanded: $calendarExpanded)
+                    .clubBottomBar { bottomDock }
+                    .toolbar { rootToolbar }
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .tabItem { Label("训练", systemImage: "dumbbell") }
+            .tag(ClubShellMode.training)
+
+            NavigationStack(path: $recordsPath131) {
+                ClubRecordsHub(category: $recordsCategory, embeddedInShell: true)
+                    .clubBottomBar { bottomDock }
+                    .toolbar { rootToolbar }
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .tabItem { Label("记录", systemImage: "chart.bar.doc.horizontal") }
+            .tag(ClubShellMode.records)
+
+            NavigationStack {
+                ProfileView(routeToKeepsakeVault: $keepsakeRoute)
+                    .clubBottomBar { bottomDock }
+                    .toolbar { rootToolbar }
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            .tabItem { Label("我的", systemImage: "person.crop.circle") }
+            .tag(ClubShellMode.profile)
+        }
+        .tint(ClubBrand.accent)
+    }
+
     @ToolbarContentBuilder private var rootToolbar: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Button(action: openSidebar) { Image(systemName: "sidebar.leading") }
@@ -247,7 +303,9 @@ struct ClubAIShellView: View {
                 .accessibilityIdentifier("v2-sidebar-toggle")
                 .accessibilityFocused($sidebarToggleFocused)
         }
-        ToolbarItem(placement: .principal) { ClubModeCapsulePicker(mode: $mode) }
+        if horizontalSizeClass == .regular {
+            ToolbarItem(placement: .principal) { ClubModeCapsulePicker(mode: $mode) }
+        }
         ToolbarItem(placement: .topBarTrailing) {
             if mode == .clubAI {
                 Menu {
@@ -262,6 +320,13 @@ struct ClubAIShellView: View {
                     Button("动作库", systemImage: "rectangle.stack") { showExerciseLibrary = true }
                 } label: { Image(systemName: "ellipsis") }
                 .accessibilityLabel("训练更多操作").accessibilityIdentifier("v2-context-action")
+            } else if mode == .profile {
+                Menu {
+                    Button("记录饮食") { openMeal("手动") }
+                    Button("记录身体数据") { bodyEntryRoute = ClubDateRoute(date: Date()) }
+                    Button("AI 解读档案", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
+                } label: { Image(systemName: "ellipsis") }
+                .accessibilityLabel("我的更多操作").accessibilityIdentifier("v2-context-action")
             } else {
                 Menu {
                     Button("记录饮食") { openMeal("手动") }
@@ -442,7 +507,9 @@ struct ClubAIShellView: View {
                 }
             }, onOpen: { route in
                 closeSidebar()
+                // 记录 / 我的 已是顶层 Tab，直接切换而不是一层多余的 sheet。
                 if route == .records { mode = .records }
+                else if route == .profile { mode = .profile }
                 else if flags.clubEnabled || route != .club { sidebarRoute = route }
             })
     }
@@ -700,9 +767,10 @@ struct ClubModeCapsulePicker: View {
     }
     private var options: some View {
         Group {
-            Text("Club AI").tag(ClubShellMode.clubAI)
+            Text("主页").tag(ClubShellMode.clubAI)
             Text("训练").tag(ClubShellMode.training)
             Text("记录").tag(ClubShellMode.records)
+            Text("我的").tag(ClubShellMode.profile)
         }
     }
 }
@@ -819,7 +887,8 @@ struct SidebarHostView: View {
                     .listRowBackground(Color.clear).listRowSeparator(.hidden)
                     Section {
                         entry("处理进度", symbol: "checklist", id: "v2-sidebar-tasks") { onOpen(.tasks) }
-                        entry("AI 对我的了解", symbol: "brain.head.profile", id: "v2-sidebar-aimemory") { onOpen(.aiMemory) }
+                        entry("AI 解读档案", symbol: "doc.text.magnifyingglass", id: "v2-sidebar-aimemory") { onOpen(.aiMemory) }
+                        entry("反馈与回复", symbol: "exclamationmark.bubble", id: "v2-sidebar-feedback") { onOpen(.feedback) }
                     }
                 }
                 .modifier(ClubSidebarListPolicy(floating: floating))

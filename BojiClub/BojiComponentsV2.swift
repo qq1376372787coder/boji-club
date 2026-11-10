@@ -102,6 +102,8 @@ struct BojiItemRow: View {
     var value: String? = nil
     var showsChevron: Bool = false
     var action: (() -> Void)? = nil
+    /// 无障碍与 UI 测试定位标识；默认取 title（同一屏内唯一）。
+    var identifier: String? = nil
 
     var body: some View {
         let row = HStack(spacing: 12) {
@@ -142,6 +144,8 @@ struct BojiItemRow: View {
         .contentShape(Rectangle())
         .onTapGesture { action?() }
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier(identifier ?? title)
     }
 }
 
