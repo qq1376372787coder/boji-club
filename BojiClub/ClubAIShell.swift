@@ -816,6 +816,7 @@ struct ClubAIWorkspaceIdleView: View {
                             Text("看数据").font(BojiV2.caption)
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 11, weight: .semibold))
+                                .accessibilityHidden(true)
                         }
                         .foregroundStyle(BojiV2.textPrimary)
                         .padding(.horizontal, 10)

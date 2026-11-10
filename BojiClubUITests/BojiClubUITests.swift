@@ -139,6 +139,18 @@ final class BojiClubUITests: XCTestCase {
         attachScreenshot("home-summary-card", app: app)
     }
 
+    func testHomeDataEntryOpensRecordsDashboard() {
+        let app = launch()
+        let entry = app.buttons["v2-home-data"].firstMatch
+        XCTAssertTrue(entry.waitForExistence(timeout: 8), "首页顶部必须给出「看数据」入口")
+        XCTAssertTrue(entry.label.contains("看数据"), "入口文案必须是看数据，实际：\(entry.label)")
+        entry.tap()
+        XCTAssertTrue(app.segmentedControls["records-category-picker"].waitForExistence(timeout: 8),
+                      "「看数据」必须落到记录 Tab 的数据面板")
+        XCTAssertTrue(app.staticTexts["多尺度趋势"].waitForExistence(timeout: 8), "数据面板必须显示趋势分析")
+        attachScreenshot("entry-home-data", app: app)
+    }
+
     func testDailyReportEntryOpensReportLibraryFilteredToDaily() {
         let app = launch()
         app.buttons["每日分析"].firstMatch.tap()
