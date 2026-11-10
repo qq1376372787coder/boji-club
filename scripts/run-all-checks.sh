@@ -7,10 +7,13 @@
 #               既有红灯（见 docs/KNOWN-CI-ISSUES.md），跳过后仍会编译、跑单元
 #               测试与 UI 测试这三段真正的验收。
 #   --only-rules 只跑第 2 阶段。
+#
+# 模拟器目的地不写死机型名：runner 镜像里可用的运行时与机型随时间变化，写死
+# 会直接报 "Unable to find a destination matching the provided destination
+# specifier"。这里按"可用优先"动态解析，并可用 BOJI_DESTINATION 覆盖。
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-DESTINATION='platform=iOS Simulator,name=iPhone 17'
 OUT="${TMPDIR:-/tmp}/boji-checks-$$"
 mkdir -p "$OUT"
 
@@ -22,6 +25,26 @@ for argument in "$@"; do
     --skip-rules) SKIP_RULES=1 ;;
   esac
 done
+
+# 打印可用的模拟器运行时与机型，便于在 CI 日志里定位目的地问题。
+report_simulators() {
+  echo "-- xcrun simctl runtimes --"
+  xcrun simctl list runtimes 2>/dev/null || echo "(simctl unavailable)"
+  echo "-- available iPhone devices --"
+  xcrun simctl list devices available 2>/dev/null | grep -i 'iPhone' || echo "(none)"
+}
+
+# 解析测试用的具体模拟器：BOJI_DESTINATION > 任意可用 iPhone > generic。
+resolve_test_destination() {
+  if [ -n "${BOJI_DESTINATION:-}" ]; then printf '%s' "$BOJI_DESTINATION"; return 0; fi
+  local udid
+  udid=$(xcrun simctl list devices available 2>/dev/null | awk -F '[()]' '/iPhone/ {print $2; exit}')
+  if [ -n "$udid" ]; then printf 'platform=iOS Simulator,id=%s' "$udid"; return 0; fi
+  printf 'generic/platform=iOS Simulator'
+}
+
+# 编译阶段用 generic 目的地：只需要模拟器 SDK，不需要具体机型。
+BUILD_DESTINATION='generic/platform=iOS Simulator'
 
 run_rules() {
   echo "== [2/5] Swift 规则回归链（54 个 harness） =="
@@ -49,15 +72,21 @@ if [ "$SKIP_RULES" -eq 0 ]; then
   run_rules || true
 fi
 
+echo "== 模拟器环境 =="
+report_simulators
+
 echo "== [3/5] 主应用编译检查（模拟器 Debug） =="
 set -o pipefail
 xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
-  -destination "$DESTINATION" -configuration Debug build 2>&1 | tee "$OUT/build.log" | grep -E "error:|BUILD" || true
+  -destination "$BUILD_DESTINATION" -configuration Debug build 2>&1 | tee "$OUT/build.log" | grep -E "error:|BUILD" || true
 grep -q "BUILD SUCCEEDED" "$OUT/build.log"
+
+TEST_DESTINATION="$(resolve_test_destination)"
+echo "测试目的地：$TEST_DESTINATION"
 
 echo "== [4/5] 单元测试（BojiClubTests） =="
 xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
-  -destination "$DESTINATION" test -only-testing:BojiClubTests 2>&1 | tee "$OUT/unit.log" | grep -E "Test Case.*(passed|failed)|Executed.*tests" || true
+  -destination "$TEST_DESTINATION" test -only-testing:BojiClubTests 2>&1 | tee "$OUT/unit.log" | grep -E "Test Case.*(passed|failed)|Executed.*tests" || true
 if grep -qE "Executed [0-9]+ tests?, with [1-9][0-9]* failures?" "$OUT/unit.log"; then
   echo "UNIT TESTS FAILED (nonzero failure count)"; exit 1
 fi
@@ -65,7 +94,7 @@ grep -qE "Executed [0-9]+ tests?, with 0 failures" "$OUT/unit.log"
 
 echo "== [5/5] UI 测试（旧壳回归 + V2 壳 + 无障碍审计 + 启动性能） =="
 xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
-  -destination "$DESTINATION" test 2>&1 | tee "$OUT/ui.log" | grep -E "Test Case.*failed|Executed.*tests|TEST" || true
+  -destination "$TEST_DESTINATION" test 2>&1 | tee "$OUT/ui.log" | grep -E "Test Case.*failed|Executed.*tests|TEST" || true
 # ui.log 同时含单元测试汇总（"Executed 16 tests, with 0 failures"），不能靠
 # "任意一条 0 failures" 判绿——必须排除任何非零 failure 计数（曾因此漏报 1 个 UI 失败）。
 if grep -qE "Executed [0-9]+ tests?, with [1-9][0-9]* failures?" "$OUT/ui.log"; then

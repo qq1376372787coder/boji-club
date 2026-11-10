@@ -30,6 +30,16 @@ jobs:
             fi
           done
           xcodebuild -version
+      - name: Ensure an iOS simulator runtime is available
+        # runner 镜像里模拟器运行时是独立下载项，缺失时单元测试与 UI 测试无法
+        # 解析出目的地。缺失才下载（慢），存在则直接跳过。
+        run: |
+          if ! xcrun simctl list runtimes 2>/dev/null | grep -q -- '- iOS'; then
+            echo "No iOS simulator runtime found — downloading the iOS platform."
+            xcodebuild -downloadPlatform iOS
+          fi
+          xcrun simctl list runtimes
+          xcrun simctl list devicetypes | grep -i iphone | head -5
       - name: Run all checks
         # 第 2 阶段（Swift 规则回归链）是独立于应用代码的既有红灯，见
         # docs/KNOWN-CI-ISSUES.md。它在单独的非阻塞 job 里跑，这里跳过，
