@@ -1,6 +1,10 @@
 """Generate, compile and execute every Swift rules harness; fail on any stage.
 Usage: python3 tests/run_swift_regressions.py --output /tmp/boji-rules --jobs 3
 These Foundation fixtures do not replace an iOS build or device acceptance.
+
+Every failing stage prints its own log tail. The chain used to report only
+"PASS"/"compile_FAIL" labels, so a red run gave no clue what went wrong and
+the per-harness logs were never uploaded. See docs/KNOWN-CI-ISSUES.md.
 """
 from pathlib import Path
 import argparse
@@ -16,6 +20,13 @@ parser.add_argument('--jobs', type=int, default=3)
 args = parser.parse_args()
 logs = args.output.resolve()
 logs.mkdir(parents=True, exist_ok=True)
+
+TAIL_LINES = 30
+
+
+def tail(output: bytes) -> str:
+    lines = (output or b'').decode('utf-8', 'replace').splitlines()
+    return '\n'.join(lines[-TAIL_LINES:])
 
 def one(generator):
     name = generator.stem
@@ -37,9 +48,14 @@ def one(generator):
                 source.write_text(text, 'utf-8')
             (logs / (name + '.' + stage + '.log')).write_bytes(result.stdout)
             if result.returncode:
+                print('--- {} {} FAILED (exit {}) ---'.format(name, stage, result.returncode), flush=True)
+                print(tail(result.stdout), flush=True)
+                print('--- end of {} {} log ---'.format(name, stage), flush=True)
                 return {'name': name, 'status': stage + '_FAIL', 'exit_code': result.returncode}
         except subprocess.TimeoutExpired as error:
             (logs / (name + '.' + stage + '.log')).write_bytes(error.stdout or b'')
+            print('--- {} {} TIMEOUT ---'.format(name, stage), flush=True)
+            print(tail(error.stdout or b''), flush=True)
             return {'name': name, 'status': stage + '_TIMEOUT', 'exit_code': None}
     return {'name': name, 'status': 'PASS', 'exit_code': 0}
 
