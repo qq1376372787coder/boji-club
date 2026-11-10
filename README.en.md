@@ -30,8 +30,7 @@ self-hosted account/automation backend.
 
 ## Current release
 
-**0.15.9 · Build 135** — see [BUILD135_NATURAL_EXPERIENCE.md](BUILD135_NATURAL_EXPERIENCE.md)
-for the change summary and verification boundaries.
+**0.15.9 · Build 136** — see [BUILD135_NATURAL_EXPERIENCE.md](BUILD135_NATURAL_EXPERIENCE.md). Build 136 fixes the cross-database schema bootstrap, the missing AI consent tables, card expiry and the photo-OCR crash for the change summary and verification boundaries.
 `README_先读我.md` is the Chinese entry point.
 
 ## Requirements

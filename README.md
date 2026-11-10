@@ -1,6 +1,6 @@
-# 当前交付：0.15.9 (Build135)
+# 当前交付：0.15.9 (Build136)
 
-请先阅读 [Build135 自然体验与 Club AI 联动](BUILD135_NATURAL_EXPERIENCE.md)。本目录保留旧版本文档和历史 manifest，仅供追溯；本次交付以 Build135 说明、测试证据和源码包 manifest 为准。
+请先阅读 [Build135 自然体验与 Club AI 联动](BUILD135_NATURAL_EXPERIENCE.md)。本目录保留旧版本文档和历史 manifest，仅供追溯；Build136 在 Build135 基础上修复跨库 schema 引导、AI 同意表缺失、卡片过期时间与照片识别崩溃。本次交付以本文、CI 证据和源码包 manifest 为准。
 
 > 前序：0.15.6 (Build130) 见 [BUILD130_升级说明.md](BUILD130_升级说明.md)。
 
