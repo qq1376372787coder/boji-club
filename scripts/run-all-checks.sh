@@ -55,7 +55,7 @@ run_rules() {
   local status=$?
   set -e
   if [ "$status" -ne 0 ]; then
-    echo "!! Swift 规则回归链未全绿（exit=$status）。"
+    echo "!! Swift 规则回归链未全绿（exit=${status}）。"
     echo "!! 该链生成器按源码标记抽取生产代码，标记漂移即失败；属独立于应用代码的"
     echo "!! 既有问题，跟踪于 docs/KNOWN-CI-ISSUES.md。它不阻断随后的编译与测试阶段。"
   fi

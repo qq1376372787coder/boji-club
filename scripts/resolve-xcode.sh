@@ -1,22 +1,29 @@
 #!/usr/bin/env bash
-# 选一个「带 iOS 平台」的 Xcode，并打印诊断信息。
+# Pick an Xcode that actually has the iOS platform installed, and print diagnostics.
 #
-# runner 镜像里可能同时装着多个 Xcode，其中新版未必装了 iOS 平台（Apple 从
-# Xcode 16 起把 iOS 平台拆成可单独下载的 component）。选错会得到：
-#   · "iOS 26.0 is not installed. Please download and install the platform"
-#   · "No simulator runtime version from [...] available to use with
-#      iphonesimulator SDK version ..."
-# 两者都不是代码问题，而是工具链没配齐。
+# The runner image ships many Xcode versions side by side. The one xcode-select
+# points at by default may not have the iOS platform installed (Apple made the
+# platforms separately downloadable components in Xcode 16). Picking the wrong
+# one produces either of:
+#   "iOS 26.0 is not installed. Please download and install the platform"
+#   "No simulator runtime version from [...] available to use with
+#    iphonesimulator SDK version ..."
+# Neither is a code problem; the toolchain is simply not set up.
 #
-# 策略：逐个候选 Xcode 用 `xcodebuild -showsdks` 探测是否带 iphoneos SDK；
-# 都没有就下载 iOS platform，再选一次。
+# Strategy: probe every candidate Xcode with `xcodebuild -showsdks` and pick one
+# that exposes the iphoneos SDK. If none does, download the iOS platform and
+# try again.
+#
+# NOTE: keep messages ASCII-only. bash resolves "$var" against the following
+# byte, so a multi-byte character right after the variable name gets absorbed
+# into the identifier ("dev\xef: unbound variable"). Use ${var} if you must.
 set -uo pipefail
 
 log() { echo ">> $*"; }
 
-echo "== 当前 Xcode =="
+echo "== current xcode =="
 xcodebuild -version || true
-echo "== /Applications 里的 Xcode =="
+echo "== Xcodes under /Applications =="
 ls -1 /Applications 2>/dev/null | grep -i '^Xcode' || echo "(none)"
 
 has_ios_platform() {
@@ -26,28 +33,28 @@ has_ios_platform() {
 select_xcode() {
   local dev
   for dev in /Applications/Xcode*.app; do
-    [ -d "$dev/Contents/Developer" ] || continue
-    if has_ios_platform "$dev"; then
-      log "选用 $dev（含 iOS 平台）"
-      sudo xcode-select -s "$dev/Contents/Developer" || true
+    [ -d "${dev}/Contents/Developer" ] || continue
+    if has_ios_platform "${dev}"; then
+      log "using ${dev} (has iOS platform)"
+      sudo xcode-select -s "${dev}/Contents/Developer" || true
       return 0
     fi
-    log "跳过 $dev（未安装 iOS 平台）"
+    log "skipping ${dev} (no iOS platform)"
   done
   return 1
 }
 
 if ! select_xcode; then
-  log "已装的 Xcode 都没有 iOS 平台，开始下载 iOS platform（数 GB，耗时较长）。"
-  xcodebuild -downloadPlatform iOS || log "iOS platform 下载失败"
-  select_xcode || log "仍未找到带 iOS 平台的 Xcode"
+  log "no installed Xcode exposes the iOS platform; downloading it (several GB, slow)"
+  xcodebuild -downloadPlatform iOS || log "iOS platform download failed"
+  select_xcode || log "still no Xcode with the iOS platform"
 fi
 
-echo "== 选中的 Xcode =="
+echo "== selected xcode =="
 xcodebuild -version || true
-echo "== 可用 SDK =="
+echo "== available SDKs =="
 xcodebuild -showsdks || true
-echo "== 模拟器运行时 =="
+echo "== simulator runtimes =="
 xcrun simctl list runtimes 2>/dev/null || echo "(simctl unavailable)"
-echo "== 可用 iPhone 机型 =="
+echo "== iPhone device types =="
 xcrun simctl list devicetypes 2>/dev/null | grep -i iphone | head -8 || echo "(none)"

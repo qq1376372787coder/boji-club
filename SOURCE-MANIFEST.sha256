@@ -911,8 +911,8 @@ f8b56aa9b3ddcab48a3dfe9a030d5076caf33522b6333fbb746318e868b1c367  ./scripts/enab
 5158052c9f1ad52d7efc93a7bcd97f9eb37453152370f08dd4d0c7c6ffb0a9eb  ./scripts/generate-feedback128-fixtures.swift
 42a38e645ebce8c3833dc96ae1252805addc3ed002fe8ebe8dd78c92fe4c141f  ./scripts/import-usda-foods.py
 e5e2fa1151ec2af6b22871eb7570278011ad8712f54a883c8ad98c7848645bed  ./scripts/php_parse_check.py
-25ee872f5d90932f4c389b86aa10522f96a30e0e3bfabbabd86e791cc9d4365c  ./scripts/resolve-xcode.sh
-9cc981aa0d9e793f4eaf0edc0c5aa3e0e76741766a79a6e03c1c4a73a8605b15  ./scripts/run-all-checks.sh
+5c571a2f5af02a0841b1a40ab53532487f061b25c4054607e0ddb3c7046b5243  ./scripts/resolve-xcode.sh
+17cf7f787e22aef010bd6cd5f67e90e88c00822a152416b2a5922e7a76756294  ./scripts/run-all-checks.sh
 7f1ef2ff3513b87ec664800cde0eb7659520e605220a6f70023f3065d826f46f  ./shared/prompts/PROMPT_VERSION.json
 b1bab330a51fb157f080ea2d288640d7714ca925d6de72abe948f3c3a7d5fac8  ./shared/prompts/context_continue.v1.md
 b3b72882a0cb185016824678a49bb47d46499819818aee474f2e6372a71b8000  ./shared/prompts/draft_correction.v1.md
