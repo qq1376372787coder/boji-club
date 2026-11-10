@@ -54,6 +54,9 @@ BOJI_MIGRATION_ROOT=1 php migrate-build112-compat.php
 BOJI_MIGRATION_ROOT=1 php migrate-v2-quality.php
 BOJI_MIGRATION_ROOT=1 php migrate-v2-repair.php --apply
 BOJI_MIGRATION_ROOT=1 php migrate-onboarding-v2.php --apply
+# AI 同意 / 上下文 / 流式租约三张表由 migrate-ai-context.php 建立。缺失时
+# aiProviderConsentAssert 会直接抛表不存在，整个 AI 行动链路全部失效。
+BOJI_MIGRATION_ROOT=1 php migrate-ai-context.php --apply
 # R10: Verify schema compatibility and report drift
 BOJI_MIGRATION_ROOT=1 php migrate-build112-compat.php --check || true
 BOJI_MIGRATION_ROOT=1 php migrate-v2-quality.php --check || true

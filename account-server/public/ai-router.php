@@ -702,7 +702,7 @@ function aiRouterResolve(PDO $db, array $user, array $body): array {
     $conversation=is_string($body['conversation_id']??null)?substr($body['conversation_id'],0,80):null;
     $results=[];foreach($calls as $i=>$call){
       if(!is_array($call)){$results[]=['status'=>'rejected','error'=>'能力调用格式错误。'];continue;}
-      try{$results[]=actionCallResolve($db,$user,$call,$message,$i,$conversation);}catch(Throwable $e){if($db->inTransaction())$db->rollBack();$results[]=['capability'=>$call['capability']??null,'status'=>$e->getCode()===409?'conflict':'failed_retryable','error'=>$e instanceof BusinessActionError?$e->getMessage():'行动暂未确认，请按原编号查询。'];}
+      try{$results[]=actionCallResolve($db,$user,$call,$message,$i,$conversation);}catch(Throwable $e){if($db->inTransaction())$db->rollBack();$results[]=['capability'=>$call['capability']??null,'execution_id'=>actionCallIdentity((int)$user['id'],$message,$i,(string)($call['capability']??'')),'status'=>$e->getCode()===409?'conflict':'failed_retryable','error'=>$e instanceof BusinessActionError?$e->getMessage():'行动暂未确认，请按原编号查询。'];}
     }
     return ['results'=>$results];
 }

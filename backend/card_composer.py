@@ -46,11 +46,27 @@ def _zone(name):
 def _stamp(moment):
     return moment.isoformat(timespec='seconds')
 
+def _expiry(created, request_day, zone):
+    """A card must never be issued already expired.
+
+    Expiry is anchored to the request day, but that boundary can already have
+    passed when the card is rendered: the client derives its request day from
+    the device time zone while the server stamps the card in the account time
+    zone, so shortly after local midnight the request day is yesterday. The
+    card then came with an expires_at in the past and the iOS client rendered
+    it as expired (AICards.isExpired). Fall back to created_at + 1 minute so
+    the envelope always satisfies expires_at > created_at.
+    """
+    expires = dt.datetime.combine(request_day + dt.timedelta(days=1), dt.time.min, tzinfo=zone)
+    if expires <= created:
+        expires = created + dt.timedelta(minutes=1)
+    return expires
+
 def _envelope(conversation, card_type, title, payload, actions, evidence_refs, request):
     zone = _zone(request['payload'].get('timeZone', 'Asia/Shanghai'))
     day = dt.date.fromisoformat(request['date'])
     created = dt.datetime.now(zone)
-    expires = dt.datetime.combine(day + dt.timedelta(days=1), dt.time.min, tzinfo=zone)
+    expires = _expiry(created, day, zone)
     identity = f"boji/card/{conversation}/{card_type}"
     card_id = 'card-' + uuid.uuid5(uuid.NAMESPACE_URL, identity).hex[:20]
     return {
@@ -153,7 +169,7 @@ def _draft_envelope(conversation, card_type, title, payload, request):
     zone = _zone(request['payload'].get('timeZone', 'Asia/Shanghai'))
     day = dt.date.fromisoformat(request['date'])
     created = dt.datetime.now(zone)
-    expires = dt.datetime.combine(day + dt.timedelta(days=1), dt.time.min, tzinfo=zone)
+    expires = _expiry(created, day, zone)
     canonical = json.dumps([card_type, payload], sort_keys=True, ensure_ascii=False, separators=(',', ':'))
     card_id = 'card-' + uuid.uuid5(uuid.NAMESPACE_URL, f'boji/card/{conversation}/{canonical}').hex[:20]
     return {

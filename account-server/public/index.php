@@ -132,10 +132,10 @@ function db(array $config): PDO {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ]);
-    } catch (BusinessActionError $error) {
-    if ($db->inTransaction()) $db->rollBack();
-    respond($error->getCode(), $error->detail);
-} catch (PDOException) {
+    } catch (PDOException) {
+        // The connection could not be opened, so there is no $db and no
+        // transaction to roll back here. The previous catch block referenced
+        // an undefined $db and crashed on the error path.
         fail('账号服务暂不可用。', 503);
     }
 }

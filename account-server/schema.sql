@@ -938,3 +938,37 @@ CREATE TABLE IF NOT EXISTS ai_guard_buckets131 (
  PRIMARY KEY(bucket_key,window_start),
  INDEX ai_guard_buckets131_expiry(window_start)
 ) ENGINE=InnoDB;
+
+-- AI 同意 / 上下文快照 / 流式租约。
+-- 这三张表原先只由 migrate-ai-context.php 建立，schema.sql 里没有，导致
+-- 新建库与测试库缺表：aiProviderConsentAssert 查询 ai_provider_consents 时
+-- 直接抛"表不存在"，整条 AI 行动链路失效。这里与 migrate-ai-context.php
+-- 保持完全一致的定义，两条路径收敛到同一份 schema。
+CREATE TABLE IF NOT EXISTS ai_context_bundles (
+ id CHAR(36) PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ conversation_id VARCHAR(64) NOT NULL,
+ content_hash CHAR(64) NOT NULL,
+ snapshot_cipher MEDIUMTEXT NOT NULL,
+ expires_at DATETIME NOT NULL,
+ created_at DATETIME NOT NULL,
+ KEY owner_conversation(user_id,conversation_id),
+ KEY expiry(expires_at),
+ CONSTRAINT context_owner_fk FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS ai_provider_consents (
+ user_id BIGINT UNSIGNED PRIMARY KEY,
+ allowed TINYINT(1) NOT NULL,
+ notice_version VARCHAR(64) NOT NULL,
+ updated_at DATETIME NOT NULL,
+ CONSTRAINT ai_consent_owner_fk FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS ai_stream_leases (
+ id CHAR(36) PRIMARY KEY,
+ user_id BIGINT UNSIGNED NOT NULL,
+ expires_at DATETIME NOT NULL,
+ KEY owner_expiry(user_id,expires_at),
+ CONSTRAINT ai_stream_owner_fk FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1526,7 +1526,11 @@ struct OnboardingPlanOCRView: View {
                 request.recognitionLanguages = ["zh-Hans", "en-US"]
                 request.recognitionLevel = .accurate
                 request.usesLanguageCorrection = true
-                do { try VNImageRequestHandler(cgImage: image.cgImage!).perform([request]) }
+                guard let cgImage = image.cgImage else {
+                    continuation.resume(throwing: OnboardingAPIError(message: "这张照片无法读取，请换一张图片或手动粘贴文字。", status: 0))
+                    return
+                }
+                do { try VNImageRequestHandler(cgImage: cgImage).perform([request]) }
                 catch { continuation.resume(throwing: error) }
             }
             if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { throw OnboardingAPIError(message: "没有识别到可读文字，请换一张更清晰的照片或手动粘贴。", status: 0) }

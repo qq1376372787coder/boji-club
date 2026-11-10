@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if(PHP_SAPI!=='cli')exit(1);
 $config=getenv('BOJI_MIGRATION_DSN')?['dsn'=>getenv('BOJI_MIGRATION_DSN'),'db_user'=>getenv('BOJI_MIGRATION_USER')?:'root','db_password'=>getenv('BOJI_MIGRATION_PASSWORD')?:'']:require __DIR__.'/config.php';
+if(!getenv('BOJI_MIGRATION_DSN')&&getenv('BOJI_MIGRATION_ROOT')==='1'){require_once __DIR__.'/schema-loader.php';$config=bojiMigrationRootConfig($config);}
 $db=new PDO($config['dsn'],$config['db_user'],$config['db_password'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
 $apply=in_array('--apply',$argv,true);
 if($apply)$db->exec("CREATE TABLE IF NOT EXISTS ai_context_bundles(id CHAR(36) PRIMARY KEY,user_id BIGINT UNSIGNED NOT NULL,conversation_id VARCHAR(64) NOT NULL,content_hash CHAR(64) NOT NULL,snapshot_cipher MEDIUMTEXT NOT NULL,expires_at DATETIME NOT NULL,created_at DATETIME NOT NULL,KEY owner_conversation(user_id,conversation_id),KEY expiry(expires_at),CONSTRAINT context_owner_fk FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");

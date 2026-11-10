@@ -30,21 +30,13 @@ function bojiTestDatabase(string $database): PDO {
 }
 
 function bojiTestSchema(PDO $db, string $accountServer): void {
+    // Production and tests must load the schema through the same code path:
+    // re-implementing the migration here is how the schema drifted from
+    // production in the first place.
+    require_once dirname(__DIR__) . '/account-server/schema-loader.php';
     $db->exec('SET FOREIGN_KEY_CHECKS=0');
     foreach (['schema.sql', 'admin-schema.sql', 'sync-schema-v59.sql', 'migrations/20261026-onboarding-v2.sql'] as $file) {
-        $lines = file($accountServer . '/' . $file, FILE_IGNORE_NEW_LINES) ?: [];
-        $sql = implode("\n", array_filter($lines, fn(string $line): bool => !preg_match('/^\s*--/', $line)));
-        $sql = preg_replace('/(ALTER TABLE [^\n;]*?) ADD COLUMN IF NOT EXISTS/', '$1 ADD COLUMN', $sql);
-        $sql = preg_replace('/(ALTER TABLE [^\n;]*?) ADD UNIQUE KEY IF NOT EXISTS/', '$1 ADD UNIQUE KEY', $sql);
-        $sql = preg_replace('/(ALTER TABLE [^\n;]*?) ADD (?:KEY|INDEX) IF NOT EXISTS/', '$1 ADD KEY', $sql);
-        foreach (array_filter(array_map('trim', explode(';', $sql))) as $statement) {
-            try { $db->exec($statement); }
-            catch (PDOException $error) {
-                // MySQL lacks MariaDB's ADD COLUMN IF NOT EXISTS. On a fresh
-                // isolated schema duplicate columns/indexes are already present.
-                if (!in_array((int)($error->errorInfo[1] ?? 0), [1060, 1061, 1091], true)) throw $error;
-            }
-        }
+        bojiApplySchemaFile($db, $accountServer . '/' . $file);
     }
     $db->exec('SET FOREIGN_KEY_CHECKS=1');
 }

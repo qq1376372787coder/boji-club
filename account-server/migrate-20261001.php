@@ -1,18 +1,14 @@
 <?php
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli') exit(1);
+require_once __DIR__.'/schema-loader.php';
 $config = require __DIR__.'/config.php';
-if (getenv('BOJI_MIGRATION_ROOT') === '1') {
-    if (!preg_match('/(?:^|;)dbname=([A-Za-z0-9_]+)(?:;|$)/',$config['dsn'],$match)) throw new RuntimeException('Database name missing');
-    $socket=getenv('BOJI_MYSQL_SOCKET')?:'/run/mysqld/mysqld.sock';
-    if(!str_starts_with($socket,'/')||str_contains($socket,';'))throw new RuntimeException('Invalid database socket path');
-    $config['dsn'] = 'mysql:unix_socket='.$socket.';dbname='.$match[1].';charset=utf8mb4';
-    $config['db_user']='root'; $config['db_password']='';
-}
+if (getenv('BOJI_MIGRATION_ROOT') === '1') $config = bojiMigrationRootConfig($config);
 $db = new PDO($config['dsn'],$config['db_user'],$config['db_password'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
-$db->exec(file_get_contents(__DIR__.'/schema.sql'));
-$db->exec(file_get_contents(__DIR__.'/admin-schema.sql'));
-$db->exec(file_get_contents(__DIR__.'/sync-schema-v59.sql'));
+// The loader executes statement by statement and rewrites MariaDB-only
+// "ADD COLUMN/KEY IF NOT EXISTS" into an information_schema probe plus the
+// portable plain DDL, so this bootstrap also works on MySQL 8.x.
+foreach (['schema.sql','admin-schema.sql','sync-schema-v59.sql'] as $file) bojiApplySchemaFile($db, __DIR__.'/'.$file);
 // AUD-021：任务类型只扩不缩。旧版这里无条件改写成不含 coach 的枚举，
 // 会让已有 coach 行迁移失败，也会让空库后续无法写入 coach。读取当前
 // COLUMN_TYPE，与运行时接受的全部类型取并集；未来新增类型同样保留。
@@ -41,5 +37,5 @@ if(!$q->fetchColumn()) $db->exec('ALTER TABLE account_deletions ADD COLUMN subje
 $rows=$db->query('SELECT d.id,d.user_id,u.apple_subject FROM account_deletions d JOIN users u ON u.id=d.user_id WHERE d.subject_hash IS NULL AND u.apple_subject IS NOT NULL')->fetchAll(PDO::FETCH_ASSOC);
 $set=$db->prepare('UPDATE account_deletions SET subject_hash=? WHERE id=? AND subject_hash IS NULL');
 foreach($rows as $row) $set->execute([hash_hmac('sha256',$row['user_id'].':apple:'.$row['apple_subject'],$config['otp_secret']),(int)$row['id']]);
-$db->exec(file_get_contents(__DIR__.'/migration-v4.sql'));
+bojiApplySchemaFile($db, __DIR__.'/migration-v4.sql');
 echo "MIGRATION_OK\n";
