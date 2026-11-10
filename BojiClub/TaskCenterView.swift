@@ -258,7 +258,6 @@ struct TaskCenterView: View {
     @State private var selected: UserTask?
     @State private var planRoute: TaskPlanRoute?
     @State private var reportID: String?
-    @State private var conversation: String?
     @State private var mealRoute: TaskMealRoute?
 
     private let groups: [(String, String)] = [("attention", "需要处理"), ("processing", "处理中"), ("history", "已结束"), ("all", "全部")]
@@ -304,7 +303,7 @@ struct TaskCenterView: View {
             else { MealEditorView(date: route.date, initialJobID: route.id) }
         }
         .onChange(of: account.user?.id) { _, _ in
-            selected = nil; planRoute = nil; reportID = nil; conversation = nil; mealRoute = nil; profileProposalID = nil
+            selected = nil; planRoute = nil; reportID = nil; mealRoute = nil; profileProposalID = nil
             Task { await model.load(account: account) }
         }
         .sheet(item:$recoverySelection,onDismiss:{ refreshRecoveryEntries() }) { entry in
@@ -325,10 +324,6 @@ struct TaskCenterView: View {
         }
         .sheet(item: Binding(get: { reportID.map { TaskStringRoute(value: $0) } }, set: { reportID = $0?.value })) { route in
             NavigationStack { AIReportReaderView(jobID: route.value).toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { reportID = nil } } } }
-        }
-        .sheet(item: Binding(get: { conversation.map { TaskStringRoute(value: $0) } }, set: { conversation = $0?.value })) { route in
-            NavigationStack { ClubAIEntryBridge(conversation: route.value)
-                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { conversation = nil } } } }
         }
     }
 
@@ -381,7 +376,6 @@ struct TaskCenterView: View {
            !job.consumed, !store.hasAppliedAIJob(job.id), let date = ClubDates.date(fromKey: job.request.date) {
             planRoute = TaskPlanRoute(id: task.taskID, date: date, mode: job.request.kind, jobID: task.taskID); return
         }
-        if task.kind == "coach", let conversation = task.sourceConversationID { self.conversation = conversation; return }
         selected = task
     }
 }

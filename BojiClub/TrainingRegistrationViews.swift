@@ -693,7 +693,6 @@ struct MiniWorkoutBar: View {
     let open: () -> Void
     let togglePause: () -> Void
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var showAICoach = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -733,20 +732,6 @@ struct MiniWorkoutBar: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            Button {
-                BojiHaptics.latch()
-                showAICoach = true
-            } label: {
-                Image(systemName: "sparkles")
-                    .font(.footnote.weight(.bold))
-                    .frame(width: 36, height: 36)
-                    .background(BojiColor.subtleSurface, in: Circle())
-                    // aiGold（浅色 222,193,138）对 subtleSurface 仅 1.56:1，过不了
-                    // 图形 3:1 对比度审计；timerAccent 为同族深金（3.25:1 浅色 / 8.9:1 暗色）。
-                    .foregroundStyle(BojiColor.timerAccent)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("召唤 Club AI 教练")
             Button(action: togglePause) {
                 Image(systemName: snapshot.isPaused ? "play.fill" : "pause.fill")
                     .font(.footnote.weight(.semibold))
@@ -762,11 +747,6 @@ struct MiniWorkoutBar: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .bojiSpecularBorder(cornerRadius: 22)
         .shadow(color: .black.opacity(0.14), radius: 18, y: 6)
-        .sheet(isPresented: $showAICoach) {
-            ClubCurrentTrainingHelp(date: ClubDates.date(fromKey: snapshot.dateKey) ?? Date())
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-        }
         .accessibilityIdentifier("mini-workout-bar")
         .accessibilityElement(children: .contain)
     }

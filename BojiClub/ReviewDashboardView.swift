@@ -90,7 +90,6 @@ struct ReviewDashboardView: View {
     @State private var recordLimit = 20
     @State private var showMethodologySheet = false
     @State private var selectedTrendPoint: ReviewTrendPoint? = nil
-    @State private var showDiagnosticCoach = false
 
     private var monthStart: Date { ClubDates.calendar.dateInterval(of: .month, for: reviewMonth)?.start ?? reviewMonth }
     private var earliestMonth: Date {
@@ -675,17 +674,6 @@ struct ReviewDashboardView: View {
                     Label("AI 周期诊断与建议", systemImage: "sparkles")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(BojiColor.brandAccent)
-                    Spacer()
-                    Button {
-                        BojiHaptics.latch()
-                        showDiagnosticCoach = true
-                    } label: {
-                        Text("问教练对策")
-                            .font(.caption2.weight(.medium))
-                            .foregroundStyle(BojiColor.timerAccent)
-                            .padding(.horizontal, BojiSpace.tightRow).padding(.vertical, 3)
-                            .background(BojiColor.inputSurface, in: Capsule())
-                    }
                 }
                 Text(top.title)
                     .font(.subheadline.weight(.semibold))
@@ -694,9 +682,6 @@ struct ReviewDashboardView: View {
                     .font(.footnote)
                     .foregroundStyle(BojiColor.textSecondary)
                     .lineLimit(2)
-            }
-            .sheet(isPresented: $showDiagnosticCoach) {
-                ClubAIEntryBridge(question: "关于回顾周期诊断“\(top.title)”：\(top.detail)，我接下来的训练排期应如何优化？")
             }
         }
     }

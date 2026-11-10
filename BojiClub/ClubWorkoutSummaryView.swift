@@ -9,8 +9,6 @@ struct ClubWorkoutSummaryView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var ownerID: Int?
     @State private var aiError: String?
-    @State private var contextSource: ClubContextSource?
-    @State private var showClubAI = false
     @State private var confirmHealthExport = false
     @State private var exportingWorkout = false
     @State private var healthExportMessage: String?
@@ -73,8 +71,6 @@ struct ClubWorkoutSummaryView: View {
                 }
             }
             .onChange(of: store.editingAccountID) { _, value in if value != ownerID { dismiss() } }
-            .sheet(item: $contextSource) { source in ContextAskView(source: source) }
-
     }
 
     private var feedbackSection: some View {

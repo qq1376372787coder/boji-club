@@ -183,11 +183,10 @@ final class BojiClubUITests: XCTestCase {
     func testSidebarDrawerReachesSecondaryRoutes() {
         let app = launch()
         app.buttons["v2-sidebar-toggle"].tap()
-        for route in ["today", "club", "newchat", "tasks", "aimemory", "feedback", "profile", "settings"] {
+        for route in ["today", "club", "tasks", "aimemory", "feedback", "profile", "settings"] {
             let entry = app.buttons["v2-sidebar-" + route]
             revealSidebarEntry(entry, in: app)
         }
-        XCTAssertTrue(app.searchFields.firstMatch.exists, "侧栏仍必须提供历史检索")
         attachScreenshot("sidebar-routes", app: app)
         app.buttons["v2-sidebar-close"].tap()
         XCTAssertTrue(app.tabBars.buttons["主页"].waitForExistence(timeout: 8))
@@ -272,8 +271,6 @@ final class BojiClubUITests: XCTestCase {
         app.buttons["结束并保存 1 组"].tap()
         XCTAssertTrue(app.navigationBars["训练完成"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.staticTexts["辛苦了，训练已完成"].exists)
-        let review = app.buttons["workout-ai-review"]
-        XCTAssertTrue(review.exists && review.isHittable, "AI review must be visible immediately below the metrics")
         attachScreenshot("build125-completion", app: app)
         for _ in 0..<3 where !app.staticTexts["每个动作的完成情况"].isHittable { app.swipeUp() }
         XCTAssertTrue(app.staticTexts["每个动作的完成情况"].exists)
@@ -540,7 +537,7 @@ final class BojiClubUITests: XCTestCase {
         // 侧栏关闭时 app 级审计（无遮挡，全部元素真实渲染）。
         try app.performAccessibilityAudit { audit("workspace", $0) }
         app.buttons["v2-sidebar-toggle"].tap()
-        XCTAssertTrue(app.buttons["v2-sidebar-newchat"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.buttons["v2-sidebar-tasks"].waitForExistence(timeout: 8))
         // 侧栏打开后：app 级审计会连被不透明面板遮挡的工作台元素一起测，按面板
         // 像素量出假对比度失败（全量回归实测）。用 isHittable 区分：被面板盖住的
         // 元素不可命中（其发现记为遮挡量测伪影，仅打印），可命中的发现仍是硬失败。

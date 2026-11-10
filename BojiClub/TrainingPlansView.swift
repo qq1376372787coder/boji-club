@@ -25,17 +25,11 @@ struct TrainingHandoffCard: View {
     @EnvironmentObject private var weekly: WeeklyReviewService
     @State private var ownerID: Int?
     @State private var continuing = false
-    @State private var reviewing = false
     @State private var adjustment: WeeklyReview?
     private var savedReview: WeeklyReview? {
         WeeklyVersions.visible(days: store.state.days, local: weekly.reviews,
             deletedJobIDs: Set(store.state.deletedAIJobIDs ?? []))
             .first { $0.date == cycle.end && $0.result != nil }
-    }
-    private var adjustmentTitle: String {
-        if let review = savedReview, review.result?.decision == "adjust", !review.baseline.isEmpty,
-           !store.hasAppliedAIJob("weekly/" + review.id.uuidString) { return "比较并确认调整建议" }
-        return savedReview == nil ? "查看进度，开始本周复盘" : "查看本周复盘与建议"
     }
     var body: some View {
         ClubCard {
@@ -55,16 +49,13 @@ struct TrainingHandoffCard: View {
         .clubReveal()
         .onAppear { if ownerID == nil { ownerID = store.editingAccountID } }
         .onChange(of: store.editingAccountID) { _, id in
-            if id != ownerID { continuing = false; reviewing = false; adjustment = nil }
+            if id != ownerID { continuing = false; adjustment = nil }
         }
         .sheet(isPresented: $continuing) { ContinueWeekView(endDate: ClubDates.date(fromKey: cycle.end) ?? Date(), initialCycle: cycle) }
-        .sheet(isPresented: $reviewing) { ClubAIEntryBridge(scope: .make(.rolling7, through: ClubDates.date(fromKey: cycle.end) ?? Date())) }
         .sheet(item: $adjustment) { WeeklyPlanPreview(review: $0) }
     }
     private func openAdjustment() {
         guard ownerID != nil, ownerID == store.editingAccountID else { return }
-        if let review = savedReview, review.result?.decision == "adjust", !review.baseline.isEmpty,
-           !store.hasAppliedAIJob("weekly/" + review.id.uuidString) { adjustment = review }
-        else { reviewing = true }
+        adjustment = savedReview
     }
 }

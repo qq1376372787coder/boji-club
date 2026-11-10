@@ -175,23 +175,11 @@ struct ManagedPlanDetail132: View {
             }
             if !store.planIsEnded(plan.id), !store.cancellableDates(for: plan).isEmpty {
                 Button("编辑计划") { editRoute = .init(plan: plan, date: nil) }.buttonStyle(PrimaryButton()).accessibilityIdentifier("edit-managed-plan")
-                Button("让 AI 调整这份计划") { openAI(plan) }.buttonStyle(SecondaryButton())
             }
         }
     }
     private func stage(_ plan: ManagedPlan, action: String) {
         pendingPlanID = plan.id; pendingBaseline = store.state.days; pendingAction = action
-    }
-    private func openAI(_ plan: ManagedPlan) {
-        guard let owner, owner == store.editingAccountID else { return }
-        let anchor = store.state.days.keys.sorted().first { key in store.state.days[key]?.planVersions?.contains { $0.id == plan.id } == true }
-        var references: [AIContextReference] = anchor.map { [.init(kind: "plan_version", resourceID: plan.id, from: $0, to: $0, title: plan.version.title)] } ?? []
-        if let first = plan.dates.first, let last = plan.dates.last {
-            references.append(.init(kind: "plan_day", resourceID: plan.id, from: first, to: last, title: plan.version.title + " · 当前安排"))
-        }
-        let prompt = "请调整我选中的“\(plan.version.title)”（\(plan.range)，计划编号 \(plan.id)）。先确认我的修改需求，给出修改前后差异。保留已开始、已完成训练及其他计划，不要未经确认修改日历。"
-        ClubAIRoute.open(owner: owner, question: prompt, references: references)
-        dismiss()
     }
     private func dayRow(_ key: String, plan: ManagedPlan) -> some View {
         let day = store.state.days[key] ?? DayLog()

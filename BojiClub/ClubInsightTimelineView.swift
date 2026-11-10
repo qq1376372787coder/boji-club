@@ -95,8 +95,6 @@ struct ClubInsightMessageView: View {
     @State private var error: String?
     @State private var feedbackCount = 0
     @State private var destination: ClubInsightOpen?
-    @State private var showCoachChat = false
-    @State private var coachPrompt = ""
     @State private var detailExpanded = false
 
     private var display: ClubInsightDisplayState { ClubInsightLedger.displayState(event, in: store.state) }
@@ -186,22 +184,6 @@ struct ClubInsightMessageView: View {
                     }
                     .buttonStyle(.plain)
                 }
-
-                Button {
-                    coachPrompt = "针对跟进「\(event.title)」：\(event.detail) 请给出具体的实操建议与注意事项。"
-                    showCoachChat = true
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "bubble.left.and.bubble.right.fill").font(.caption)
-                        Text("问教练")
-                    }
-                    .font(.subheadline.weight(.medium))
-                    .padding(.horizontal, BojiSpace.workoutCardInset)
-                    .frame(minHeight: 44)
-                    .background(BojiColor.subtleSurface, in: Capsule())
-                    .foregroundStyle(BojiColor.textPrimary)
-                }
-                .buttonStyle(.plain)
             }
             .padding(.top, 2)
 
@@ -218,14 +200,8 @@ struct ClubInsightMessageView: View {
         .sensoryFeedback(.success, trigger: feedbackCount)
         .contextMenu { feedbackMenuItems }
         .sheet(item: $destination) { route in ClubInsightDestinationView(action: route.action, ownerID: ownerID) }
-        .sheet(isPresented: $showCoachChat) {
-            ClubNavigationStack132 {
-                ClubAIEntryBridge(question: coachPrompt)
-                    .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showCoachChat = false } } }
-            }
-        }
         .onChange(of: store.editingAccountID) { _, value in
-            if value != ownerID { destination = nil; showCoachChat = false }
+            if value != ownerID { destination = nil }
         }
     }
 
@@ -357,8 +333,10 @@ struct ClubInsightTimelineView: View {
     @State private var visible = 30
     @State private var settings = false
     @State private var reading = "未归档"
-    @State private var showDailyReport = false
-    @State private var showWeeklyReview = false
+    /// 日报走 report 管线直连；周报打开专属复盘页。自由对话已下线。
+    @State private var dailyJobID: String?
+    @State private var dailyError: String?
+    @State private var showWeeklyCenter = false
 
     private var allEvents: [ClubInsightEvent] {
         let today = ClubDates.key(Date())
@@ -406,6 +384,7 @@ struct ClubInsightTimelineView: View {
                 // 顶部看板概览与日报/周报快捷栏
                 headerPulse
                 reportQuickBar
+                if let dailyError { Text(dailyError).font(.caption).foregroundStyle(.red) }
 
                 // 筛选行
                 filterSection
@@ -453,8 +432,30 @@ struct ClubInsightTimelineView: View {
         .onChange(of: rangeDays) { _, _ in visible = 30 }
         .onChange(of: reading) { _, _ in visible = 30 }
         .sheet(isPresented: $settings) { ClubAISettingsView() }
-        .sheet(isPresented: $showDailyReport) { ClubAIEntryBridge(scope: .make(.daily)) }
-        .sheet(isPresented: $showWeeklyReview) { ClubAIEntryBridge(scope: .make(.completedCalendarWeek)) }
+        .sheet(item: $dailyJobID) { jobID in
+            NavigationStack { AIReportReaderView(jobID: jobID) }
+        }
+        .sheet(isPresented: $showWeeklyCenter) { WeeklyReviewCenter().background { ClubBackground() } }
+    }
+
+    /// 日报生成：直接提交 report 任务并打开阅读页，全程不经过对话。
+    private func generateDailyReport() {
+        guard let owner = store.editingAccountID else {
+            dailyError = "登录状态已变化，请重新打开跟进。"; return
+        }
+        let date = Date()
+        do {
+            let input = try ai.reportInput(date: date, log: store.log(for: date),
+                nutritionTarget: store.state.nutritionTarget,
+                weightHistory: store.bodyWeightPoints(through: date),
+                goalContext: ClubAIContext.make(state: store.state, start: date, end: date))
+            let jobID = try ai.submit(input)
+            guard owner == store.editingAccountID else {
+                dailyError = "账号已切换，这份日报没有生成；请重新打开后再试。"; return
+            }
+            dailyError = nil
+            dailyJobID = jobID
+        } catch { dailyError = AppErrorText.message(error) }
     }
 
     /// 日报与周报一键生成/查看快捷栏
@@ -468,7 +469,7 @@ struct ClubInsightTimelineView: View {
             .contains { $0.date == cycle.end && $0.result != nil }
 
         return HStack(spacing: 10) {
-            Button { showDailyReport = true } label: {
+            Button { generateDailyReport() } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "sun.max.fill").foregroundStyle(BojiColor.aiGold)
                     VStack(alignment: .leading, spacing: 2) {
@@ -485,7 +486,7 @@ struct ClubInsightTimelineView: View {
             }
             .buttonStyle(.plain)
 
-            Button { showWeeklyReview = true } label: {
+            Button { showWeeklyCenter = true } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "calendar.badge.checkmark").foregroundStyle(BojiColor.aiViolet)
                     VStack(alignment: .leading, spacing: 2) {

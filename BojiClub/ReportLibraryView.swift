@@ -33,8 +33,11 @@ struct ReportLibraryView: View {
     @State private var filteringDate = false
     @State private var selectedDate = Date()
     @State private var ownerID: Int?
-    @State private var showDailySheet = false
-    @State private var showWeeklySheet = false
+    /// 日报：直接走 report 管线（kind == "report"），不经过对话。
+    @State private var dailyJobID: String?
+    @State private var dailyError: String?
+    /// 周报：打开专属的每周回顾中心，而不是对话。
+    @State private var showWeeklyCenter = false
     init(initialKind: ReportLibraryKind = .all, embedded: Bool = false) {
         self.embedded = embedded
         _kind = State(initialValue: initialKind)
@@ -78,11 +81,6 @@ struct ReportLibraryView: View {
                     Text("历史报告正在分批恢复，列表会随同步继续补齐。")
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
-                HStack {
-                    Button("今日解读") { if let owner = store.editingAccountID { let scope = ClubReviewScope.make(.daily); ClubAIRoute.open(owner: owner, question: scope.prompt, scope: scope) } }
-                    Spacer()
-                    Button("上周解读") { if let owner = store.editingAccountID { let scope = ClubReviewScope.make(.completedCalendarWeek); ClubAIRoute.open(owner: owner, question: scope.prompt, scope: scope) } }
-                }.font(.footnote)
                 filters
                 if entries.isEmpty { emptyState }
                 ForEach(entries) { entry in
@@ -100,17 +98,17 @@ struct ReportLibraryView: View {
                 .frame(maxWidth: .infinity)
         }.background { ClubBackground() }.tint(ClubBrand.accent)
             .navigationTitle("AI 解读档案").navigationBarTitleDisplayMode(.inline)
-            .sheet(isPresented: $showDailySheet) {
+            .sheet(item: $dailyJobID) { jobID in
                 NavigationStack {
-                    ClubAIEntryBridge(scope: .make(.daily, through: Date()))
+                    AIReportReaderView(jobID: jobID)
                         .background { ClubBackground() }
                         .navigationTitle("日报")
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar { ToolbarItem(placement: .cancellationAction) { DismissButton() } }
                 }
             }
-            .sheet(isPresented: $showWeeklySheet) {
-                ClubAIEntryBridge(scope: .make(.completedCalendarWeek))
+            .sheet(isPresented: $showWeeklyCenter) {
+                WeeklyReviewCenter().background { ClubBackground() }
             }
             .onAppear { if ownerID == nil { ownerID = store.editingAccountID } }
             .onChange(of: store.editingAccountID) { _, id in if id != ownerID { dismiss() } }
@@ -132,7 +130,7 @@ struct ReportLibraryView: View {
                 .font(.footnote).foregroundStyle(.secondary)
 
             VStack(spacing: 8) {
-                Button { showDailySheet = true } label: {
+                Button { generateDailyReport() } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "sun.max.fill").foregroundStyle(BojiColor.aiGold).frame(width: 24)
                         VStack(alignment: .leading, spacing: 2) {
@@ -151,8 +149,9 @@ struct ReportLibraryView: View {
                     .background(BojiColor.subtleSurface, in: RoundedRectangle(cornerRadius: BojiRadius.inner, style: .continuous))
                 }
                 .buttonStyle(.plain)
+                if let dailyError { Text(dailyError).font(.caption).foregroundStyle(.red) }
 
-                Button { showWeeklySheet = true } label: {
+                Button { showWeeklyCenter = true } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "calendar.badge.checkmark").foregroundStyle(BojiColor.aiViolet).frame(width: 24)
                         VStack(alignment: .leading, spacing: 2) {
@@ -202,7 +201,7 @@ struct ReportLibraryView: View {
     private var emptyState: some View {
         ClubCard {
             EmptyNote(title: allEntries.isEmpty ? "你的分析，会在这里留下记录" : "这个筛选条件下没有报告",
-                      detail: allEntries.isEmpty ? "可到 Club AI 发起解读。已有分析按生成时的记录保留在这里。" : "换一个日期或报告类型，也可以关闭日期筛选查看全部。")
+                      detail: allEntries.isEmpty ? "生成日报、周报或阶段报告后，分析会按生成时的记录保留在这里。" : "换一个日期或报告类型，也可以关闭日期筛选查看全部。")
             if filteringDate { Button("查看全部日期") { filteringDate = false }.buttonStyle(SecondaryButton()) }
         }
     }
@@ -242,6 +241,25 @@ struct ReportLibraryView: View {
     // D3：阶段报告生成。本地规则计算，幂等（同区间同 ID）；数据不足如实说明，不生成空报告。
     @State private var phaseBusy = false
     @State private var phaseError: String?
+    /// 日报生成：直接提交 report 任务并打开阅读页，全程不经过对话。
+    private func generateDailyReport() {
+        guard let owner = store.editingAccountID else {
+            dailyError = "登录状态已变化，请重新打开报告库。"; return
+        }
+        let date = Date()
+        do {
+            let input = try ai.reportInput(date: date, log: store.log(for: date),
+                nutritionTarget: store.state.nutritionTarget,
+                weightHistory: store.bodyWeightPoints(through: date),
+                goalContext: ClubAIContext.make(state: store.state, start: date, end: date))
+            let jobID = try ai.submit(input)
+            guard owner == store.editingAccountID else {
+                dailyError = "账号已切换，这份日报没有生成；请重新打开后再试。"; return
+            }
+            dailyError = nil
+            dailyJobID = jobID
+        } catch { dailyError = AppErrorText.message(error) }
+    }
     private func generatePhaseReport() {
         guard !phaseBusy else { return }
         phaseBusy = true; phaseError = nil

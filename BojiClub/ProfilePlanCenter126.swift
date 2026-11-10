@@ -32,10 +32,6 @@ struct ProfileKnowledgeCards126: View {
                     Section { ForEach(trainingFields, id: \.self) { field in factRow(field) } }
                     Section {
                         Button("编辑训练条件") { onEditGroup(.training) }
-                        Button("请 AI 帮我调整计划") {
-                            guard let owner = store.editingAccountID else { return }
-                            ClubAIRoute.open(owner: owner, question: "请根据我的资料，帮我看看现有计划是否需要调整，先给我预览。")
-                        }
                     }
                 }.clubManagementList132().navigationTitle("目标与训练条件").navigationBarTitleDisplayMode(.inline)
             } label: { LabeledContent("目标与训练条件", value: ProfileBodyRules126.value(field: .goal, profile: store.state.profile) ?? "未填写") }

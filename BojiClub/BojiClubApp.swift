@@ -178,23 +178,27 @@ struct RootView: View {
     private var notificationRoutingContent: some View {
         accountLifecycleContent
         .sheet(item: Binding(get: { notifications.route?.kind == "training" || store.trainingInterfacePresented ? nil : notifications.route }, set: { notifications.route = $0 })) { route in
-            NavigationStack {
-                Group {
-                    if ["club_weekly","club_workout"].contains(route.kind) {
-                        if let id = route.jobID { ClubAutomaticReportReader(jobID: id) }
-                        else { ReportLibraryView(initialKind: route.kind == "club_weekly" ? .weekly : .workout) }
+            // 每周回顾提醒直接进入专属复盘页（自带导航与“完成”按钮），不再经过对话。
+            if route.kind == "weekly_center" || route.kind == "weekly_review" {
+                WeeklyReviewCenter().background { ClubBackground() }
+            } else {
+                NavigationStack {
+                    Group {
+                        if ["club_weekly","club_workout"].contains(route.kind) {
+                            if let id = route.jobID { ClubAutomaticReportReader(jobID: id) }
+                            else { ReportLibraryView(initialKind: route.kind == "club_weekly" ? .weekly : .workout) }
+                        }
+                        else if route.kind == "report" { AIReportHistoryView(dateKey: route.date) }
+                        else if route.kind == "task" || route.kind == "task_center" { TaskCenterView() }
+                        else if route.kind == "body" { BodyWeightView(initialDate: ClubDates.date(fromKey: route.date) ?? Date()) }
+                        else if route.kind == "meal" {
+                            if let date = ClubDates.date(fromKey: route.date) { MealEditorView(date: date) }
+                            else { EmptyNote(title: "日期不可用", detail: "请从输入框左侧“＋”或侧栏“我的记录 → 饮食”重新打开登记。") }
+                        }
+                        else { TaskCenterView() }
                     }
-                    else if route.kind == "weekly_center" || route.kind == "weekly_review" { ClubAIEntryBridge(scope: .make(.completedCalendarWeek)) }
-                    else if route.kind == "report" { AIReportHistoryView(dateKey: route.date) }
-                    else if route.kind == "task" || route.kind == "task_center" { TaskCenterView() }
-                    else if route.kind == "body" { BodyWeightView(initialDate: ClubDates.date(fromKey: route.date) ?? Date()) }
-                    else if route.kind == "meal" {
-                        if let date = ClubDates.date(fromKey: route.date) { MealEditorView(date: date) }
-                        else { EmptyNote(title: "日期不可用", detail: "请从输入框左侧“＋”或侧栏“我的记录 → 饮食”重新打开登记。") }
-                    }
-                    else { TaskCenterView() }
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { notifications.route = nil } } }
                 }
-                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { notifications.route = nil } } }
             }
         }
     }

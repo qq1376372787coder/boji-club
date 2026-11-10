@@ -3,8 +3,14 @@ import SwiftUI
 struct ClubAIHubView: View {
     var initialSection = "动态"
     var body: some View {
+        // 自由对话已下线：报告区进报告库，其余分区进动态时间线（本地洞察，无对话）。
         if initialSection == "报告" { NavigationStack { ReportLibraryView() } }
-        else { ClubAIEntryBridge() }
+        else {
+            NavigationStack {
+                ClubInsightTimelineView(embedded: true)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { DismissButton() } }
+            }
+        }
     }
 }
 

@@ -7,7 +7,7 @@ struct ClubPlanFollowupView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var ownerID: Int?
     @State private var report: ClubPlanFollowup?
-    @State private var showReview = false
+    @State private var showWeeklyCenter = false
     private var cycle: TrainingCycle? {
         let today = ClubDates.key(Date())
         let cycles = TrainingCycle.available(days: store.state.days).filter {
@@ -24,7 +24,7 @@ struct ClubPlanFollowupView: View {
                         Text("下一步怎么做").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
                         Text(report.confirmedDays == 0 ? "完成训练后，这里会显示你的进度。" : "回顾训练感受，看看下周怎么安排。")
                             .font(.subheadline).foregroundStyle(.secondary)
-                        Button("开始每周回顾") { showReview = true }.buttonStyle(SecondaryButton())
+                        Button("开始每周回顾") { showWeeklyCenter = true }.buttonStyle(SecondaryButton())
                     }
                     ForEach(report.days.filter { $0.date <= ClubDates.key(Date()) }) { day in ClubPlanFollowupDayCard(day: day) }
                     let upcoming = report.days.filter { $0.date > ClubDates.key(Date()) }
@@ -48,7 +48,7 @@ struct ClubPlanFollowupView: View {
             .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in refresh() }
             .onChange(of: scenePhase) { _, phase in if phase == .active { refresh() } }
             .onChange(of: store.editingAccountID) { _, id in if id != ownerID { report = nil; dismiss() } }
-            .sheet(isPresented: $showReview) { ClubAIEntryBridge(scope: .make(.rolling7, through: cycle.flatMap { ClubDates.date(fromKey: $0.end) } ?? Date())) }
+            .sheet(isPresented: $showWeeklyCenter) { WeeklyReviewCenter().background { ClubBackground() } }
     }
     private func refresh() {
         guard ownerID != nil, ownerID == store.editingAccountID else { return }

@@ -517,7 +517,6 @@ private struct TrainingExerciseCard: View {
     @State private var quickAdjustSetID: UUID?
     @State private var editingSetID: UUID?
     @State private var editingWeight = true
-    @State private var showMovementHelp = false
     @State private var completeAfterEdit: UUID?
     @State private var pendingTimerSet: TrainingSet?
     @State private var setError: String?
@@ -608,7 +607,6 @@ private struct TrainingExerciseCard: View {
                 HStack {
                     ExerciseDemoButton(exercise: exercise)
                     Spacer()
-                    Button("问教练", systemImage: "bubble.left") { showMovementHelp = true }.font(.footnote).buttonStyle(.borderless).frame(minHeight: 44)
                 }
                 Spacer()
             }
@@ -678,7 +676,6 @@ private struct TrainingExerciseCard: View {
                     more: { quickAdjustSetID = nil; editingWeight = true; editingSetID = set.id })
             }
         }
-        .sheet(isPresented: $showMovementHelp) { ClubMovementHelp(exercise: exercise, date: date).presentationDetents([.medium, .large]) }
         .sheet(item: Binding(get: {
             editingSetID.flatMap { id in exercise.sets.first(where: { $0.id == id }) }
         }, set: { if $0 == nil { editingSetID = nil } }), onDismiss: {
@@ -953,20 +950,12 @@ struct WorkoutCompletionView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     completionHeading
-                    if let saved = completedSnapshot {
-                        Button("AI 复盘本次训练", systemImage: "bubble.left.and.text.bubble.right") {
-                            ClubAIEntryContext.open(owner: snapshot.ownerID, date: snapshot.date, sessionID: saved.sessionID)
-                        }.buttonStyle(.bordered).buttonBorderShape(.capsule).controlSize(.regular)
-                            .tint(ClubBrand.accent).frame(maxWidth: .infinity).frame(minHeight: 44)
-                            .accessibilityIdentifier("workout-ai-review")
-                    }
                     healthActions
                     completionSummary
                     Button("完成") { dismiss() }.buttonStyle(SecondaryButton())
                     DisclosureGroup("补记与更多") {
                         VStack(alignment: .leading, spacing: 16) {
                             dailyRecordCard
-                            Button("在 Club AI 解读这一天") { if let owner = store.editingAccountID { let scope = ClubReviewScope.make(.daily, through: snapshot.date); ClubAIRoute.open(owner: owner, question: scope.prompt, scope: scope) } }
                         }
                         .padding(.top, BojiSpace.general)
                     }

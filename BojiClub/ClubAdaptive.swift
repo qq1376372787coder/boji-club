@@ -62,12 +62,6 @@ struct ClubAutomaticReportReader: View {
                     BojiBrandMark(size:22,style:.monochrome)
                     Text(answer.answer).font(.body).lineSpacing(7).textSelection(.enabled)
                     Text("基于生成时已同步的记录；后续补记与修改请在最新分析中重新核对。").font(.footnote).foregroundStyle(.secondary)
-                    Button("在 Club AI 继续讨论") {
-                        guard let owner = store.editingAccountID else { return }
-                        let source = ClubContextSource(type: answer.purpose == "weekly" ? "weekly" : "workout", jobID: job.id, version: nil, sessionID: answer.source_session, title: job.request.date + (answer.purpose == "weekly" ? " 周度解读" : " 训练解读"))
-                        ClubAIRoute.open(owner: owner, conversation: ClubCoachRules.conversation(job), source: source)
-                        dismiss()
-                    }.buttonStyle(.bordered)
                     DisclosureGroup("查看记录依据") {
                         ForEach(answer.sources) { source in
                             Text(source.detail).font(.subheadline).padding(.vertical, BojiSpace.tight)

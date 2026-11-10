@@ -201,35 +201,6 @@ struct ClubNumericField: View {
     }
 }
 
-struct ClubMovementHelp: View {
-    let exercise: Exercise
-    let date: Date
-    @EnvironmentObject private var store: AppStore
-    @Environment(\.dismiss) private var dismiss
-    var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    Text(exercise.name).font(.headline)
-                    ExerciseDemoButton(exercise: exercise)
-                    Text("选择你正在遇到的问题。回答以这个动作与器械为背景，不会自动调整训练。位置不适或疼痛请先停止这组。").font(.footnote).foregroundStyle(.secondary)
-                }
-                Section("想了解什么？") {
-                    ForEach(["这个动作主要练哪里？", "这个动作怎么发力？", "器械座椅和握把应该怎么调整？", "常见错误和需要注意的地方？", "没有这个器械，可以换什么动作？"], id: \.self) { question in
-                        Button(question) {
-                            guard let owner = store.editingAccountID else { return }
-                            let ref = AIContextReference.day("workout_range", date: date, title: ClubDates.key(date) + " 当前训练")
-                            ClubAIRoute.open(owner: owner, question: "我正在做「\(exercise.name)」。\(question)", references: FeatureFlagService.shared.referencesEnabled ? [ref] : [])
-                            dismiss()
-                        }
-                    }
-                }
-            }.navigationTitle("动作帮助").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("关闭") { dismiss() } } }
-        }
-    }
-}
-
 private struct ClubBasicDraft: Codable {
     var nickname = ""
     var age = ""
@@ -337,25 +308,6 @@ struct ClubAIEntryBridge: View {
             guard !routed, let owner = store.editingAccountID else { return }; routed = true
             ClubAIRoute.open(owner: owner, question: scope?.prompt ?? question, conversation: conversation, scope: scope)
             dismiss()
-        }
-    }
-}
-
-struct ClubCurrentTrainingHelp: View {
-    var date = Date()
-    @EnvironmentObject private var store: AppStore
-    @Environment(\.dismiss) private var dismiss
-    @State private var selected: Exercise?
-    var body: some View {
-        NavigationStack {
-            List {
-                if store.log(for: date).trainingLog.exercises.isEmpty { Text("当前没有可选择的训练动作。").foregroundStyle(.secondary) }
-                ForEach(store.log(for: date).trainingLog.exercises) { exercise in
-                    Button(exercise.name) { selected = exercise }
-                }
-            }.navigationTitle("选择当前动作")
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("关闭") { dismiss() } } }
-            .sheet(item: $selected) { exercise in ClubMovementHelp(exercise: exercise, date: date) }
         }
     }
 }
