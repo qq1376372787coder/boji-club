@@ -149,7 +149,9 @@ final class OnboardingV2ContractTests: XCTestCase {
     func testTrainingDayAndUnitDisplay() {
         let value = JSONValue.array([.number(1), .number(3), .number(5)])
         XCTAssertEqual(OnboardingFieldSpec.trainingDays.displayValue(value), "周一、周三、周五")
-        XCTAssertEqual(OnboardingFieldSpec.sessionMinutes.displayValue(.number(30)), "30 minutes")
+        // displayUnit133 对 sessionMinutes 返回中文「分钟」（见 BodyFactsView.swift），
+        // 断言与之一致；旧断言 "30 minutes" 是 displayUnit133 引入前的遗留。
+        XCTAssertEqual(OnboardingFieldSpec.sessionMinutes.displayValue(.number(30)), "30 分钟")
         XCTAssertEqual(OnboardingFieldSpec.ageGroup.displayValue(.string("minor")), "未满 18 岁")
         XCTAssertEqual(OnboardingFieldSpec.weightMeasurementKind.displayValue(.string("estimated")), "估计")
     }
