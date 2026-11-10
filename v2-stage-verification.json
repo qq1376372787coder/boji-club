@@ -1,0 +1,165 @@
+{
+  "stage": "/opt/bojiclub-account/.backups/v2-finish-20261016-031648",
+  "backend": {
+    "passed": true,
+    "tests": 336,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "isolated_database_integration": {
+    "passed": true,
+    "checks": 34,
+    "pagination_total_recovered": 52,
+    "archived_report_after_45_days": true,
+    "direct_id_lookup": true,
+    "cross_account_access_blocked": true,
+    "partitioned_old_goal_restored": true,
+    "setting_and_record_conflicts_distinguished": true,
+    "real_models_called": false,
+    "production_account_data_used": false
+  },
+  "php_contract_groups": [
+    {
+      "name": "test_build106.php",
+      "passed": true
+    },
+    {
+      "name": "test_club_push.php",
+      "passed": true
+    },
+    {
+      "name": "test_automation_contract.php",
+      "passed": true
+    },
+    {
+      "name": "test_coach.php",
+      "passed": true
+    },
+    {
+      "name": "test_workout_insights.php",
+      "passed": true
+    },
+    {
+      "name": "test_plan_changes.php",
+      "passed": true
+    },
+    {
+      "name": "test_club_insights.php",
+      "passed": true
+    },
+    {
+      "name": "test_club_history.php",
+      "passed": true
+    },
+    {
+      "name": "test_repair_v77.php",
+      "passed": true
+    },
+    {
+      "name": "test_cycle_v75.php",
+      "passed": true
+    },
+    {
+      "name": "test_cloud_scope_v73.php",
+      "passed": true
+    },
+    {
+      "name": "test_experience_v25.php",
+      "passed": true
+    },
+    {
+      "name": "test_membership_verify_v70.php",
+      "passed": true
+    },
+    {
+      "name": "test_onboarding_plan_preview.php",
+      "passed": true
+    },
+    {
+      "name": "test_plan_explanation.php",
+      "passed": true
+    },
+    {
+      "name": "test_training_feedback_v63.php",
+      "passed": true
+    },
+    {
+      "name": "test_multi_meal.php",
+      "passed": true
+    },
+    {
+      "name": "test_repair_v48.php",
+      "passed": true
+    },
+    {
+      "name": "test_revenuecat_v60.php",
+      "passed": true
+    }
+  ],
+  "source_hashes": {
+    "backend/adaptive_core.py": "5b576ea68785de9d6f1a5a0993a6d806b2ea4066966b772dabfced716e5cbc9c",
+    "backend/ai_core.py": "060cb839d89f401ed23a368406746c7fcf82203bde9cb25f4d425851bf6533e4",
+    "backend/automation_core.py": "86dcedacf63fddeb140417523a334ca6ca8da0faafee9e268416d199a5e8523c",
+    "backend/coach_core.py": "eeffe8e83214a4086a0d72eda2f627558ca922f62f6b38b5b6b89df2f9d8ecb4",
+    "backend/curated_library.py": "a9b37d60413350b48098fa8e40c5bf3d04a282700c355a4fc715686351390bd7",
+    "backend/food_core.py": "fb23dc5db842d344d44fa33c8c6b6f4e37fe1f5d8a771f70366f7ffe263b8089",
+    "backend/goal_context.py": "7fb4bcfebf9a1b04686798535ea19715618a169b71cc53e83a0f52181037fbbb",
+    "backend/plan_explanation.py": "e0794cf4725212db1735fffcf5b72b4337a080434f9f41b307e7be77f04e8ad2",
+    "backend/server.py": "0386cd3737d653b70762e8f4c69b7e3da24590a3168137fc8e155f5e405f9ca2",
+    "backend/setup.py": "baa221117d025aa9b34477530095c262411e00754c6a6158fda45502ece2c70e",
+    "backend/training_feedback.py": "774dbf99c90940aeec0eefe1eb2a4c219c77112c1670cb72a02606dc1e52d6c1",
+    "backend/weekly_core.py": "6b4d195eed11612e1fbfbcdcc524836bb594ac3be769674fc743c33ab80318af",
+    "account-server/admin-schema.sql": "c3d85846238f230d9dfd0653a5321c0da569bb1a116ceebda555cb2f799d51eb",
+    "account-server/apns-config.example.php": "8feae2cb067aa3aa8ab1ae1fda7ad88d72b82a20f0416cfa27a33c077dddf813",
+    "account-server/apple-token-config.example.php": "4d9c46e1ea9ff4450ddd5d002b10ea064de37d7174aa04ba23a97f4001a652ee",
+    "account-server/migrate-20261001.php": "8e41bf6798d46706386666319f9b3b849e1cd1ee14dfd4e4de00319db77391b6",
+    "account-server/migrate-club-automation.sql": "beca2e2e69291d0143fd7f04fd6cabae87999f2552352a08bf3c2723e04641be",
+    "account-server/migrate-club-coach.sql": "298cd098ba86a7345d08ede4b96e75ae0e4430cf6dff4389bb527de6062455db",
+    "account-server/migrate-club-push.sql": "3617e7eb7f94b93b9c79c3b3b2c06f3da5405902e53abbfef13b5a386bfefd73",
+    "account-server/migrate-premium-badges-v20.php": "61e330e9163ed9c95b91c3a350b50e2e0634770e56f4032342e284518bc1da02",
+    "account-server/migrate-repair-v5.php": "ce886e9574d8791678af7cac76203900ff4f610c03745dd331cf6bb92b604733",
+    "account-server/migrate-repair-v6.php": "591497d94890ccb1ad041b4141806739c841a2283297eb1dbedae411cb70158f",
+    "account-server/migration-v2.sql": "9a124ce751de7d77b3122727c28b12ca0e0de7cc1d38872bf2c5e93af3653919",
+    "account-server/migration-v4.sql": "30b664ea946b4fc674238c658a142d34da32660856b07e2e760e9472ce2e6f17",
+    "account-server/optimize-copy-20261002.php": "d883f641b02aa43a9e447dab29c04951dbc7495264e1c7039ff637b9dc9a2e3f",
+    "account-server/process-club-automation.php": "4d3700a386d267760c551fd86c6a9c8d2ba9a4e2e58184694c8dd89242e9de7a",
+    "account-server/process-club-push.php": "8c36e0e042a1fadc8d724b6eb1b48c441eeb83c37a37d5c0930bc74a2061cd7f",
+    "account-server/process-deletions.php": "793953982bd2c5f646ccd6d154949358e59c61afc782feb58e32b92161edc086",
+    "account-server/revenuecat-config.example.php": "515cbffc821f6bcf307f27a02c7e837c05737b49a7ad92666038ea987eeb432b",
+    "account-server/revenuecat-member-checks.sql": "4ae6cfb3e86ed4fff606ed1ec5b6f1cd6c20b2c443e462e801379f19f9d655cf",
+    "account-server/schema.sql": "279422051f74f4be6eed2c7efe0fbd0e7002b449e0f4f017c35c74b896f4f129",
+    "account-server/seed-club-keepsakes.sql": "fa32c9a46d14a4787d3daae590d315d8f5a55e1b2d8c8787644fc0fc91080835",
+    "account-server/sync-schema-v59.sql": "8b54ed1ca965eed219116d0788c0385472a10b4b0314b34dd9389185220b34a4",
+    "account-server/admin/ai-capacity.php": "c4f5d4886fa32aa51843aa7e85887dc6f1ae0a38e9fcec26c147c88329812069",
+    "account-server/admin/ai-validation-reasons.php": "f967dea247d44fd74a99fa37c2a0f985696076ce901a0409739d003663121969",
+    "account-server/admin/bootstrap.php": "f4c8808c78570a35e0751cf796a1802087453c1b48bea5e1eb066e8a1e381a66",
+    "account-server/admin/index.php": "a01f12922bb2dd447ba0ed867cfe48bfa7b2e29acfe6474f4376d474b276db2a",
+    "account-server/admin/statistics.php": "f343817d7140c7c63c2d438db945527ab3cc719bab7a0fb7e962a69ab6885ce9",
+    "account-server/admin/storage.php": "a7719d2ca7b5fcbd589e130ffdcbf4acdc4c2f6890c3ceee343398071c9dd8d3",
+    "account-server/admin/weekly-summary.php": "0248813e714422a4b7540ec39fc5bed8a6930928239106ee95132bb29fc72bf5",
+    "account-server/public/account-deletion.php": "5d8c5eb4b825be048f6cfb97102917933a5aa67ed5a43701644312ea0e7e863c",
+    "account-server/public/ai-response.php": "d57c0d138140c117fd58d3f08704cfc2d50769b1bfc6af306341f4997d75e182",
+    "account-server/public/apple-auth.php": "38738f65bc54dbc4f7f321d6d425397c7749a3c213d4ab13b9c026c7fd22fa1b",
+    "account-server/public/apple-key-cache.php": "5759b26a9ecfaa9ed81739fa287fa16d24ee8e2bf1bf54dc4b33fc15f85512b6",
+    "account-server/public/apple-tokens.php": "546be718012ee37eb71167707b88ed6494cb85a3be94e7fa2c64b97970a9b974",
+    "account-server/public/automation.php": "ce1ed568eb8c75ef341d25f353da65751032e970ab69fdb07456e0284b2f0c92",
+    "account-server/public/cloud-parts.php": "1eaf17474f698ba3e5613f309c106223c5cd1034b3cf643a772bbc921bf725d4",
+    "account-server/public/cloud-validation.php": "5095b472cdd5d981ae55541d1b1bd3cb5971b0af11df5758a37e5ede9b3bb912",
+    "account-server/public/club-artwork.php": "1e98e4a26e51f5f142f57385dbd010ef25fa4957d813dc88cb35bbf3a7a3daed",
+    "account-server/public/club-lock.php": "dfc147826d75391960bad481d5f39574636374661cf35edf83f7c4bd85f81334",
+    "account-server/public/club-progress.php": "6c2d096e65c37a2d76dd7a5082f4a289288d09b40c666112447cc93b172524fd",
+    "account-server/public/club-push.php": "4ebad38beec51e086cbf98b82fc7ac58b6a408fc3d2304c3c6baacef7c2ef2f2",
+    "account-server/public/index.php": "7bcc36b62e6ee992ad5dd0b198c01539e224d7eacff94cb6fb39449eb8622584",
+    "account-server/public/media-cleanup.php": "6bf019aac118c27709128bbab1218a881416491e0d91330affe1853cbe154df0",
+    "account-server/public/media-quota.php": "344842c3700ff468e599b083a67cd1a4ac3344d0fa66614b7baff017ac238dfc",
+    "account-server/public/revenuecat-policy.php": "2055d64be38c033ca994daf8577c71c6306352ab58e5a2d12d6845a86794b46a",
+    "account-server/public/revenuecat-snapshot-policy.php": "97bb7fb546d3af9f6b3814414714acfe94b6e237521c876aff07656a6343eaa2",
+    "account-server/public/revenuecat-verify.php": "8391c5b346239f48982b70ad3152ea355806cff19d2c7ecb31637651a3be9493",
+    "account-server/public/revenuecat.php": "8005ffcaaed2c6f0d125505f6ac5934da6b47700a446ecbbcffff4d8ebef1d8e",
+    "account-server/public/storage-settings.php": "ce8520c10b7245788378a51b122d15fd0072182e08080539f7668638f3351476",
+    "account-server/public/task-recovery.php": "33104af7d612463878471a43e09d0479d70c65ebeed92600c0fdf9b3958bce67",
+    "account-server/public/weekly.php": "653987718113b07562f5ecfe1bc9a016e084f24f3cc9e47f8bea02da6ddad615"
+  },
+  "deployed": false
+}

@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "tests": 262,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "native_swift_executed": false,
+  "xcode_build_executed": false,
+  "paid_provider_calls": false,
+  "training_feedback_sha256": "9b7ddc1b1db72e6348d70e98ca350faf14127c5efcbddd53531c21fb8bb0007a"
+}

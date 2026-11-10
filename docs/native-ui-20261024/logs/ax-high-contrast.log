@@ -1,0 +1,128 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/BojiClub_iphonesimulator26.5-arm64.xctestrun -destination "platform=iOS Simulator,id=9B496F27-8B0D-4B90-99F2-9379D8B0626C" -resultBundlePath /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/ax-high-contrast.xcresult -parallel-testing-enabled NO "-only-testing:BojiClubUITests/BojiClubUITests/testV2WorkspaceAccessibilityAudit"
+
+2026-10-24 20:48:28.576 xcodebuild[17472:3406657] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+Writing result bundle at path:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/ax-high-contrast.xcresult
+
+2026-10-24 20:48:28.581 xcodebuild[17472:3406657] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:48:31.039 xcodebuild[17472:3406657] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:48:32.517284+0800 BojiClubUITests-Runner[17498:3407063] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-24 20:48:33.074.
+Test Suite 'BojiClubUITests.xctest' started at 2026-10-24 20:48:33.075.
+Test Suite 'BojiClubUITests' started at 2026-10-24 20:48:33.075.
+Test Case '-[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit]' started.
+    t =     0.00s Start Test at 2026-10-24 20:48:33.075
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+2026-10-24 20:48:33.288 xcodebuild[17472:3406657] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:48:33.288 xcodebuild[17472:3406657] [MT] IDELaunchParametersSnapshot: no debugger version
+objc[17498]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x109bb4310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x109b34398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     1.08s         Setting up automation session
+    t =     2.01s         Wait for com.bojiclub.app.dev to idle
+    t =     4.10s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     5.17s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     5.17s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     5.25s Checking existence of `TabBar (First Match)`
+    t =     5.28s Waiting 2.0s for "稍后再看" Button to exist
+    t =     6.35s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.35s         Checking existence of `"稍后再看" Button`
+    t =     6.40s         Capturing element debug description
+    t =     7.29s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     7.29s         Checking existence of `"稍后再看" Button`
+    t =     7.33s         Capturing element debug description
+    t =     7.33s     Checking existence of `"稍后再看" Button`
+    t =     7.36s Collecting debug information to assist test failure triage
+    t =     7.36s     Requesting snapshot of accessibility hierarchy for app with pid 17511
+    t =     7.39s Waiting 15.0s for "v2-mode-picker" SegmentedControl to exist
+    t =     8.46s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     8.46s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =    10.53s Tap "v2-sidebar-toggle" Button
+    t =    10.53s     Wait for com.bojiclub.app.dev to idle
+    t =    10.53s     Find the "v2-sidebar-toggle" Button
+    t =    10.55s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    10.57s     Synthesize event
+    t =    10.88s     Wait for com.bojiclub.app.dev to idle
+    t =    11.99s Waiting 8.0s for "v2-sidebar-newchat" Button to exist
+    t =    13.07s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-newchat" Button`
+    t =    13.07s         Checking existence of `"v2-sidebar-newchat" Button`
+    t =    15.45s Find the Any (Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4395911360.45)
+    t =    15.49s Requesting snapshot of accessibility hierarchy for app with pid 17511
+    t =    15.55s Find: Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4395911360.45
+    t =    15.58s Requesting snapshot of accessibility hierarchy for app with pid 17511
+    t =    15.65s Find: Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4395911360.45
+    t =    15.65s Requesting snapshot of accessibility hierarchy for app with pid 17511
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    15.71s Find the Target Application 'com.bojiclub.app.dev'
+    t =    15.81s Added attachment named 'ax-sidebar-issue-0'
+    t =    15.81s Find the Any (Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4395911360.45)
+    t =    15.85s Find the "BOJI CLUB" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x1168b2940, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Element subtree:
+ →StaticText, 0x1168b2940, {{160.8, 180.0}, {80.3, 14.3
+    t =    15.90s Find the Any (Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4395913152.46)
+    t =    15.93s Requesting snapshot of accessibility hierarchy for app with pid 17511
+    t =    15.99s Find: Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4395913152.46
+    t =    16.02s Requesting snapshot of accessibility hierarchy for app with pid 17511
+    t =    16.08s Find: Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4395913152.46
+    t =    16.08s Requesting snapshot of accessibility hierarchy for app with pid 17511
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    16.15s Find the Target Application 'com.bojiclub.app.dev'
+    t =    16.24s Added attachment named 'ax-sidebar-issue-0'
+    t =    16.24s Find the Any (Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4395913152.46)
+    t =    16.28s Find the "今天，想先做什么？" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x116a77840, {{111.5, 204.3}, {179.0, 26.3}}, label: '今天，想先做什么？'
+Element subtree:
+ →StaticText, 0x116a77840, {{111.5, 204.3}, {179.0, 26
+AUDIT-DIAGNOSTIC [sidebar] Text of this element may be clipped at larger Dynamic Type sizes.
+    t =    16.31s Find the Target Application 'com.bojiclub.app.dev'
+    t =    16.41s Added attachment named 'ax-sidebar-issue-0'
+AUDIT-DIAGNOSTIC [sidebar] Text of this element may be clipped at larger Dynamic Type sizes.
+    t =    16.41s Find the Target Application 'com.bojiclub.app.dev'
+    t =    16.50s Added attachment named 'ax-sidebar-issue-1'
+    t =    16.50s Find the Any (Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4335742208.69)
+    t =    16.54s Requesting snapshot of accessibility hierarchy for app with pid 17511
+    t =    16.60s Find: Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4335742208.69
+    t =    16.62s Requesting snapshot of accessibility hierarchy for app with pid 17511
+    t =    16.68s Find: Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4335742208.69
+    t =    16.68s Requesting snapshot of accessibility hierarchy for app with pid 17511
+AUDIT-DIAGNOSTIC [sidebar] Text of this UISearchBarTextField may be clipped at larger Dynamic Type sizes.
+    t =    16.76s Find the Target Application 'com.bojiclub.app.dev'
+    t =    16.86s Added attachment named 'ax-sidebar-issue-2'
+    t =    16.86s Find the Any (Descendant with identity binding to AX element pid: 17511, elementOrHash.elementID: 4335742208.69)
+    t =    16.90s Find the "搜索历史对话" SearchField
+AUDIT-DETAIL workspace/sidebar: 
+[sidebar] Text clipped — ?
+[sidebar] Text clipped — ?
+[sidebar] Text clipped — Attributes: SearchField, 0x11685cf00, {{16.0, 133.0}, {337.7, 44.0}}, label: '搜索历史对话', placeholderValue: '搜索历史对话'
+Element subtree:
+ →SearchField, 0x11685cf00, {
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:715: error: -[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit] : XCTAssertTrue failed - Accessibility audit hard failures:
+[sidebar] Text clipped — ?
+[sidebar] Text clipped — ?
+[sidebar] Text clipped — Attributes: SearchField, 0x11685cf00, {{16.0, 133.0}, {337.7, 44.0}}, label: '搜索历史对话', placeholderValue: '搜索历史对话'
+Element subtree:
+ →SearchField, 0x11685cf00, {
+    t =    16.99s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit]' failed (17.247 seconds).
+Test Suite 'BojiClubUITests' failed at 2026-10-24 20:48:50.323.
+	 Executed 1 test, with 1 failure (0 unexpected) in 17.247 (17.248) seconds
+Test Suite 'BojiClubUITests.xctest' failed at 2026-10-24 20:48:50.324.
+	 Executed 1 test, with 1 failure (0 unexpected) in 17.247 (17.249) seconds
+Test Suite 'Selected tests' failed at 2026-10-24 20:48:50.327.
+	 Executed 1 test, with 1 failure (0 unexpected) in 17.247 (17.252) seconds
+2026-10-24 20:49:00.308 xcodebuild[17472:3406657] [MT] IDETestOperationsObserverDebug: 29.268 elapsed -- Testing started completed.
+2026-10-24 20:49:00.309 xcodebuild[17472:3406657] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-24 20:49:00.309 xcodebuild[17472:3406657] [MT] IDETestOperationsObserverDebug: 29.268 sec, +29.268 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/ax-high-contrast.xcresult
+
+Failing tests:
+	BojiClubUITests.testV2WorkspaceAccessibilityAudit()
+
+** TEST EXECUTE FAILED **
+
+Testing started

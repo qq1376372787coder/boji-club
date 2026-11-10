@@ -1,0 +1,1194 @@
+[
+  {
+    "file": "AIViews.swift",
+    "line": 359,
+    "header": "struct ReportPreviousAnalysesLink: View",
+    "scope": "复盘卡片、全文、此前分析、AI 状态与授权提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "AIViews.swift",
+    "line": 257,
+    "header": "struct AIReportReaderView: View",
+    "scope": "复盘卡片、全文、此前分析、AI 状态与授权提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "AIViews.swift",
+    "line": 243,
+    "header": "struct AIRoutingConsentView: View",
+    "scope": "复盘卡片、全文、此前分析、AI 状态与授权提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "AIViews.swift",
+    "line": 200,
+    "header": "struct ReportSectionText: View",
+    "scope": "复盘卡片、全文、此前分析、AI 状态与授权提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "AIViews.swift",
+    "line": 158,
+    "header": "struct AIReportHistoryView: View",
+    "scope": "复盘卡片、全文、此前分析、AI 状态与授权提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "AIViews.swift",
+    "line": 53,
+    "header": "struct AIReportCard: View",
+    "scope": "复盘卡片、全文、此前分析、AI 状态与授权提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "AIViews.swift",
+    "line": 29,
+    "header": "private struct ReportCardSurface<Content: View>: View",
+    "scope": "复盘卡片、全文、此前分析、AI 状态与授权提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "AIViews.swift",
+    "line": 3,
+    "header": "struct AIJobStatusView: View",
+    "scope": "复盘卡片、全文、此前分析、AI 状态与授权提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "BodyWeightView.swift",
+    "line": 117,
+    "header": "private struct WeightEntryEditor: View",
+    "scope": "体重曲线、测量列表与登记编辑",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "BodyWeightView.swift",
+    "line": 4,
+    "header": "struct BodyWeightView: View",
+    "scope": "体重曲线、测量列表与登记编辑",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "BojiClubApp.swift",
+    "line": 259,
+    "header": "private struct AccountDeletionStatusView: View",
+    "scope": "主标签与全局色调；启动和停用页保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "BojiClubApp.swift",
+    "line": 190,
+    "header": "struct MainClubView: View",
+    "scope": "主标签与全局色调；启动和停用页保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "BojiClubApp.swift",
+    "line": 68,
+    "header": "struct RootView: View",
+    "scope": "主标签与全局色调；启动和停用页保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "BojiClubApp.swift",
+    "line": 38,
+    "header": "private struct LaunchArtworkView: View",
+    "scope": "主标签与全局色调；启动和停用页保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ClubSeasonView.swift",
+    "line": 747,
+    "header": "struct ClubHistoryView: View",
+    "scope": "成长季任务、申领奖励、收藏详情、奖励历史；徽章展示保留专用媒体造型",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ClubSeasonView.swift",
+    "line": 628,
+    "header": "struct ClubRewardArtwork: View",
+    "scope": "成长季任务、申领奖励、收藏详情、奖励历史；徽章展示保留专用媒体造型",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ClubSeasonView.swift",
+    "line": 449,
+    "header": "struct Badge3DView: UIViewRepresentable",
+    "scope": "成长季任务、申领奖励、收藏详情、奖励历史；徽章展示保留专用媒体造型",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ClubSeasonView.swift",
+    "line": 380,
+    "header": "struct ClubKeepsakeDetailView: View",
+    "scope": "成长季任务、申领奖励、收藏详情、奖励历史；徽章展示保留专用媒体造型",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ClubSeasonView.swift",
+    "line": 283,
+    "header": "private struct RewardClaimView: View",
+    "scope": "成长季任务、申领奖励、收藏详情、奖励历史；徽章展示保留专用媒体造型",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ClubSeasonView.swift",
+    "line": 7,
+    "header": "struct ClubSeasonView: View",
+    "scope": "成长季任务、申领奖励、收藏详情、奖励历史；徽章展示保留专用媒体造型",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 501,
+    "header": "struct ClubCompactWait: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 458,
+    "header": "struct AIWaitProgress: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 427,
+    "header": "struct ClubWaitBar: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 406,
+    "header": "struct AILoadingCard: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 373,
+    "header": "struct AIProcessingMark: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 331,
+    "header": "private struct ClubSuccessFeedbackModifier: ViewModifier",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 287,
+    "header": "struct ClubLoadingSkeleton: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 264,
+    "header": "struct ClubLoadingCard: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 235,
+    "header": "struct ClubActivityMark: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 207,
+    "header": "private struct ClubRevealModifier: ViewModifier",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 199,
+    "header": "private struct ClubMotionModifier<Value: Equatable>: ViewModifier",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 171,
+    "header": "struct ClubPhotoPreview: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 97,
+    "header": "struct ServiceInfoView: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 86,
+    "header": "struct EmptyNote: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 64,
+    "header": "struct Metric: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 56,
+    "header": "struct SectionTitle: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 44,
+    "header": "struct ClubCard<Content: View>: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "Design.swift",
+    "line": 37,
+    "header": "struct ClubBackground: View",
+    "scope": "共享卡片、数据小卡、空状态、加载及动态反馈",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ExerciseLibraryView.swift",
+    "line": 648,
+    "header": "private struct CustomExerciseEditor: View",
+    "scope": "动作库、动作详情、演示与个人动作编辑",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ExerciseLibraryView.swift",
+    "line": 594,
+    "header": "private struct AnimatedGIFView: View",
+    "scope": "动作库、动作详情、演示与个人动作编辑",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ExerciseLibraryView.swift",
+    "line": 581,
+    "header": "private struct GIFImageView: UIViewRepresentable",
+    "scope": "动作库、动作详情、演示与个人动作编辑",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ExerciseLibraryView.swift",
+    "line": 394,
+    "header": "struct LibraryExerciseDetailView: View",
+    "scope": "动作库、动作详情、演示与个人动作编辑",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ExerciseLibraryView.swift",
+    "line": 348,
+    "header": "struct ExerciseDemoButton: View",
+    "scope": "动作库、动作详情、演示与个人动作编辑",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ExerciseLibraryView.swift",
+    "line": 196,
+    "header": "struct ExerciseLibraryView: View",
+    "scope": "动作库、动作详情、演示与个人动作编辑",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FlowDesign.swift",
+    "line": 106,
+    "header": "struct FlowError: View",
+    "scope": "引导/计划共用表面、选项、标题与底部操作",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FlowDesign.swift",
+    "line": 86,
+    "header": "struct FlowChips: View",
+    "scope": "引导/计划共用表面、选项、标题与底部操作",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FlowDesign.swift",
+    "line": 61,
+    "header": "struct FlowChoice: View",
+    "scope": "引导/计划共用表面、选项、标题与底部操作",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FlowDesign.swift",
+    "line": 50,
+    "header": "struct FlowDock<Content: View>: View",
+    "scope": "引导/计划共用表面、选项、标题与底部操作",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FlowDesign.swift",
+    "line": 34,
+    "header": "struct FlowSurface<Content: View>: View",
+    "scope": "引导/计划共用表面、选项、标题与底部操作",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FlowDesign.swift",
+    "line": 16,
+    "header": "struct FlowHeading: View",
+    "scope": "引导/计划共用表面、选项、标题与底部操作",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FlowDesign.swift",
+    "line": 10,
+    "header": "struct FlowBackground: View",
+    "scope": "引导/计划共用表面、选项、标题与底部操作",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FoodComponents.swift",
+    "line": 109,
+    "header": "private struct FoodPortionField: View",
+    "scope": "食物成分编辑、份量校验与补充菜单",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FoodComponents.swift",
+    "line": 27,
+    "header": "struct FoodCompositionEditor: View",
+    "scope": "食物成分编辑、份量校验与补充菜单",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "FoodCutoutView.swift",
+    "line": 62,
+    "header": "struct FoodCutoutView: View",
+    "scope": "透明食物图专用展示；继承调用页面的容器",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HealthViews.swift",
+    "line": 290,
+    "header": "struct HealthShareReviewView: View",
+    "scope": "设备数据、健康确认、训练关联",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HealthViews.swift",
+    "line": 230,
+    "header": "struct WorkoutHealthLinkCard: View",
+    "scope": "设备数据、健康确认、训练关联",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HealthViews.swift",
+    "line": 78,
+    "header": "struct HealthConnectionsView: View",
+    "scope": "设备数据、健康确认、训练关联",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HealthViews.swift",
+    "line": 49,
+    "header": "struct HealthMetricsView: View",
+    "scope": "设备数据、健康确认、训练关联",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HealthViews.swift",
+    "line": 4,
+    "header": "struct HealthSummaryCard: View",
+    "scope": "设备数据、健康确认、训练关联",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HomeView.swift",
+    "line": 874,
+    "header": "struct ShareCardPreview: View",
+    "scope": "保留首页模块布局；共用热量进度；分享预览沿用按钮样式",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HomeView.swift",
+    "line": 844,
+    "header": "struct ShareSheet: UIViewControllerRepresentable",
+    "scope": "保留首页模块布局；共用热量进度；分享预览沿用按钮样式",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HomeView.swift",
+    "line": 725,
+    "header": "struct ShareCardView: View",
+    "scope": "保留首页模块布局；共用热量进度；分享预览沿用按钮样式",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HomeView.swift",
+    "line": 668,
+    "header": "private struct AIInsightsHeading: View",
+    "scope": "保留首页模块布局；共用热量进度；分享预览沿用按钮样式",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HomeView.swift",
+    "line": 550,
+    "header": "private struct AIInsightsCard: View",
+    "scope": "保留首页模块布局；共用热量进度；分享预览沿用按钮样式",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HomeView.swift",
+    "line": 510,
+    "header": "private struct HomeRecordErrorBanner: View",
+    "scope": "保留首页模块布局；共用热量进度；分享预览沿用按钮样式",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "HomeView.swift",
+    "line": 4,
+    "header": "@MainActor\r\nstruct HomeView: View",
+    "scope": "保留首页模块布局；共用热量进度；分享预览沿用按钮样式",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "JourneyComponents.swift",
+    "line": 167,
+    "header": "@MainActor\r\nstruct ClubCalorieProgressView: View",
+    "scope": "主次/危险/图标按钮、选择项、路由行与共用热量进度",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "JourneyComponents.swift",
+    "line": 146,
+    "header": "struct ClubRouteRow: View",
+    "scope": "主次/危险/图标按钮、选择项、路由行与共用热量进度",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "JourneyComponents.swift",
+    "line": 119,
+    "header": "struct ClubOptionRow: View",
+    "scope": "主次/危险/图标按钮、选择项、路由行与共用热量进度",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "JourneyComponents.swift",
+    "line": 52,
+    "header": "private struct ClubStyledButtonLabel: View",
+    "scope": "主次/危险/图标按钮、选择项、路由行与共用热量进度",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "JourneyComponents.swift",
+    "line": 17,
+    "header": "struct ClubLogoutButton: View",
+    "scope": "主次/危险/图标按钮、选择项、路由行与共用热量进度",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "JourneyUIKitSupport.swift",
+    "line": 162,
+    "header": "struct ClubPresentationProbe: UIViewRepresentable",
+    "scope": "滚动位置、焦点、可见性检测；属于交互辅助，无页面布局修改",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "JourneyUIKitSupport.swift",
+    "line": 77,
+    "header": "private struct ClubViewportProbe: UIViewRepresentable",
+    "scope": "滚动位置、焦点、可见性检测；属于交互辅助，无页面布局修改",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "JourneyUIKitSupport.swift",
+    "line": 46,
+    "header": "struct ClubScrollPositionProbe: UIViewRepresentable",
+    "scope": "滚动位置、焦点、可见性检测；属于交互辅助，无页面布局修改",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "MealBatchReviewView.swift",
+    "line": 37,
+    "header": "struct MealBatchReviewView: View",
+    "scope": "多餐审核、详情展开与核对操作",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "MealCamera.swift",
+    "line": 19,
+    "header": "struct MealCameraPreview: UIViewRepresentable",
+    "scope": "系统相机驱动和取景框；快门外观保留",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "MealEditorView.swift",
+    "line": 5,
+    "header": "struct MealEditorView: View",
+    "scope": "拍照、文字/语音、营养、草稿选择与保存",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "NutritionView.swift",
+    "line": 428,
+    "header": "private struct NutritionTrendSummary: View",
+    "scope": "饮食页、趋势、历史、餐食详情和饮食方向",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "NutritionView.swift",
+    "line": 402,
+    "header": "struct NutritionStrategyCard: View",
+    "scope": "饮食页、趋势、历史、餐食详情和饮食方向",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "NutritionView.swift",
+    "line": 321,
+    "header": "private struct MealNutritionEditor: View",
+    "scope": "饮食页、趋势、历史、餐食详情和饮食方向",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "NutritionView.swift",
+    "line": 291,
+    "header": "private struct NutritionHistoryView: View",
+    "scope": "饮食页、趋势、历史、餐食详情和饮食方向",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "NutritionView.swift",
+    "line": 269,
+    "header": "private struct MealThumbnail: View",
+    "scope": "饮食页、趋势、历史、餐食详情和饮食方向",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "NutritionView.swift",
+    "line": 235,
+    "header": "private struct MealPlacementReviewCard: View",
+    "scope": "饮食页、趋势、历史、餐食详情和饮食方向",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "NutritionView.swift",
+    "line": 5,
+    "header": "struct NutritionView: View",
+    "scope": "饮食页、趋势、历史、餐食详情和饮食方向",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 1115,
+    "header": "struct ActivityProfileFields: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 1098,
+    "header": "struct BodyAssessmentCard: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 1081,
+    "header": "private struct ConfettiView: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 1041,
+    "header": "private struct MemberCardCelebration: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 347,
+    "header": "@MainActor\r\nstruct OnboardingView: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 290,
+    "header": "private struct OnboardingNavigation: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 259,
+    "header": "private struct OnboardingGoalChoice: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 234,
+    "header": "private struct OnboardingGoalReference: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 197,
+    "header": "struct LegalDocumentView: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 160,
+    "header": "private struct LoginCloudAnalysisChoice: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 124,
+    "header": "private struct ServerTestLoginView: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "OnboardingView.swift",
+    "line": 4,
+    "header": "struct AccountEntryView: View",
+    "scope": "登录、短步骤引导、身体参考、隐私阅读；会员卡保留仪式布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "PlanExplanation.swift",
+    "line": 114,
+    "header": "struct PlanDayPurposeView: View",
+    "scope": "计划制定依据；已经采用共用卡片和折叠展示",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "PlanExplanation.swift",
+    "line": 95,
+    "header": "struct SavedPlanExplanationCard: View",
+    "scope": "计划制定依据；已经采用共用卡片和折叠展示",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "PlanExplanation.swift",
+    "line": 58,
+    "header": "struct PlanExplanationCard: View",
+    "scope": "计划制定依据；已经采用共用卡片和折叠展示",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "PlanRemindersView.swift",
+    "line": 4,
+    "header": "struct PlanRemindersView: View",
+    "scope": "中文训练提醒；已经采用共用按钮和等待组件",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "PlanView.swift",
+    "line": 554,
+    "header": "struct ContinueWeekView: View",
+    "scope": "制定计划、预览、动作编辑与下一周安排",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "PlanView.swift",
+    "line": 448,
+    "header": "private struct PlanExerciseEditor: View",
+    "scope": "制定计划、预览、动作编辑与下一周安排",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "PlanView.swift",
+    "line": 9,
+    "header": "struct PlanView: View",
+    "scope": "制定计划、预览、动作编辑与下一周安排",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 1152,
+    "header": "private struct AvatarCropEditor: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 1057,
+    "header": "struct MemberIdentityEditor: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 1017,
+    "header": "private struct ClubAvatarArtwork: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 999,
+    "header": "struct ClubAvatarView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 930,
+    "header": "struct ClubUsageGuideView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 889,
+    "header": "private struct MembershipDayRecordView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 875,
+    "header": "private struct MembershipRecordHistoryView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 804,
+    "header": "struct RecordArchiveView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 745,
+    "header": "struct ClubKeepsakeVaultView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 479,
+    "header": "struct ProfileEditor: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 444,
+    "header": "struct NotificationSettingsView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 326,
+    "header": "struct MembershipView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 270,
+    "header": "private struct MembershipPreviewView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 232,
+    "header": "struct MembershipGateView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ProfileView.swift",
+    "line": 6,
+    "header": "struct ProfileView: View",
+    "scope": "我的、会员、目标、提醒、收藏、备份、指南、头像；头像裁切保留专用布局",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "RecordRepairViews.swift",
+    "line": 100,
+    "header": "struct TCXPreviewView: View",
+    "scope": "本机恢复、照片修复与 TCX 导入核对",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "RecordRepairViews.swift",
+    "line": 4,
+    "header": "struct RecordRepairView: View",
+    "scope": "本机恢复、照片修复与 TCX 导入核对",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ReportLibraryView.swift",
+    "line": 22,
+    "header": "struct ReportLibraryView: View",
+    "scope": "复盘档案；筛选、空状态和报告统一为卡片",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ReviewCamera.swift",
+    "line": 76,
+    "header": "private struct ReviewCameraController: UIViewControllerRepresentable",
+    "scope": "复盘拍照、裁切与相机不可用提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ReviewCamera.swift",
+    "line": 52,
+    "header": "struct WeeklyCamera: View",
+    "scope": "复盘拍照、裁切与相机不可用提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ReviewCamera.swift",
+    "line": 5,
+    "header": "struct ReviewPhotoEditor: View",
+    "scope": "复盘拍照、裁切与相机不可用提示",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ScreenshotBranding.swift",
+    "line": 33,
+    "header": "private struct ScreenshotBrandAnchor: UIViewRepresentable",
+    "scope": "截图品牌原生浮层；保留安全区定位",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "ScreenshotBranding.swift",
+    "line": 22,
+    "header": "struct ScreenshotBranding: View",
+    "scope": "截图品牌原生浮层；保留安全区定位",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "TrainingPlansView.swift",
+    "line": 134,
+    "header": "struct TrainingHandoffCard: View",
+    "scope": "我的计划、下一周选择与周期交接",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "TrainingPlansView.swift",
+    "line": 129,
+    "header": "struct DismissButton: View",
+    "scope": "我的计划、下一周选择与周期交接",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "TrainingPlansView.swift",
+    "line": 71,
+    "header": "struct NextWeekChoiceView: View",
+    "scope": "我的计划、下一周选择与周期交接",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "TrainingPlansView.swift",
+    "line": 3,
+    "header": "struct TrainingPlansView: View",
+    "scope": "我的计划、下一周选择与周期交接",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WeeklyReviewView.swift",
+    "line": 621,
+    "header": "struct WeeklyCoverageCard: View",
+    "scope": "每周回顾、问卷、报告、历史、调整预览",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WeeklyReviewView.swift",
+    "line": 604,
+    "header": "private struct ReviewQuestion: View",
+    "scope": "每周回顾、问卷、报告、历史、调整预览",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WeeklyReviewView.swift",
+    "line": 537,
+    "header": "struct WeeklyPlanPreview: View",
+    "scope": "每周回顾、问卷、报告、历史、调整预览",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WeeklyReviewView.swift",
+    "line": 248,
+    "header": "struct WeeklyReviewDetail: View",
+    "scope": "每周回顾、问卷、报告、历史、调整预览",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WeeklyReviewView.swift",
+    "line": 145,
+    "header": "struct WeeklyReviewHistoryDetail: View",
+    "scope": "每周回顾、问卷、报告、历史、调整预览",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WeeklyReviewView.swift",
+    "line": 119,
+    "header": "struct WeeklyReviewHistoryView: View",
+    "scope": "每周回顾、问卷、报告、历史、调整预览",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WeeklyReviewView.swift",
+    "line": 31,
+    "header": "struct WeeklyReviewCenter: View",
+    "scope": "每周回顾、问卷、报告、历史、调整预览",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WeeklyReviewView.swift",
+    "line": 5,
+    "header": "struct WeeklyReviewHomeCard: View",
+    "scope": "每周回顾、问卷、报告、历史、调整预览",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 895,
+    "header": "struct WorkoutCompletionView: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 847,
+    "header": "private struct ReplaceWorkoutExerciseView: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 763,
+    "header": "private struct ReviewDayDetailView: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 627,
+    "header": "private struct ReviewDashboardView: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 595,
+    "header": "struct ExerciseDetailView: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 495,
+    "header": "private struct TrainingSetRow: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 432,
+    "header": "private struct TimedTrainingSetView: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 297,
+    "header": "private struct TrainingExerciseCard: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "WorkoutView.swift",
+    "line": 4,
+    "header": "struct WorkoutView: View",
+    "scope": "训练、组间休息、计时、综合回顾、日记录、替换与完成页",
+    "changed_in_v54": true,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "TodayTrainingWidget.swift",
+    "line": 42,
+    "header": "struct TodayTrainingWidgetView: View",
+    "scope": "Widget 系统尺寸视图，保留独立布局",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  },
+  {
+    "file": "TrainingLiveActivityWidget.swift",
+    "line": 45,
+    "header": "struct TrainingLiveActivityView: View",
+    "scope": "Widget 系统尺寸视图，保留独立布局",
+    "changed_in_v54": false,
+    "validation": "源码清单与语法检查；尚未进行原生截图比对"
+  }
+]

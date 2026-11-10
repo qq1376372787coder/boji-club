@@ -1,0 +1,61 @@
+{
+  "nav_features": "Tính năng",
+  "nav_faq": "Câu hỏi thường gặp",
+  "nav_changelog": "Nhật ký cập nhật",
+  "nav_legal": "Trung tâm Điều khoản",
+  "hero_badge": "Tập trung vào chính bạn",
+  "hero_title": "Tập luyện. Dinh dưỡng. AI đồng hành.",
+  "hero_sub": "Kế hoạch, ghi chép, đánh giá — rõ trong tầm mắt.",
+  "download_note": "iOS 17+ · iPhone & iPad",
+  "features_title": "Tính năng nổi bật",
+  "features_sub": "Vòng khép kín hoàn chỉnh từ lập kế hoạch, thực hiện đến đánh giá",
+  "features": [
+    {
+      "t": "Kế hoạch tập luyện AI",
+      "d": "Xây dựng theo mục tiêu và dụng cụ của Bạn. Ghi chép từng hiệp."
+    },
+    {
+      "t": "Ghi chép bữa ăn bằng ảnh",
+      "d": "Chụp một bữa ăn — calo và chất dinh dưỡng được nhận diện."
+    },
+    {
+      "t": "Bảng dữ liệu sức khỏe",
+      "d": "Số bước, nhịp tim và giấc ngủ, do Bạn quyết định."
+    },
+    {
+      "t": "Báo cáo AI hàng ngày và Đánh giá cơ thể hàng tuần",
+      "d": "Mỗi ngày một bản giải đọc. Mỗi tuần một bản đánh giá."
+    },
+    {
+      "t": "Huấn luyện viên Club AI",
+      "d": "Câu trả lời dựa trên chính bản ghi tập luyện của Bạn."
+    },
+    {
+      "t": "Ưu tiên quyền riêng tư",
+      "d": "Ảnh cơ thể chỉ lưu trên thiết bị của Bạn. Xóa bất cứ lúc nào."
+    }
+  ],
+  "shots_title": "Giao diện ứng dụng",
+  "shots_sub": "Tinh gọn, tiết chế, tập trung vào chính việc tập luyện",
+  "shots": [
+    {
+      "file": "shot-home.png",
+      "cap": "Trang chủ Club AI"
+    },
+    {
+      "file": "shot-training.png",
+      "cap": "Lịch tập và ghi chép buổi tập"
+    },
+    {
+      "file": "shot-chat.png",
+      "cap": "Trò chuyện cùng Club AI"
+    },
+    {
+      "file": "shot-log.png",
+      "cap": "Ghi chép nhanh"
+    }
+  ],
+  "cta_title": "Bắt đầu tuần tập đầu tiên của Bạn",
+  "cta_sub": "Dữ liệu luyện tập thuộc về bạn. Xóa tài khoản bất cứ lúc nào.",
+  "legal_hint": "Việc sử dụng sản phẩm này có nghĩa là Bạn đồng ý với \"Điều khoản Dịch vụ\" và \"Chính sách quyền riêng tư\"."
+}

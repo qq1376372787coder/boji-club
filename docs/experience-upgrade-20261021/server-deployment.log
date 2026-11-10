@@ -1,0 +1,17 @@
+No syntax errors detected in /opt/bojiclub-account/.experience-cloud-validation.php
+PLAN PASS remove only targeted pending exercise
+PLAN PASS meal untouched
+PLAN PASS concurrent start protected
+PLAN PASS concurrent completed set protected
+PLAN PASS new rest cycle retained
+PLAN PASS owned cancelled cycle removed
+PLAN PASS old-client upload retains cancellation
+PLAN PASS old-client upload cannot resurrect cancelled plan
+PLAN PASS old client preserves single-day intent
+PLAN PASS cancel upload restores concurrently started server exercise
+PLAN_LIFECYCLE_OK 10 checks
+No syntax errors detected in /opt/bojiclub-account/public/cloud-validation.php
+DEPLOYED_SHA256 9f6fc1f9b5c37853ec040fedd50ecb412ab3c9bc4a6b0a52b2f6334c9343a8a8
+BACKUP /opt/bojiclub-account/.backups/experience-20261021T021914Z/cloud-validation.php
+{"status":"ok","count":678,"retained_count":1324,"supplemental_count":13,"dataset":"7447c17f3d304c8b40debd56"}
+ACCOUNT_CONFIG_HTTP 200

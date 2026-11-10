@@ -1,0 +1,421 @@
+{
+  "version": "0.13.50",
+  "build": 69,
+  "created": "2026-10-11T10:07:41.501968+00:00",
+  "python": {
+    "tests": 309,
+    "passed": 308,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0
+  },
+  "php": {
+    "linted_files": 20,
+    "rules_and_temporary_sql_passed": true
+  },
+  "swift": {
+    "syntax_files": 49,
+    "parse_errors": 0,
+    "xcode_build_performed": false,
+    "native_rule_execution_performed": false,
+    "device_test_performed": false
+  },
+  "live_model": {
+    "source": "synthetic records through real HTTP queue, worker and provider calls",
+    "final_sparse_repeat": {
+      "passed": true,
+      "synthetic_only": true,
+      "production_user_records_modified": false,
+      "real_model_calls": true,
+      "transport": "actual loopback HTTP queue + workers + SQLite",
+      "photo_test_scope": "illustration recognition, not real meal nutritional accuracy",
+      "cases": [
+        {
+          "name": "daily_sparse_1",
+          "passed": true,
+          "status": "succeeded",
+          "seconds": 18.04,
+          "provider": "longcat",
+          "result_kind": "report",
+          "error": null,
+          "attempts": [
+            {
+              "provider": "longcat",
+              "outcome": "success",
+              "duration_ms": 16800,
+              "validation_reason": null
+            }
+          ],
+          "job_count": 1
+        },
+        {
+          "name": "daily_sparse_2",
+          "passed": true,
+          "status": "succeeded",
+          "seconds": 39.08,
+          "provider": "deepseek",
+          "result_kind": "report",
+          "error": null,
+          "attempts": [
+            {
+              "provider": "longcat",
+              "outcome": "invalid_output",
+              "duration_ms": 11021,
+              "validation_reason": "report_detail"
+            },
+            {
+              "provider": "mimo",
+              "outcome": "invalid_output",
+              "duration_ms": 20968,
+              "validation_reason": "report_unsupported_claim"
+            },
+            {
+              "provider": "deepseek",
+              "outcome": "success",
+              "duration_ms": 6013,
+              "validation_reason": null
+            }
+          ],
+          "job_count": 1
+        },
+        {
+          "name": "daily_sparse_3",
+          "passed": true,
+          "status": "succeeded",
+          "seconds": 25.06,
+          "provider": "longcat",
+          "result_kind": "report",
+          "error": null,
+          "attempts": [
+            {
+              "provider": "longcat",
+              "outcome": "success",
+              "duration_ms": 24168,
+              "validation_reason": null
+            }
+          ],
+          "job_count": 1
+        }
+      ]
+    },
+    "final_rules_replay": {
+      "passed": true,
+      "cases": [
+        {
+          "name": "text_food",
+          "passed": true,
+          "result_kind": "meal"
+        },
+        {
+          "name": "multiple_meals",
+          "passed": true,
+          "result_kind": "meal_batch"
+        },
+        {
+          "name": "photo_illustration",
+          "passed": true,
+          "result_kind": "meal"
+        },
+        {
+          "name": "home_plan",
+          "passed": true,
+          "result_kind": "plan"
+        },
+        {
+          "name": "gym_plan",
+          "passed": true,
+          "result_kind": "plan"
+        },
+        {
+          "name": "daily_full",
+          "passed": true,
+          "result_kind": "report"
+        },
+        {
+          "name": "weekly_training",
+          "passed": true,
+          "result_kind": "weekly_review"
+        },
+        {
+          "name": "daily_sparse_1",
+          "passed": true,
+          "result_kind": "report"
+        },
+        {
+          "name": "daily_sparse_2",
+          "passed": true,
+          "result_kind": "report"
+        },
+        {
+          "name": "daily_sparse_3",
+          "passed": true,
+          "result_kind": "report"
+        }
+      ],
+      "scope": "Final rules replay of successful synthetic live responses; no new model calls",
+      "core_sha256": "f34d6fc0e92961668b104492c13558163b732f7ccb5f4a66cb46d0a3ccb14db3",
+      "server_sha256": "3458fdc583a11b5fae2768893c397956584d020d5dd1e36e491f3244d13ccb91"
+    },
+    "initial_rounds_had_failures": true,
+    "real_food_photo_accuracy_tested": false,
+    "final_distributed_ios_account_flow_tested": false
+  },
+  "account_http_flow": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "anonymous request denied",
+        "passed": true
+      },
+      {
+        "name": "membership enforced",
+        "passed": true
+      },
+      {
+        "name": "job accepted food",
+        "passed": true
+      },
+      {
+        "name": "client ID restored without leaking server ID",
+        "passed": true
+      },
+      {
+        "name": "async result returned food",
+        "passed": true
+      },
+      {
+        "name": "duplicate submission uses same job",
+        "passed": true
+      },
+      {
+        "name": "duplicate does not consume another quota unit",
+        "passed": true
+      },
+      {
+        "name": "meal completion written through actual proxy",
+        "passed": true
+      },
+      {
+        "name": "another account cannot read result",
+        "passed": true
+      },
+      {
+        "name": "invalid request rejected by worker",
+        "passed": true
+      },
+      {
+        "name": "rejected request rolls back reserved quota",
+        "passed": true
+      },
+      {
+        "name": "job accepted report",
+        "passed": true
+      },
+      {
+        "name": "client ID restored without leaking server ID",
+        "passed": true
+      },
+      {
+        "name": "async result returned report",
+        "passed": true
+      },
+      {
+        "name": "both proxy jobs use ordered fallback once",
+        "passed": true
+      },
+      {
+        "name": "task recovery metadata includes both jobs",
+        "passed": true
+      },
+      {
+        "name": "analysis result saved to cloud",
+        "passed": true
+      },
+      {
+        "name": "empty local cache cannot erase saved cloud report",
+        "passed": true
+      },
+      {
+        "name": "explicit deletion removes cloud report",
+        "passed": true
+      },
+      {
+        "name": "quota error states reset time",
+        "passed": true
+      },
+      {
+        "name": "refused quota request does not consume usage",
+        "passed": true
+      }
+    ],
+    "isolated_mysql_and_sqlite": true,
+    "real_account_proxy_used": true,
+    "model_transport": "synthetic outage + valid fixtures",
+    "production_accounts_modified": false
+  },
+  "deployment": {
+    "passed": true,
+    "backup": "/root/bojiclub-v50-backup-20261011-180643",
+    "health": true,
+    "files": {
+      "account-server/admin/ai-validation-reasons.php": "f967dea247d44fd74a99fa37c2a0f985696076ce901a0409739d003663121969",
+      "account-server/public/ai-response.php": "ad048bcfecd07a648ed0486e187d899835138729a51f0ac6b7235acf9d13d93c",
+      "account-server/public/cloud-validation.php": "4ad09535d7c6fa00668988ca1bb1c9951fc1dc153095f177ad84f9a44a08114e",
+      "account-server/public/weekly.php": "f265f0e3e37db68f83a6173dbbd99aa525a0b1ff7d68c28475f6c87a6110c41b",
+      "account-server/admin/index.php": "50891158dc4f9728d49351f9d52e0b4bfdc53708350ba2e2191ce01438fc4b43",
+      "backend/ai_core.py": "f34d6fc0e92961668b104492c13558163b732f7ccb5f4a66cb46d0a3ccb14db3",
+      "backend/server.py": "3458fdc583a11b5fae2768893c397956584d020d5dd1e36e491f3244d13ccb91"
+    },
+    "public_statuses": {
+      "https://110.41.10.154/admin/": 200,
+      "https://110.41.10.154/account/v1/me/state": 401,
+      "https://110.41.10.154/account/v1/me/ai/jobs": 401
+    },
+    "installed_contract_probe": true,
+    "existing_training_and_meal_records_modified": false,
+    "additive_attempt_diagnostic_column": true,
+    "external_model_call_performed": false
+  },
+  "post_deployment": {
+    "passed": true,
+    "source_matches_installed": true,
+    "services": {
+      "bojiclub-ai": "active",
+      "php8.2-fpm": "active",
+      "nginx": "active"
+    },
+    "health": true,
+    "accepting_restored": true,
+    "active_tasks": 0,
+    "nginx_configuration_valid": true,
+    "mode": "read-only"
+  },
+  "old_v49_source_unchanged": true,
+  "changed_files": [
+    "AI-STABILITY-V50-20261011.md",
+    "BojiClub.xcodeproj/project.pbxproj",
+    "BojiClub/AIService.swift",
+    "BojiClub/AIViews.swift",
+    "BojiClub/AppStore.swift",
+    "BojiClub/JourneyRules.swift",
+    "BojiClub/MealEditorView.swift",
+    "BojiClub/PlanRemindersView.swift",
+    "BojiClub/PlanView.swift",
+    "BojiClub/RecordReliability.swift",
+    "BojiClub/WeeklyReview.swift",
+    "README_先读我.md",
+    "account-server/admin/ai-validation-reasons.php",
+    "account-server/admin/index.php",
+    "account-server/public/ai-response.php",
+    "account-server/public/cloud-validation.php",
+    "account-server/public/weekly.php",
+    "backend/ai_core.py",
+    "backend/server.py",
+    "scripts/check-ai-stability-v50-on-mac.sh",
+    "scripts/check-on-mac.sh",
+    "tests/build_ai_stability_v50_swift_tests.py",
+    "tests/build_repair_v48_swift_tests.py",
+    "tests/food-illustration-fixture.jpg",
+    "tests/test_ai_stability.php",
+    "tests/test_ai_stability.py",
+    "tests/test_ai_stability_sql.php",
+    "tests/test_plan_explanation.php",
+    "tests/test_repair_v4.py"
+  ],
+  "overall_ios_acceptance": "pending Mac build and TestFlight device verification",
+  "account_http_integration": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "anonymous request denied",
+        "passed": true
+      },
+      {
+        "name": "membership enforced",
+        "passed": true
+      },
+      {
+        "name": "job accepted food",
+        "passed": true
+      },
+      {
+        "name": "client ID restored without leaking server ID",
+        "passed": true
+      },
+      {
+        "name": "async result returned food",
+        "passed": true
+      },
+      {
+        "name": "duplicate submission uses same job",
+        "passed": true
+      },
+      {
+        "name": "duplicate does not consume another quota unit",
+        "passed": true
+      },
+      {
+        "name": "meal completion written through actual proxy",
+        "passed": true
+      },
+      {
+        "name": "another account cannot read result",
+        "passed": true
+      },
+      {
+        "name": "invalid request rejected by worker",
+        "passed": true
+      },
+      {
+        "name": "rejected request rolls back reserved quota",
+        "passed": true
+      },
+      {
+        "name": "job accepted report",
+        "passed": true
+      },
+      {
+        "name": "client ID restored without leaking server ID",
+        "passed": true
+      },
+      {
+        "name": "async result returned report",
+        "passed": true
+      },
+      {
+        "name": "both proxy jobs use ordered fallback once",
+        "passed": true
+      },
+      {
+        "name": "task recovery metadata includes both jobs",
+        "passed": true
+      },
+      {
+        "name": "analysis result saved to cloud",
+        "passed": true
+      },
+      {
+        "name": "empty local cache cannot erase saved cloud report",
+        "passed": true
+      },
+      {
+        "name": "explicit deletion removes cloud report",
+        "passed": true
+      },
+      {
+        "name": "quota error states reset time",
+        "passed": true
+      },
+      {
+        "name": "refused quota request does not consume usage",
+        "passed": true
+      }
+    ],
+    "isolated_mysql_and_sqlite": true,
+    "real_account_proxy_used": true,
+    "model_transport": "synthetic outage + valid fixtures",
+    "production_accounts_modified": false
+  },
+  "source_matches_installed_at_delivery": true,
+  "backend_tests_verified_again_after_final_quote_boundary_fix": true
+}

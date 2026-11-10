@@ -1,0 +1,4 @@
+[Service]
+MemoryHigh=448M
+MemoryMax=512M
+TimeoutStopSec=240

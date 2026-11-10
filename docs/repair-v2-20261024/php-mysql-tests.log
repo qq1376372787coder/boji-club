@@ -1,0 +1,8 @@
+test_ai_conversations.php: ai conversations contract passed
+test_ai_proposals.php: ai proposals contract passed
+test_ai_memory.php: ai memory contract passed
+test_proposal_intake.php: Standalone proposal intake passed
+test_v2_repair.php: V2 repair: 37 assertions passed
+test_outbox_repair.php: Outbox repair: 7 assertions passed
+test_timestamp_repair.php: Timestamp repair: 10 assertions passed
+All 7 V2 PHP/MySQL suites passed

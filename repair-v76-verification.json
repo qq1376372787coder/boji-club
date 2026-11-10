@@ -1,0 +1,86 @@
+{
+  "version": "0.13.76",
+  "build": 95,
+  "code_fixed_items": [
+    "whole-window plan replacement including rest days",
+    "continuation source uses actual cycle interval",
+    "new continuation operation ID allows recreation after deletion",
+    "weekly adoption awaits active sync and subsequent edits"
+  ],
+  "verification": {
+    "python_syntax_errors": [],
+    "php_syntax_errors": [],
+    "swift_syntax_errors": [],
+    "swift_native_executed": false,
+    "xcode_build_executed": false,
+    "swift_files_parsed": 58,
+    "offline_exit_code": 0,
+    "offline": {
+      "passed": true,
+      "tests": 455,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    },
+    "php_contracts": [
+      {
+        "name": "test_cycle_v75.php",
+        "exit_code": 0,
+        "output": "PASS 9 v75 interval and provenance checks\n"
+      },
+      {
+        "name": "test_cloud_scope_v73.php",
+        "exit_code": 0,
+        "output": "{\"passed\":16}\n"
+      },
+      {
+        "name": "test_experience_v25.php",
+        "exit_code": 0,
+        "output": "PASS 20 v25 PHP session and reward checks\n"
+      },
+      {
+        "name": "test_membership_verify_v70.php",
+        "exit_code": 0,
+        "output": "{\"passed\":23}\n"
+      },
+      {
+        "name": "test_onboarding_plan_preview.php",
+        "exit_code": 0,
+        "output": "onboarding plan preview policy passed\n"
+      },
+      {
+        "name": "test_plan_explanation.php",
+        "exit_code": 0,
+        "output": "PASS new plan explanation validates\r\nPASS legacy plan has no required explanation\r\nPASS reject malformed version\r\nPASS reject malformed summary\r\nPASS reject malformed sessions\r\nPASS reject malformed sections\r\nPASS source marker validates\r\nPASS legacy cycle validates\r\nPASS retained job and snapshot contract validates\r\nPASS old client does not drop cycle source\r\nPASS old client does not drop unchanged plan reasons\r\nPASS new client can explicitly clear source\r\nPASS different prescription does not inherit reasons\r\nPASS different cycle does not inherit source\r\nPASS deleted records are not resurrected\r\nPASS first sync retains explanation\r\nALL 16 PLAN EXPLANATION PHP CHECKS PASSED; NO DATABASE ACCESSED\r\n"
+      },
+      {
+        "name": "test_training_feedback_v63.php",
+        "exit_code": 0,
+        "output": "{\"passed\":true,\"checks\":13,\"labels\":[\"new contracts accepted\",\"snapshot day validates with mirror fields\",\"old client cannot drop snapshot\",\"committed snapshot cannot be shortened\",\"old client preserves report feedback\",\"same report retains original status\",\"different day and session never inherits old target\",\"duplicate target rejected\",\"zero duration target rejected\",\"capture after confirmation rejected\",\"invalid status rejected\",\"invalid status rejected\",\"invalid status rejected\"]}"
+      },
+      {
+        "name": "test_multi_meal.php",
+        "exit_code": 0,
+        "output": "6 cloud contract cases passed; no database was accessed\n"
+      },
+      {
+        "name": "test_repair_v48.php",
+        "exit_code": 0,
+        "output": "PASS first key fetch\r\nPASS fresh known key uses cache\r\nPASS invalid kid does not fetch\r\nPASS unknown kid rejected after refresh\r\nPASS unknown kid refresh occurs once\r\nPASS unknown kid refresh throttled\r\nPASS throttle prevents network hammering\r\nPASS known key works during probe backoff\r\nPASS expired keys fail closed on network error\r\nPASS failed refresh has backoff\r\nPASS retry succeeds after backoff\r\nPASS new upload within quota\r\nPASS total bytes bounded\r\nPASS replacement accounts for prior bytes\r\nPASS new file count bounded\r\nPASS replacement permitted at file count limit\r\nPASS upload burst limited\r\nPASS proxy keeps required output and drops internal fields\r\nPASS trace error filtered\r\nPASS retry no-op flag preserved\r\nPASS safe actionable error preserved\r\nPASS valid Apple signature accepted\r\nPASS nonce remains checked\r\nPASS audience remains checked\r\nPASS expiry remains checked\r\nALL V48 PHP RULES PASSED\r\n"
+      },
+      {
+        "name": "test_revenuecat_v60.php",
+        "exit_code": 0,
+        "output": "{\n    \"passed\": true,\n    \"checks\": 33,\n    \"database_tested\": false,\n    \"cases\": [\n        \"Lifetime with null expiration grants permanent access\",\n        \"Missing expiration is not silently interpreted as lifetime\",\n        \"Malformed expiration rejected\",\n        \"monthly without expiration rejected\",\n        \"monthly with expiration grants access\",\n        \"six_month without expiration rejected\",\n        \"six_month with expiration grants access\",\n        \"Reject wrong environment\",\n        \"Reject wrong store\",\n        \"Reject wrong app_id\",\n        \"Reject wrong product_id\",\n        \"Wrong\\/missing entitlement cannot grant membership\",\n        \"Wrong\\/missing entitlement cannot grant membership\",\n        \"Wrong\\/missing entitlement cannot grant membership\",\n        \"Lifetime refund revokes even after entitlement mapping removed\",\n        \"Refund reversal can reinstate lifetime\",\n        \"Cancellation is not an immediate loss of access\",\n        \"Apple sandbox accepts configured yuefu\",\n        \"TestFlight server rejects production yuefu\",\n        \"Apple sandbox accepts configured nianfu\",\n        \"TestFlight server rejects production nianfu\",\n        \"Apple sandbox accepts configured yongjiu\",\n        \"TestFlight server rejects production yongjiu\",\n        \"Expiration revokes access\",\n        \"Billing grace period honored\",\n        \"Stable app user ID accepted\",\n        \"Unsupported identity rejected\",\n        \"Unsupported identity rejected\",\n        \"Unsupported identity rejected\",\n        \"Unsupported identity rejected\",\n        \"Missing Authorization rejected\",\n        \"Wrong Authorization rejected\",\n        \"Exact configured Authorization accepted\"\n    ]\n}\n"
+      }
+    ],
+    "elapsed_seconds": 23.18
+  },
+  "new_swift_regression_cases": "prepared from actual production code; not executed on Windows",
+  "backend_unchanged_from": "0.13.75",
+  "backend_files_checked": 166,
+  "backend_deployed_in_this_fix": false,
+  "xcode_build_tested": false,
+  "native_device_tested": false,
+  "native_rules_executed": false
+}

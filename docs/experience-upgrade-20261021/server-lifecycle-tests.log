@@ -1,0 +1,12 @@
+No syntax errors detected in /opt/bojiclub-account/.experience-cloud-validation.php
+PLAN PASS remove only targeted pending exercise
+PLAN PASS meal untouched
+PLAN PASS concurrent start protected
+PLAN PASS concurrent completed set protected
+PLAN PASS new rest cycle retained
+PLAN PASS owned cancelled cycle removed
+PLAN PASS old-client upload retains cancellation
+PLAN PASS old-client upload cannot resurrect cancelled plan
+PLAN PASS old client preserves single-day intent
+PLAN PASS cancel upload restores concurrently started server exercise
+PLAN_LIFECYCLE_OK 10 checks

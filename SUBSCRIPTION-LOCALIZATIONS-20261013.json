@@ -1,0 +1,52 @@
+{
+  "membership_display_name": "薄肌俱乐部Pro",
+  "entitlement_id": "薄肌俱乐部_pro",
+  "subscription_group": {
+    "zh-Hans": "薄肌俱乐部Pro",
+    "en-US": "BOJI CLUB Pro"
+  },
+  "products": [
+    {
+      "id": "yuefu",
+      "type": "auto_renewable_subscription",
+      "duration": "P1M",
+      "price_cny": 12,
+      "zh-Hans": {
+        "name": "薄肌俱乐部Pro月度会员",
+        "description": "按月解锁训练计划、饮食记录、AI复盘及云端同步。"
+      },
+      "en-US": {
+        "name": "BOJI CLUB Pro Monthly",
+        "description": "Monthly plans, food logs and AI reviews."
+      }
+    },
+    {
+      "id": "nianfu",
+      "type": "auto_renewable_subscription",
+      "duration": "P1Y",
+      "price_cny": 28,
+      "zh-Hans": {
+        "name": "薄肌俱乐部Pro年度会员",
+        "description": "按年解锁训练计划、饮食记录、AI复盘及云端同步。"
+      },
+      "en-US": {
+        "name": "BOJI CLUB Pro Annual",
+        "description": "Yearly plans, food logs and AI reviews."
+      }
+    },
+    {
+      "id": "yongjiu",
+      "type": "non_consumable",
+      "duration": null,
+      "price_cny": 38,
+      "zh-Hans": {
+        "name": "薄肌俱乐部Pro永久会员",
+        "description": "一次购买，永久解锁训练计划、饮食记录与AI复盘。"
+      },
+      "en-US": {
+        "name": "BOJI CLUB Pro Lifetime",
+        "description": "Lifetime plans, food logs and AI reviews."
+      }
+    }
+  ]
+}

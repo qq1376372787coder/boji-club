@@ -1,0 +1,69 @@
+{
+  "phase": 0,
+  "status": "COMPLETE",
+  "generatedAt": "2026-10-25",
+  "gitSha": "313e91ed9afbdafb95cd1823c57ae5825337bc2d",
+  "sourceZipSha256": "c1a242dbefc98706a74f7d30fe574b1fe334d39c96cfb9b6979c7e5369abcbd5",
+  "uiBaselineHashes": "docs/v2/ui_baseline_hashes.txt",
+  "uiScreenshots": [
+    "evidence/ui_baseline/launch_01.png",
+    "evidence/ui_baseline/shell_complete_01.png"
+  ],
+  "tests": [
+    {
+      "name": "ios-debug-build",
+      "command": "xcodebuild -project BojiClub.xcodeproj -scheme BojiClub -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO build",
+      "exitCode": 0,
+      "evidence": "evidence/xcodebuild_baseline.log"
+    },
+    {
+      "name": "python-offline",
+      "command": "python3 tests/run_offline.py",
+      "exitCode": 0,
+      "testsRun": 676,
+      "evidence": "docs/v2/04_TEST_BASELINE.md"
+    },
+    {
+      "name": "swift-regressions",
+      "command": "python3 tests/run_swift_regressions.py --output evidence/swift_regressions_baseline.json",
+      "exitCode": 0,
+      "harnessesPassed": 32,
+      "harnessesTotal": 54,
+      "evidence": "evidence/swift_regressions_baseline.json"
+    }
+  ],
+  "blocked": [
+    "php-runtime-missing",
+    "mysql-runtime-missing",
+    "real-model-credentials",
+    "apple-signing-testflight",
+    "healthkit-device"
+  ],
+  "swiftBaselineFailures": [
+    "build_ai_stability_v50_swift_tests",
+    "build_experience_upgrade_swift_tests",
+    "build_experience_v21_swift_tests",
+    "build_experience_v22_swift_tests",
+    "build_experience_v23_swift_tests",
+    "build_experience_v24_swift_tests",
+    "build_experience_v25_swift_tests",
+    "build_experience_v33_swift_tests",
+    "build_experience_v34_swift_tests",
+    "build_experience_v35_swift_tests",
+    "build_experience_v36_swift_tests",
+    "build_experience_v37_swift_tests",
+    "build_experience_v42_swift_tests",
+    "build_experience_v43_swift_tests",
+    "build_experience_v44_swift_tests",
+    "build_multi_meal_swift_tests",
+    "build_phase1_swift_tests",
+    "build_phase2_swift_tests",
+    "build_plan_insights_v49_swift_tests",
+    "build_product_consistency_swift_tests",
+    "build_repair_v38_swift_tests",
+    "build_repair_v46_swift_tests",
+    "build_repair_v48_swift_tests",
+    "build_ui_v47_swift_tests"
+  ],
+  "next": "Phase 1: trace/idempotency verification then SSE server+client"
+}

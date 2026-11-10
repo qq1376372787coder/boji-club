@@ -1,0 +1,122 @@
+[
+  {
+    "file": "account-server/process-club-automation.php",
+    "sha256": "4d3700a386d267760c551fd86c6a9c8d2ba9a4e2e58184694c8dd89242e9de7a",
+    "status": "modified"
+  },
+  {
+    "file": "account-server/public/automation.php",
+    "sha256": "ce1ed568eb8c75ef341d25f353da65751032e970ab69fdb07456e0284b2f0c92",
+    "status": "modified"
+  },
+  {
+    "file": "account-server/public/task-recovery.php",
+    "sha256": "33104af7d612463878471a43e09d0479d70c65ebeed92600c0fdf9b3958bce67",
+    "status": "new"
+  },
+  {
+    "file": "account-server/public/weekly.php",
+    "sha256": "653987718113b07562f5ecfe1bc9a016e084f24f3cc9e47f8bea02da6ddad615",
+    "status": "modified"
+  },
+  {
+    "file": "backend/adaptive_core.py",
+    "sha256": "5b576ea68785de9d6f1a5a0993a6d806b2ea4066966b772dabfced716e5cbc9c",
+    "status": "modified"
+  },
+  {
+    "file": "backend/automation_core.py",
+    "sha256": "86dcedacf63fddeb140417523a334ca6ca8da0faafee9e268416d199a5e8523c",
+    "status": "modified"
+  },
+  {
+    "file": "backend/server.py",
+    "sha256": "0386cd3737d653b70762e8f4c69b7e3da24590a3168137fc8e155f5e405f9ca2",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/AIService.swift",
+    "sha256": "53a6d6825a37d77b743ce894caf6232a08841d4369fe972489f9d5301fdf830e",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ClubAdaptive.swift",
+    "sha256": "9b6c3cc6bdc1a1c64b0f735908cc54131f28c94a91dd36c76e2396bfa39f00ab",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ClubAutomation.swift",
+    "sha256": "7137528e8bab6a2cd1d6f53ec452ddaef4913a7dfa250a08264e9311c0bb0a66",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ClubAutomationService.swift",
+    "sha256": "95df3f2f4f49fce6eb76bbc4a0cc729a3949795b3baeeef7efd43d763bbf8c09",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ManualPlanView.swift",
+    "sha256": "28817ff5b3311879c435cc166ca2aeb834c865139a2054bba288fbc085e09ca7",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub/ReportLibraryView.swift",
+    "sha256": "b9770a07cb41fc6e3b245764694ab9364c78fdd1bb42f2a16ef34a7fa098bb94",
+    "status": "modified"
+  },
+  {
+    "file": "BojiClub.xcodeproj/project.pbxproj",
+    "sha256": "dad333ec6826c71fff750e3892aebabae129e91962549b3171e1cc98a4f338c7",
+    "status": "modified"
+  },
+  {
+    "file": "scripts/check-upgrade-on-mac.sh",
+    "sha256": "d00fdfe72d4cb099890c15193c205c41a86eaf37941aa56b7c45c08b96875403",
+    "status": "modified"
+  },
+  {
+    "file": "tests/automation-generated.swift",
+    "sha256": "c939b8f6d8c970eb7469dde49573056630fbafebcec480db91ebbc03df14dd91",
+    "status": "modified"
+  },
+  {
+    "file": "tests/build_automation_swift_tests.py",
+    "sha256": "20cab250e5a9d5455e3010a44934996cafaf4dcf013cc68672dfc431ffc666a0",
+    "status": "modified"
+  },
+  {
+    "file": "tests/build_retry_v106_swift_tests.py",
+    "sha256": "b59447c0b349950bd843dffadffb6d482bccc94407a4605aa166b990b521923c",
+    "status": "new"
+  },
+  {
+    "file": "tests/retry-v106-generated.swift",
+    "sha256": "0fc0b2fcebd08c190f5fa25ff79e75f0040d6e677df4ddcb0b9a1a51e078ce52",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_retry_v106.sh",
+    "sha256": "b5ff94299829dea6bb69d6adb34c88b62f15f3b1dd48b77d5d274b1b80c13935",
+    "status": "new"
+  },
+  {
+    "file": "tests/run_upgrade_offline.py",
+    "sha256": "eae4fd1cb3159fffa31273df2264233a0a21f40dcebd52d939b00f8d4f017319",
+    "status": "modified"
+  },
+  {
+    "file": "tests/test_adaptive_automation.py",
+    "sha256": "e1f89083001d7e31e0f8d6e7749a07fe469c55856f41bec8f8809c5f0cc042ff",
+    "status": "modified"
+  },
+  {
+    "file": "tests/test_build106.php",
+    "sha256": "1ba3eb2086c59adc0fda144e000361a83b462891d0996639bcbfe1653657e4ea",
+    "status": "new"
+  },
+  {
+    "file": "tests/test_build106.py",
+    "sha256": "1f0c63abb20160cb4fd71977c8a8da9c16cc78232afbf5350f9872767ecbb6e8",
+    "status": "new"
+  }
+]

@@ -1,0 +1,10 @@
+[Unit]
+Description=Boji Club durable AI runs timer
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=5s
+AccuracySec=2s
+
+[Install]
+WantedBy=timers.target

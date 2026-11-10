@@ -1,0 +1,42 @@
+<?php
+declare(strict_types=1);
+require __DIR__.'/../account-server/public/apple-tokens.php';
+require __DIR__.'/../account-server/public/apple-auth.php';
+require __DIR__.'/../account-server/public/revenuecat.php';
+require __DIR__.'/php_test_bootstrap.php';
+$db=bojiTestDatabase(getenv('BOJI_TEST_DB') ?: 'bojiclub_repair_v2_test');
+$checks=0;
+function checkV2(bool $ok,string $name): void {global $checks;if(!$ok)throw new RuntimeException($name);$checks++;echo "PASS $name\n";}
+$config=['apple_token_encryption_key'=>base64_encode(random_bytes(32))];
+$sealed=appleTokenSeal('synthetic-refresh-token',$config);
+checkV2(appleTokenOpen($sealed,$config)==='synthetic-refresh-token','Apple token encryption round trip');
+checkV2(!str_contains($sealed,'synthetic-refresh-token'),'Apple plaintext token is not stored');
+$bytes=base64_decode($sealed);$bytes[30]=chr(ord($bytes[30])^1);$rejected=false;
+try {appleTokenOpen(base64_encode($bytes),$config);}catch(Throwable){$rejected=true;}
+checkV2($rejected,'Apple encrypted token tampering rejected');
+$key=openssl_pkey_new(['private_key_type'=>OPENSSL_KEYTYPE_EC,'curve_name'=>'prime256v1']);
+openssl_sign('synthetic-jwt',$signature,$key,OPENSSL_ALGO_SHA256);
+checkV2(strlen(appleES256Signature($signature))===64,'Apple ES256 signature JOSE conversion');
+checkV2(appleAuthorizationTokens([],[], 'synthetic')===null,'Unconfigured old Apple accounts retain manual deletion flow');
+$db->exec("DELETE FROM users WHERE id IN (900001,900002);DELETE FROM revenuecat_events WHERE event_id LIKE 'v2-crypto-%';INSERT INTO users(id,status,created_at,updated_at) VALUES(900001,'active',UTC_TIMESTAMP(),UTC_TIMESTAMP()),(900002,'active',UTC_TIMESTAMP(),UTC_TIMESTAMP())");
+$cfg=['revenuecat_environment'=>'PRODUCTION'];$now=(int)(microtime(true)*1000);
+$event=['id'=>'v2-crypto-initial','type'=>'INITIAL_PURCHASE','app_user_id'=>'boji-900001','environment'=>'PRODUCTION','product_id'=>'bojiclub_yearly_4290','original_transaction_id'=>'v2-crypto-sub','transaction_id'=>'v2-crypto-tx','purchased_at_ms'=>$now,'expiration_at_ms'=>$now+86400000,'event_timestamp_ms'=>$now];
+processRevenueCatEvent($db,$cfg,$event);
+$db->exec("INSERT INTO membership_admin_grants(user_id,status,starts_at,expires_at,updated_at) VALUES(900001,'active',UTC_TIMESTAMP(),DATE_ADD(UTC_TIMESTAMP(),INTERVAL 30 DAY),UTC_TIMESTAMP())");
+$renew=$event;$renew['id']='v2-crypto-renew';$renew['type']='RENEWAL';$renew['event_timestamp_ms']=$now+1;$renew['expiration_at_ms']=$now+2*86400000;
+processRevenueCatEvent($db,$cfg,$renew);
+checkV2($db->query('SELECT source FROM membership_entitlements WHERE user_id=900001')->fetchColumn()==='admin','Renewal preserves separate operator grant');
+$transfer=['id'=>'v2-crypto-transfer','type'=>'TRANSFER','environment'=>'PRODUCTION','transferred_from'=>['boji-900001'],'transferred_to'=>['boji-900002'],'event_timestamp_ms'=>$now+2];
+processRevenueCatEvent($db,$cfg,$transfer);
+checkV2((int)$db->query("SELECT user_id FROM revenuecat_subscriptions WHERE original_transaction_id='v2-crypto-sub'")->fetchColumn()===900002,'Transfer moves subscription');
+checkV2($db->query('SELECT source FROM membership_entitlements WHERE user_id=900001')->fetchColumn()==='admin','Transfer preserves old account gift');
+checkV2($db->query('SELECT status FROM membership_entitlements WHERE user_id=900002')->fetchColumn()==='active','Transfer grants destination access');
+checkV2(!empty(processRevenueCatEvent($db,$cfg,$transfer)['duplicate']),'Transfer is idempotent');
+$grace=$renew;$grace['id']='v2-crypto-grace';$grace['app_user_id']='boji-900002';$grace['type']='BILLING_ISSUE';$grace['event_timestamp_ms']=$now+3;$grace['expiration_at_ms']=$now-3600000;$grace['grace_period_expiration_at_ms']=$now+3*86400000;
+processRevenueCatEvent($db,$cfg,$grace);
+checkV2($db->query('SELECT status FROM membership_entitlements WHERE user_id=900002')->fetchColumn()==='active','Billing grace period preserves access');
+$transfer['id']='v2-crypto-transfer-back';$transfer['transferred_from']=['boji-900002'];$transfer['transferred_to']=['boji-900001'];$transfer['event_timestamp_ms']=$now+4;
+processRevenueCatEvent($db,$cfg,$transfer);
+checkV2($db->query('SELECT status FROM membership_entitlements WHERE user_id=900002')->fetchColumn()==='expired','Transfer clears previous account access and unique transaction');
+$db->exec("DELETE FROM users WHERE id IN (900001,900002);DELETE FROM revenuecat_events WHERE event_id LIKE 'v2-crypto-%'");
+echo "ACCOUNT_V2_OK checks=$checks\n";

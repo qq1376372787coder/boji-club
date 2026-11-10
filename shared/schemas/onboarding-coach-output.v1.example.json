@@ -1,0 +1,46 @@
+{
+  "kind": "coach",
+  "notes": [],
+  "coach": {
+    "answer": "这些条件我先整理成待核对资料。你之前有规律做过力量训练吗？",
+    "source_ids": [],
+    "actions": [],
+    "onboarding": {
+      "schema_version": 1,
+      "candidates": [
+        {
+          "field": "goal",
+          "value": "build_muscle",
+          "unit": null,
+          "evidence_quote": "我想增肌"
+        },
+        {
+          "field": "venue",
+          "value": "home",
+          "unit": null,
+          "evidence_quote": "在家"
+        },
+        {
+          "field": "equipment",
+          "value": [
+            "dumbbell"
+          ],
+          "unit": null,
+          "evidence_quote": "有哑铃"
+        },
+        {
+          "field": "days_per_week",
+          "value": 3,
+          "unit": "days_per_week",
+          "evidence_quote": "一周三次"
+        },
+        {
+          "field": "session_minutes",
+          "value": 30,
+          "unit": "minutes",
+          "evidence_quote": "每次半小时"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "onboarding_assist": {
+    "version": "boji.onboarding_assist.v1",
+    "file": "shared/prompts/onboarding_assist.v1.md",
+    "sha256": "d0b6405cc9d74824fe5fd01fa3d387aaa5c07f4a02304cedf3abe0a6c22724f6"
+  },
+  "context_continue": {
+    "version": "boji.context_continue.v1",
+    "file": "shared/prompts/context_continue.v1.md",
+    "sha256": "17690bdef3d827039ae1e3fb1121b95a8a7be593562df43ee6267dc7cc411b55"
+  },
+  "draft_correction": {
+    "version": "boji.draft_correction.v2",
+    "file": "shared/prompts/draft_correction.v2.md",
+    "sha256": "f4e1760a7a6ce0736d0b9bf01868d80f6302578d9a5d33b4df6bb3a3168ed770"
+  },
+  "output_schema": {
+    "file": "shared/schemas/onboarding-coach-output.v1.schema.json"
+  }
+}

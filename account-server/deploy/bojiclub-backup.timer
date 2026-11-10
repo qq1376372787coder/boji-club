@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Boji Club encrypted backup (03:17 local, off-peak)
+
+[Timer]
+OnCalendar=*-*-* 03:17:00
+Persistent=true
+RandomizedDelaySec=300
+Unit=bojiclub-backup.service
+
+[Install]
+WantedBy=timers.target

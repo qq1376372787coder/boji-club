@@ -1,0 +1,76 @@
+{
+  "version": "0.14.0",
+  "build": 105,
+  "deployed": true,
+  "server": "117.50.119.49",
+  "backup": "/opt/bojiclub-account/.backups/v2-deploy-20261016-013702",
+  "hashes": {
+    "backend/ai_core.py": "060cb839d89f401ed23a368406746c7fcf82203bde9cb25f4d425851bf6533e4",
+    "backend/server.py": "9371e2fd85d07bedce3112749b1f39e731c6292873ca2a4093b95e9df5fe5e9b",
+    "backend/coach_core.py": "eeffe8e83214a4086a0d72eda2f627558ca922f62f6b38b5b6b89df2f9d8ecb4",
+    "backend/training_feedback.py": "774dbf99c90940aeec0eefe1eb2a4c219c77112c1670cb72a02606dc1e52d6c1",
+    "backend/adaptive_core.py": "fd86d16deaba6f1324c2b19ed44e01c50bc0f73200bb5d9b5dddb2cfddc5dc75",
+    "backend/automation_core.py": "69a7ae8f9e8a9bff24482624580e04ab33f3223816f312d87313c92d1472ef40",
+    "account-server/public/cloud-validation.php": "5095b472cdd5d981ae55541d1b1bd3cb5971b0af11df5758a37e5ede9b3bb912",
+    "account-server/public/weekly.php": "3b256bbda73b2c6579df0f9ee18cc6025462f3ba0113cb33fb4024f9749b0f4d",
+    "account-server/public/index.php": "7bcc36b62e6ee992ad5dd0b198c01539e224d7eacff94cb6fb39449eb8622584",
+    "account-server/public/automation.php": "199ef4d39020859d983fe371807437d047a5066e2dc28f4eb44b7c32b1d9ac3d",
+    "account-server/public/club-push.php": "4ebad38beec51e086cbf98b82fc7ac58b6a408fc3d2304c3c6baacef7c2ef2f2",
+    "account-server/process-club-automation.php": "1dc59c241e35a947d90fab854cad89c41eab067587dc9e74d03fabc93953abcd",
+    "account-server/process-club-push.php": "8c36e0e042a1fadc8d724b6eb1b48c441eeb83c37a37d5c0930bc74a2061cd7f"
+  },
+  "database": {
+    "additive_tables": [
+      "club_automation",
+      "club_push_devices",
+      "club_push_receipts"
+    ],
+    "legacy_row_counts_unchanged": true,
+    "automatic_accounts_enabled": 0,
+    "apns_configured": false
+  },
+  "production_targeted_tests": {
+    "passed": true,
+    "tests": 76,
+    "real_models_called": false,
+    "production_import_paths_verified": true
+  },
+  "staging_backend_tests": {
+    "passed": true,
+    "tests": 314,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "isolated_integration": {
+    "passed": true,
+    "checks": 23,
+    "real_models_called": false,
+    "production_account_data_used": false
+  },
+  "php_contract_groups": 18,
+  "health": "ok",
+  "services": [
+    "active",
+    "active",
+    "active",
+    "active"
+  ],
+  "cron": "/etc/cron.d/bojiclub-club-ai",
+  "cron_run_as": "nginx",
+  "cron_manual_empty_run_passed": true,
+  "capacity_settings_unchanged": true,
+  "provider_calls_made": false,
+  "payment_config_changed": false,
+  "apns_delivery_verified": false,
+  "scheduler_final_backup": "/opt/bojiclub-account/.backups/v2-scheduler-20261016-014739",
+  "public_unauthenticated_statuses": {
+    "automation": 401,
+    "push-device": 401
+  },
+  "internal_disabled_smoke": {
+    "private_prepare_authenticated": true,
+    "disabled_account_no_tasks": true
+  },
+  "scheduler_releases_account_lock_before_http": true
+}

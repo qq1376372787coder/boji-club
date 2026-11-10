@@ -1,0 +1,209 @@
+[
+  {
+    "testIdentifier" : "BojiClubUITests/testNativeLaunchBenchmark()",
+    "testIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubUITests/testNativeLaunchBenchmark",
+    "testRuns" : [
+      {
+        "device" : {
+          "deviceId" : "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+          "deviceName" : "BOJI Native UI Small"
+        },
+        "metrics" : [
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "Duration (AppLaunch)",
+            "identifier" : "com.apple.dt.XCTMetric_ApplicationLaunch-AppLaunch.duration",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              1.502092167,
+              1.407520375,
+              1.454767125,
+              1.366068875,
+              1.666138083
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "s"
+          }
+        ],
+        "testPlanConfiguration" : {
+          "configurationId" : "1",
+          "configurationName" : "Test Scheme Action"
+        }
+      }
+    ]
+  },
+  {
+    "testIdentifier" : "BojiClubUITests/testNativeScrollBenchmark()",
+    "testIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubUITests/testNativeScrollBenchmark",
+    "testRuns" : [
+      {
+        "device" : {
+          "deviceId" : "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+          "deviceName" : "BOJI Native UI Small"
+        },
+        "metrics" : [
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "Duration (Scroll_DraggingAndDeceleration)",
+            "identifier" : "com.apple.dt.XCTMetric_OSSignpost-Scroll_DraggingAndDeceleration.duration",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              0.9843251670000001,
+              0.984140542,
+              1.000829041,
+              1.000443583,
+              0.99972925
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "s"
+          },
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "CPU Instructions Retired (dev)",
+            "identifier" : "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.instructions_retired",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              1493440.339,
+              1478685.621,
+              1492022.635,
+              1471966.419,
+              1483931.856
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "kI"
+          },
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "Clock Monotonic Time",
+            "identifier" : "com.apple.dt.XCTMetric_Clock.time.monotonic",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              2.8514518460000002,
+              2.3745288170000003,
+              2.596822781,
+              2.324478559,
+              2.44168038
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "s"
+          },
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "CPU Time (dev)",
+            "identifier" : "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.time",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              0.30350602600000004,
+              0.29606661700000003,
+              0.34264372400000004,
+              0.28383434900000004,
+              0.29411284400000004
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "s"
+          },
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "CPU Cycles (dev)",
+            "identifier" : "com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.cycles",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              928954.244,
+              901109.299,
+              971453.955,
+              787726.342,
+              867601.429
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "kC"
+          },
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "Absolute Memory Physical (dev)",
+            "identifier" : "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_absolute",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              85887.376,
+              85903.76,
+              85870.992,
+              85854.608,
+              85870.992
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "kB"
+          },
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "Memory Physical (dev)",
+            "identifier" : "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              -49.152,
+              16.384,
+              -16.384,
+              0,
+              16.384
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "kB"
+          },
+          {
+            "baselineAverage" : 0,
+            "baselineName" : "",
+            "displayName" : "Memory Peak Physical (dev)",
+            "identifier" : "com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_peak",
+            "maxPercentRegression" : 10,
+            "maxPercentRelativeStandardDeviation" : 10,
+            "maxRegression" : 0,
+            "maxStandardDeviation" : 10,
+            "measurements" : [
+              86100.368,
+              86133.136,
+              85936.528,
+              86100.368,
+              85952.912
+            ],
+            "polarity" : "prefers smaller",
+            "unitOfMeasurement" : "kB"
+          }
+        ],
+        "testPlanConfiguration" : {
+          "configurationId" : "1",
+          "configurationName" : "Test Scheme Action"
+        }
+      }
+    ]
+  }
+]

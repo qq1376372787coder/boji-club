@@ -1,0 +1,15 @@
+[Unit]
+Description=Boji Club proactive push dispatcher
+After=network.target mariadb.service
+ConditionPathExists=/opt/bojiclub-account/config.php
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/php /opt/bojiclub-account/process-club-push.php
+TimeoutStartSec=120
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/bojiclub-account/media

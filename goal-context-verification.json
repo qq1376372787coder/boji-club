@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "tests": 253,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "python_syntax_errors": [],
+  "native_swift_executed": false,
+  "xcode_executed": false,
+  "paid_provider_calls": false,
+  "legacy_UI_snapshot_tests": "v66/v67 refer to replaced homepage; not used as acceptance for new UI"
+}

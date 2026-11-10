@@ -1,0 +1,11 @@
+[Unit]
+Description=Reconcile Boji Club domain projections every 15 minutes
+PartOf=bojiclub-domain-reconcile.service
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

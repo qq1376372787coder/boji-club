@@ -1,0 +1,43 @@
+<?php
+declare(strict_types=1);
+require __DIR__.'/test_club_history.php';
+$checks=0;
+$movement=['name'=>'俯卧撑','muscle'=>'胸','sets'=>[['weight'=>0,'reps'=>10]]];
+$updated=$movement;$updated['sets'][0]['reps']=12;
+$plan['changes']=[['date'=>'2026-10-15','before'=>[$movement],'after'=>[$updated],'retained'=>false]];
+$state=['days'=>(object)['2026-10-15'=>['exercises'=>[],'meals'=>[],'planVersions'=>[$plan]]]];
+cloudValidate($plan,'planVersion');checkHistory(true,'audit DTO accepted');
+checkHistory(cloudExperienceValid($state),'complete audit accepted');
+function invalidChange(array $state,callable $edit,string $label):void {
+    $plan=$state['days']->{'2026-10-15'}['planVersions'][0];$edit($plan);
+    $state['days']=(object)['2026-10-15'=>['exercises'=>[],'meals'=>[],'planVersions'=>[$plan]]];
+    checkHistory(!cloudExperienceValid($state),$label);
+}
+invalidChange($state,function(&$p){$p['changes']=[];},'missing scoped date rejected');
+invalidChange($state,function(&$p){$p['changes'][]=$p['changes'][0];},'duplicate date rejected');
+invalidChange($state,function(&$p){$p['changes'][0]['date']='2026-10-16';},'date outside adoption scope rejected');
+invalidChange($state,function(&$p){$p['changes'][0]['retained']=true;},'invented retention rejected');
+invalidChange($state,function(&$p){$p['retainedDates']=['2026-10-15'];$p['changes'][0]['retained']=true;},'retained date cannot claim overwritten parameters');
+invalidChange($state,function(&$p){$p['changes'][0]['before'][0]['sets']=array_fill(0,51,['weight'=>0,'reps'=>10]);},'oversized movement sets rejected');
+invalidChange($state,function(&$p){$p['changes'][0]['after'][0]['sets'][0]['weight']=3000;},'out of range audit weight rejected');
+invalidChange($state,function(&$p){$p['changes'][0]['after'][0]['sets'][0]['reps']=-1;},'negative audit rep target rejected');
+invalidChange($state,function(&$p){$p['changes'][0]['after']=array_fill(0,31,$p['changes'][0]['after'][0]);},'oversized movement audit rejected');
+$empty=$state;$empty['days']=(object)['2026-10-15'=>['exercises'=>[],'meals'=>[],'planVersions'=>[$plan]]];
+$empty['days']->{'2026-10-15'}['planVersions'][0]['changes'][0]['before'][0]['sets']=[];
+checkHistory(cloudExperienceValid($empty),'historical movement with all sets removed remains a faithful audit');
+$rest=$state;$rest['days']=(object)['2026-10-15'=>['exercises'=>[],'meals'=>[],'planVersions'=>[$plan]]];
+$rest['days']->{'2026-10-15'}['planVersions'][0]['changes'][0]['after']=[];
+checkHistory(cloudExperienceValid($rest),'rest replacement audit accepted');
+$kept=$plan;$kept['retainedDates']=['2026-10-15'];$kept['changes'][0]['retained']=true;$kept['changes'][0]['after']=$kept['changes'][0]['before'];
+checkHistory(cloudPlanChangesValid(['days'=>[['planVersions'=>[$kept]]]]),'retained original snapshot accepted');
+$old=$plan;unset($old['changes']);checkHistory(cloudPlanChangesValid(['days'=>[['planVersions'=>[$old]]]]),'old plan without audit remains supported');
+$legacy=$state;$legacy['days']=(object)['2026-10-15'=>['exercises'=>[],'meals'=>[],'planVersions'=>[$old]]];
+$preserved=cloudReconcileRecords($legacy,$state);
+checkHistory($preserved['days']->{'2026-10-15'}['planVersions'][0]['changes']===$plan['changes'],'old client cannot erase saved audit');
+$mutated=$plan;$mutated['changes'][0]['before'][0]['sets'][0]['reps']=999;
+$changed=['days'=>(object)['2026-10-15'=>['exercises'=>[],'meals'=>[],'planVersions'=>[$mutated]]]];
+$preserved=cloudReconcileRecords($changed,$state);
+checkHistory($preserved['days']->{'2026-10-15'}['planVersions'][0]['changes']===$plan['changes'],'accepted audit cannot be rewritten');
+$parts=cloudPartSplit($state);
+checkHistory(isset($parts['d/2026-10-15']['planVersions'][0]['changes']),'audit stays with its plan date partition');
+echo "PASS {$checks} plan change schema and immutable history checks\n";

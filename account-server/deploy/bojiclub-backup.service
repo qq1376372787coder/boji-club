@@ -1,0 +1,15 @@
+[Unit]
+Description=Boji Club encrypted full-recovery backup
+After=network.target mariadb.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/usr/bin/python3 /root/bojiclub-rebuild-v59/backup.py
+TimeoutStartSec=1800
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=read-only
+ReadWritePaths=/root/bojiclub-rebuild-v59 /root/bojiclub-backups

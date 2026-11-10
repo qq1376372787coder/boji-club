@@ -1,0 +1,1127 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/BojiClub_iphonesimulator26.5-arm64.xctestrun -destination "platform=iOS Simulator,id=9B496F27-8B0D-4B90-99F2-9379D8B0626C" -resultBundlePath /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-final-flows.xcresult -parallel-testing-enabled NO "-only-testing:BojiClubUITests/BojiClubUITests/testNativeManualMealAndBodyHaveSingleNavigation" "-only-testing:BojiClubUITests/BojiClubUITests/testV2WorkspaceAccessibilityAudit" "-only-testing:BojiClubUITests/BojiClubUITests/testV2ActiveWorkoutAccessibilityAudit" "-only-testing:BojiClubUITests/BojiClubUITests/testV2SidebarEntriesAndRecords" "-only-testing:BojiClubUITests/BojiClubUITests/testV2SidebarHistorySearchAndRestoreConversation" "-only-testing:BojiClubUITests/BojiClubUITests/testNativeShellScreenshots" "-only-testing:BojiClubUITests/BojiClubUITests/testNativeVoiceStartsOnlyAfterExplicitRecord" "-only-testing:BojiClubUITests/BojiClubUITests/testMiniWorkoutBarSurvivesModesAndRelaunch" "-only-testing:BojiClubUITests/BojiClubUITests/testV2MemoryPageOpensForPreviewAccount"
+
+2026-10-24 20:06:52.881 xcodebuild[2281:3299751] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+Writing result bundle at path:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-final-flows.xcresult
+
+2026-10-24 20:06:52.885 xcodebuild[2281:3299751] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:06:54.169 xcodebuild[2281:3299751] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:06:55.859018+0800 BojiClubUITests-Runner[2316:3300071] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-24 20:06:56.924.
+Test Suite 'BojiClubUITests.xctest' started at 2026-10-24 20:06:56.924.
+Test Suite 'BojiClubUITests' started at 2026-10-24 20:06:56.924.
+Test Case '-[BojiClubUITests.BojiClubUITests testMiniWorkoutBarSurvivesModesAndRelaunch]' started.
+    t =     0.00s Start Test at 2026-10-24 20:06:56.925
+    t =     0.06s Set Up
+    t =     0.06s Open com.bojiclub.app.dev
+    t =     0.06s     Launch com.bojiclub.app.dev
+2026-10-24 20:06:57.238 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:06:57.238 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+objc[2316]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x109bcc310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x10888c398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     1.16s         Setting up automation session
+    t =     1.94s         Wait for com.bojiclub.app.dev to idle
+    t =     4.24s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     5.27s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     5.27s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     5.39s Checking existence of `TabBar (First Match)`
+    t =     5.41s Waiting 2.0s for "稍后再看" Button to exist
+    t =     6.44s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.44s         Checking existence of `"稍后再看" Button`
+    t =     6.50s         Capturing element debug description
+    t =     7.42s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     7.42s         Checking existence of `"稍后再看" Button`
+    t =     7.48s         Capturing element debug description
+    t =     7.48s     Checking existence of `"稍后再看" Button`
+    t =     7.51s Collecting debug information to assist test failure triage
+    t =     7.51s     Requesting snapshot of accessibility hierarchy for app with pid 2333
+    t =     7.54s Waiting 10.0s for "训练" Button to exist
+    t =     8.56s     Checking `Expect predicate `existsNoRetry == 1` for object "训练" Button`
+    t =     8.56s         Checking existence of `"训练" Button`
+    t =     8.59s Tap "训练" Button
+    t =     8.59s     Wait for com.bojiclub.app.dev to idle
+    t =     8.60s     Find the "训练" Button
+    t =     8.62s     Check for interrupting elements affecting "训练" Button
+    t =     8.65s     Synthesize event
+    t =     8.94s     Wait for com.bojiclub.app.dev to idle
+    t =     9.24s Find the "训练" Button
+    t =     9.28s Waiting 8.0s for "开始训练" Button to exist
+    t =    10.31s     Checking `Expect predicate `existsNoRetry == 1` for object "开始训练" Button`
+    t =    10.31s         Checking existence of `"开始训练" Button`
+    t =    10.35s Find the "开始训练" Button
+    t =    10.40s Find the "开始训练" Button
+    t =    10.45s Find the "开始训练" Button
+    t =    10.50s Find the "开始训练" Button
+    t =    10.53s Find the "开始训练" Button
+    t =    10.57s Tap "开始训练" Button
+    t =    10.57s     Wait for com.bojiclub.app.dev to idle
+    t =    10.57s     Find the "开始训练" Button
+    t =    10.61s     Check for interrupting elements affecting "开始训练" Button
+    t =    10.63s     Synthesize event
+    t =    10.93s     Wait for com.bojiclub.app.dev to idle
+    t =    11.29s Waiting 8.0s for "v2-workout-collapse" Button to exist
+    t =    12.32s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-workout-collapse" Button`
+    t =    12.32s         Checking existence of `"v2-workout-collapse" Button`
+    t =    12.44s Tap "v2-workout-collapse" Button
+    t =    12.44s     Wait for com.bojiclub.app.dev to idle
+    t =    12.44s     Find the "v2-workout-collapse" Button
+    t =    12.49s     Check for interrupting elements affecting "v2-workout-collapse" Button
+    t =    12.53s     Synthesize event
+    t =    12.83s     Wait for com.bojiclub.app.dev to idle
+    t =    13.67s Waiting 8.0s for "mini-workout-bar" Any to exist
+    t =    14.70s     Checking `Expect predicate `existsNoRetry == 1` for object "mini-workout-bar" Any`
+    t =    14.70s         Checking existence of `"mini-workout-bar" Any`
+    t =    14.72s Waiting 10.0s for "Club AI" Button to exist
+    t =    15.75s     Checking `Expect predicate `existsNoRetry == 1` for object "Club AI" Button`
+    t =    15.75s         Checking existence of `"Club AI" Button`
+    t =    15.81s Tap "Club AI" Button
+    t =    15.81s     Wait for com.bojiclub.app.dev to idle
+    t =    15.81s     Find the "Club AI" Button
+    t =    15.84s     Check for interrupting elements affecting "Club AI" Button
+    t =    15.87s     Synthesize event
+    t =    16.16s     Wait for com.bojiclub.app.dev to idle
+    t =    16.40s Find the "Club AI" Button
+    t =    16.45s Checking existence of `"mini-workout-bar" Any`
+    t =    16.46s Tap "v2-sidebar-toggle" Button
+    t =    16.46s     Wait for com.bojiclub.app.dev to idle
+    t =    16.46s     Find the "v2-sidebar-toggle" Button
+    t =    16.48s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    16.50s     Synthesize event
+    t =    16.79s     Wait for com.bojiclub.app.dev to idle
+    t =    17.87s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    18.90s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    18.90s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    18.93s Checking existence of `CollectionView (First Match)`
+    t =    18.97s Checking existence of `"v2-sidebar-profile" Button`
+    t =    19.03s Find the "v2-sidebar-profile" Button
+    t =    19.08s Tap "v2-sidebar-profile" Button
+    t =    19.08s     Wait for com.bojiclub.app.dev to idle
+    t =    19.08s     Find the "v2-sidebar-profile" Button
+    t =    19.12s     Check for interrupting elements affecting "v2-sidebar-profile" Button
+    t =    19.16s     Synthesize event
+    t =    19.45s     Wait for com.bojiclub.app.dev to idle
+    t =    19.82s Waiting 8.0s for NavigationBar (First Match) to exist
+    t =    20.84s     Checking `Expect predicate `existsNoRetry == 1` for object NavigationBar (First Match)`
+    t =    20.84s         Checking existence of `NavigationBar (First Match)`
+    t =    20.85s Tap "关闭" Button
+    t =    20.85s     Wait for com.bojiclub.app.dev to idle
+    t =    20.86s     Find the "关闭" Button
+    t =    20.90s     Check for interrupting elements affecting "关闭" Button
+    t =    20.95s     Synthesize event
+    t =    21.25s     Wait for com.bojiclub.app.dev to idle
+    t =    22.03s Waiting 8.0s for "mini-workout-bar" Any to exist
+    t =    23.06s     Checking `Expect predicate `existsNoRetry == 1` for object "mini-workout-bar" Any`
+    t =    23.06s         Checking existence of `"mini-workout-bar" Any`
+    t =    23.08s Terminate com.bojiclub.app.dev:2333
+    t =    24.15s Open com.bojiclub.app.dev
+    t =    24.15s     Launch com.bojiclub.app.dev
+2026-10-24 20:07:21.091 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:07:21.091 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    24.38s         Setting up automation session
+    t =    25.13s         Wait for com.bojiclub.app.dev to idle
+    t =    26.85s Waiting 10.0s for "mini-workout-bar" Any to exist
+    t =    27.87s     Checking `Expect predicate `existsNoRetry == 1` for object "mini-workout-bar" Any`
+    t =    27.87s         Checking existence of `"mini-workout-bar" Any`
+    t =    27.92s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testMiniWorkoutBarSurvivesModesAndRelaunch]' passed (28.207 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeManualMealAndBodyHaveSingleNavigation]' started.
+    t =     0.00s Start Test at 2026-10-24 20:07:25.135
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:2468
+2026-10-24 20:07:26.226 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:07:26.226 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.30s         Setting up automation session
+    t =     1.93s         Wait for com.bojiclub.app.dev to idle
+    t =     3.62s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.65s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.65s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.76s Checking existence of `TabBar (First Match)`
+    t =     4.78s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.81s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.81s         Checking existence of `"稍后再看" Button`
+    t =     5.87s         Capturing element debug description
+    t =     6.79s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.79s         Checking existence of `"稍后再看" Button`
+    t =     6.85s         Capturing element debug description
+    t =     6.85s     Checking existence of `"稍后再看" Button`
+    t =     6.88s Collecting debug information to assist test failure triage
+    t =     6.88s     Requesting snapshot of accessibility hierarchy for app with pid 2497
+    t =     6.91s Tap "v2-composer-plus" Button
+    t =     6.91s     Wait for com.bojiclub.app.dev to idle
+    t =     6.91s     Find the "v2-composer-plus" Button
+    t =     6.93s     Check for interrupting elements affecting "v2-composer-plus" Button
+    t =     6.95s     Synthesize event
+    t =     7.24s     Wait for com.bojiclub.app.dev to idle
+    t =     8.26s Waiting 5.0s for "手动记录饮食" Button to exist
+    t =     9.29s     Checking `Expect predicate `existsNoRetry == 1` for object "手动记录饮食" Button`
+    t =     9.29s         Checking existence of `"手动记录饮食" Button`
+    t =     9.34s Tap "手动记录饮食" Button
+    t =     9.34s     Wait for com.bojiclub.app.dev to idle
+    t =     9.35s     Find the "手动记录饮食" Button
+    t =     9.37s     Check for interrupting elements affecting "fork.knife" Button
+    t =     9.40s     Synthesize event
+    t =     9.69s     Wait for com.bojiclub.app.dev to idle
+    t =    11.14s Waiting 10.0s for "meal-entry-mode" SegmentedControl to exist
+    t =    12.16s     Checking `Expect predicate `existsNoRetry == 1` for object "meal-entry-mode" SegmentedControl`
+    t =    12.16s         Checking existence of `"meal-entry-mode" SegmentedControl`
+    t =    12.24s Find the "手动" Button
+    t =    12.27s Get number of matches for: Descendants matching type NavigationBar
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:855: error: -[BojiClubUITests.BojiClubUITests testNativeManualMealAndBodyHaveSingleNavigation] : XCTAssertEqual failed: ("2") is not equal to ("1") - The meal editor must own one navigation layer
+    t =    12.37s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeManualMealAndBodyHaveSingleNavigation]' failed (12.613 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeShellScreenshots]' started.
+    t =     0.00s Start Test at 2026-10-24 20:07:37.749
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:2497
+2026-10-24 20:07:38.804 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:07:38.804 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.26s         Setting up automation session
+    t =     1.97s         Wait for com.bojiclub.app.dev to idle
+    t =     3.63s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.66s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.66s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.75s Checking existence of `TabBar (First Match)`
+    t =     4.78s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.80s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.80s         Checking existence of `"稍后再看" Button`
+    t =     5.86s         Capturing element debug description
+    t =     6.78s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.79s         Checking existence of `"稍后再看" Button`
+    t =     6.84s         Capturing element debug description
+    t =     6.84s     Checking existence of `"稍后再看" Button`
+    t =     6.87s Collecting debug information to assist test failure triage
+    t =     6.87s     Requesting snapshot of accessibility hierarchy for app with pid 2571
+    t =     6.90s Find the Target Application 'com.bojiclub.app.dev'
+    t =     6.99s Added attachment named 'native-ai-home'
+    t =     6.99s Waiting 10.0s for "训练" Button to exist
+    t =     8.02s     Checking `Expect predicate `existsNoRetry == 1` for object "训练" Button`
+    t =     8.02s         Checking existence of `"训练" Button`
+    t =     8.06s Tap "训练" Button
+    t =     8.06s     Wait for com.bojiclub.app.dev to idle
+    t =     8.06s     Find the "训练" Button
+    t =     8.09s     Check for interrupting elements affecting "训练" Button
+    t =     8.11s     Synthesize event
+    t =     8.40s     Wait for com.bojiclub.app.dev to idle
+    t =     8.64s Find the "训练" Button
+    t =     8.69s Waiting 8.0s for "plan-calendar-toggle" Button to exist
+    t =     9.72s     Checking `Expect predicate `existsNoRetry == 1` for object "plan-calendar-toggle" Button`
+    t =     9.72s         Checking existence of `"plan-calendar-toggle" Button`
+    t =     9.78s Find the Target Application 'com.bojiclub.app.dev'
+    t =     9.89s Added attachment named 'native-training-workspace'
+    t =     9.89s Waiting 10.0s for "Club AI" Button to exist
+    t =    10.90s     Checking `Expect predicate `existsNoRetry == 1` for object "Club AI" Button`
+    t =    10.90s         Checking existence of `"Club AI" Button`
+    t =    10.96s Tap "Club AI" Button
+    t =    10.96s     Wait for com.bojiclub.app.dev to idle
+    t =    10.96s     Find the "Club AI" Button
+    t =    11.00s     Check for interrupting elements affecting "Club AI" Button
+    t =    11.03s     Synthesize event
+    t =    11.33s     Wait for com.bojiclub.app.dev to idle
+    t =    11.58s Find the "Club AI" Button
+    t =    11.63s Tap "v2-sidebar-toggle" Button
+    t =    11.63s     Wait for com.bojiclub.app.dev to idle
+    t =    11.63s     Find the "v2-sidebar-toggle" Button
+    t =    11.65s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    11.67s     Synthesize event
+    t =    11.97s     Wait for com.bojiclub.app.dev to idle
+    t =    12.91s Waiting 8.0s for "v2-sidebar-today" Button to exist
+    t =    13.93s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-today" Button`
+    t =    13.94s         Checking existence of `"v2-sidebar-today" Button`
+    t =    14.02s Find the Target Application 'com.bojiclub.app.dev'
+    t =    14.14s Added attachment named 'native-sidebar'
+    t =    14.14s Tap "v2-sidebar-close" Button
+    t =    14.14s     Wait for com.bojiclub.app.dev to idle
+    t =    14.14s     Find the "v2-sidebar-close" Button
+    t =    14.18s     Check for interrupting elements affecting "v2-sidebar-close" Button
+    t =    14.22s     Synthesize event
+    t =    14.51s     Wait for com.bojiclub.app.dev to idle
+    t =    15.34s Tap "v2-composer-field" Any
+    t =    15.35s     Wait for com.bojiclub.app.dev to idle
+    t =    15.35s     Find the "v2-composer-field" Any
+    t =    15.37s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =    15.40s     Synthesize event
+    t =    15.69s     Wait for com.bojiclub.app.dev to idle
+    t =    15.90s Type '今天怎么安排训练' into "v2-composer-field" TextField
+    t =    15.90s     Wait for com.bojiclub.app.dev to idle
+    t =    16.28s     Find the "v2-composer-field" TextField
+    t =    16.31s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =    16.36s     Synthesize event
+    t =    16.69s     Wait for com.bojiclub.app.dev to idle
+    t =    16.69s Tap "v2-composer-send" Button
+    t =    16.69s     Wait for com.bojiclub.app.dev to idle
+    t =    16.70s     Find the "v2-composer-send" Button
+    t =    16.74s     Check for interrupting elements affecting "v2-composer-send" Button
+    t =    16.77s     Synthesize event
+    t =    17.06s     Wait for com.bojiclub.app.dev to idle
+    t =    17.23s Waiting 15.0s for "ai-card-today_training" Any to exist
+    t =    18.25s     Checking `Expect predicate `existsNoRetry == 1` for object "ai-card-today_training" Any`
+    t =    18.25s         Checking existence of `"ai-card-today_training" Any`
+    t =    18.34s Find the Target Application 'com.bojiclub.app.dev'
+    t =    18.43s Added attachment named 'native-conversation'
+    t =    18.43s Tap "v2-composer-field" Any
+    t =    18.43s     Wait for com.bojiclub.app.dev to idle
+    t =    18.58s     Find the "v2-composer-field" Any
+    t =    18.59s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =    18.62s     Synthesize event
+    t =    18.91s     Wait for com.bojiclub.app.dev to idle
+    t =    19.23s Type '帮我调整明天的安排' into "v2-composer-field" Any
+    t =    19.23s     Wait for com.bojiclub.app.dev to idle
+    t =    19.23s     Find the "v2-composer-field" Any
+    t =    19.26s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =    19.30s     Synthesize event
+    t =    19.65s     Wait for com.bojiclub.app.dev to idle
+    t =    19.65s Find the Target Application 'com.bojiclub.app.dev'
+    t =    19.77s Added attachment named 'native-keyboard-composer'
+    t =    19.77s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeShellScreenshots]' passed (20.023 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeVoiceStartsOnlyAfterExplicitRecord]' started.
+    t =     0.00s Start Test at 2026-10-24 20:07:57.773
+    t =     0.02s Set Up
+    t =     0.02s Open com.bojiclub.app.dev
+    t =     0.02s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:2571
+2026-10-24 20:07:58.845 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:07:58.845 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.28s         Setting up automation session
+    t =     2.03s         Wait for com.bojiclub.app.dev to idle
+    t =     3.70s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.73s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.73s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.82s Checking existence of `TabBar (First Match)`
+    t =     4.85s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.87s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.87s         Checking existence of `"稍后再看" Button`
+    t =     5.93s         Capturing element debug description
+    t =     6.86s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.86s         Checking existence of `"稍后再看" Button`
+    t =     6.91s         Capturing element debug description
+    t =     6.91s     Checking existence of `"稍后再看" Button`
+    t =     6.95s Collecting debug information to assist test failure triage
+    t =     6.95s     Requesting snapshot of accessibility hierarchy for app with pid 2681
+    t =     6.98s Waiting 10.0s for "v2-composer-voice" Button to exist
+    t =     7.99s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-voice" Button`
+    t =     8.00s         Checking existence of `"v2-composer-voice" Button`
+    t =     8.04s Tap "v2-composer-voice" Button
+    t =     8.04s     Wait for com.bojiclub.app.dev to idle
+    t =     8.04s     Find the "v2-composer-voice" Button
+    t =     8.06s     Check for interrupting elements affecting "v2-composer-voice" Button
+    t =     8.08s     Synthesize event
+    t =     8.38s     Wait for com.bojiclub.app.dev to idle
+    t =     8.46s Waiting 8.0s for "语音输入" NavigationBar to exist
+    t =     9.48s     Checking `Expect predicate `existsNoRetry == 1` for object "语音输入" NavigationBar`
+    t =     9.49s         Checking existence of `"语音输入" NavigationBar`
+    t =     9.58s Waiting 5.0s for "开始录音" Button to exist
+    t =    10.59s     Checking `Expect predicate `existsNoRetry == 1` for object "开始录音" Button`
+    t =    10.60s         Checking existence of `"开始录音" Button`
+    t =    10.66s Find the "开始录音" Button
+    t =    10.69s Checking existence of `"结束录音" Button`
+    t =    10.72s Checking existence of `"正在准备…" Button`
+    t =    10.76s Checking existence of `Alert (First Match)`
+    t =    10.80s Waiting 5.0s for Any (First Match) to exist
+    t =    11.83s     Checking `Expect predicate `existsNoRetry == 1` for object Any (First Match)`
+    t =    11.83s         Checking existence of `Any (First Match)`
+    t =    11.92s Find the Any (First Match)
+    t =    11.98s Tap "识别后的文字可在这里修改" TextField
+    t =    11.98s     Wait for com.bojiclub.app.dev to idle
+    t =    11.98s     Find the "识别后的文字可在这里修改" TextField
+    t =    12.03s     Check for interrupting elements affecting "识别后的文字可在这里修改" TextField
+    t =    12.08s     Synthesize event
+    t =    12.36s     Wait for com.bojiclub.app.dev to idle
+    t =    13.04s Type '明天想安排一次上肢训练' into "识别后的文字可在这里修改" TextField
+    t =    13.04s     Wait for com.bojiclub.app.dev to idle
+    t =    13.04s     Find the "识别后的文字可在这里修改" TextField
+    t =    13.15s     Check for interrupting elements affecting "识别后的文字可在这里修改" TextField
+    t =    13.21s     Synthesize event
+    t =    13.60s     Wait for com.bojiclub.app.dev to idle
+    t =    13.60s Find the "识别后的文字可在这里修改" TextField
+    t =    13.70s Checking existence of `"结束录音" Button`
+    t =    13.74s Find the Target Application 'com.bojiclub.app.dev'
+    t =    13.85s Added attachment named 'native-voice-before-explicit-recording'
+    t =    13.85s Tap "取消" Button
+    t =    13.85s     Wait for com.bojiclub.app.dev to idle
+    t =    13.86s     Find the "取消" Button
+    t =    13.90s     Check for interrupting elements affecting "取消" Button
+    t =    13.94s     Synthesize event
+    t =    14.23s     Wait for com.bojiclub.app.dev to idle
+    t =    15.02s Waiting 8.0s for "v2-composer-field" Any to exist
+    t =    16.03s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =    16.03s         Checking existence of `"v2-composer-field" Any`
+    t =    16.07s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeVoiceStartsOnlyAfterExplicitRecord]' passed (16.295 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ActiveWorkoutAccessibilityAudit]' started.
+    t =     0.00s Start Test at 2026-10-24 20:08:14.069
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.04s     Launch com.bojiclub.app.dev
+    t =     0.04s         Terminate com.bojiclub.app.dev:2681
+2026-10-24 20:08:15.144 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:08:15.144 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.28s         Setting up automation session
+    t =     2.03s         Wait for com.bojiclub.app.dev to idle
+    t =     3.71s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.72s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.72s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.79s Checking existence of `TabBar (First Match)`
+    t =     4.82s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.83s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.83s         Checking existence of `"稍后再看" Button`
+    t =     5.89s         Capturing element debug description
+    t =     6.82s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.82s         Checking existence of `"稍后再看" Button`
+    t =     6.88s         Capturing element debug description
+    t =     6.88s     Checking existence of `"稍后再看" Button`
+    t =     6.91s Collecting debug information to assist test failure triage
+    t =     6.91s     Requesting snapshot of accessibility hierarchy for app with pid 2770
+    t =     6.94s Waiting 15.0s for "v2-mode-picker" SegmentedControl to exist
+    t =     7.96s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     7.96s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     8.00s Waiting 10.0s for "训练" Button to exist
+    t =     9.00s     Checking `Expect predicate `existsNoRetry == 1` for object "训练" Button`
+    t =     9.01s         Checking existence of `"训练" Button`
+    t =     9.05s Tap "训练" Button
+    t =     9.05s     Wait for com.bojiclub.app.dev to idle
+    t =     9.05s     Find the "训练" Button
+    t =     9.08s     Check for interrupting elements affecting "训练" Button
+    t =     9.10s     Synthesize event
+    t =     9.39s     Wait for com.bojiclub.app.dev to idle
+    t =     9.64s Find the "训练" Button
+    t =     9.69s Waiting 8.0s for "开始训练" Button to exist
+    t =    10.71s     Checking `Expect predicate `existsNoRetry == 1` for object "开始训练" Button`
+    t =    10.71s         Checking existence of `"开始训练" Button`
+    t =    10.77s Tap "开始训练" Button
+    t =    10.77s     Wait for com.bojiclub.app.dev to idle
+    t =    10.77s     Find the "开始训练" Button
+    t =    10.81s     Check for interrupting elements affecting "开始训练" Button
+    t =    10.84s     Synthesize event
+    t =    11.13s     Wait for com.bojiclub.app.dev to idle
+    t =    11.33s Waiting 10.0s for "v2-workout-collapse" Button to exist
+    t =    12.36s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-workout-collapse" Button`
+    t =    12.36s         Checking existence of `"v2-workout-collapse" Button`
+    t =    12.44s Tap "v2-workout-collapse" Button
+    t =    12.44s     Wait for com.bojiclub.app.dev to idle
+    t =    12.44s     Find the "v2-workout-collapse" Button
+    t =    12.49s     Check for interrupting elements affecting "v2-workout-collapse" Button
+    t =    12.54s     Synthesize event
+    t =    12.83s     Wait for com.bojiclub.app.dev to idle
+    t =    13.64s Waiting 8.0s for "mini-workout-bar" Any to exist
+    t =    14.67s     Checking `Expect predicate `existsNoRetry == 1` for object "mini-workout-bar" Any`
+    t =    14.67s         Checking existence of `"mini-workout-bar" Any`
+    t =    14.69s Waiting 10.0s for "Club AI" Button to exist
+    t =    15.72s     Checking `Expect predicate `existsNoRetry == 1` for object "Club AI" Button`
+    t =    15.72s         Checking existence of `"Club AI" Button`
+    t =    15.78s Tap "Club AI" Button
+    t =    15.78s     Wait for com.bojiclub.app.dev to idle
+    t =    15.79s     Find the "Club AI" Button
+    t =    15.82s     Check for interrupting elements affecting "Club AI" Button
+    t =    15.85s     Synthesize event
+    t =    16.14s     Wait for com.bojiclub.app.dev to idle
+    t =    16.39s Find the "Club AI" Button
+    t =    16.44s Terminate com.bojiclub.app.dev:2770
+    t =    17.49s Open com.bojiclub.app.dev
+    t =    17.49s     Launch com.bojiclub.app.dev
+2026-10-24 20:08:31.565 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:08:31.565 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    17.71s         Setting up automation session
+    t =    18.44s         Wait for com.bojiclub.app.dev to idle
+    t =    20.15s Waiting 10.0s for "mini-workout-bar" Any to exist
+    t =    21.17s     Checking `Expect predicate `existsNoRetry == 1` for object "mini-workout-bar" Any`
+    t =    21.17s         Checking existence of `"mini-workout-bar" Any`
+    t =    23.21s Waiting 4.0s for "v2-composer-field" Any to exist
+    t =    24.23s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =    24.23s         Checking existence of `"v2-composer-field" Any`
+    t =    24.28s Find the "v2-composer-field" Any
+    t =    24.30s Waiting 8.0s for "v2-composer-field" TextField to exist
+    t =    25.32s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" TextField`
+    t =    25.32s         Checking existence of `"v2-composer-field" TextField`
+    t =    25.35s Find the "v2-composer-field" TextField
+    t =    27.46s Find the Any (Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467254912.19)
+    t =    27.48s Requesting snapshot of accessibility hierarchy for app with pid 2858
+    t =    27.51s Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467254912.19
+    t =    27.54s Requesting snapshot of accessibility hierarchy for app with pid 2858
+    t =    27.57s Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467254912.19
+    t =    27.57s Requesting snapshot of accessibility hierarchy for app with pid 2858
+AUDIT-ISSUE active-workout: Contrast nearly passed — Attributes: StaticText, 0x115869900, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Element subtree:
+ →StaticText, 0x115869900, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Path to element:
+
+    t =    27.60s Find the Any (Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467257600.21)
+    t =    27.62s Requesting snapshot of accessibility hierarchy for app with pid 2858
+    t =    27.65s Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467257600.21
+    t =    27.68s Requesting snapshot of accessibility hierarchy for app with pid 2858
+    t =    27.70s Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467257600.21
+    t =    27.70s Requesting snapshot of accessibility hierarchy for app with pid 2858
+AUDIT-ISSUE active-workout: Contrast nearly passed — Attributes: StaticText, 0x11583c780, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Element subtree:
+ →StaticText, 0x11583c780, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Path to ele
+    t =    27.74s Find the Any (Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467260288.22)
+    t =    27.75s Requesting snapshot of accessibility hierarchy for app with pid 2858
+    t =    27.78s Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467260288.22
+    t =    27.81s Requesting snapshot of accessibility hierarchy for app with pid 2858
+    t =    27.83s Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467260288.22
+    t =    27.83s Requesting snapshot of accessibility hierarchy for app with pid 2858
+AUDIT-ISSUE active-workout: Contrast nearly passed — Attributes: StaticText, 0x1158e92c0, {{44.0, 318.7}, {89.3, 18.0}}, identifier: 'v2-today-training', label: '进行中的训练'
+Element subtree:
+ →StaticText, 0x1158e92c0, {{44.0, 318.7}, {89.3, 18.0}}, identifi
+    t =    27.86s Find the Any (Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467822528.24)
+    t =    27.88s Requesting snapshot of accessibility hierarchy for app with pid 2858
+    t =    27.91s Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467822528.24
+    t =    27.94s Requesting snapshot of accessibility hierarchy for app with pid 2858
+    t =    27.96s Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467822528.24
+    t =    27.96s Requesting snapshot of accessibility hierarchy for app with pid 2858
+AUDIT-ISSUE active-workout: Contrast nearly passed — Attributes: StaticText, 0x11580fac0, {{44.0, 381.0}, {140.7, 18.0}}, identifier: 'v2-today-training', label: '2026-10-24 · 0/3 组'
+Element subtree:
+ →StaticText, 0x11580fac0, {{44.0, 381.0}, {140.7, 18
+Accessibility tolerated (by design): 
+Contrast nearly passed — Attributes: StaticText, 0x115869900, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Element subtree:
+ →StaticText, 0x115869900, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Path to element:
+ →Application, 0x11561b0c0, pid: 2858, label: '薄肌俱乐部'
+  ↳Window (Main), 0x11561b200, {{0.0, 0.0}, {402.0, 874.0}}
+   ↳Other, 0x11561a580, {{0.0, 0.0}, {402.0, 874.0}}
+    ↳Other, 0x11561a6c0, {{0.0, 0.0}, {402.0, 874.0}}
+     ↳Other, 0x11561aa80, {{0.0, 0.0}, {402.0, 874.0}}
+      ↳Other, 0x11561af80, {{0.0, 0.0}, {402.0, 874.0}}
+       ↳Other, 0x11561abc0, {{0.0, 0.0}, {402.0, 874.0}}
+        ↳Other, 0x115868c80, {{0.0, 0.0}, {402.0, 874.0}}
+         ↳Other, 0x115868dc0, {{0.0, 0.0}, {402.0, 874.0}}
+          ↳Other, 0x115868f00, {{0.0, 0.0}, {402.0, 874.0}}
+           ↳Other, 0x115869040, {{0.0, 0.0}, {402.0, 874.0}}
+            ↳ScrollView, 0x115869180, {{0.0, 0.0}, {402.0, 874.0}}, identifier: 'v2-ai-workspace'
+             ↳Other, 0x1158697c0, {{0.0, 116.0}, {402.0, 445.3}}
+              ↳StaticText, 0x115869900, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Query chain:
+ →Find: Target Application 'com.bojiclub.app.dev'
+  Output: {
+    Application, 0x1158eb200, pid: 2858, label: '薄肌俱乐部'
+  }
+  ↪︎Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467254912.19
+    Output: {
+      StaticText, 0x1158e8f00, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+    }
+
+Contrast nearly passed — Attributes: StaticText, 0x11583c780, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Element subtree:
+ →StaticText, 0x11583c780, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Path to element:
+ →Application, 0x1158ea6c0, pid: 2858, label: '薄肌俱乐部'
+  ↳Window (Main), 0x1158ea580, {{0.0, 0.0}, {402.0, 874.0}}
+   ↳Other, 0x1158ea440, {{0.0, 0.0}, {402.0, 874.0}}
+    ↳Other, 0x1158ea080, {{0.0, 0.0}, {402.0, 874.0}}
+     ↳Other, 0x1158ea1c0, {{0.0, 0.0}, {402.0, 874.0}}
+      ↳Other, 0x1158e8280, {{0.0, 0.0}, {402.0, 874.0}}
+       ↳Other, 0x1158e83c0, {{0.0, 0.0}, {402.0, 874.0}}
+        ↳Other, 0x1158e9540, {{0.0, 0.0}, {402.0, 874.0}}
+         ↳Other, 0x1158e9400, {{0.0, 0.0}, {402.0, 874.0}}
+          ↳Other, 0x1158e92c0, {{0.0, 0.0}, {402.0, 874.0}}
+           ↳Other, 0x1158e9180, {{0.0, 0.0}, {402.0, 874.0}}
+            ↳ScrollView, 0x1158e9040, {{0.0, 0.0}, {402.0, 874.0}}, identifier: 'v2-ai-workspace'
+             ↳Other, 0x1158e8a00, {{0.0, 116.0}, {402.0, 445.3}}
+              ↳StaticText, 0x11583c780, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Query chain:
+ →Find: Target Application 'com.bojiclub.app.dev'
+  Output: {
+    Application, 0x1158eb200, pid: 2858, label: '薄肌俱乐部'
+  }
+  ↪︎Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467257600.21
+    Output: {
+      StaticText, 0x11586aa80, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+    }
+
+Contrast nearly passed — Attributes: StaticText, 0x1158e92c0, {{44.0, 318.7}, {89.3, 18.0}}, identifier: 'v2-today-training', label: '进行中的训练'
+Element subtree:
+ →StaticText, 0x1158e92c0, {{44.0, 318.7}, {89.3, 18.0}}, identifier: 'v2-today-training', label: '进行中的训练'
+Path to element:
+ →Application, 0x11561b340, pid: 2858, label: '薄肌俱乐部'
+  ↳Window (Main), 0x11561aa80, {{0.0, 0.0}, {402.0, 874.0}}
+   ↳Other, 0x11561b0c0, {{0.0, 0.0}, {402.0, 874.0}}
+    ↳Other, 0x11561a6c0, {{0.0, 0.0}, {402.0, 874.0}}
+     ↳Other, 0x11561a580, {{0.0, 0.0}, {402.0, 874.0}}
+      ↳Other, 0x11561b200, {{0.0, 0.0}, {402.0, 874.0}}
+       ↳Other, 0x11561bd40, {{0.0, 0.0}, {402.0, 874.0}}
+        ↳Other, 0x1158eae40, {{0.0, 0.0}, {402.0, 874.0}}
+         ↳Other, 0x1158ea300, {{0.0, 0.0}, {402.0, 874.0}}
+          ↳Other, 0x1158eb0c0, {{0.0, 0.0}, {402.0, 874.0}}
+           ↳Other, 0x1158ead00, {{0.0, 0.0}, {402.0, 874.0}}
+            ↳ScrollView, 0x1158ea6c0, {{0.0, 0.0}, {402.0, 874.0}}, identifier: 'v2-ai-workspace'
+             ↳Other, 0x1158e8280, {{0.0, 116.0}, {402.0, 445.3}}
+              ↳StaticText, 0x1158e92c0, {{44.0, 318.7}, {89.3, 18.0}}, identifier: 'v2-today-training', label: '进行中的训练'
+Query chain:
+ →Find: Target Application 'com.bojiclub.app.dev'
+  Output: {
+    Application, 0x1158f88c0, pid: 2858, label: '薄肌俱乐部'
+  }
+  ↪︎Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467260288.22
+    Output: {
+      StaticText, 0x11586abc0, {{44.0, 318.7}, {89.3, 18.0}}, identifier: 'v2-today-training', label: '进行中的训练'
+    }
+
+Contrast nearly passed — Attributes: StaticText, 0x11580fac0, {{44.0, 381.0}, {140.7, 18.0}}, identifier: 'v2-today-training', label: '2026-10-24 · 0/3 组'
+Element subtree:
+ →StaticText, 0x11580fac0, {{44.0, 381.0}, {140.7, 18.0}}, identifier: 'v2-today-training', label: '2026-10-24 · 0/3 组'
+Path to element:
+ →Application, 0x1158eb0c0, pid: 2858, label: '薄肌俱乐部'
+  ↳Window (Main), 0x1158ead00, {{0.0, 0.0}, {402.0, 874.0}}
+   ↳Other, 0x1158ea6c0, {{0.0, 0.0}, {402.0, 874.0}}
+    ↳Other, 0x1158e8c80, {{0.0, 0.0}, {402.0, 874.0}}
+     ↳Other, 0x1158e8500, {{0.0, 0.0}, {402.0, 874.0}}
+      ↳Other, 0x1158e8f00, {{0.0, 0.0}, {402.0, 874.0}}
+       ↳Other, 0x1158e88c0, {{0.0, 0.0}, {402.0, 874.0}}
+        ↳Other, 0x1158ea080, {{0.0, 0.0}, {402.0, 874.0}}
+         ↳Other, 0x1158ea440, {{0.0, 0.0}, {402.0, 874.0}}
+          ↳Other, 0x1158ebe80, {{0.0, 0.0}, {402.0, 874.0}}
+           ↳Other, 0x1158f8500, {{0.0, 0.0}, {402.0, 874.0}}
+            ↳ScrollView, 0x1158f8000, {{0.0, 0.0}, {402.0, 874.0}}, identifier: 'v2-ai-workspace'
+             ↳Other, 0x1158fb980, {{0.0, 116.0}, {402.0, 445.3}}
+              ↳StaticText, 0x11580fac0, {{44.0, 381.0}, {140.7, 18.0}}, identifier: 'v2-today-training', label: '2026-10-24 · 0/3 组'
+Query chain:
+ →Find: Target Application 'com.bojiclub.app.dev'
+  Output: {
+    Application, 0x1158ebd40, pid: 2858, label: '薄肌俱乐部'
+  }
+  ↪︎Find: Descendant with identity binding to AX element pid: 2858, elementOrHash.elementID: 4467822528.24
+    Output: {
+      StaticText, 0x11586ae40, {{44.0, 381.0}, {140.7, 18.0}}, identifier: 'v2-today-training', label: '2026-10-24 · 0/3 组'
+    }
+
+    t =    27.99s Tap "mini-workout-bar" Any
+    t =    27.99s     Wait for com.bojiclub.app.dev to idle
+    t =    28.00s     Find the "mini-workout-bar" Any
+    t =    28.00s     Check for interrupting elements affecting "mini-workout-bar" Button
+    t =    28.03s     Synthesize event
+    t =    28.32s     Wait for com.bojiclub.app.dev to idle
+    t =    28.44s Waiting 10.0s for "完成第 1 组" Button to exist
+    t =    29.47s     Checking `Expect predicate `existsNoRetry == 1` for object "完成第 1 组" Button`
+    t =    29.47s         Checking existence of `"完成第 1 组" Button`
+    t =    29.57s Tap "完成第 1 组" Button
+    t =    29.57s     Wait for com.bojiclub.app.dev to idle
+    t =    29.58s     Find the "完成第 1 组" Button
+    t =    29.63s     Check for interrupting elements affecting "完成第 1 组" Button
+    t =    29.67s     Synthesize event
+    t =    29.96s     Wait for com.bojiclub.app.dev to idle
+    t =    30.25s Waiting 5.0s for "结束并保存本次训练" Button to exist
+    t =    31.27s     Checking `Expect predicate `existsNoRetry == 1` for object "结束并保存本次训练" Button`
+    t =    31.27s         Checking existence of `"结束并保存本次训练" Button`
+    t =    31.35s Tap "结束并保存本次训练" Button
+    t =    31.35s     Wait for com.bojiclub.app.dev to idle
+    t =    31.35s     Find the "结束并保存本次训练" Button
+    t =    31.40s     Check for interrupting elements affecting "结束并保存本次训练" Button
+    t =    31.44s     Synthesize event
+    t =    31.73s     Wait for com.bojiclub.app.dev to idle
+    t =    32.46s Tap "结束并保存已完成的部分" Button
+    t =    32.46s     Wait for com.bojiclub.app.dev to idle
+    t =    32.46s     Find the "结束并保存已完成的部分" Button
+    t =    32.53s     Check for interrupting elements affecting "结束并保存已完成的部分" Button
+    t =    32.58s     Synthesize event
+    t =    32.87s     Wait for com.bojiclub.app.dev to idle
+    t =    33.24s Waiting 8.0s for "训练完成" NavigationBar to exist
+    t =    34.27s     Checking `Expect predicate `existsNoRetry == 1` for object "训练完成" NavigationBar`
+    t =    34.27s         Checking existence of `"训练完成" NavigationBar`
+    t =    34.36s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ActiveWorkoutAccessibilityAudit]' passed (34.672 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2MemoryPageOpensForPreviewAccount]' started.
+    t =     0.00s Start Test at 2026-10-24 20:08:48.741
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:2858
+2026-10-24 20:08:49.812 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:08:49.812 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.28s         Setting up automation session
+    t =     1.98s         Wait for com.bojiclub.app.dev to idle
+    t =     3.63s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.65s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.65s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.75s Checking existence of `TabBar (First Match)`
+    t =     4.78s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.79s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.79s         Checking existence of `"稍后再看" Button`
+    t =     5.85s         Capturing element debug description
+    t =     6.78s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.78s         Checking existence of `"稍后再看" Button`
+    t =     6.83s         Capturing element debug description
+    t =     6.84s     Checking existence of `"稍后再看" Button`
+    t =     6.87s Collecting debug information to assist test failure triage
+    t =     6.87s     Requesting snapshot of accessibility hierarchy for app with pid 2966
+    t =     6.90s Tap "v2-sidebar-toggle" Button
+    t =     6.90s     Wait for com.bojiclub.app.dev to idle
+    t =     6.90s     Find the "v2-sidebar-toggle" Button
+    t =     6.92s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =     6.93s     Synthesize event
+    t =     7.23s     Wait for com.bojiclub.app.dev to idle
+    t =     8.19s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =     9.21s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =     9.21s         Checking existence of `"v2-sidebar-panel" Any`
+    t =     9.24s Checking existence of `CollectionView (First Match)`
+    t =     9.28s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =     9.34s Press CollectionView (First Match)[0.50, 0.78] for 0.1 seconds, then drag to CollectionView (First Match)[0.50, 0.34] with velocity of 500.00 pixels per second, and then hold for 0.0 seconds 
+    t =     9.34s     Wait for com.bojiclub.app.dev to idle
+    t =     9.34s     Find the CollectionView (First Match)
+    t =     9.36s     Check for interrupting elements affecting CollectionView
+    t =     9.41s     Synthesize event
+    t =     9.41s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =     9.43s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =     9.46s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =     9.48s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =     9.50s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.44s     Wait for com.bojiclub.app.dev to idle
+    t =    10.76s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =    10.81s Find the "v2-sidebar-aimemory" Button
+    t =    10.86s Tap "v2-sidebar-aimemory" Button
+    t =    10.86s     Wait for com.bojiclub.app.dev to idle
+    t =    10.86s     Find the "v2-sidebar-aimemory" Button
+    t =    10.90s     Check for interrupting elements affecting "v2-sidebar-aimemory" Button
+    t =    10.94s     Synthesize event
+    t =    11.23s     Wait for com.bojiclub.app.dev to idle
+    t =    11.75s Waiting 10.0s for "ai-memory-page" Any to exist
+    t =    12.77s     Checking `Expect predicate `existsNoRetry == 1` for object "ai-memory-page" Any`
+    t =    12.78s         Checking existence of `"ai-memory-page" Any`
+    t =    12.83s Waiting 10.0s for StaticText (First Match) to exist
+    t =    13.85s     Checking `Expect predicate `existsNoRetry == 1` for object StaticText (First Match)`
+    t =    13.85s         Checking existence of `StaticText (First Match)`
+    t =    13.92s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2MemoryPageOpensForPreviewAccount]' passed (14.144 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarEntriesAndRecords]' started.
+    t =     0.00s Start Test at 2026-10-24 20:09:02.886
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:2966
+2026-10-24 20:09:03.977 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:09:03.977 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.30s         Setting up automation session
+    t =     2.00s         Wait for com.bojiclub.app.dev to idle
+    t =     3.66s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.69s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.69s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.78s Checking existence of `TabBar (First Match)`
+    t =     4.81s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.84s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.84s         Checking existence of `"稍后再看" Button`
+    t =     5.90s         Capturing element debug description
+    t =     6.81s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.81s         Checking existence of `"稍后再看" Button`
+    t =     6.85s         Capturing element debug description
+    t =     6.85s     Checking existence of `"稍后再看" Button`
+    t =     6.88s Collecting debug information to assist test failure triage
+    t =     6.88s     Requesting snapshot of accessibility hierarchy for app with pid 3040
+    t =     6.91s Tap "v2-sidebar-toggle" Button
+    t =     6.91s     Wait for com.bojiclub.app.dev to idle
+    t =     6.91s     Find the "v2-sidebar-toggle" Button
+    t =     6.93s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =     6.95s     Synthesize event
+    t =     7.24s     Wait for com.bojiclub.app.dev to idle
+    t =     8.17s Waiting 8.0s for "v2-sidebar-newchat" Button to exist
+    t =     9.19s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-newchat" Button`
+    t =     9.19s         Checking existence of `"v2-sidebar-newchat" Button`
+    t =     9.28s Checking existence of `SearchField (First Match)`
+    t =     9.30s Find the "v2-composer-field" Any
+    t =     9.32s Find the Target Application 'com.bojiclub.app.dev'
+    t =     9.43s Added attachment named 'native-sidebar-open'
+    t =     9.43s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    10.45s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    10.45s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    10.51s Checking existence of `CollectionView (First Match)`
+    t =    10.54s Checking existence of `"v2-sidebar-records" Button`
+    t =    10.58s Press CollectionView (First Match)[0.50, 0.78] for 0.1 seconds, then drag to CollectionView (First Match)[0.50, 0.34] with velocity of 500.00 pixels per second, and then hold for 0.0 seconds 
+    t =    10.58s     Wait for com.bojiclub.app.dev to idle
+    t =    10.58s     Find the CollectionView (First Match)
+    t =    10.60s     Check for interrupting elements affecting CollectionView
+    t =    10.64s     Synthesize event
+    t =    10.64s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.67s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.69s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.71s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.73s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    11.66s     Wait for com.bojiclub.app.dev to idle
+    t =    12.01s Checking existence of `"v2-sidebar-records" Button`
+    t =    12.08s Find the "v2-sidebar-records" Button
+    t =    12.13s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    13.14s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    13.14s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    13.17s Checking existence of `CollectionView (First Match)`
+    t =    13.19s Checking existence of `"v2-sidebar-club" Button`
+    t =    13.24s Find the "v2-sidebar-club" Button
+    t =    13.29s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    14.31s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    14.31s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    14.34s Checking existence of `CollectionView (First Match)`
+    t =    14.36s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =    14.41s Find the "v2-sidebar-aimemory" Button
+    t =    14.46s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    15.48s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    15.48s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    15.51s Checking existence of `CollectionView (First Match)`
+    t =    15.54s Checking existence of `"v2-sidebar-profile" Button`
+    t =    15.59s Find the "v2-sidebar-profile" Button
+    t =    15.64s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    16.65s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    16.65s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    16.68s Checking existence of `CollectionView (First Match)`
+    t =    16.70s Checking existence of `"v2-sidebar-settings" Button`
+    t =    16.75s Find the "v2-sidebar-settings" Button
+    t =    16.80s Tap "v2-sidebar-close" Button
+    t =    16.80s     Wait for com.bojiclub.app.dev to idle
+    t =    16.80s     Find the "v2-sidebar-close" Button
+    t =    16.85s     Check for interrupting elements affecting "v2-sidebar-close" Button
+    t =    16.89s     Synthesize event
+    t =    17.18s     Wait for com.bojiclub.app.dev to idle
+    t =    18.01s Tap "v2-sidebar-toggle" Button
+    t =    18.01s     Wait for com.bojiclub.app.dev to idle
+    t =    18.01s     Find the "v2-sidebar-toggle" Button
+    t =    18.06s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    18.08s     Synthesize event
+    t =    18.37s     Wait for com.bojiclub.app.dev to idle
+    t =    19.24s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    20.27s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    20.27s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    20.30s Checking existence of `CollectionView (First Match)`
+    t =    20.33s Checking existence of `"v2-sidebar-records" Button`
+    t =    20.38s Press CollectionView (First Match)[0.50, 0.78] for 0.1 seconds, then drag to CollectionView (First Match)[0.50, 0.34] with velocity of 500.00 pixels per second, and then hold for 0.0 seconds 
+    t =    20.38s     Wait for com.bojiclub.app.dev to idle
+    t =    20.39s     Find the CollectionView (First Match)
+    t =    20.41s     Check for interrupting elements affecting CollectionView
+    t =    20.45s     Synthesize event
+    t =    20.45s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    20.47s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    20.49s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    20.51s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    20.54s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    21.47s     Wait for com.bojiclub.app.dev to idle
+    t =    21.81s Checking existence of `"v2-sidebar-records" Button`
+    t =    21.88s Find the "v2-sidebar-records" Button
+    t =    21.93s Tap "v2-sidebar-records" Button
+    t =    21.93s     Wait for com.bojiclub.app.dev to idle
+    t =    21.93s     Find the "v2-sidebar-records" Button
+    t =    21.97s     Check for interrupting elements affecting "v2-sidebar-records" Button
+    t =    22.01s     Synthesize event
+    t =    22.30s     Wait for com.bojiclub.app.dev to idle
+    t =    22.65s Waiting 8.0s for "records-category-picker" SegmentedControl to exist
+    t =    23.67s     Checking `Expect predicate `existsNoRetry == 1` for object "records-category-picker" SegmentedControl`
+    t =    23.67s         Checking existence of `"records-category-picker" SegmentedControl`
+    t =    23.77s Tap "关闭" Button
+    t =    23.77s     Wait for com.bojiclub.app.dev to idle
+    t =    23.77s     Find the "关闭" Button
+    t =    23.81s     Check for interrupting elements affecting "关闭" Button
+    t =    23.85s     Synthesize event
+    t =    24.14s     Wait for com.bojiclub.app.dev to idle
+    t =    24.91s Waiting 8.0s for "v2-sidebar-toggle" Button to exist
+    t =    25.92s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =    25.92s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =    25.96s Find the "v2-composer-field" Any
+    t =    25.98s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarEntriesAndRecords]' passed (26.256 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarHistorySearchAndRestoreConversation]' started.
+    t =     0.00s Start Test at 2026-10-24 20:09:29.143
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.04s     Launch com.bojiclub.app.dev
+    t =     0.04s         Terminate com.bojiclub.app.dev:3040
+2026-10-24 20:09:30.220 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:09:30.220 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.49s         Setting up automation session
+    t =     2.05s         Wait for com.bojiclub.app.dev to idle
+    t =     3.71s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.73s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.74s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.81s Checking existence of `TabBar (First Match)`
+    t =     4.84s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.86s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.87s         Checking existence of `"稍后再看" Button`
+    t =     5.92s         Capturing element debug description
+    t =     6.84s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.84s         Checking existence of `"稍后再看" Button`
+    t =     6.90s         Capturing element debug description
+    t =     6.90s     Checking existence of `"稍后再看" Button`
+    t =     6.93s Collecting debug information to assist test failure triage
+    t =     6.93s     Requesting snapshot of accessibility hierarchy for app with pid 3185
+    t =     6.96s Waiting 10.0s for "v2-composer-field" Any to exist
+    t =     7.98s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =     7.98s         Checking existence of `"v2-composer-field" Any`
+    t =     8.01s Tap "v2-composer-field" Any
+    t =     8.01s     Wait for com.bojiclub.app.dev to idle
+    t =     8.01s     Find the "v2-composer-field" Any
+    t =     8.02s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.05s     Synthesize event
+    t =     8.34s     Wait for com.bojiclub.app.dev to idle
+    t =     8.39s Type '核对今天训练与饮食的安排' into "v2-composer-field" TextField
+    t =     8.39s     Wait for com.bojiclub.app.dev to idle
+    t =     8.78s     Find the "v2-composer-field" TextField
+    t =     8.82s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.87s     Synthesize event
+    t =     9.29s     Wait for com.bojiclub.app.dev to idle
+    t =     9.29s Tap "v2-composer-send" Button
+    t =     9.29s     Wait for com.bojiclub.app.dev to idle
+    t =     9.30s     Find the "v2-composer-send" Button
+    t =     9.34s     Check for interrupting elements affecting "v2-composer-send" Button
+    t =     9.37s     Synthesize event
+    t =     9.67s     Wait for com.bojiclub.app.dev to idle
+    t =    11.10s Waiting 15.0s for "ai-card-today_training" Any to exist
+    t =    12.12s     Checking `Expect predicate `existsNoRetry == 1` for object "ai-card-today_training" Any`
+    t =    12.12s         Checking existence of `"ai-card-today_training" Any`
+    t =    12.21s Tap "v2-sidebar-toggle" Button
+    t =    12.21s     Wait for com.bojiclub.app.dev to idle
+    t =    12.21s     Find the "v2-sidebar-toggle" Button
+    t =    12.24s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    12.26s     Synthesize event
+    t =    12.56s     Wait for com.bojiclub.app.dev to idle
+    t =    13.54s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    14.56s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    14.56s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    14.59s Checking existence of `CollectionView (First Match)`
+    t =    14.63s Checking existence of `"v2-sidebar-history" Button`
+    t =    14.69s Find the "v2-sidebar-history" Button
+    t =    14.76s Tap "v2-sidebar-history" Button
+    t =    14.76s     Wait for com.bojiclub.app.dev to idle
+    t =    14.76s     Find the "v2-sidebar-history" Button
+    t =    14.81s     Check for interrupting elements affecting "v2-sidebar-history" Button
+    t =    14.85s     Synthesize event
+    t =    15.14s     Wait for com.bojiclub.app.dev to idle
+    t =    15.15s Waiting 5.0s for SearchField (First Match) to exist
+    t =    16.16s     Checking `Expect predicate `existsNoRetry == 1` for object SearchField (First Match)`
+    t =    16.16s         Checking existence of `SearchField (First Match)`
+    t =    16.21s Tap SearchField (First Match)
+    t =    16.21s     Wait for com.bojiclub.app.dev to idle
+    t =    16.21s     Find the SearchField (First Match)
+    t =    16.24s     Check for interrupting elements affecting "搜索历史对话" SearchField
+    t =    16.29s     Synthesize event
+    t =    16.58s     Wait for com.bojiclub.app.dev to idle
+    t =    17.07s Type '核对今天训练' into "搜索历史对话" SearchField
+    t =    17.07s     Wait for com.bojiclub.app.dev to idle
+    t =    17.08s     Find the "搜索历史对话" SearchField
+    t =    17.12s     Check for interrupting elements affecting "搜索历史对话" SearchField
+    t =    17.16s     Synthesize event
+    t =    17.47s     Wait for com.bojiclub.app.dev to idle
+    t =    17.47s Waiting 8.0s for Button (First Match) to exist
+    t =    18.47s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    18.48s         Checking existence of `Button (First Match)`
+    t =    18.60s Find the Target Application 'com.bojiclub.app.dev'
+    t =    18.72s Added attachment named 'native-history-search'
+    t =    18.72s Tap Button (First Match)
+    t =    18.72s     Wait for com.bojiclub.app.dev to idle
+    t =    18.72s     Find the Button (First Match)
+    t =    18.81s     Check for interrupting elements affecting "核对今天训练与饮食的安排、10月24日 20:09、当前对话" Button
+    t =    18.85s     Synthesize event
+    t =    19.15s     Wait for com.bojiclub.app.dev to idle
+    t =    19.15s Waiting 8.0s for "v2-composer-field" Any to exist
+    t =    20.18s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =    20.18s         Checking existence of `"v2-composer-field" Any`
+    t =    20.21s Checking existence of `"核对今天训练与饮食的安排" StaticText`
+    t =    20.24s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarHistorySearchAndRestoreConversation]' passed (20.498 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit]' started.
+    t =     0.00s Start Test at 2026-10-24 20:09:49.641
+    t =     0.02s Set Up
+    t =     0.02s Open com.bojiclub.app.dev
+    t =     0.02s     Launch com.bojiclub.app.dev
+    t =     0.02s         Terminate com.bojiclub.app.dev:3185
+2026-10-24 20:09:50.705 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:09:50.706 xcodebuild[2281:3299751] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.27s         Setting up automation session
+    t =     2.00s         Wait for com.bojiclub.app.dev to idle
+    t =     3.66s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.68s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.68s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.77s Checking existence of `TabBar (First Match)`
+    t =     4.80s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.81s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.81s         Checking existence of `"稍后再看" Button`
+    t =     5.87s         Capturing element debug description
+    t =     6.80s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.80s         Checking existence of `"稍后再看" Button`
+    t =     6.85s         Capturing element debug description
+    t =     6.85s     Checking existence of `"稍后再看" Button`
+    t =     6.89s Collecting debug information to assist test failure triage
+    t =     6.89s     Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =     6.92s Waiting 15.0s for "v2-mode-picker" SegmentedControl to exist
+    t =     7.93s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     7.93s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     9.94s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395967680.45)
+    t =     9.96s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =     9.99s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395967680.45
+    t =    10.02s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.04s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395967680.45
+    t =    10.04s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.07s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970816.47)
+    t =    10.09s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.11s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970816.47
+    t =    10.14s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.16s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970816.47
+    t =    10.16s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.19s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971264.48)
+    t =    10.21s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.23s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971264.48
+    t =    10.26s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.28s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971264.48
+    t =    10.28s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.31s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972160.50)
+    t =    10.33s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.36s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972160.50
+    t =    10.39s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.41s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972160.50
+    t =    10.41s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    10.44s Tap "v2-sidebar-toggle" Button
+    t =    10.44s     Wait for com.bojiclub.app.dev to idle
+    t =    10.44s     Find the "v2-sidebar-toggle" Button
+    t =    10.46s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    10.47s     Synthesize event
+    t =    10.77s     Wait for com.bojiclub.app.dev to idle
+    t =    11.75s Waiting 8.0s for "v2-sidebar-newchat" Button to exist
+    t =    12.78s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-newchat" Button`
+    t =    12.78s         Checking existence of `"v2-sidebar-newchat" Button`
+    t =    15.07s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395967680.45)
+    t =    15.11s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.17s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395967680.45
+    t =    15.20s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.26s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395967680.45
+    t =    15.26s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.33s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395967680.45)
+    t =    15.36s Find the "BOJI CLUB" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x11580da40, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Element subtree:
+ →StaticText, 0x11580da40, {{160.8, 180.0}, {80.3, 14.3
+    t =    15.41s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970368.46)
+    t =    15.45s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.51s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970368.46
+    t =    15.54s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.60s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970368.46
+    t =    15.60s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.67s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970368.46)
+    t =    15.70s Find the "今天，想先做什么？" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x115fccb40, {{111.5, 204.3}, {179.0, 26.3}}, label: '今天，想先做什么？'
+Element subtree:
+ →StaticText, 0x115fccb40, {{111.5, 204.3}, {179.0, 26
+    t =    15.74s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970816.47)
+    t =    15.77s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.83s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970816.47
+    t =    15.86s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.92s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970816.47
+    t =    15.92s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    15.99s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395970816.47)
+    t =    16.02s Find the "你的训练，由这里开始。" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x115fef840, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Element subtree:
+ →StaticText, 0x115fef840, {{122.7, 240.7}, {156.7, 
+    t =    16.06s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971264.48)
+    t =    16.09s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.15s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971264.48
+    t =    16.18s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.24s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971264.48
+    t =    16.24s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.31s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971264.48)
+    t =    16.35s Find the "v2-today-training" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x115ea7980, {{44.0, 318.7}, {59.7, 18.0}}, identifier: 'v2-today-training', label: '今日训练'
+Element subtree:
+ →StaticText, 0x115ea7980, {
+    t =    16.39s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971712.49)
+    t =    16.42s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.48s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971712.49
+    t =    16.51s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.57s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971712.49
+    t =    16.58s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.64s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395971712.49)
+    t =    16.67s Find the "v2-today-training" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x115fef980, {{44.0, 348.7}, {185.7, 20.3}}, identifier: 'v2-today-training', label: '准备好，开始今天的训练'
+Element subtree:
+ →StaticText, 0x115f
+    t =    16.71s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972160.50)
+    t =    16.75s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.80s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972160.50
+    t =    16.83s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.89s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972160.50
+    t =    16.90s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    16.96s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972160.50)
+    t =    17.00s Find the "v2-today-training" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x115ea75c0, {{44.0, 381.0}, {55.7, 18.0}}, identifier: 'v2-today-training', label: '1 个动作'
+Element subtree:
+ →StaticText, 0x115ea75c0, 
+    t =    17.04s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972608.51)
+    t =    17.07s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.13s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972608.51
+    t =    17.16s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.23s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972608.51
+    t =    17.23s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.29s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395972608.51)
+    t =    17.33s Find the "v2-today-training" Button
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: Button, 0x115fedcc0, {{44.0, 411.0}, {91.7, 34.3}}, identifier: 'v2-today-training', label: '开始训练'
+Element subtree:
+ →Button, 0x115fedcc0, {{44.0, 4
+    t =    17.37s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395973056.52)
+    t =    17.40s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.46s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395973056.52
+    t =    17.49s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.55s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395973056.52
+    t =    17.55s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.61s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4395973056.52)
+    t =    17.65s Find the "v2-today-training" Button
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: Button, 0x115ea6300, {{151.7, 418.0}, {67.7, 20.3}}, identifier: 'v2-today-training', label: '查看计划'
+Element subtree:
+ →Button, 0x115ea6300, {{151.7,
+    t =    17.69s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4396079680.163)
+    t =    17.73s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.79s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4396079680.163
+    t =    17.82s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.88s Find: Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4396079680.163
+    t =    17.89s Requesting snapshot of accessibility hierarchy for app with pid 3302
+    t =    17.95s Find the Any (Descendant with identity binding to AX element pid: 3302, elementOrHash.elementID: 4396079680.163)
+    t =    17.98s Find the "草稿" StaticText
+Accessibility tolerated (by design): 
+[workspace] Contrast nearly passed — Attributes: StaticText, 0x11580fd40, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Element subtree:
+ →StaticText, 0x11580fd40, {{160.8, 180.0}, {80.3, 14.3
+[workspace] Contrast nearly passed — Attributes: StaticText, 0x115ea2bc0, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Element subtree:
+ →StaticText, 0x115ea2bc0, {{122.7, 240.7}, {156.7, 
+[workspace] Contrast nearly passed — Attributes: StaticText, 0x11580db80, {{44.0, 318.7}, {59.7, 18.0}}, identifier: 'v2-today-training', label: '今日训练'
+Element subtree:
+ →StaticText, 0x11580db80, {
+[workspace] Contrast nearly passed — Attributes: StaticText, 0x115ea3840, {{44.0, 381.0}, {55.7, 18.0}}, identifier: 'v2-today-training', label: '1 个动作'
+Element subtree:
+ →StaticText, 0x115ea3840, 
+AUDIT-DETAIL workspace/sidebar: 
+[sidebar] Contrast failed — ?
+[sidebar] Contrast failed — ?
+[sidebar] Contrast failed — Attributes: StaticText, 0x115fc1a40, {{8.0, 340.0}, {353.7, 50.3}}, label: '草稿'
+Element subtree:
+ →StaticText, 0x115fc1a40, {{8.0, 340.0}, {353.7, 50.3}}, label
+[sidebar] Contrast failed — ?
+[sidebar] Text clipped — ?
+[sidebar] Text clipped — ?
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:701: error: -[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit] : XCTAssertTrue failed - Accessibility audit hard failures:
+[sidebar] Contrast failed — ?
+[sidebar] Contrast failed — ?
+[sidebar] Contrast failed — Attributes: StaticText, 0x115fc1a40, {{8.0, 340.0}, {353.7, 50.3}}, label: '草稿'
+Element subtree:
+ →StaticText, 0x115fc1a40, {{8.0, 340.0}, {353.7, 50.3}}, label
+[sidebar] Contrast failed — ?
+[sidebar] Text clipped — ?
+[sidebar] Text clipped — ?
+    t =    18.03s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit]' failed (18.289 seconds).
+Test Suite 'BojiClubUITests' failed at 2026-10-24 20:10:07.930.
+	 Executed 9 tests, with 2 failures (0 unexpected) in 190.998 (191.006) seconds
+Test Suite 'BojiClubUITests.xctest' failed at 2026-10-24 20:10:07.931.
+	 Executed 9 tests, with 2 failures (0 unexpected) in 190.998 (191.006) seconds
+Test Suite 'Selected tests' failed at 2026-10-24 20:10:07.931.
+	 Executed 9 tests, with 2 failures (0 unexpected) in 190.998 (191.008) seconds
+2026-10-24 20:10:18.859 xcodebuild[2281:3299751] [MT] IDETestOperationsObserverDebug: 204.689 elapsed -- Testing started completed.
+2026-10-24 20:10:18.859 xcodebuild[2281:3299751] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-24 20:10:18.859 xcodebuild[2281:3299751] [MT] IDETestOperationsObserverDebug: 204.689 sec, +204.689 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-final-flows.xcresult
+
+Failing tests:
+	BojiClubUITests.testNativeManualMealAndBodyHaveSingleNavigation()
+	BojiClubUITests.testV2WorkspaceAccessibilityAudit()
+
+** TEST EXECUTE FAILED **
+
+Testing started

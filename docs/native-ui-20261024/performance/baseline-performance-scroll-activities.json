@@ -1,0 +1,646 @@
+{
+  "testIdentifier" : "BojiClubUITests/testNativeScrollBenchmark()",
+  "testIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubUITests/testNativeScrollBenchmark",
+  "testName" : "testNativeScrollBenchmark()",
+  "testRuns" : [
+    {
+      "activities" : [
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843225.265,
+          "title" : "Start Test at 2026-10-24 20:00:25.265"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843225.306,
+          "title" : "Set Up"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843225.313,
+                  "title" : "Terminate com.bojiclub.app.dev:99473"
+                },
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843226.571,
+                  "title" : "Setting up automation session"
+                },
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843227.236,
+                  "title" : "Wait for com.bojiclub.app.dev to idle"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843225.312,
+              "title" : "Launch com.bojiclub.app.dev"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843225.311,
+          "title" : "Open com.bojiclub.app.dev"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843230.09,
+                  "title" : "Checking existence of `\"v2-sidebar-toggle\" Button`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843230.09,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"v2-sidebar-toggle\" Button`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843229.056,
+          "title" : "Waiting 15.0s for \"v2-sidebar-toggle\" Button to exist"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843231.253,
+                  "title" : "Checking existence of `\"v2-mode-picker\" SegmentedControl`"
+                },
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843231.28,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843231.253,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"v2-mode-picker\" SegmentedControl`"
+            },
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843232.303,
+                  "title" : "Checking existence of `\"v2-mode-picker\" SegmentedControl`"
+                },
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843232.354,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843232.302,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"v2-mode-picker\" SegmentedControl`"
+            },
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843233.236,
+                  "title" : "Checking existence of `\"v2-mode-picker\" SegmentedControl`"
+                },
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843233.275,
+                  "title" : "Capturing element debug description"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843233.235,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"v2-mode-picker\" SegmentedControl`"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843233.276,
+              "title" : "Checking existence of `\"v2-mode-picker\" SegmentedControl`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843230.23,
+          "title" : "Waiting 3.0s for \"v2-mode-picker\" SegmentedControl to exist"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843233.303,
+              "title" : "Requesting snapshot of accessibility hierarchy for app with pid 99498"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843233.302,
+          "title" : "Collecting debug information to assist test failure triage"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843234.378,
+                  "title" : "Checking existence of `\"v2-mode-training\" Button`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843234.377,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"v2-mode-training\" Button`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843233.345,
+          "title" : "Waiting 8.0s for \"v2-mode-training\" Button to exist"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843234.436,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843234.437,
+              "title" : "Find the \"v2-mode-training\" Button"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843234.468,
+              "title" : "Check for interrupting elements affecting \"v2-mode-training\" Button"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843234.519,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843234.82,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843234.436,
+          "title" : "Tap \"v2-mode-training\" Button"
+        },
+        {
+          "childActivities" : [
+            {
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1792843235.853,
+                  "title" : "Checking existence of `\"plan-calendar-toggle\" Button`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843235.852,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"plan-calendar-toggle\" Button`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843234.823,
+          "title" : "Waiting 8.0s for \"plan-calendar-toggle\" Button to exist"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843235.918,
+          "title" : "Get all elements bound by index for: Descendants matching type ScrollView"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843235.944,
+          "title" : "Find the ScrollView (Element at index 0)"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843235.967,
+          "title" : "Find the Target Application 'com.bojiclub.app.dev'"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843235.988,
+          "title" : "Find the ScrollView (Element at index 1)"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843236.012,
+          "title" : "Find the Target Application 'com.bojiclub.app.dev'"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843236.035,
+          "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843236.064,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843236.066,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843236.088,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843236.113,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843236.552,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843236.064,
+          "title" : "Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843237.436,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843237.438,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843237.468,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843237.497,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843237.934,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843237.436,
+          "title" : "Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843239.624,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843239.779,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843239.804,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843239.829,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843240.266,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843239.624,
+          "title" : "Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843241.206,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843241.209,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843241.245,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843241.274,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843241.716,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843241.205,
+          "title" : "Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843243.108,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843243.109,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843243.136,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843243.161,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843243.597,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843243.108,
+          "title" : "Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843244.255,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843244.258,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843244.298,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843244.331,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843244.792,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843244.254,
+          "title" : "Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843246.131,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843246.133,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843246.158,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843246.184,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843246.615,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843246.131,
+          "title" : "Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843247.405,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843247.41,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843247.463,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843247.502,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843247.941,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843247.404,
+          "title" : "Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843249.357,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843249.359,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843249.385,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843249.41,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843249.849,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843249.357,
+          "title" : "Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843250.504,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843250.508,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843250.54,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843250.568,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843251.005,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843250.504,
+          "title" : "Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843252.308,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843252.31,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843252.336,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843252.361,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843252.806,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843252.308,
+          "title" : "Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843253.436,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843253.441,
+              "title" : "Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843253.471,
+              "title" : "Check for interrupting elements affecting ScrollView"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843253.497,
+              "title" : "Synthesize event"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1792843253.932,
+              "title" : "Wait for com.bojiclub.app.dev to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843253.435,
+          "title" : "Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}"
+        },
+        {
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1792843255.488,
+          "title" : "Tear Down"
+        }
+      ],
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+        "deviceName" : "BOJI Native UI Small",
+        "modelName" : "iPhone SE (3rd generation)",
+        "osBuildNumber" : "23F77",
+        "osVersion" : "26.5",
+        "platform" : "iOS Simulator"
+      },
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ]
+}

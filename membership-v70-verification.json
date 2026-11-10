@@ -1,0 +1,27 @@
+{
+  "unauthenticated": 401,
+  "client_claim_rejected": 400,
+  "verification_status": 200,
+  "server_result": "verified",
+  "unknown_purchase_stays_inactive": true,
+  "authenticated_owner_matches": true,
+  "nonmember_report_denied": 403,
+  "server_environment": "SANDBOX",
+  "server_secret_readable": true,
+  "version": "0.13.70",
+  "build": 89,
+  "php_policy_tests": 23,
+  "php_database_tests": 14,
+  "existing_purchase_tests": 47,
+  "python_regression_tests": 34,
+  "swift_syntax_files": 2,
+  "xcode_archive_tested": false,
+  "native_sandbox_purchase_tested": false,
+  "server_backup": "/root/bojiclub-membership-v70-backup/20261013-191350",
+  "server_source_hashes": {
+    "public/revenuecat.php": "8005ffcaaed2c6f0d125505f6ac5934da6b47700a446ecbbcffff4d8ebef1d8e",
+    "public/index.php": "3394bed05df6deb9ae1e8f1b00d78ea2b11ec1001a68d418ce5356a962ee7624",
+    "public/weekly.php": "a7e5c662ddb3fb4b06d62dea5b2dfb5a5d866bfb1e4ad4bb3cdbd7a522f9c115"
+  },
+  "server_key_in_delivery": false
+}

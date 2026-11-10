@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bojiclub.invalid/onboarding-coach-output.v1.json",
+  "title": "Proposed raw model output for server-authorized onboarding_assist only",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "notes",
+    "coach"
+  ],
+  "properties": {
+    "kind": {
+      "const": "coach"
+    },
+    "notes": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "coach": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "answer",
+        "source_ids",
+        "actions",
+        "onboarding"
+      ],
+      "properties": {
+        "answer": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 240
+        },
+        "source_ids": {
+          "type": "array",
+          "maxItems": 14,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "actions": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "onboarding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema_version",
+            "candidates"
+          ],
+          "properties": {
+            "schema_version": {
+              "const": 1
+            },
+            "candidates": {
+              "type": "array",
+              "maxItems": 19,
+              "items": {
+                "$ref": "#/$defs/candidate"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "value",
+        "unit",
+        "evidence_quote"
+      ],
+      "properties": {
+        "field": {
+          "enum": [
+            "goal",
+            "experience",
+            "venue",
+            "equipment",
+            "equipment_exclusions",
+            "days_per_week",
+            "training_days",
+            "session_minutes",
+            "age_group",
+            "age_years",
+            "sex_for_nutrition",
+            "height_cm",
+            "profile_weight_kg",
+            "target_weight_kg",
+            "weight_measurement_kind",
+            "weight_observed_at",
+            "limitations",
+            "nutrition_context",
+            "daily_activity"
+          ]
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": [
+                  "string",
+                  "integer"
+                ]
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "enum": [
+            null,
+            "cm",
+            "kg",
+            "minutes",
+            "days_per_week",
+            "years"
+          ]
+        },
+        "evidence_quote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    }
+  }
+}

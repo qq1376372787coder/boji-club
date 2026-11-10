@@ -1,0 +1,28 @@
+{
+  "deployed": true,
+  "server": "117.50.119.49",
+  "account_backup": "/opt/bojiclub-account/.backups/coach-20261015-193941",
+  "ai_backup": "/opt/bojiclub-ai/.backups/coach-20261015-193941",
+  "hashes": {
+    "account-server/public/weekly.php": "c3db60383e90f79d8010ce34b95472d0a05c563eb34fae0f6b77ea3623104a69",
+    "account-server/public/ai-response.php": "d57c0d138140c117fd58d3f08704cfc2d50769b1bfc6af306341f4997d75e182",
+    "account-server/public/cloud-validation.php": "b18c09c488b3a24e2395e07535d26d1c96e256007925d6f1f1094a90dd8df367",
+    "account-server/admin/index.php": "a01f12922bb2dd447ba0ed867cfe48bfa7b2e29acfe6474f4376d474b276db2a",
+    "backend/ai_core.py": "28721714aca85355d9686329feee83367ac540e806a9ea67cd42e9e638c9c03c",
+    "backend/server.py": "6e0f4b1985a40b535a8b50b06d415d909f8689abcff9d166ce7a2356d0c5f3ad",
+    "backend/goal_context.py": "7fb4bcfebf9a1b04686798535ea19715618a169b71cc53e83a0f52181037fbbb",
+    "backend/training_feedback.py": "9b7ddc1b1db72e6348d70e98ca350faf14127c5efcbddd53531c21fb8bb0007a",
+    "backend/coach_core.py": "c20183b9d37708e8e8731bf371128d8604cb6128f7fe76080506fa9b2e226dc5"
+  },
+  "database": {
+    "task_kind_added": true,
+    "existing_rows_preserved": true,
+    "rows": 5
+  },
+  "staged_tests": "PASS 44 staged coach/context tests",
+  "production_tests": "PASS production coach/context tests; health ok",
+  "php_contracts": "PASS 30 insight schema, causal graph and compatibility checks\nPASS 14 Club coach schema, safe action and compatibility checks",
+  "services": "active",
+  "provider_calls_made": false,
+  "quota_or_payment_config_changed": false
+}

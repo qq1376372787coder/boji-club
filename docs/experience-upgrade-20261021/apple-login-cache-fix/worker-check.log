@@ -1,0 +1,5 @@
+uid=993(nginx) gid=992(nginx) groups=992(nginx)
+{"cache_read_write":true,"key_count":3,"cache_age_seconds":43}
+root:nginx 750 /opt/bojiclub-account/cache
+nginx:nginx 700 /opt/bojiclub-account/cache/apple-keys
+nginx:nginx 600 /opt/bojiclub-account/cache/apple-keys/keys.json

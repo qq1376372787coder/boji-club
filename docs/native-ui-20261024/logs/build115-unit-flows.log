@@ -1,0 +1,410 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/BojiClub_iphonesimulator26.5-arm64.xctestrun -destination "platform=iOS Simulator,id=9B496F27-8B0D-4B90-99F2-9379D8B0626C" -resultBundlePath /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/build115-unit-flows.xcresult -parallel-testing-enabled NO "-only-testing:BojiClubTests" "-only-testing:BojiClubUITests/BojiClubUITests/testNativeManualMealAndBodyHaveSingleNavigation" "-only-testing:BojiClubUITests/BojiClubUITests/testV2ConversationKeepsNativeComposerActions" "-only-testing:BojiClubUITests/BojiClubUITests/testReviewSidebarRecordsCanSelectNutrition"
+
+2026-10-24 20:41:14.887 xcodebuild[15002:3390554] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+Writing result bundle at path:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/build115-unit-flows.xcresult
+
+2026-10-24 20:41:14.889 xcodebuild[15002:3390554] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:41:15.581 xcodebuild[15002:3390554] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:41:18.734352+0800 BojiClubUITests-Runner[15045:3391124] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-24 20:41:19.715.
+Test Suite 'BojiClubUITests.xctest' started at 2026-10-24 20:41:19.715.
+Test Suite 'BojiClubUITests' started at 2026-10-24 20:41:19.715.
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeManualMealAndBodyHaveSingleNavigation]' started.
+    t =     0.00s Start Test at 2026-10-24 20:41:19.716
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+2026-10-24 20:41:19.979 xcodebuild[15002:3390554] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:41:19.979 xcodebuild[15002:3390554] [MT] IDELaunchParametersSnapshot: no debugger version
+objc[15045]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x108a74310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x107eb4398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     2.08s         Setting up automation session
+    t =     3.39s         Wait for com.bojiclub.app.dev to idle
+    t =     5.95s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     7.03s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     7.03s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     7.20s Checking existence of `TabBar (First Match)`
+    t =     7.25s Waiting 2.0s for "稍后再看" Button to exist
+    t =     8.33s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     8.33s         Checking existence of `"稍后再看" Button`
+    t =     8.41s         Capturing element debug description
+    t =     9.26s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     9.26s         Checking existence of `"稍后再看" Button`
+    t =     9.31s         Capturing element debug description
+    t =     9.31s     Checking existence of `"稍后再看" Button`
+    t =     9.35s Collecting debug information to assist test failure triage
+    t =     9.35s     Requesting snapshot of accessibility hierarchy for app with pid 15073
+    t =     9.40s Tap "v2-composer-plus" Button
+    t =     9.40s     Wait for com.bojiclub.app.dev to idle
+    t =     9.40s     Find the "v2-composer-plus" Button
+    t =     9.42s     Check for interrupting elements affecting "v2-composer-plus" Button
+    t =     9.47s     Synthesize event
+    t =     9.79s     Wait for com.bojiclub.app.dev to idle
+    t =     9.95s Waiting 5.0s for "手动记录饮食" Button to exist
+    t =    11.03s     Checking `Expect predicate `existsNoRetry == 1` for object "手动记录饮食" Button`
+    t =    11.03s         Checking existence of `"手动记录饮食" Button`
+    t =    11.08s Tap "手动记录饮食" Button
+    t =    11.08s     Wait for com.bojiclub.app.dev to idle
+    t =    11.08s     Find the "手动记录饮食" Button
+    t =    11.13s     Check for interrupting elements affecting "fork.knife" Button
+    t =    11.16s     Synthesize event
+    t =    11.46s     Wait for com.bojiclub.app.dev to idle
+    t =    13.15s Waiting 10.0s for "meal-entry-mode" SegmentedControl to exist
+    t =    14.23s     Checking `Expect predicate `existsNoRetry == 1` for object "meal-entry-mode" SegmentedControl`
+    t =    14.23s         Checking existence of `"meal-entry-mode" SegmentedControl`
+    t =    14.49s Find the "手动" Button
+    t =    14.58s Get all elements bound by index for: Descendants matching type NavigationBar
+    t =    14.67s Find the NavigationBar (Element at index 0)
+    t =    14.79s Find the NavigationBar (Element at index 1)
+    t =    14.83s Find the "v2-sidebar-toggle" Button
+    t =    14.92s Find the Target Application 'com.bojiclub.app.dev'
+    t =    15.04s Added attachment named 'native-manual-meal-single-navigation'
+    t =    15.04s Tap "关闭" Button
+    t =    15.04s     Wait for com.bojiclub.app.dev to idle
+    t =    15.05s     Find the "关闭" Button
+    t =    15.08s     Check for interrupting elements affecting "关闭" Button
+    t =    15.12s     Synthesize event
+    t =    15.42s     Wait for com.bojiclub.app.dev to idle
+    t =    16.25s Waiting 8.0s for "v2-composer-plus" Button to exist
+    t =    17.33s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-plus" Button`
+    t =    17.33s         Checking existence of `"v2-composer-plus" Button`
+    t =    17.36s Tap "v2-composer-plus" Button
+    t =    17.36s     Wait for com.bojiclub.app.dev to idle
+    t =    17.36s     Find the "v2-composer-plus" Button
+    t =    17.39s     Check for interrupting elements affecting "v2-composer-plus" Button
+    t =    17.41s     Synthesize event
+    t =    17.71s     Wait for com.bojiclub.app.dev to idle
+    t =    18.59s Waiting 5.0s for "记录体重" Button to exist
+    t =    19.67s     Checking `Expect predicate `existsNoRetry == 1` for object "记录体重" Button`
+    t =    19.67s         Checking existence of `"记录体重" Button`
+    t =    19.72s Tap "记录体重" Button
+    t =    19.72s     Wait for com.bojiclub.app.dev to idle
+    t =    19.72s     Find the "记录体重" Button
+    t =    19.76s     Check for interrupting elements affecting "scalemass" Button
+    t =    19.79s     Synthesize event
+    t =    20.08s     Wait for com.bojiclub.app.dev to idle
+    t =    21.74s Waiting 10.0s for "身体记录" NavigationBar to exist
+    t =    22.82s     Checking `Expect predicate `existsNoRetry == 1` for object "身体记录" NavigationBar`
+    t =    22.82s         Checking existence of `"身体记录" NavigationBar`
+    t =    22.93s Get all elements bound by index for: Descendants matching type NavigationBar
+    t =    22.99s Find the NavigationBar (Element at index 0)
+    t =    23.10s Find the NavigationBar (Element at index 1)
+    t =    23.15s Find the "v2-sidebar-toggle" Button
+    t =    23.25s Find the Target Application 'com.bojiclub.app.dev'
+    t =    23.36s Added attachment named 'native-body-single-navigation'
+    t =    23.36s Tap "完成" Button
+    t =    23.36s     Wait for com.bojiclub.app.dev to idle
+    t =    23.37s     Find the "完成" Button
+    t =    23.41s     Check for interrupting elements affecting "完成" Button
+    t =    23.48s     Synthesize event
+    t =    23.77s     Wait for com.bojiclub.app.dev to idle
+    t =    24.54s Waiting 8.0s for "v2-composer-field" Any to exist
+    t =    25.62s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =    25.62s         Checking existence of `"v2-composer-field" Any`
+    t =    25.64s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeManualMealAndBodyHaveSingleNavigation]' passed (25.911 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testReviewSidebarRecordsCanSelectNutrition]' started.
+    t =     0.00s Start Test at 2026-10-24 20:41:45.628
+    t =     0.06s Set Up
+    t =     0.06s Open com.bojiclub.app.dev
+    t =     0.06s     Launch com.bojiclub.app.dev
+    t =     0.06s         Terminate com.bojiclub.app.dev:15073
+2026-10-24 20:41:46.709 xcodebuild[15002:3390554] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:41:46.710 xcodebuild[15002:3390554] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.51s         Setting up automation session
+    t =     2.31s         Wait for com.bojiclub.app.dev to idle
+    t =     4.41s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     5.48s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     5.48s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     5.57s Checking existence of `TabBar (First Match)`
+    t =     5.60s Waiting 2.0s for "稍后再看" Button to exist
+    t =     6.66s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.66s         Checking existence of `"稍后再看" Button`
+    t =     6.70s         Capturing element debug description
+    t =     7.61s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     7.61s         Checking existence of `"稍后再看" Button`
+    t =     7.67s         Capturing element debug description
+    t =     7.67s     Checking existence of `"稍后再看" Button`
+    t =     7.70s Collecting debug information to assist test failure triage
+    t =     7.70s     Requesting snapshot of accessibility hierarchy for app with pid 15230
+    t =     7.74s Tap "v2-sidebar-toggle" Button
+    t =     7.74s     Wait for com.bojiclub.app.dev to idle
+    t =     7.74s     Find the "v2-sidebar-toggle" Button
+    t =     7.77s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =     7.79s     Synthesize event
+    t =     8.09s     Wait for com.bojiclub.app.dev to idle
+    t =     9.16s Waiting 8.0s for "v2-sidebar-panel" Any to exist
+    t =    10.23s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-panel" Any`
+    t =    10.23s         Checking existence of `"v2-sidebar-panel" Any`
+    t =    10.26s Checking existence of `CollectionView (First Match)`
+    t =    10.31s Checking existence of `"v2-sidebar-records" Button`
+    t =    10.37s Press CollectionView (First Match)[0.50, 0.78] for 0.1 seconds, then drag to CollectionView (First Match)[0.50, 0.34] with velocity of 500.00 pixels per second, and then hold for 0.0 seconds 
+    t =    10.37s     Wait for com.bojiclub.app.dev to idle
+    t =    10.38s     Find the CollectionView (First Match)
+    t =    10.40s     Check for interrupting elements affecting CollectionView
+    t =    10.44s     Synthesize event
+    t =    10.45s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.47s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.49s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.51s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    10.55s         Find the CollectionView at {{8.0, 68.0}, {353.7, 702.0}}
+    t =    11.49s     Wait for com.bojiclub.app.dev to idle
+    t =    11.82s Checking existence of `"v2-sidebar-records" Button`
+    t =    11.89s Find the "v2-sidebar-records" Button
+    t =    11.95s Tap "v2-sidebar-records" Button
+    t =    11.95s     Wait for com.bojiclub.app.dev to idle
+    t =    11.95s     Find the "v2-sidebar-records" Button
+    t =    12.01s     Check for interrupting elements affecting "v2-sidebar-records" Button
+    t =    12.05s     Synthesize event
+    t =    12.33s     Wait for com.bojiclub.app.dev to idle
+    t =    12.79s Waiting 8.0s for "records-category-picker" SegmentedControl to exist
+    t =    13.85s     Checking `Expect predicate `existsNoRetry == 1` for object "records-category-picker" SegmentedControl`
+    t =    13.85s         Checking existence of `"records-category-picker" SegmentedControl`
+    t =    13.93s Checking existence of `"饮食" Button`
+    t =    13.97s Tap "饮食" Button
+    t =    13.97s     Wait for com.bojiclub.app.dev to idle
+    t =    13.97s     Find the "饮食" Button
+    t =    14.01s     Check for interrupting elements affecting "饮食" Button
+    t =    14.05s     Synthesize event
+    t =    14.34s     Wait for com.bojiclub.app.dev to idle
+    t =    15.33s Find the "饮食" Button
+    t =    15.41s Tap "身体" Button
+    t =    15.41s     Wait for com.bojiclub.app.dev to idle
+    t =    15.42s     Find the "身体" Button
+    t =    15.46s     Check for interrupting elements affecting "身体" Button
+    t =    15.50s     Synthesize event
+    t =    15.79s     Wait for com.bojiclub.app.dev to idle
+    t =    17.04s Find the "身体" Button
+    t =    17.11s Tap "报告" Button
+    t =    17.11s     Wait for com.bojiclub.app.dev to idle
+    t =    17.11s     Find the "报告" Button
+    t =    17.14s     Check for interrupting elements affecting "报告" Button
+    t =    17.18s     Synthesize event
+    t =    17.47s     Wait for com.bojiclub.app.dev to idle
+    t =    18.66s Find the "报告" Button
+    t =    18.72s Tap "训练" Button
+    t =    18.72s     Wait for com.bojiclub.app.dev to idle
+    t =    18.72s     Find the "训练" Button
+    t =    18.76s     Check for interrupting elements affecting "训练" Button
+    t =    18.80s     Synthesize event
+    t =    19.09s     Wait for com.bojiclub.app.dev to idle
+    t =    20.26s Find the "训练" Button
+    t =    20.33s Tap "饮食" Button
+    t =    20.33s     Wait for com.bojiclub.app.dev to idle
+    t =    20.33s     Find the "饮食" Button
+    t =    20.38s     Check for interrupting elements affecting "饮食" Button
+    t =    20.41s     Synthesize event
+    t =    20.70s     Wait for com.bojiclub.app.dev to idle
+    t =    21.73s Find the "饮食" Button
+    t =    21.78s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testReviewSidebarRecordsCanSelectNutrition]' passed (22.045 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ConversationKeepsNativeComposerActions]' started.
+    t =     0.00s Start Test at 2026-10-24 20:42:07.675
+    t =     0.04s Set Up
+    t =     0.04s Open com.bojiclub.app.dev
+    t =     0.04s     Launch com.bojiclub.app.dev
+    t =     0.04s         Terminate com.bojiclub.app.dev:15230
+2026-10-24 20:42:08.729 xcodebuild[15002:3390554] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:42:08.730 xcodebuild[15002:3390554] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.27s         Setting up automation session
+    t =     2.01s         Wait for com.bojiclub.app.dev to idle
+    t =     3.76s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.83s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.84s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.92s Checking existence of `TabBar (First Match)`
+    t =     4.95s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.97s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.97s         Checking existence of `"稍后再看" Button`
+    t =     6.03s         Capturing element debug description
+    t =     6.96s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.96s         Checking existence of `"稍后再看" Button`
+    t =     7.02s         Capturing element debug description
+    t =     7.02s     Checking existence of `"稍后再看" Button`
+    t =     7.05s Collecting debug information to assist test failure triage
+    t =     7.05s     Requesting snapshot of accessibility hierarchy for app with pid 15352
+    t =     7.09s Waiting 10.0s for "v2-composer-field" Any to exist
+    t =     8.14s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =     8.14s         Checking existence of `"v2-composer-field" Any`
+    t =     8.16s Tap "v2-composer-field" Any
+    t =     8.16s     Wait for com.bojiclub.app.dev to idle
+    t =     8.16s     Find the "v2-composer-field" Any
+    t =     8.18s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.21s     Synthesize event
+    t =     8.50s     Wait for com.bojiclub.app.dev to idle
+    t =     8.58s Type '今天怎么练' into "v2-composer-field" TextField
+    t =     8.58s     Wait for com.bojiclub.app.dev to idle
+    t =     8.96s     Find the "v2-composer-field" TextField
+    t =     8.99s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     9.04s     Synthesize event
+    t =     9.32s     Wait for com.bojiclub.app.dev to idle
+    t =     9.33s Tap "v2-composer-send" Button
+    t =     9.33s     Wait for com.bojiclub.app.dev to idle
+    t =     9.33s     Find the "v2-composer-send" Button
+    t =     9.37s     Check for interrupting elements affecting "v2-composer-send" Button
+    t =     9.40s     Synthesize event
+    t =     9.70s     Wait for com.bojiclub.app.dev to idle
+    t =     9.84s Waiting 15.0s for "ai-card-today_training" Any to exist
+    t =    10.91s     Checking `Expect predicate `existsNoRetry == 1` for object "ai-card-today_training" Any`
+    t =    10.91s         Checking existence of `"ai-card-today_training" Any`
+    t =    10.97s Checking existence of `"v2-composer-voice" Button`
+    t =    11.00s Tap "v2-composer-plus" Button
+    t =    11.00s     Wait for com.bojiclub.app.dev to idle
+    t =    11.19s     Find the "v2-composer-plus" Button
+    t =    11.23s     Check for interrupting elements affecting "v2-composer-plus" Button
+    t =    11.26s     Synthesize event
+    t =    11.55s     Wait for com.bojiclub.app.dev to idle
+    t =    12.52s Waiting 5.0s for "记录体重" Button to exist
+    t =    13.56s     Checking `Expect predicate `existsNoRetry == 1` for object "记录体重" Button`
+    t =    13.56s         Checking existence of `"记录体重" Button`
+    t =    13.61s Checking existence of `"手动记录饮食" Button`
+    t =    13.63s Tap "记录体重" Button
+    t =    13.63s     Wait for com.bojiclub.app.dev to idle
+    t =    13.63s     Find the "记录体重" Button
+    t =    13.66s     Check for interrupting elements affecting "scalemass" Button
+    t =    13.69s     Synthesize event
+    t =    13.98s     Wait for com.bojiclub.app.dev to idle
+    t =    15.48s Waiting 8.0s for "身体记录" NavigationBar to exist
+    t =    16.52s     Checking `Expect predicate `existsNoRetry == 1` for object "身体记录" NavigationBar`
+    t =    16.52s         Checking existence of `"身体记录" NavigationBar`
+    t =    16.64s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ConversationKeepsNativeComposerActions]' passed (16.902 seconds).
+Test Suite 'BojiClubUITests' passed at 2026-10-24 20:42:24.577.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 64.858 (64.862) seconds
+Test Suite 'BojiClubUITests.xctest' passed at 2026-10-24 20:42:24.578.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 64.858 (64.863) seconds
+Test Suite 'Selected tests' passed at 2026-10-24 20:42:24.578.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 64.858 (64.864) seconds
+2026-10-24 20:42:27.018397+0800 BojiClub[15436:3395691] [SwiftUI] Publishing changes from background threads is not allowed; make sure to publish values from the main thread (via operators like receive(on:)) on model updates.
+Test Suite 'All tests' started at 2026-10-24 20:42:27.036.
+Test Suite 'BojiClubTests.xctest' started at 2026-10-24 20:42:27.037.
+Test Suite 'AICardContractTests' started at 2026-10-24 20:42:27.037.
+Test Case '-[BojiClubTests.AICardContractTests testCoachAnswerDecodesWithCardsAndWithoutCards]' started.
+Test Case '-[BojiClubTests.AICardContractTests testCoachAnswerDecodesWithCardsAndWithoutCards]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testDraftActionsInWhitelistAndRouterGuards]' started.
+Test Case '-[BojiClubTests.AICardContractTests testDraftActionsInWhitelistAndRouterGuards]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testFutureExpiryIsNotExpired]' started.
+Test Case '-[BojiClubTests.AICardContractTests testFutureExpiryIsNotExpired]' passed (0.004 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testFutureSchemaVersionIsNotRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testFutureSchemaVersionIsNotRenderable]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testInsightCacheResetsForAnotherOwner]' started.
+Test Case '-[BojiClubTests.AICardContractTests testInsightCacheResetsForAnotherOwner]' passed (0.006 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testInsightPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testInsightPayloadDecodes]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testLateInsightResponseCannotPopulateAnotherAccount]' started.
+Test Case '-[BojiClubTests.AICardContractTests testLateInsightResponseCannotPopulateAnotherAccount]' passed (0.006 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftCardDecodeAndRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftCardDecodeAndRenderable]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftMalformedPayloadFailsClosed]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftMalformedPayloadFailsClosed]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMemoryHTTPEnvelopeDecodesEmptyAndNonemptyPages]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMemoryHTTPEnvelopeDecodesEmptyAndNonemptyPages]' passed (0.004 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testProposalRetryIdentitySeparatesOwnersIntentsAndNewAttempts]' started.
+Test Case '-[BojiClubTests.AICardContractTests testProposalRetryIdentitySeparatesOwnersIntentsAndNewAttempts]' passed (0.002 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testRouterIgnoresUnknownAndExpiredActions]' started.
+Test Case '-[BojiClubTests.AICardContractTests testRouterIgnoresUnknownAndExpiredActions]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testRouterMapsWhitelistedActions]' started.
+Test Case '-[BojiClubTests.AICardContractTests testRouterMapsWhitelistedActions]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testSchedulePreviewCreatesOnlyProposalUntilFinalConfirmation]' started.
+Test Case '-[BojiClubTests.AICardContractTests testSchedulePreviewCreatesOnlyProposalUntilFinalConfirmation]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingEmptyStateDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingEmptyStateDecodes]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingFullPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingFullPayloadDecodes]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTrainingProgressPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTrainingProgressPayloadDecodes]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testUnknownCardTypeIsNotRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testUnknownCardTypeIsNotRenderable]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testWeightDraftCardDecodeAndRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testWeightDraftCardDecodeAndRenderable]' passed (0.000 seconds).
+Test Suite 'AICardContractTests' passed at 2026-10-24 20:42:27.073.
+	 Executed 19 tests, with 0 failures (0 unexpected) in 0.032 (0.036) seconds
+Test Suite 'ClubCoachDraftErasureTests' started at 2026-10-24 20:42:27.073.
+Test Case '-[BojiClubTests.ClubCoachDraftErasureTests testErasureRemovesIndexedAndLegacyDraftsForExactOwnerOnly]' started.
+Test Case '-[BojiClubTests.ClubCoachDraftErasureTests testErasureRemovesIndexedAndLegacyDraftsForExactOwnerOnly]' passed (0.005 seconds).
+Test Case '-[BojiClubTests.ClubCoachDraftErasureTests testNegativePreviewOwnerErasureAndRepeatedErasureAreSafe]' started.
+Test Case '-[BojiClubTests.ClubCoachDraftErasureTests testNegativePreviewOwnerErasureAndRepeatedErasureAreSafe]' passed (0.003 seconds).
+Test Suite 'ClubCoachDraftErasureTests' passed at 2026-10-24 20:42:27.082.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.008 (0.008) seconds
+Test Suite 'ClubCoachSessionTests' started at 2026-10-24 20:42:27.082.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testAccountResetClearsTransientConversationState]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testAccountResetClearsTransientConversationState]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.ClubCoachSessionTests testConversationSelectionRestoresDraftAndScroll]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testConversationSelectionRestoresDraftAndScroll]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.ClubCoachSessionTests testDiscardDoesNotResurrectDraft]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testDiscardDoesNotResurrectDraft]' passed (0.002 seconds).
+Test Case '-[BojiClubTests.ClubCoachSessionTests testNewConversationKeepsDraftUnderOriginalConversation]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testNewConversationKeepsDraftUnderOriginalConversation]' passed (0.002 seconds).
+Test Case '-[BojiClubTests.ClubCoachSessionTests testSendRequestConsumedOnceAcrossRendering]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testSendRequestConsumedOnceAcrossRendering]' passed (0.000 seconds).
+Test Suite 'ClubCoachSessionTests' passed at 2026-10-24 20:42:27.091.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.008 (0.009) seconds
+Test Suite 'ClubDiscoverableDraftTests' started at 2026-10-24 20:42:27.091.
+Test Case '-[BojiClubTests.ClubDiscoverableDraftTests testSavedAndLegacyDraftsAreDiscoverableAndAccountScoped]' started.
+Test Case '-[BojiClubTests.ClubDiscoverableDraftTests testSavedAndLegacyDraftsAreDiscoverableAndAccountScoped]' passed (0.003 seconds).
+Test Suite 'ClubDiscoverableDraftTests' passed at 2026-10-24 20:42:27.095.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.003 (0.003) seconds
+Test Suite 'ClubProactiveModeTests' started at 2026-10-24 20:42:27.095.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testActiveTurnsAllOn]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testActiveTurnsAllOn]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testBalancedMatchesDefaults]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testBalancedMatchesDefaults]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testModeLabelDerivesFromSwitches]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testModeLabelDerivesFromSwitches]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testNonMappedSettingsSurviveModeApplication]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testNonMappedSettingsSurviveModeApplication]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testQuietTurnsEverythingOff]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testQuietTurnsEverythingOff]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testStoredLegacyJSONDecodesWithoutMode]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testStoredLegacyJSONDecodesWithoutMode]' passed (0.002 seconds).
+Test Suite 'ClubProactiveModeTests' passed at 2026-10-24 20:42:27.099.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.003 (0.005) seconds
+Test Suite 'ClubServerInsightTests' started at 2026-10-24 20:42:27.100.
+Test Case '-[BojiClubTests.ClubServerInsightTests testBothNilResolvesNil]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testBothNilResolvesNil]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testDecodeSnakeCaseRefs]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testDecodeSnakeCaseRefs]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testLocalOnlyResolvesLocal]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testLocalOnlyResolvesLocal]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testNullInsightResponse]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testNullInsightResponse]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWinsOnlyOnStrictlyHigherPriority]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWinsOnlyOnStrictlyHigherPriority]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWithoutLocalApplies]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWithoutLocalApplies]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindFallsBackToLocal]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindFallsBackToLocal]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindIsIgnored]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindIsIgnored]' passed (0.000 seconds).
+Test Suite 'ClubServerInsightTests' passed at 2026-10-24 20:42:27.104.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.003 (0.004) seconds
+Test Suite 'FeatureFlagServiceTests' started at 2026-10-24 20:42:27.104.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testDefaultsAreSafe]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testDefaultsAreSafe]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testFeatureGatesFlowFromRemote]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testFeatureGatesFlowFromRemote]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyRemoteShellFlagCannotRestoreRemovedUI]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyRemoteShellFlagCannotRestoreRemovedUI]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyServerPayloadDecodesWithoutShellKey]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyServerPayloadDecodesWithoutShellKey]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNewServerPayloadDecodesShellKey]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNewServerPayloadDecodesShellKey]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNilRemoteKeepsDefaults]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNilRemoteKeepsDefaults]' passed (0.000 seconds).
+Test Suite 'FeatureFlagServiceTests' passed at 2026-10-24 20:42:27.111.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.006 (0.007) seconds
+Test Suite 'BojiClubTests.xctest' passed at 2026-10-24 20:42:27.111.
+	 Executed 47 tests, with 0 failures (0 unexpected) in 0.064 (0.074) seconds
+Test Suite 'All tests' passed at 2026-10-24 20:42:27.111.
+	 Executed 47 tests, with 0 failures (0 unexpected) in 0.064 (0.075) seconds
+2026-10-24 20:42:27.406 xcodebuild[15002:3390554] [MT] IDETestOperationsObserverDebug: 71.823 elapsed -- Testing started completed.
+2026-10-24 20:42:27.406 xcodebuild[15002:3390554] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-24 20:42:27.406 xcodebuild[15002:3390554] [MT] IDETestOperationsObserverDebug: 71.823 sec, +71.823 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/build115-unit-flows.xcresult
+
+** TEST EXECUTE SUCCEEDED **
+
+Testing started

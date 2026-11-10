@@ -1,0 +1,293 @@
+[
+  {
+    "id": "boji-cardio-walk",
+    "name": "brisk walking",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "body weight",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "选择平整、安全的路线，按自己可持续的节奏行走。\n保持自然摆臂和呼吸，记录实际行走时间。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "选择平整、安全的路线，按自己可持续的节奏行走。",
+        "保持自然摆臂和呼吸，记录实际行走时间。"
+      ]
+    }
+  },
+  {
+    "id": "boji-cardio-cycle",
+    "name": "outdoor cycling",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "bicycle",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "检查车辆和路线，佩戴头盔，遵守交通规则。\n选择能够控制的骑行强度，记录实际骑行时间。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "检查车辆和路线，佩戴头盔，遵守交通规则。",
+        "选择能够控制的骑行强度，记录实际骑行时间。"
+      ]
+    }
+  },
+  {
+    "id": "boji-cardio-row",
+    "name": "rowing machine",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "rowing machine",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "先熟悉器械的阻力与脚踏固定方式。\n蹬腿、伸髋、拉手柄依次衔接；回程按相反顺序还原，保持背部稳定。\n记录实际训练时间；本条目不提供经过核对的动作动图。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "先熟悉器械的阻力与脚踏固定方式。",
+        "蹬腿、伸髋、拉手柄依次衔接；回程按相反顺序还原，保持背部稳定。",
+        "记录实际训练时间；本条目不提供经过核对的动作动图。"
+      ]
+    }
+  },
+  {
+    "id": "boji-cardio-swim-free",
+    "name": "freestyle swimming",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "body weight",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "仅在有安全保障的场地，按已掌握的泳姿训练。\n本条目用于登记游泳时间，不替代泳姿教学。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "仅在有安全保障的场地，按已掌握的泳姿训练。",
+        "本条目用于登记游泳时间，不替代泳姿教学。"
+      ]
+    }
+  },
+  {
+    "id": "boji-cardio-swim-breast",
+    "name": "breaststroke swimming",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "body weight",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "仅在有安全保障的场地，按已掌握的泳姿训练。\n记录实际游泳时间；不熟悉泳姿时先接受现场指导。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "仅在有安全保障的场地，按已掌握的泳姿训练。",
+        "记录实际游泳时间；不熟悉泳姿时先接受现场指导。"
+      ]
+    }
+  },
+  {
+    "id": "boji-cardio-stairs",
+    "name": "stair climbing",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "body weight",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "选择照明和防滑条件良好的楼梯，保持脚下稳定。\n以可控制的节奏上楼，不把台阶数量当作训练组数。\n记录实际活动时间。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "选择照明和防滑条件良好的楼梯，保持脚下稳定。",
+        "以可控制的节奏上楼，不把台阶数量当作训练组数。",
+        "记录实际活动时间。"
+      ]
+    }
+  },
+  {
+    "id": "boji-cardio-march",
+    "name": "marching in place",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "body weight",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "站稳后交替抬脚踏步，手臂自然摆动。\n保持躯干稳定，在舒适范围内调整节奏，记录实际时长。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "站稳后交替抬脚踏步，手臂自然摆动。",
+        "保持躯干稳定，在舒适范围内调整节奏，记录实际时长。"
+      ]
+    }
+  },
+  {
+    "id": "boji-cardio-dance",
+    "name": "aerobic dance",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "body weight",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "选择适合自身水平、已有教学指导的操课。\n按实际运动时长登记；本条目不包含完整操课演示。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "选择适合自身水平、已有教学指导的操课。",
+        "按实际运动时长登记；本条目不包含完整操课演示。"
+      ]
+    }
+  },
+  {
+    "id": "boji-cardio-step-jack",
+    "name": "low impact step jack",
+    "body_part": "cardio",
+    "category": "cardio",
+    "equipment": "body weight",
+    "target": "cardiovascular system",
+    "muscle_group": "cardiovascular system",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "站稳后交替向侧方迈步，同时在舒适范围内抬起手臂。\n迈步还原后换另一侧；不需要双脚同时跳起。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "站稳后交替向侧方迈步，同时在舒适范围内抬起手臂。",
+        "迈步还原后换另一侧；不需要双脚同时跳起。"
+      ]
+    }
+  },
+  {
+    "id": "boji-basic-squat",
+    "name": "bodyweight squat",
+    "body_part": "upper legs",
+    "category": "upper legs",
+    "equipment": "body weight",
+    "target": "quads",
+    "muscle_group": "quads",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "双脚稳定站立，脚尖自然朝向。\n屈髋屈膝，下蹲至能够控制的深度，膝盖与脚尖方向协调。\n平稳站起，按实际完成次数记录。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "双脚稳定站立，脚尖自然朝向。",
+        "屈髋屈膝，下蹲至能够控制的深度，膝盖与脚尖方向协调。",
+        "平稳站起，按实际完成次数记录。"
+      ]
+    }
+  },
+  {
+    "id": "boji-basic-plank",
+    "name": "forearm plank",
+    "body_part": "waist",
+    "category": "waist",
+    "equipment": "body weight",
+    "target": "abs",
+    "muscle_group": "abs",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "前臂与脚尖支撑，肩部位于肘部上方。\n保持躯干稳定、自然呼吸，在可控制姿势的时间范围内坚持。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "前臂与脚尖支撑，肩部位于肘部上方。",
+        "保持躯干稳定、自然呼吸，在可控制姿势的时间范围内坚持。"
+      ]
+    }
+  },
+  {
+    "id": "boji-basic-bird-dog",
+    "name": "bird dog",
+    "body_part": "waist",
+    "category": "waist",
+    "equipment": "body weight",
+    "target": "abs",
+    "muscle_group": "abs",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "四足跪姿，保持背部与骨盆稳定。\n同时伸出对侧手臂和腿，控制还原后换侧。\n每完成一侧计一次，按实际完成次数登记。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "四足跪姿，保持背部与骨盆稳定。",
+        "同时伸出对侧手臂和腿，控制还原后换侧。",
+        "每完成一侧计一次，按实际完成次数登记。"
+      ]
+    }
+  },
+  {
+    "id": "boji-basic-wall-sit",
+    "name": "wall sit",
+    "body_part": "upper legs",
+    "category": "upper legs",
+    "equipment": "body weight",
+    "target": "quads",
+    "muscle_group": "quads",
+    "secondary_muscles": [],
+    "image": null,
+    "gif_url": null,
+    "media_id": null,
+    "instructions": {
+      "zh": "背部贴稳墙面，双脚稳定支撑。\n屈膝下降至自己能够控制的范围，不强迫固定蹲姿深度。\n保持自然呼吸，按实际坚持的时间登记。"
+    },
+    "instruction_steps": {
+      "zh": [
+        "背部贴稳墙面，双脚稳定支撑。",
+        "屈膝下降至自己能够控制的范围，不强迫固定蹲姿深度。",
+        "保持自然呼吸，按实际坚持的时间登记。"
+      ]
+    }
+  }
+]

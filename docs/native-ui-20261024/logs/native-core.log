@@ -1,0 +1,994 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project BojiClub.xcodeproj -scheme BojiClub -configuration Debug -destination "platform=iOS Simulator,id=9B496F27-8B0D-4B90-99F2-9379D8B0626C" -derivedDataPath /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData -resultBundlePath /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-core.xcresult CODE_SIGNING_ALLOWED=NO -parallel-testing-enabled NO test "-only-testing:BojiClubTests" "-only-testing:BojiClubUITests/BojiClubUITests/testNativeShellIgnoresRetiredHomeSwitch" "-only-testing:BojiClubUITests/BojiClubUITests/testV2ShellHeaderAndModeSwitch" "-only-testing:BojiClubUITests/BojiClubUITests/testV2ComposerSendsIntoConversation" "-only-testing:BojiClubUITests/BojiClubUITests/testV2SidebarEntriesAndRecords" "-only-testing:BojiClubUITests/BojiClubUITests/testV2ConversationKeepsNativeComposerActions" "-only-testing:BojiClubUITests/BojiClubUITests/testV2NewConversationPreservesRestorableDraft" "-only-testing:BojiClubUITests/BojiClubUITests/testV2SidebarHistorySearchAndRestoreConversation"
+
+Build settings from command line:
+    CODE_SIGNING_ALLOWED = NO
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  RevenueCat: https://github.com/RevenueCat/purchases-ios-spm.git @ 5.95.0
+
+Writing result bundle at path:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-core.xcresult
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (10 targets)
+    Target 'BojiClubTests' in project 'BojiClub'
+        ➜ Explicit dependency on target 'BojiClub' in project 'BojiClub'
+    Target 'BojiClubUITests' in project 'BojiClub'
+        ➜ Explicit dependency on target 'BojiClub' in project 'BojiClub'
+    Target 'BojiClub' in project 'BojiClub'
+        ➜ Explicit dependency on target 'BojiClubWidget' in project 'BojiClub'
+        ➜ Explicit dependency on target 'RevenueCat' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCatUI' in project 'RevenueCat'
+    Target 'RevenueCatUI' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCatUI' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCat_RevenueCatUI' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCat' in project 'RevenueCat'
+    Target 'RevenueCatUI' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCat_RevenueCatUI' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCat' in project 'RevenueCat'
+    Target 'RevenueCat_RevenueCatUI' in project 'RevenueCat' (no dependencies)
+    Target 'RevenueCat' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCat' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCat_RevenueCat' in project 'RevenueCat'
+    Target 'RevenueCat' in project 'RevenueCat'
+        ➜ Explicit dependency on target 'RevenueCat_RevenueCat' in project 'RevenueCat'
+    Target 'RevenueCat_RevenueCat' in project 'RevenueCat' (no dependencies)
+    Target 'BojiClubWidget' in project 'BojiClub' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClub/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+ReadFileContents /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/docc/features.json
+
+Build description signature: ae354235101e4bf011c4661174796e96
+Build description path: /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/XCBuildData/ae354235101e4bf011c4661174796e96.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClub.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache
+
+ProcessInfoPlistFile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubWidget.appex/Info.plist /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubWidget/Info.plist (in target 'BojiClubWidget' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-infoPlistUtility /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubWidget/Info.plist -producttype com.apple.product-type.app-extension -expandbuildsettings -format binary -platform iphonesimulator -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubWidget.appex/Info.plist
+
+ProcessInfoPlistFile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/RevenueCat_RevenueCat.bundle/Info.plist /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/RevenueCat.build/Debug-iphonesimulator/RevenueCat_RevenueCat.build/empty-RevenueCat_RevenueCat.plist (in target 'RevenueCat_RevenueCat' from project 'RevenueCat')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SourcePackages/checkouts/purchases-ios-spm
+    builtin-infoPlistUtility /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/RevenueCat.build/Debug-iphonesimulator/RevenueCat_RevenueCat.build/empty-RevenueCat_RevenueCat.plist -producttype com.apple.product-type.bundle -expandbuildsettings -format binary -platform iphonesimulator -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/RevenueCat_RevenueCat.bundle/Info.plist
+
+MkDir /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    /bin/mkdir -p /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+
+ProcessInfoPlistFile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/RevenueCat_RevenueCatUI.bundle/Info.plist /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/RevenueCat.build/Debug-iphonesimulator/RevenueCat_RevenueCatUI.build/empty-RevenueCat_RevenueCatUI.plist (in target 'RevenueCat_RevenueCatUI' from project 'RevenueCat')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SourcePackages/checkouts/purchases-ios-spm
+    builtin-infoPlistUtility /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/RevenueCat.build/Debug-iphonesimulator/RevenueCat_RevenueCatUI.build/empty-RevenueCat_RevenueCatUI.plist -producttype com.apple.product-type.bundle -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/RevenueCat.build/Debug-iphonesimulator/RevenueCat_RevenueCatUI.build/assetcatalog_generated_info.plist -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/RevenueCat_RevenueCatUI.bundle/Info.plist
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/Testing.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/Testing.framework (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/Testing.framework /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/Testing.framework/Testing (in target 'BojiClub' from project 'BojiClub')
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/libXCTestSwiftSupport.dylib /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib (in target 'BojiClub' from project 'BojiClub')
+
+SwiftDriver BojiClubUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BojiClubUITests -Onone @/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.SwiftFileList -DDEBUG -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -index-store-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-generated-files.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-own-target-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClub-f37df1ef008f1ce5496a0725e85d3798-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-project-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests-Swift.h -working-directory /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021 -experimental-emit-module-separately -disable-cmo
+
+SwiftDriver BojiClubTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BojiClubTests -Onone @/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.SwiftFileList -DDEBUG -DDEBUG -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -index-store-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-generated-files.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-own-target-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClub-f37df1ef008f1ce5496a0725e85d3798-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-project-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources-normal/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests-Swift.h -working-directory /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021 -experimental-emit-module-separately -disable-cmo
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/libXCTestBundleInject.dylib /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestBundleInject.dylib (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestBundleInject.dylib /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestBundleInject.dylib (in target 'BojiClub' from project 'BojiClub')
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/XCUnit.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework/XCUnit (in target 'BojiClub' from project 'BojiClub')
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/XCUIAutomation.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework/XCUIAutomation (in target 'BojiClub' from project 'BojiClub')
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/XCTestSupport.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestSupport.framework (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestSupport.framework /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestSupport.framework/XCTestSupport (in target 'BojiClub' from project 'BojiClub')
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/XCTestCore.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestCore.framework (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestCore.framework /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestCore.framework/XCTestCore (in target 'BojiClub' from project 'BojiClub')
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/XCTest.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework/XCTest (in target 'BojiClub' from project 'BojiClub')
+
+ProcessInfoPlistFile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Info.plist /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClub/Info.plist (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-infoPlistUtility /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClub/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClub.build/assetcatalog_generated_info.plist -scanforprivacyfile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubWidget.appex -scanforprivacyfile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/RevenueCat_RevenueCat.bundle -scanforprivacyfile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/RevenueCat_RevenueCatUI.bundle -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Info.plist
+
+CopySwiftLibs /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/BojiClub.debug.dylib --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/SystemExtensions --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Extensions --platform iphonesimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClub.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+Ignoring --strip-bitcode because --sign was not passed
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks/XCTAutomationSupport.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/Frameworks
+warning: not stripping binary because it is signed: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework/XCTAutomationSupport (in target 'BojiClub' from project 'BojiClub')
+
+ProcessInfoPlistFile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/Info.plist /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/empty-BojiClubTests.plist (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-infoPlistUtility /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/empty-BojiClubTests.plist -producttype com.apple.product-type.bundle.unit-test -expandbuildsettings -format binary -platform iphonesimulator -scanforprivacyfile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/RevenueCat_RevenueCat.bundle -scanforprivacyfile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/RevenueCat_RevenueCatUI.bundle -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/Info.plist
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ BojiClubUITests (in target 'BojiClubUITests' from project 'BojiClub')
+
+SwiftCompile normal arm64 /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    
+
+SwiftCompile normal arm64 Compiling\ BojiClubUITests.swift /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift (in target 'BojiClubUITests' from project 'BojiClub')
+SwiftCompile normal arm64 /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for BojiClubUITests (in target 'BojiClubUITests' from project 'BojiClub')
+
+SwiftDriver\ Compilation\ Requirements BojiClubUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BojiClubUITests -Onone @/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.SwiftFileList -DDEBUG -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -index-store-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-generated-files.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-own-target-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClub-f37df1ef008f1ce5496a0725e85d3798-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-project-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests-Swift.h -working-directory /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021 -experimental-emit-module-separately -disable-cmo
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.swiftsourceinfo (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.swiftsourceinfo /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests.swiftmodule/arm64-apple-ios-simulator.swiftmodule /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.swiftmodule (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.swiftmodule /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests.swiftmodule/arm64-apple-ios-simulator.swiftmodule
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.abi.json (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.abi.json /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+SwiftCompile normal arm64 Compiling\ ClubServerInsightTests.swift /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubTests/ClubServerInsightTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+
+SwiftCompile normal arm64 /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubTests/ClubServerInsightTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ BojiClubTests (in target 'BojiClubTests' from project 'BojiClub')
+
+EmitSwiftModule normal arm64 (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    
+
+SwiftCompile normal arm64 Compiling\ FeatureFlagServiceTests.swift /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubTests/FeatureFlagServiceTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+
+SwiftCompile normal arm64 /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubTests/FeatureFlagServiceTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    
+
+SwiftCompile normal arm64 Compiling\ ClubProactiveModeTests.swift /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubTests/ClubProactiveModeTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+
+SwiftCompile normal arm64 /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubTests/ClubProactiveModeTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    
+
+SwiftCompile normal arm64 Compiling\ AICardContractTests.swift /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubTests/AICardContractTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+SwiftCompile normal arm64 /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubTests/AICardContractTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for BojiClubTests (in target 'BojiClubTests' from project 'BojiClub')
+
+SwiftDriver\ Compilation\ Requirements BojiClubTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BojiClubTests -Onone @/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.SwiftFileList -DDEBUG -DDEBUG -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -index-store-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-generated-files.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-own-target-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClub-f37df1ef008f1ce5496a0725e85d3798-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-project-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources-normal/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests-Swift.h -working-directory /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021 -experimental-emit-module-separately -disable-cmo
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubTests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.swiftsourceinfo (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.swiftsourceinfo /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubTests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubTests.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.abi.json (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.abi.json /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubTests.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+Copy /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.swiftmodule (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.swiftmodule /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule
+
+SwiftDriverJobDiscovery normal arm64 Compiling ClubProactiveModeTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+
+SwiftDriverJobDiscovery normal arm64 Compiling ClubServerInsightTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+
+SwiftDriverJobDiscovery normal arm64 Compiling FeatureFlagServiceTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+
+SwiftDriverJobDiscovery normal arm64 Compiling BojiClubUITests.swift (in target 'BojiClubUITests' from project 'BojiClub')
+
+SwiftDriver\ Compilation BojiClubUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BojiClubUITests -Onone @/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.SwiftFileList -DDEBUG -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -index-store-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-generated-files.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-own-target-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClub-f37df1ef008f1ce5496a0725e85d3798-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests-project-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests-Swift.h -working-directory /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021 -experimental-emit-module-separately -disable-cmo
+
+SwiftDriverJobDiscovery normal arm64 Compiling AICardContractTests.swift (in target 'BojiClubTests' from project 'BojiClub')
+
+SwiftDriver\ Compilation BojiClubTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BojiClubTests -Onone @/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.SwiftFileList -DDEBUG -DDEBUG -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -index-store-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-generated-files.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-own-target-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClub-f37df1ef008f1ce5496a0725e85d3798-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests-project-headers.hmap -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources-normal/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources/arm64 -Xcc -I/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests-Swift.h -working-directory /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021 -experimental-emit-module-separately -disable-cmo
+
+Ld /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/BojiClubTests normal (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios17.0-simulator -bundle -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -F/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -F/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -iframework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -iframework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -filelist /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.LinkFileList -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/PackageFrameworks -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -bundle_loader /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/BojiClub -Xlinker -object_path_lto -Xlinker /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests_lto.o -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.swiftmodule @/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests-linker-args.resp -Wl,-no_warn_duplicate_libraries -Wl,-no_warn_duplicate_libraries -Xlinker -needed_framework -Xlinker XCTest -framework XCTest -Xlinker -needed-lXCTestSwiftSupport -lXCTestSwiftSupport /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/BojiClub.debug.dylib -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/BojiClubTests
+
+ExtractAppIntentsMetadata (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name BojiClubTests --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 17.0 --bundle-identifier com.bojiclub.app.dev.unittests --output /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest --target-triple arm64-apple-ios17.0-simulator --binary-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/BojiClubTests --dependency-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests_dependency_info.dat --stringsdata-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.SwiftFileList --metadata-file-list /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests.DependencyMetadataFileList --static-metadata-file-list /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/BojiClubTests.DependencyStaticMetadataFileList --swift-const-vals-list /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/Objects-normal/arm64/BojiClubTests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-10-24 18:57:57.265 appintentsmetadataprocessor[81097:3127795] Starting appintentsmetadataprocessor export
+2026-10-24 18:57:57.271 appintentsmetadataprocessor[81097:3127795] Extracted no relevant App Intents symbols, skipping writing output
+
+CopySwiftLibs /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest (in target 'BojiClubTests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/BojiClubTests --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/Frameworks --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/PlugIns --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/SystemExtensions --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/Extensions --platform iphonesimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app/PlugIns/BojiClubTests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubTests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+Ignoring --strip-bitcode because --sign was not passed
+
+Validate /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app (in target 'BojiClub' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-validationUtility /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClub.app -shallow-bundle -infoplist-subpath Info.plist
+
+ProcessInfoPlistFile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/Info.plist /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/empty-BojiClubUITests.plist (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-infoPlistUtility /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/empty-BojiClubUITests.plist -producttype com.apple.product-type.bundle.ui-testing -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/ProductTypeInfoPlistAdditions.plist -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/Info.plist
+
+Ld /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/BojiClubUITests normal (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios17.0-simulator -bundle -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator -iframework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -iframework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -filelist /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.LinkFileList -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests_lto.o -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.swiftmodule @/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests-linker-args.resp -Xlinker -needed_framework -Xlinker XCTest -framework XCTest -Xlinker -needed-lXCTestSwiftSupport -lXCTestSwiftSupport -o /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/BojiClubUITests
+
+CopySwiftLibs /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/BojiClubUITests --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/Frameworks --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/PlugIns --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/SystemExtensions --scan-folder /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/Extensions --platform iphonesimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+Ignoring --strip-bitcode because --sign was not passed
+
+ExtractAppIntentsMetadata (in target 'BojiClubUITests' from project 'BojiClub')
+    cd /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name BojiClubUITests --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 17.0 --bundle-identifier com.bojiclub.app.dev.uitests --output /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest --target-triple arm64-apple-ios17.0-simulator --binary-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/Debug-iphonesimulator/BojiClubUITests-Runner.app/PlugIns/BojiClubUITests.xctest/BojiClubUITests --dependency-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests_dependency_info.dat --stringsdata-file /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.SwiftFileList --metadata-file-list /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests.DependencyMetadataFileList --static-metadata-file-list /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/BojiClubUITests.DependencyStaticMetadataFileList --swift-const-vals-list /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Intermediates.noindex/BojiClub.build/Debug-iphonesimulator/BojiClubUITests.build/Objects-normal/arm64/BojiClubUITests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-10-24 18:57:57.405 appintentsmetadataprocessor[81100:3127811] Starting appintentsmetadataprocessor export
+2026-10-24 18:57:57.406 appintentsmetadataprocessor[81100:3127811] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+2026-10-24 18:58:04.227193+0800 BojiClubUITests-Runner[81153:3128165] [Default] Running tests...
+objc[81153]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x102bb0310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x105a18398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-24 18:58:07.516.
+Test Suite 'BojiClubUITests.xctest' started at 2026-10-24 18:58:07.517.
+Test Suite 'BojiClubUITests' started at 2026-10-24 18:58:07.517.
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeShellIgnoresRetiredHomeSwitch]' started.
+    t =     0.00s Start Test at 2026-10-24 18:58:07.517
+    t =     0.19s Set Up
+    t =     0.19s Open com.bojiclub.app.dev
+    t =     0.20s     Launch com.bojiclub.app.dev
+    t =     0.20s         Terminate com.bojiclub.app.dev:73867
+2026-10-24 18:58:08.999 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 18:58:08.999 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     2.73s         Setting up automation session
+    t =     3.64s         Wait for com.bojiclub.app.dev to idle
+    t =     6.03s Waiting 15.0s for "v2-mode-picker" SegmentedControl to exist
+    t =     7.06s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     7.06s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     7.15s Checking existence of `"v2-composer-field" Any`
+    t =     7.17s Checking existence of `TabBar (First Match)`
+    t =     7.19s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeShellIgnoresRetiredHomeSwitch]' passed (7.465 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ComposerSendsIntoConversation]' started.
+    t =     0.00s Start Test at 2026-10-24 18:58:14.987
+    t =     0.04s Set Up
+    t =     0.04s Open com.bojiclub.app.dev
+    t =     0.04s     Launch com.bojiclub.app.dev
+    t =     0.04s         Terminate com.bojiclub.app.dev:81235
+2026-10-24 18:58:16.123 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 18:58:16.123 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.35s         Setting up automation session
+    t =     2.02s         Wait for com.bojiclub.app.dev to idle
+    t =     3.92s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.98s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.98s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     5.07s Checking existence of `TabBar (First Match)`
+    t =     5.09s Waiting 2.0s for "稍后再看" Button to exist
+    t =     6.14s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.14s         Checking existence of `"稍后再看" Button`
+    t =     6.18s         Capturing element debug description
+    t =     7.10s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     7.10s         Checking existence of `"稍后再看" Button`
+    t =     7.16s         Capturing element debug description
+    t =     7.16s     Checking existence of `"稍后再看" Button`
+    t =     7.19s Collecting debug information to assist test failure triage
+    t =     7.19s     Requesting snapshot of accessibility hierarchy for app with pid 81301
+    t =     7.22s Waiting 15.0s for "v2-composer-field" Any to exist
+    t =     8.25s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =     8.25s         Checking existence of `"v2-composer-field" Any`
+    t =     8.28s Tap "v2-composer-field" Any
+    t =     8.28s     Wait for com.bojiclub.app.dev to idle
+    t =     8.28s     Find the "v2-composer-field" Any
+    t =     8.29s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.34s     Synthesize event
+    t =     8.74s     Wait for com.bojiclub.app.dev to idle
+    t =     9.31s Type '帮我看看今天的安排' into "v2-composer-field" TextField
+    t =     9.31s     Wait for com.bojiclub.app.dev to idle
+    t =     9.69s     Find the "v2-composer-field" TextField
+    t =     9.71s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     9.87s     Synthesize event
+    t =    10.22s     Wait for com.bojiclub.app.dev to idle
+    t =    10.22s Tap "v2-composer-send" Button
+    t =    10.22s     Wait for com.bojiclub.app.dev to idle
+    t =    10.22s     Find the "v2-composer-send" Button
+    t =    10.26s     Check for interrupting elements affecting "v2-composer-send" Button
+    t =    10.28s     Synthesize event
+    t =    10.57s     Wait for com.bojiclub.app.dev to idle
+    t =    10.88s Waiting 15.0s for "ai-card-today_training" Any to exist
+    t =    11.95s     Checking `Expect predicate `existsNoRetry == 1` for object "ai-card-today_training" Any`
+    t =    11.95s         Checking existence of `"ai-card-today_training" Any`
+    t =    12.04s Checking existence of `"v2-composer-field" Any`
+    t =    12.05s Checking existence of `"v2-composer-plus" Button`
+    t =    12.07s Tap "Club AI" Button
+    t =    12.07s     Wait for com.bojiclub.app.dev to idle
+    t =    12.16s     Find the "Club AI" Button
+    t =    12.18s     Check for interrupting elements affecting "Club AI" Button
+    t =    12.21s     Synthesize event
+    t =    12.51s     Wait for com.bojiclub.app.dev to idle
+    t =    13.27s Checking existence of `"ai-card-today_training" Any`
+    t =    13.35s Tap "v2-sidebar-toggle" Button
+    t =    13.35s     Wait for com.bojiclub.app.dev to idle
+    t =    13.35s     Find the "v2-sidebar-toggle" Button
+    t =    13.37s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    13.39s     Synthesize event
+    t =    13.69s     Wait for com.bojiclub.app.dev to idle
+    t =    14.81s Waiting 8.0s for "v2-sidebar-today" Button to exist
+    t =    15.85s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-today" Button`
+    t =    15.85s         Checking existence of `"v2-sidebar-today" Button`
+    t =    15.96s Find the "v2-sidebar-today" Button
+    t =    16.01s Find the "v2-sidebar-today" Button
+    t =    16.06s Find the "v2-sidebar-today" Button
+    t =    16.11s Find the "v2-sidebar-today" Button
+    t =    16.16s Find the "v2-sidebar-today" Button
+    t =    16.21s Tap "v2-sidebar-today" Button
+    t =    16.21s     Wait for com.bojiclub.app.dev to idle
+    t =    16.21s     Find the "v2-sidebar-today" Button
+    t =    16.26s     Check for interrupting elements affecting "v2-sidebar-today" Button
+    t =    16.30s     Synthesize event
+    t =    16.58s     Wait for com.bojiclub.app.dev to idle
+    t =    17.16s Waiting 8.0s for "v2-composer-field" Any to exist
+    t =    18.21s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =    18.21s         Checking existence of `"v2-composer-field" Any`
+    t =    18.24s Checking existence of `"ai-card-today_training" Any`
+    t =    18.30s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ComposerSendsIntoConversation]' passed (18.589 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ConversationKeepsNativeComposerActions]' started.
+    t =     0.00s Start Test at 2026-10-24 18:58:33.575
+    t =     0.03s Set Up
+    t =     0.04s Open com.bojiclub.app.dev
+    t =     0.04s     Launch com.bojiclub.app.dev
+    t =     0.04s         Terminate com.bojiclub.app.dev:81301
+2026-10-24 18:58:34.703 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 18:58:34.703 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.34s         Setting up automation session
+    t =     2.00s         Wait for com.bojiclub.app.dev to idle
+    t =     3.82s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.85s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.85s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.94s Checking existence of `TabBar (First Match)`
+    t =     4.97s Waiting 2.0s for "稍后再看" Button to exist
+    t =     6.02s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.02s         Checking existence of `"稍后再看" Button`
+    t =     6.08s         Capturing element debug description
+    t =     6.97s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.97s         Checking existence of `"稍后再看" Button`
+    t =     7.03s         Capturing element debug description
+    t =     7.03s     Checking existence of `"稍后再看" Button`
+    t =     7.05s Collecting debug information to assist test failure triage
+    t =     7.05s     Requesting snapshot of accessibility hierarchy for app with pid 81408
+    t =     7.08s Waiting 10.0s for "v2-composer-field" Any to exist
+    t =     8.12s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =     8.12s         Checking existence of `"v2-composer-field" Any`
+    t =     8.15s Tap "v2-composer-field" Any
+    t =     8.15s     Wait for com.bojiclub.app.dev to idle
+    t =     8.15s     Find the "v2-composer-field" Any
+    t =     8.16s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.19s     Synthesize event
+    t =     8.48s     Wait for com.bojiclub.app.dev to idle
+    t =     8.49s Type '今天怎么练' into "v2-composer-field" TextField
+    t =     8.49s     Wait for com.bojiclub.app.dev to idle
+    t =     8.88s     Find the "v2-composer-field" TextField
+    t =     8.92s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.97s     Synthesize event
+    t =     9.25s     Wait for com.bojiclub.app.dev to idle
+    t =     9.26s Tap "v2-composer-send" Button
+    t =     9.26s     Wait for com.bojiclub.app.dev to idle
+    t =     9.26s     Find the "v2-composer-send" Button
+    t =     9.30s     Check for interrupting elements affecting "v2-composer-send" Button
+    t =     9.33s     Synthesize event
+    t =     9.63s     Wait for com.bojiclub.app.dev to idle
+    t =    11.05s Waiting 15.0s for "ai-card-today_training" Any to exist
+    t =    12.08s     Checking `Expect predicate `existsNoRetry == 1` for object "ai-card-today_training" Any`
+    t =    12.08s         Checking existence of `"ai-card-today_training" Any`
+    t =    12.16s Checking existence of `"v2-composer-voice" Button`
+    t =    12.18s Tap "v2-composer-plus" Button
+    t =    12.18s     Wait for com.bojiclub.app.dev to idle
+    t =    12.18s     Find the "v2-composer-plus" Button
+    t =    12.20s     Check for interrupting elements affecting "v2-composer-plus" Button
+    t =    12.22s     Synthesize event
+    t =    12.51s     Wait for com.bojiclub.app.dev to idle
+    t =    13.45s Waiting 5.0s for "记录体重" Button to exist
+    t =    14.50s     Checking `Expect predicate `existsNoRetry == 1` for object "记录体重" Button`
+    t =    14.50s         Checking existence of `"记录体重" Button`
+    t =    14.56s Checking existence of `"手动记录饮食" Button`
+    t =    14.59s Tap "记录体重" Button
+    t =    14.59s     Wait for com.bojiclub.app.dev to idle
+    t =    14.59s     Find the "记录体重" Button
+    t =    14.61s     Check for interrupting elements affecting "scalemass" Button
+    t =    14.64s     Synthesize event
+    t =    14.93s     Wait for com.bojiclub.app.dev to idle
+    t =    16.54s Waiting 8.0s for "身体记录" NavigationBar to exist
+    t =    17.58s     Checking `Expect predicate `existsNoRetry == 1` for object "身体记录" NavigationBar`
+    t =    17.58s         Checking existence of `"身体记录" NavigationBar`
+    t =    17.70s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ConversationKeepsNativeComposerActions]' passed (17.958 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2NewConversationPreservesRestorableDraft]' started.
+    t =     0.00s Start Test at 2026-10-24 18:58:51.535
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:81408
+2026-10-24 18:58:52.626 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 18:58:52.626 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.30s         Setting up automation session
+    t =     1.95s         Wait for com.bojiclub.app.dev to idle
+    t =     3.72s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.75s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.75s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.85s Checking existence of `TabBar (First Match)`
+    t =     4.87s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.90s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.90s         Checking existence of `"稍后再看" Button`
+    t =     5.95s         Capturing element debug description
+    t =     6.88s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.88s         Checking existence of `"稍后再看" Button`
+    t =     6.93s         Capturing element debug description
+    t =     6.93s     Checking existence of `"稍后再看" Button`
+    t =     6.96s Collecting debug information to assist test failure triage
+    t =     6.96s     Requesting snapshot of accessibility hierarchy for app with pid 81505
+    t =     6.99s Waiting 10.0s for "v2-composer-field" Any to exist
+    t =     8.02s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =     8.02s         Checking existence of `"v2-composer-field" Any`
+    t =     8.04s Tap "v2-composer-field" Any
+    t =     8.04s     Wait for com.bojiclub.app.dev to idle
+    t =     8.04s     Find the "v2-composer-field" Any
+    t =     8.05s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.07s     Synthesize event
+    t =     8.37s     Wait for com.bojiclub.app.dev to idle
+    t =     8.74s Type '明天想安排一次上肢训练' into "v2-composer-field" TextField
+    t =     8.74s     Wait for com.bojiclub.app.dev to idle
+    t =     8.75s     Find the "v2-composer-field" TextField
+    t =     8.78s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.83s     Synthesize event
+    t =     9.22s     Wait for com.bojiclub.app.dev to idle
+    t =     9.22s Tap "v2-context-action" Button
+    t =     9.22s     Wait for com.bojiclub.app.dev to idle
+    t =     9.22s     Find the "v2-context-action" Button
+    t =     9.27s     Check for interrupting elements affecting "v2-context-action" Button
+    t =     9.30s     Synthesize event
+    t =     9.59s     Wait for com.bojiclub.app.dev to idle
+    t =    10.43s Waiting 8.0s for "保存草稿并开始新对话" Button to exist
+    t =    11.47s     Checking `Expect predicate `existsNoRetry == 1` for object "保存草稿并开始新对话" Button`
+    t =    11.47s         Checking existence of `"保存草稿并开始新对话" Button`
+    t =    11.52s Tap "保存草稿并开始新对话" Button
+    t =    11.52s     Wait for com.bojiclub.app.dev to idle
+    t =    11.52s     Find the "保存草稿并开始新对话" Button
+    t =    11.56s     Check for interrupting elements affecting "保存草稿并开始新对话" Button
+    t =    11.59s     Synthesize event
+    t =    11.88s     Wait for com.bojiclub.app.dev to idle
+    t =    12.07s Find the "v2-composer-field" Any
+    t =    12.13s Tap "v2-sidebar-toggle" Button
+    t =    12.13s     Wait for com.bojiclub.app.dev to idle
+    t =    12.13s     Find the "v2-sidebar-toggle" Button
+    t =    12.16s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    12.19s     Synthesize event
+    t =    12.49s     Wait for com.bojiclub.app.dev to idle
+    t =    13.43s Waiting 8.0s for Button (First Match) to exist
+    t =    14.47s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    14.47s         Checking existence of `Button (First Match)`
+    t =    14.59s         Capturing element debug description
+    t =    15.43s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    15.44s         Checking existence of `Button (First Match)`
+    t =    15.54s         Capturing element debug description
+    t =    16.49s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    16.49s         Checking existence of `Button (First Match)`
+    t =    16.60s         Capturing element debug description
+    t =    17.43s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    17.44s         Checking existence of `Button (First Match)`
+    t =    17.54s         Capturing element debug description
+    t =    18.47s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    18.47s         Checking existence of `Button (First Match)`
+    t =    18.57s         Capturing element debug description
+    t =    19.50s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    19.50s         Checking existence of `Button (First Match)`
+    t =    19.61s         Capturing element debug description
+    t =    20.45s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    20.45s         Checking existence of `Button (First Match)`
+    t =    20.56s         Capturing element debug description
+    t =    21.43s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    21.44s         Checking existence of `Button (First Match)`
+    t =    21.54s         Capturing element debug description
+    t =    21.54s     Checking existence of `Button (First Match)`
+    t =    21.62s Collecting debug information to assist test failure triage
+    t =    21.62s     Requesting snapshot of accessibility hierarchy for app with pid 81505
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:586: error: -[BojiClubUITests.BojiClubUITests testV2NewConversationPreservesRestorableDraft] : XCTAssertTrue failed
+    t =    21.91s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2NewConversationPreservesRestorableDraft]' failed (22.152 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ShellHeaderAndModeSwitch]' started.
+    t =     0.00s Start Test at 2026-10-24 18:59:13.688
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:81505
+2026-10-24 18:59:14.737 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 18:59:14.737 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.36s         Setting up automation session
+    t =     2.04s         Wait for com.bojiclub.app.dev to idle
+    t =     3.84s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.86s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.87s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.96s Checking existence of `TabBar (First Match)`
+    t =     4.99s Waiting 2.0s for "稍后再看" Button to exist
+    t =     6.04s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.04s         Checking existence of `"稍后再看" Button`
+    t =     6.10s         Capturing element debug description
+    t =     6.99s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.99s         Checking existence of `"稍后再看" Button`
+    t =     7.04s         Capturing element debug description
+    t =     7.04s     Checking existence of `"稍后再看" Button`
+    t =     7.07s Collecting debug information to assist test failure triage
+    t =     7.07s     Requesting snapshot of accessibility hierarchy for app with pid 81628
+    t =     7.10s Waiting 15.0s for "v2-mode-picker" SegmentedControl to exist
+    t =     8.14s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     8.14s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     8.18s Find the "Club AI" Button
+    t =     8.20s Checking existence of `"v2-context-action" Button`
+    t =     8.22s Checking existence of `"v2-composer-field" Any`
+    t =     8.23s Checking existence of `TabBar (First Match)`
+    t =     8.25s Waiting 10.0s for "训练" Button to exist
+    t =     9.30s     Checking `Expect predicate `existsNoRetry == 1` for object "训练" Button`
+    t =     9.30s         Checking existence of `"训练" Button`
+    t =     9.34s Tap "训练" Button
+    t =     9.34s     Wait for com.bojiclub.app.dev to idle
+    t =     9.34s     Find the "训练" Button
+    t =     9.37s     Check for interrupting elements affecting "训练" Button
+    t =     9.39s     Synthesize event
+    t =     9.68s     Wait for com.bojiclub.app.dev to idle
+    t =     9.92s Find the "训练" Button
+    t =     9.96s Waiting 8.0s for "plan-calendar-toggle" Button to exist
+    t =    11.01s     Checking `Expect predicate `existsNoRetry == 1` for object "plan-calendar-toggle" Button`
+    t =    11.01s         Checking existence of `"plan-calendar-toggle" Button`
+    t =    11.04s Find the "v2-composer-field" Any
+    t =    12.12s     Find the "v2-composer-field" Any (retry 1)
+    t =    13.20s     Find the "v2-composer-field" Any (retry 2)
+    t =    13.31s Get number of matches for: Descendants matching type NavigationBar
+    t =    13.33s Waiting 10.0s for "Club AI" Button to exist
+    t =    14.36s     Checking `Expect predicate `existsNoRetry == 1` for object "Club AI" Button`
+    t =    14.36s         Checking existence of `"Club AI" Button`
+    t =    14.42s Tap "Club AI" Button
+    t =    14.42s     Wait for com.bojiclub.app.dev to idle
+    t =    14.42s     Find the "Club AI" Button
+    t =    14.45s     Check for interrupting elements affecting "Club AI" Button
+    t =    14.47s     Synthesize event
+    t =    14.77s     Wait for com.bojiclub.app.dev to idle
+    t =    15.01s Find the "Club AI" Button
+    t =    15.05s Waiting 8.0s for "v2-composer-field" Any to exist
+    t =    16.09s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =    16.09s         Checking existence of `"v2-composer-field" Any`
+    t =    16.12s Find the Target Application 'com.bojiclub.app.dev'
+    t =    16.24s Added attachment named 'native-ai-home'
+    t =    16.24s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ShellHeaderAndModeSwitch]' passed (16.504 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarEntriesAndRecords]' started.
+    t =     0.00s Start Test at 2026-10-24 18:59:30.193
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:81628
+2026-10-24 18:59:31.282 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 18:59:31.282 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.30s         Setting up automation session
+    t =     1.91s         Wait for com.bojiclub.app.dev to idle
+    t =     3.69s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.73s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.73s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.79s Checking existence of `TabBar (First Match)`
+    t =     4.81s Waiting 2.0s for "稍后再看" Button to exist
+    t =     5.86s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     5.86s         Checking existence of `"稍后再看" Button`
+    t =     5.90s         Capturing element debug description
+    t =     6.81s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.81s         Checking existence of `"稍后再看" Button`
+    t =     6.86s         Capturing element debug description
+    t =     6.87s     Checking existence of `"稍后再看" Button`
+    t =     6.89s Collecting debug information to assist test failure triage
+    t =     6.89s     Requesting snapshot of accessibility hierarchy for app with pid 81710
+    t =     6.92s Tap "v2-sidebar-toggle" Button
+    t =     6.92s     Wait for com.bojiclub.app.dev to idle
+    t =     6.92s     Find the "v2-sidebar-toggle" Button
+    t =     6.94s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =     6.95s     Synthesize event
+    t =     7.24s     Wait for com.bojiclub.app.dev to idle
+    t =     8.20s Waiting 8.0s for "v2-sidebar-newchat" Button to exist
+    t =     9.26s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-newchat" Button`
+    t =     9.26s         Checking existence of `"v2-sidebar-newchat" Button`
+    t =     9.34s Checking existence of `SearchField (First Match)`
+    t =     9.36s Find the "v2-composer-field" Any
+    t =     9.38s Find the Target Application 'com.bojiclub.app.dev'
+    t =     9.48s Added attachment named 'native-sidebar-open'
+    t =     9.48s Checking existence of `"v2-sidebar-records" Button`
+    t =     9.52s Find the "v2-sidebar-records" Button
+    t =     9.56s Checking existence of `"v2-sidebar-records" Button`
+    t =     9.60s Find the "v2-sidebar-records" Button
+    t =     9.64s Checking existence of `"v2-sidebar-records" Button`
+    t =     9.67s Find the "v2-sidebar-records" Button
+    t =     9.71s Checking existence of `"v2-sidebar-records" Button`
+    t =     9.75s Find the "v2-sidebar-records" Button
+    t =     9.79s Checking existence of `"v2-sidebar-records" Button`
+    t =     9.82s Find the "v2-sidebar-records" Button
+    t =     9.86s Checking existence of `"v2-sidebar-records" Button`
+    t =     9.90s Find the "v2-sidebar-records" Button
+    t =     9.94s Checking existence of `"v2-sidebar-club" Button`
+    t =     9.98s Find the "v2-sidebar-club" Button
+    t =    10.02s Checking existence of `"v2-sidebar-club" Button`
+    t =    10.05s Find the "v2-sidebar-club" Button
+    t =    10.09s Checking existence of `"v2-sidebar-club" Button`
+    t =    10.13s Find the "v2-sidebar-club" Button
+    t =    10.17s Checking existence of `"v2-sidebar-club" Button`
+    t =    10.20s Find the "v2-sidebar-club" Button
+    t =    10.25s Checking existence of `"v2-sidebar-club" Button`
+    t =    10.28s Find the "v2-sidebar-club" Button
+    t =    10.32s Checking existence of `"v2-sidebar-club" Button`
+    t =    10.36s Find the "v2-sidebar-club" Button
+    t =    10.40s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =    10.43s Swipe up Target Application 'com.bojiclub.app.dev'
+    t =    10.43s     Wait for com.bojiclub.app.dev to idle
+    t =    10.43s     Find the Target Application 'com.bojiclub.app.dev'
+    t =    10.46s     Check for interrupting elements affecting "薄肌俱乐部" Application
+    t =    10.49s     Synthesize event
+    t =    10.91s     Wait for com.bojiclub.app.dev to idle
+    t =    11.43s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =    11.49s Find the "v2-sidebar-aimemory" Button
+    t =    11.54s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =    11.58s Find the "v2-sidebar-aimemory" Button
+    t =    11.62s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =    11.67s Find the "v2-sidebar-aimemory" Button
+    t =    11.71s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =    11.75s Find the "v2-sidebar-aimemory" Button
+    t =    11.80s Checking existence of `"v2-sidebar-aimemory" Button`
+    t =    11.83s Find the "v2-sidebar-aimemory" Button
+    t =    11.88s Checking existence of `"v2-sidebar-profile" Button`
+    t =    11.92s Find the "v2-sidebar-profile" Button
+    t =    11.96s Checking existence of `"v2-sidebar-profile" Button`
+    t =    12.00s Find the "v2-sidebar-profile" Button
+    t =    12.04s Checking existence of `"v2-sidebar-profile" Button`
+    t =    12.08s Find the "v2-sidebar-profile" Button
+    t =    12.13s Checking existence of `"v2-sidebar-profile" Button`
+    t =    12.17s Find the "v2-sidebar-profile" Button
+    t =    12.21s Checking existence of `"v2-sidebar-profile" Button`
+    t =    12.25s Find the "v2-sidebar-profile" Button
+    t =    12.30s Checking existence of `"v2-sidebar-profile" Button`
+    t =    12.33s Find the "v2-sidebar-profile" Button
+    t =    12.38s Checking existence of `"v2-sidebar-settings" Button`
+    t =    12.42s Find the "v2-sidebar-settings" Button
+    t =    12.46s Checking existence of `"v2-sidebar-settings" Button`
+    t =    12.50s Find the "v2-sidebar-settings" Button
+    t =    12.55s Checking existence of `"v2-sidebar-settings" Button`
+    t =    12.59s Find the "v2-sidebar-settings" Button
+    t =    12.63s Checking existence of `"v2-sidebar-settings" Button`
+    t =    12.67s Find the "v2-sidebar-settings" Button
+    t =    12.71s Checking existence of `"v2-sidebar-settings" Button`
+    t =    12.75s Find the "v2-sidebar-settings" Button
+    t =    12.80s Checking existence of `"v2-sidebar-settings" Button`
+    t =    12.84s Find the "v2-sidebar-settings" Button
+    t =    12.88s Tap "v2-sidebar-close" Button
+    t =    12.88s     Wait for com.bojiclub.app.dev to idle
+    t =    12.88s     Find the "v2-sidebar-close" Button
+    t =    12.92s     Check for interrupting elements affecting "v2-sidebar-close" Button
+    t =    12.96s     Synthesize event
+    t =    13.25s     Wait for com.bojiclub.app.dev to idle
+    t =    14.09s Tap "v2-sidebar-toggle" Button
+    t =    14.09s     Wait for com.bojiclub.app.dev to idle
+    t =    14.09s     Find the "v2-sidebar-toggle" Button
+    t =    14.14s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    14.16s     Synthesize event
+    t =    14.45s     Wait for com.bojiclub.app.dev to idle
+    t =    15.32s Waiting 8.0s for "v2-sidebar-records" Button to exist
+    t =    16.36s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-records" Button`
+    t =    16.36s         Checking existence of `"v2-sidebar-records" Button`
+    t =    16.44s Find the "v2-sidebar-records" Button
+    t =    16.48s Find the "v2-sidebar-records" Button
+    t =    16.52s Find the "v2-sidebar-records" Button
+    t =    16.56s Find the "v2-sidebar-records" Button
+    t =    16.60s Find the "v2-sidebar-records" Button
+    t =    16.65s Tap "v2-sidebar-records" Button
+    t =    16.65s     Wait for com.bojiclub.app.dev to idle
+    t =    16.65s     Find the "v2-sidebar-records" Button
+    t =    16.68s     Check for interrupting elements affecting "v2-sidebar-records" Button
+    t =    16.72s     Synthesize event
+    t =    17.01s     Wait for com.bojiclub.app.dev to idle
+    t =    17.30s Waiting 8.0s for "records-category-picker" SegmentedControl to exist
+    t =    18.35s     Checking `Expect predicate `existsNoRetry == 1` for object "records-category-picker" SegmentedControl`
+    t =    18.35s         Checking existence of `"records-category-picker" SegmentedControl`
+    t =    18.41s Tap "关闭" Button
+    t =    18.41s     Wait for com.bojiclub.app.dev to idle
+    t =    18.42s     Find the "关闭" Button
+    t =    18.45s     Check for interrupting elements affecting "关闭" Button
+    t =    18.48s     Synthesize event
+    t =    18.78s     Wait for com.bojiclub.app.dev to idle
+    t =    19.57s Waiting 8.0s for "v2-sidebar-toggle" Button to exist
+    t =    20.62s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =    20.62s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =    20.64s Find the "v2-composer-field" Any
+    t =    20.65s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarEntriesAndRecords]' passed (20.887 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarHistorySearchAndRestoreConversation]' started.
+    t =     0.00s Start Test at 2026-10-24 18:59:51.079
+    t =     0.02s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+    t =     0.03s         Terminate com.bojiclub.app.dev:81710
+2026-10-24 18:59:52.188 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 18:59:52.188 xcodebuild[81034:3127409] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.33s         Setting up automation session
+    t =     1.98s         Wait for com.bojiclub.app.dev to idle
+    t =     3.81s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.85s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.85s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.95s Checking existence of `TabBar (First Match)`
+    t =     4.97s Waiting 2.0s for "稍后再看" Button to exist
+    t =     6.01s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.01s         Checking existence of `"稍后再看" Button`
+    t =     6.06s         Capturing element debug description
+    t =     6.97s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     6.98s         Checking existence of `"稍后再看" Button`
+    t =     7.03s         Capturing element debug description
+    t =     7.03s     Checking existence of `"稍后再看" Button`
+    t =     7.06s Collecting debug information to assist test failure triage
+    t =     7.06s     Requesting snapshot of accessibility hierarchy for app with pid 81824
+    t =     7.09s Waiting 10.0s for "v2-composer-field" Any to exist
+    t =     8.12s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =     8.12s         Checking existence of `"v2-composer-field" Any`
+    t =     8.15s Tap "v2-composer-field" Any
+    t =     8.15s     Wait for com.bojiclub.app.dev to idle
+    t =     8.15s     Find the "v2-composer-field" Any
+    t =     8.16s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.19s     Synthesize event
+    t =     8.48s     Wait for com.bojiclub.app.dev to idle
+    t =     8.50s Type '核对今天训练与饮食的安排' into "v2-composer-field" TextField
+    t =     8.50s     Wait for com.bojiclub.app.dev to idle
+    t =     8.89s     Find the "v2-composer-field" TextField
+    t =     8.92s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =     8.97s     Synthesize event
+    t =     9.37s     Wait for com.bojiclub.app.dev to idle
+    t =     9.37s Tap "v2-composer-send" Button
+    t =     9.37s     Wait for com.bojiclub.app.dev to idle
+    t =     9.37s     Find the "v2-composer-send" Button
+    t =     9.42s     Check for interrupting elements affecting "v2-composer-send" Button
+    t =     9.45s     Synthesize event
+    t =     9.74s     Wait for com.bojiclub.app.dev to idle
+    t =    11.15s Waiting 15.0s for "ai-card-today_training" Any to exist
+    t =    12.19s     Checking `Expect predicate `existsNoRetry == 1` for object "ai-card-today_training" Any`
+    t =    12.19s         Checking existence of `"ai-card-today_training" Any`
+    t =    12.28s Tap "v2-sidebar-toggle" Button
+    t =    12.28s     Wait for com.bojiclub.app.dev to idle
+    t =    12.28s     Find the "v2-sidebar-toggle" Button
+    t =    12.30s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    12.32s     Synthesize event
+    t =    12.61s     Wait for com.bojiclub.app.dev to idle
+    t =    13.57s Waiting 8.0s for "v2-sidebar-history" Button to exist
+    t =    14.57s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-history" Button`
+    t =    14.57s         Checking existence of `"v2-sidebar-history" Button`
+    t =    14.65s Find the "v2-sidebar-history" Button
+    t =    14.70s Tap "v2-sidebar-history" Button
+    t =    14.70s     Wait for com.bojiclub.app.dev to idle
+    t =    14.70s     Find the "v2-sidebar-history" Button
+    t =    14.74s     Check for interrupting elements affecting "v2-sidebar-history" Button
+    t =    14.78s     Synthesize event
+    t =    15.07s     Wait for com.bojiclub.app.dev to idle
+    t =    15.35s Waiting 5.0s for SearchField (First Match) to exist
+    t =    16.38s     Checking `Expect predicate `existsNoRetry == 1` for object SearchField (First Match)`
+    t =    16.38s         Checking existence of `SearchField (First Match)`
+    t =    16.43s Tap SearchField (First Match)
+    t =    16.43s     Wait for com.bojiclub.app.dev to idle
+    t =    16.43s     Find the SearchField (First Match)
+    t =    16.46s     Check for interrupting elements affecting "搜索历史对话" SearchField
+    t =    16.50s     Synthesize event
+    t =    16.79s     Wait for com.bojiclub.app.dev to idle
+    t =    17.27s Type '核对今天训练' into "搜索历史对话" SearchField
+    t =    17.27s     Wait for com.bojiclub.app.dev to idle
+    t =    17.27s     Find the "搜索历史对话" SearchField
+    t =    17.31s     Check for interrupting elements affecting "搜索历史对话" SearchField
+    t =    17.35s     Synthesize event
+    t =    17.65s     Wait for com.bojiclub.app.dev to idle
+    t =    17.66s Waiting 8.0s for Button (First Match) to exist
+    t =    18.67s     Checking `Expect predicate `existsNoRetry == 1` for object Button (First Match)`
+    t =    18.68s         Checking existence of `Button (First Match)`
+    t =    18.79s Find the Target Application 'com.bojiclub.app.dev'
+    t =    18.91s Added attachment named 'native-history-search'
+    t =    18.91s Tap Button (First Match)
+    t =    18.91s     Wait for com.bojiclub.app.dev to idle
+    t =    18.91s     Find the Button (First Match)
+    t =    19.00s     Check for interrupting elements affecting "核对今天训练与饮食的安排、10月24日 19:00、当前对话" Button
+    t =    19.04s     Synthesize event
+    t =    19.32s     Wait for com.bojiclub.app.dev to idle
+    t =    19.59s Waiting 8.0s for "v2-composer-field" Any to exist
+    t =    20.61s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-field" Any`
+    t =    20.61s         Checking existence of `"v2-composer-field" Any`
+    t =    20.63s Checking existence of `"核对今天训练与饮食的安排" StaticText`
+    t =    20.67s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarHistorySearchAndRestoreConversation]' passed (20.914 seconds).
+Test Suite 'BojiClubUITests' failed at 2026-10-24 19:00:11.994.
+	 Executed 7 tests, with 1 failure (0 unexpected) in 124.469 (124.477) seconds
+Test Suite 'BojiClubUITests.xctest' failed at 2026-10-24 19:00:11.995.
+	 Executed 7 tests, with 1 failure (0 unexpected) in 124.469 (124.478) seconds
+Test Suite 'Selected tests' failed at 2026-10-24 19:00:11.996.
+	 Executed 7 tests, with 1 failure (0 unexpected) in 124.469 (124.479) seconds
+2026-10-24 19:00:14.488189+0800 BojiClub[81923:3134282] [SwiftUI] Publishing changes from background threads is not allowed; make sure to publish values from the main thread (via operators like receive(on:)) on model updates.
+Test Suite 'All tests' started at 2026-10-24 19:00:14.509.
+Test Suite 'BojiClubTests.xctest' started at 2026-10-24 19:00:14.509.
+Test Suite 'AICardContractTests' started at 2026-10-24 19:00:14.510.
+Test Case '-[BojiClubTests.AICardContractTests testCoachAnswerDecodesWithCardsAndWithoutCards]' started.
+Test Case '-[BojiClubTests.AICardContractTests testCoachAnswerDecodesWithCardsAndWithoutCards]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testDraftActionsInWhitelistAndRouterGuards]' started.
+Test Case '-[BojiClubTests.AICardContractTests testDraftActionsInWhitelistAndRouterGuards]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testFutureExpiryIsNotExpired]' started.
+Test Case '-[BojiClubTests.AICardContractTests testFutureExpiryIsNotExpired]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testFutureSchemaVersionIsNotRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testFutureSchemaVersionIsNotRenderable]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testInsightCacheResetsForAnotherOwner]' started.
+Test Case '-[BojiClubTests.AICardContractTests testInsightCacheResetsForAnotherOwner]' passed (0.019 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testInsightPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testInsightPayloadDecodes]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testLateInsightResponseCannotPopulateAnotherAccount]' started.
+Test Case '-[BojiClubTests.AICardContractTests testLateInsightResponseCannotPopulateAnotherAccount]' passed (0.029 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftCardDecodeAndRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftCardDecodeAndRenderable]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftMalformedPayloadFailsClosed]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftMalformedPayloadFailsClosed]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMemoryHTTPEnvelopeDecodesEmptyAndNonemptyPages]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMemoryHTTPEnvelopeDecodesEmptyAndNonemptyPages]' passed (0.002 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testProposalRetryIdentitySeparatesOwnersIntentsAndNewAttempts]' started.
+Test Case '-[BojiClubTests.AICardContractTests testProposalRetryIdentitySeparatesOwnersIntentsAndNewAttempts]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testRouterIgnoresUnknownAndExpiredActions]' started.
+Test Case '-[BojiClubTests.AICardContractTests testRouterIgnoresUnknownAndExpiredActions]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testRouterMapsWhitelistedActions]' started.
+Test Case '-[BojiClubTests.AICardContractTests testRouterMapsWhitelistedActions]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testSchedulePreviewCreatesOnlyProposalUntilFinalConfirmation]' started.
+Test Case '-[BojiClubTests.AICardContractTests testSchedulePreviewCreatesOnlyProposalUntilFinalConfirmation]' passed (0.007 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingEmptyStateDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingEmptyStateDecodes]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingFullPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingFullPayloadDecodes]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTrainingProgressPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTrainingProgressPayloadDecodes]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testUnknownCardTypeIsNotRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testUnknownCardTypeIsNotRenderable]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testWeightDraftCardDecodeAndRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testWeightDraftCardDecodeAndRenderable]' passed (0.000 seconds).
+Test Suite 'AICardContractTests' passed at 2026-10-24 19:00:14.581.
+	 Executed 19 tests, with 0 failures (0 unexpected) in 0.068 (0.072) seconds
+Test Suite 'ClubCoachSessionTests' started at 2026-10-24 19:00:14.581.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testAccountResetClearsTransientConversationState]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testAccountResetClearsTransientConversationState]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubCoachSessionTests testConversationSelectionRestoresDraftAndScroll]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testConversationSelectionRestoresDraftAndScroll]' passed (0.007 seconds).
+Test Case '-[BojiClubTests.ClubCoachSessionTests testDiscardDoesNotResurrectDraft]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testDiscardDoesNotResurrectDraft]' passed (0.002 seconds).
+Test Case '-[BojiClubTests.ClubCoachSessionTests testNewConversationKeepsDraftUnderOriginalConversation]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testNewConversationKeepsDraftUnderOriginalConversation]' passed (0.002 seconds).
+Test Case '-[BojiClubTests.ClubCoachSessionTests testSendRequestConsumedOnceAcrossRendering]' started.
+Test Case '-[BojiClubTests.ClubCoachSessionTests testSendRequestConsumedOnceAcrossRendering]' passed (0.000 seconds).
+Test Suite 'ClubCoachSessionTests' passed at 2026-10-24 19:00:14.594.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.012 (0.013) seconds
+Test Suite 'ClubDiscoverableDraftTests' started at 2026-10-24 19:00:14.595.
+Test Case '-[BojiClubTests.ClubDiscoverableDraftTests testSavedAndLegacyDraftsAreDiscoverableAndAccountScoped]' started.
+Test Case '-[BojiClubTests.ClubDiscoverableDraftTests testSavedAndLegacyDraftsAreDiscoverableAndAccountScoped]' passed (0.004 seconds).
+Test Suite 'ClubDiscoverableDraftTests' passed at 2026-10-24 19:00:14.599.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.004 (0.005) seconds
+Test Suite 'ClubProactiveModeTests' started at 2026-10-24 19:00:14.599.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testActiveTurnsAllOn]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testActiveTurnsAllOn]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testBalancedMatchesDefaults]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testBalancedMatchesDefaults]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testModeLabelDerivesFromSwitches]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testModeLabelDerivesFromSwitches]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testNonMappedSettingsSurviveModeApplication]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testNonMappedSettingsSurviveModeApplication]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testQuietTurnsEverythingOff]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testQuietTurnsEverythingOff]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testStoredLegacyJSONDecodesWithoutMode]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testStoredLegacyJSONDecodesWithoutMode]' passed (0.001 seconds).
+Test Suite 'ClubProactiveModeTests' passed at 2026-10-24 19:00:14.604.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.003 (0.004) seconds
+Test Suite 'ClubServerInsightTests' started at 2026-10-24 19:00:14.604.
+Test Case '-[BojiClubTests.ClubServerInsightTests testBothNilResolvesNil]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testBothNilResolvesNil]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testDecodeSnakeCaseRefs]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testDecodeSnakeCaseRefs]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testLocalOnlyResolvesLocal]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testLocalOnlyResolvesLocal]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testNullInsightResponse]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testNullInsightResponse]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWinsOnlyOnStrictlyHigherPriority]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWinsOnlyOnStrictlyHigherPriority]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWithoutLocalApplies]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWithoutLocalApplies]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindFallsBackToLocal]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindFallsBackToLocal]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindIsIgnored]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindIsIgnored]' passed (0.000 seconds).
+Test Suite 'ClubServerInsightTests' passed at 2026-10-24 19:00:14.608.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.003 (0.004) seconds
+Test Suite 'FeatureFlagServiceTests' started at 2026-10-24 19:00:14.610.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testDefaultsAreSafe]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testDefaultsAreSafe]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testFeatureGatesFlowFromRemote]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testFeatureGatesFlowFromRemote]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyRemoteShellFlagCannotRestoreRemovedUI]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyRemoteShellFlagCannotRestoreRemovedUI]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyServerPayloadDecodesWithoutShellKey]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyServerPayloadDecodesWithoutShellKey]' passed (0.004 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNewServerPayloadDecodesShellKey]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNewServerPayloadDecodesShellKey]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNilRemoteKeepsDefaults]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNilRemoteKeepsDefaults]' passed (0.000 seconds).
+Test Suite 'FeatureFlagServiceTests' passed at 2026-10-24 19:00:14.617.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.006 (0.007) seconds
+Test Suite 'BojiClubTests.xctest' passed at 2026-10-24 19:00:14.617.
+	 Executed 45 tests, with 0 failures (0 unexpected) in 0.097 (0.108) seconds
+Test Suite 'All tests' passed at 2026-10-24 19:00:14.617.
+	 Executed 45 tests, with 0 failures (0 unexpected) in 0.097 (0.108) seconds
+2026-10-24 19:00:25.456 xcodebuild[81034:3127409] [MT] IDETestOperationsObserverDebug: 148.044 elapsed -- Testing started completed.
+2026-10-24 19:00:25.456 xcodebuild[81034:3127409] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-24 19:00:25.456 xcodebuild[81034:3127409] [MT] IDETestOperationsObserverDebug: 148.044 sec, +148.044 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-core.xcresult
+
+Failing tests:
+	BojiClubUITests.testV2NewConversationPreservesRestorableDraft()
+
+** TEST FAILED **
+
+Testing started

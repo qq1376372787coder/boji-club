@@ -1,0 +1,14 @@
+[Unit]
+Description=Boji Club durable AI runs (SSE worker)
+After=network.target
+ConditionPathExists=/opt/bojiclub-account/config.php
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/php /opt/bojiclub-account/process-ai-runs.php 1
+TimeoutStartSec=180
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict

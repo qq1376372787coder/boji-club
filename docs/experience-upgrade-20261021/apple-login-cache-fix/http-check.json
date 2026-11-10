@@ -1,0 +1,9 @@
+{
+  "probe": "known Apple kid with deliberately invalid signature",
+  "http_status": 401,
+  "body": {
+    "error": "Apple 登录凭证无效或已过期，请重新登录。"
+  },
+  "expected": 401,
+  "no_auth_token_requested_or_stored": true
+}

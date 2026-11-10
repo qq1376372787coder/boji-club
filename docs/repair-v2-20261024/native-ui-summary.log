@@ -1,0 +1,104 @@
+Test Case '-[BojiClubUITests.BojiClubUITests testMiniWorkoutBarSurvivesTabsAndRelaunch]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testMiniWorkoutBarSurvivesTabsAndRelaunch]' passed (25.138 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testPlanCalendarExpandsAndOpensMovePreview]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testPlanCalendarExpandsAndOpensMovePreview]' passed (18.295 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testReviewSidebarRecordsCanSelectNutrition]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testReviewSidebarRecordsCanSelectNutrition]' passed (17.299 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2CoachCardStartsTraining]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testV2CoachCardStartsTraining]' passed (21.538 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ComposerKeyboardAvoidance]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ComposerKeyboardAvoidance]' passed (11.828 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2MemoryPageOpensForPreviewAccount]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testV2MemoryPageOpensForPreviewAccount]' passed (11.683 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ModeSwitchPreservesComposerDraft]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ModeSwitchPreservesComposerDraft]' passed (48.138 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ShellHeaderAndModeSwitch]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testV2ShellHeaderAndModeSwitch]' passed (12.706 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarEntriesAndRecords]' started.
+Test Case '-[BojiClubUITests.BojiClubUITests testV2SidebarEntriesAndRecords]' passed (20.093 seconds).
+	 Executed 9 tests, with 0 failures (0 unexpected) in 186.717 (186.724) seconds
+	 Executed 9 tests, with 0 failures (0 unexpected) in 186.717 (186.726) seconds
+	 Executed 9 tests, with 0 failures (0 unexpected) in 186.717 (186.727) seconds
+Test Case '-[BojiClubTests.AICardContractTests testCoachAnswerDecodesWithCardsAndWithoutCards]' started.
+Test Case '-[BojiClubTests.AICardContractTests testCoachAnswerDecodesWithCardsAndWithoutCards]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testDraftActionsInWhitelistAndRouterGuards]' started.
+Test Case '-[BojiClubTests.AICardContractTests testDraftActionsInWhitelistAndRouterGuards]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testFutureExpiryIsNotExpired]' started.
+Test Case '-[BojiClubTests.AICardContractTests testFutureExpiryIsNotExpired]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testFutureSchemaVersionIsNotRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testFutureSchemaVersionIsNotRenderable]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testInsightCacheResetsForAnotherOwner]' started.
+Test Case '-[BojiClubTests.AICardContractTests testInsightCacheResetsForAnotherOwner]' passed (0.035 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testInsightPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testInsightPayloadDecodes]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testLateInsightResponseCannotPopulateAnotherAccount]' started.
+Test Case '-[BojiClubTests.AICardContractTests testLateInsightResponseCannotPopulateAnotherAccount]' passed (0.015 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftCardDecodeAndRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftCardDecodeAndRenderable]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftMalformedPayloadFailsClosed]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMealDraftMalformedPayloadFailsClosed]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testMemoryHTTPEnvelopeDecodesEmptyAndNonemptyPages]' started.
+Test Case '-[BojiClubTests.AICardContractTests testMemoryHTTPEnvelopeDecodesEmptyAndNonemptyPages]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testProposalRetryIdentitySeparatesOwnersIntentsAndNewAttempts]' started.
+Test Case '-[BojiClubTests.AICardContractTests testProposalRetryIdentitySeparatesOwnersIntentsAndNewAttempts]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testRouterIgnoresUnknownAndExpiredActions]' started.
+Test Case '-[BojiClubTests.AICardContractTests testRouterIgnoresUnknownAndExpiredActions]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testRouterMapsWhitelistedActions]' started.
+Test Case '-[BojiClubTests.AICardContractTests testRouterMapsWhitelistedActions]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingEmptyStateDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingEmptyStateDecodes]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingFullPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTodayTrainingFullPayloadDecodes]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testTrainingProgressPayloadDecodes]' started.
+Test Case '-[BojiClubTests.AICardContractTests testTrainingProgressPayloadDecodes]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testUnknownCardTypeIsNotRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testUnknownCardTypeIsNotRenderable]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.AICardContractTests testWeightDraftCardDecodeAndRenderable]' started.
+Test Case '-[BojiClubTests.AICardContractTests testWeightDraftCardDecodeAndRenderable]' passed (0.000 seconds).
+	 Executed 18 tests, with 0 failures (0 unexpected) in 0.067 (0.071) seconds
+Test Case '-[BojiClubTests.ClubProactiveModeTests testActiveTurnsAllOn]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testActiveTurnsAllOn]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testBalancedMatchesDefaults]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testBalancedMatchesDefaults]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testModeLabelDerivesFromSwitches]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testModeLabelDerivesFromSwitches]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testNonMappedSettingsSurviveModeApplication]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testNonMappedSettingsSurviveModeApplication]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testQuietTurnsEverythingOff]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testQuietTurnsEverythingOff]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubProactiveModeTests testStoredLegacyJSONDecodesWithoutMode]' started.
+Test Case '-[BojiClubTests.ClubProactiveModeTests testStoredLegacyJSONDecodesWithoutMode]' passed (0.002 seconds).
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.005 (0.007) seconds
+Test Case '-[BojiClubTests.ClubServerInsightTests testBothNilResolvesNil]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testBothNilResolvesNil]' passed (0.003 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testDecodeSnakeCaseRefs]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testDecodeSnakeCaseRefs]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testLocalOnlyResolvesLocal]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testLocalOnlyResolvesLocal]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testNullInsightResponse]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testNullInsightResponse]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWinsOnlyOnStrictlyHigherPriority]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWinsOnlyOnStrictlyHigherPriority]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWithoutLocalApplies]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testServerWithoutLocalApplies]' passed (0.001 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindFallsBackToLocal]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindFallsBackToLocal]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindIsIgnored]' started.
+Test Case '-[BojiClubTests.ClubServerInsightTests testUnsupportedKindIsIgnored]' passed (0.000 seconds).
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.006 (0.007) seconds
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testDefaultsAreSafe]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testDefaultsAreSafe]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testFeatureGatesFlowFromRemote]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testFeatureGatesFlowFromRemote]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyServerPayloadDecodesWithoutShellKey]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testLegacyServerPayloadDecodesWithoutShellKey]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNewServerPayloadDecodesShellKey]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNewServerPayloadDecodesShellKey]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNilRemoteKeepsDefaults]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testNilRemoteKeepsDefaults]' passed (0.000 seconds).
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testRemoteShellFlagToggles]' started.
+Test Case '-[BojiClubTests.FeatureFlagServiceTests testRemoteShellFlagToggles]' passed (0.000 seconds).
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
+	 Executed 38 tests, with 0 failures (0 unexpected) in 0.081 (0.091) seconds
+	 Executed 38 tests, with 0 failures (0 unexpected) in 0.081 (0.092) seconds
+** TEST SUCCEEDED **

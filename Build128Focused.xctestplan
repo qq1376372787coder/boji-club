@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "id": "bdc3a37a-cc11-44af-b61f-87981a9505c0",
+      "name": "Targeted checks",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {
+    "preferredScreenCaptureFormat": "screenshots",
+    "testTimeoutsEnabled": true
+  },
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:BojiClub.xcodeproj",
+        "identifier": "000000000000000000007005",
+        "name": "BojiClubUITests"
+      },
+      "selectedTests": [
+        "BojiClubUITests/testFeedbackDraftPersistsAndPreviewCannotSend128()"
+      ]
+    }
+  ],
+  "version": 1
+}

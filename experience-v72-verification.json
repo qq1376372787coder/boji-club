@@ -1,0 +1,88 @@
+{
+  "version": "0.13.72",
+  "build": 91,
+  "batch_items": [
+    9,
+    13,
+    15
+  ],
+  "completed_items": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8,
+    9,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "remaining_items": [
+    6,
+    10
+  ],
+  "xcode_archive_tested": false,
+  "native_ui_tested": false,
+  "swift_syntax": [
+    {
+      "file": "AccountService.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "AIViews.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "AppStore.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "BojiClubApp.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "CloudSync.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "Design.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "ExerciseLibraryView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "HomeView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "JourneyRules.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "OnboardingView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "PlanExplanation.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "PlanView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "ProfileView.swift",
+      "syntax_errors": []
+    },
+    {
+      "file": "WorkoutView.swift",
+      "syntax_errors": []
+    }
+  ]
+}

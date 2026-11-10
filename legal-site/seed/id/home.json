@@ -1,0 +1,61 @@
+{
+  "nav_features": "Fitur",
+  "nav_faq": "Pertanyaan Umum",
+  "nav_changelog": "Catatan Pembaruan",
+  "nav_legal": "Pusat Kebijakan",
+  "hero_badge": "Fokus pada dirimu",
+  "hero_title": "Latihan. Nutrisi. Pelatih AI.",
+  "hero_sub": "Rencana, catatan, tinjauan — dalam satu pandangan.",
+  "download_note": "iOS 17+ · iPhone & iPad",
+  "features_title": "Fitur Utama",
+  "features_sub": "Siklus lengkap dari perencanaan, pelaksanaan, hingga tinjauan",
+  "features": [
+    {
+      "t": "Rencana Latihan AI",
+      "d": "Disesuaikan dengan tujuan dan peralatan Anda. Catat set demi set."
+    },
+    {
+      "t": "Catat Makanan dengan Foto",
+      "d": "Foto saja — kalori dan makro langsung dikenali."
+    },
+    {
+      "t": "Dasbor Data Kesehatan",
+      "d": "Langkah, detak jantung, dan tidur, sesuai kendali Anda."
+    },
+    {
+      "t": "Laporan AI Harian dan Tinjauan Mingguan",
+      "d": "Bacaan untuk setiap hari. Tinjauan untuk setiap minggu."
+    },
+    {
+      "t": "Pelatih Club AI",
+      "d": "Jawaban berdasarkan catatan Anda sendiri."
+    },
+    {
+      "t": "Mengutamakan Privasi",
+      "d": "Foto tubuh tetap di perangkat Anda. Hapus kapan saja."
+    }
+  ],
+  "shots_title": "Tampilan Aplikasi",
+  "shots_sub": "Sederhana, bersih, dan berfokus pada latihan itu sendiri",
+  "shots": [
+    {
+      "file": "shot-home.png",
+      "cap": "Beranda Club AI"
+    },
+    {
+      "file": "shot-training.png",
+      "cap": "Jadwal dan Pencatatan Latihan"
+    },
+    {
+      "file": "shot-chat.png",
+      "cap": "Obrolan Club AI"
+    },
+    {
+      "file": "shot-log.png",
+      "cap": "Pencatatan Cepat"
+    }
+  ],
+  "cta_title": "Mulai Pekan Latihan Pertama Anda",
+  "cta_sub": "Data latihan Anda adalah milik Anda. Hapus akun kapan saja.",
+  "legal_hint": "Dengan menggunakan produk ini, Anda menyetujui Ketentuan Layanan dan Kebijakan Privasi."
+}

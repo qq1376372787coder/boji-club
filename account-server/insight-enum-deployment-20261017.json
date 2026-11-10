@@ -1,0 +1,58 @@
+{
+  "deployed": true,
+  "deployed_at": "2026-10-17",
+  "server": "117.50.119.49",
+  "scope": "insight contract + V2 field forward-compat (cloud-validation.php, cloud-parts.php)",
+  "purpose": "Build 108 发布前置：计划跟进洞察/日程动作通过契约校验；旧客户端同步不再抹掉 0.15.0 新字段",
+  "rounds": [
+    {
+      "round": 1,
+      "files": {
+        "account-server/public/cloud-validation.php": {
+          "remote_path": "/opt/bojiclub-account/public/cloud-validation.php",
+          "new_sha256": "fbdfd3b6ca64d5e80c4ece473c17a0c8480c75c5de80e9e795e8f17b8d82106a",
+          "previous_sha256": "5095b472cdd5d981ae55541d1b1bd3cb5971b0af11df5758a37e5ede9b3bb912",
+          "backup": "/opt/bojiclub-account/.backups/insight-enum-20261017/cloud-validation.php"
+        }
+      },
+      "changes": ["insightKind +plan", "coachActionType +schedule_shift", "insightDestinationType +schedule_shift"]
+    },
+    {
+      "round": 2,
+      "files": {
+        "account-server/public/cloud-validation.php": {
+          "remote_path": "/opt/bojiclub-account/public/cloud-validation.php",
+          "new_sha256": "ba6d3bb598bd8711f09c34483705e13228eb759a42ae1626bfa29357a88d882b",
+          "backup": "/opt/bojiclub-account/.backups/insight-v2meta-20261017/cloud-validation.php"
+        },
+        "account-server/public/cloud-parts.php": {
+          "remote_path": "/opt/bojiclub-account/public/cloud-parts.php",
+          "new_sha256": "2e5fef9ccc7e4e29850c2dea44b518086138155f7dfbfc7b0c620ad7f0c207be",
+          "backup": "/opt/bojiclub-account/.backups/insight-v2meta-20261017/cloud-parts.php"
+        }
+      },
+      "changes": [
+        "cloudInsightsValid: plan 事件允许 schedule_shift 动作映射",
+        "cloudPreserveHistory 保留名单 +planShifts/+phaseReports（旧客户端不抹天级记录）",
+        "新增 cloudPreserveV2Meta：无 syncSchemaVersion 标记的旧客户端上传前向保留 actionStates/planDrafts/planTemplates/deletedPlan*/profile.targetWeightKg（同 ID 取 updatedAt 最新）",
+        "cloudPartCommit meta 删除标记并集 +deletedPlanDraftIDs/+deletedPlanTemplateIDs"
+      ]
+    }
+  ],
+  "verification": {
+    "php_lint": "both files clean",
+    "hash_match_local_remote": true,
+    "adversarial_tests": {
+      "plan_event_schedule_shift_passes_cloudExperienceValid": true,
+      "wrong_action_type_rejected": true,
+      "old_client_upload_preserves_v2_fields": true,
+      "new_client_clear_target_weight_respected": true,
+      "newer_action_state_wins": true
+    },
+    "service_health": "router /account/v1/ responds; nginx+php-fpm active",
+    "deployment_scope": "two files; no schema/DB/payment/APNs/capacity changes"
+  },
+  "rollback": "restore from /opt/bojiclub-account/.backups/insight-v2meta-20261017/ (and insight-enum-20261017 for round-1 file); Build 108 must not ship until re-applied",
+  "production_data_changed": false,
+  "provider_calls_made": false
+}

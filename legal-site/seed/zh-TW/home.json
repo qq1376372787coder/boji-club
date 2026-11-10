@@ -1,0 +1,61 @@
+{
+  "nav_features": "功能",
+  "nav_faq": "常見問題",
+  "nav_changelog": "更新日誌",
+  "nav_legal": "協議中心",
+  "hero_badge": "專注自己",
+  "hero_title": "訓練、飲食、AI 教練。",
+  "hero_sub": "計劃、記錄、回顧，一目瞭然。",
+  "download_note": "iOS 17+ · iPhone 與 iPad",
+  "features_title": "核心功能",
+  "features_sub": "從計畫、執行到回顧的完整循環",
+  "features": [
+    {
+      "t": "AI 訓練計畫",
+      "d": "按你的目標定制，逐組登記，進度一目瞭然。"
+    },
+    {
+      "t": "拍照記錄飲食",
+      "d": "拍下餐食，熱量與營養自動識別。"
+    },
+    {
+      "t": "健康資料看板",
+      "d": "步數、心率與睡眠，經你確認後呈現。"
+    },
+    {
+      "t": "AI 日報與每週回顧",
+      "d": "每天一份解讀，每週一份回顧。"
+    },
+    {
+      "t": "Club AI 教練",
+      "d": "基於你的真實記錄，回答訓練與飲食問題。"
+    },
+    {
+      "t": "隱私優先",
+      "d": "身體照片預設留在本機，帳號可徹底刪除。"
+    }
+  ],
+  "shots_title": "介面一覽",
+  "shots_sub": "簡潔、克制、專注訓練本身",
+  "shots": [
+    {
+      "file": "shot-home.png",
+      "cap": "Club AI 首頁"
+    },
+    {
+      "file": "shot-training.png",
+      "cap": "訓練日程與記錄"
+    },
+    {
+      "file": "shot-chat.png",
+      "cap": "Club AI 對話"
+    },
+    {
+      "file": "shot-log.png",
+      "cap": "快速記錄"
+    }
+  ],
+  "cta_title": "開始你的第一週訓練",
+  "cta_sub": "訓練資料屬於你，隨時可刪除帳號並清除全部資料。",
+  "legal_hint": "使用本產品即表示你同意《使用者服務協議》與《隱私政策》。"
+}

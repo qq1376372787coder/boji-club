@@ -1,0 +1,135 @@
+{
+  "version": "0.13.57",
+  "build": 76,
+  "client_date": "2026-10-12",
+  "verified_live_at": "2026-10-12T22:30:26+08:00",
+  "settings": {
+    "accepting": true,
+    "daily_limit": 0,
+    "pending_limit": 800,
+    "worker_limit": 16
+  },
+  "live": {
+    "alerts": [],
+    "capacity_settings": {
+      "daily_limit": 0,
+      "pending_limit": 800,
+      "worker_limit": 16
+    },
+    "day_start": 1791734400,
+    "oldest_queue_seconds": 0,
+    "pending": 0,
+    "queued": 0,
+    "recent_attempts": 0,
+    "recent_failed_attempts": 0,
+    "retrying": 0,
+    "running": 0,
+    "runtime": {
+      "active_workers": 0,
+      "configured_workers": 16,
+      "effective_workers": 16,
+      "job_memory_reserve": 25165824,
+      "maximum_workers": 32,
+      "pause_reason": null,
+      "resources": {
+        "cpu_count": 2,
+        "host_available": 1213530112,
+        "host_total": 1894342656,
+        "memory_current": 21393408,
+        "memory_guard_bytes": 21098496,
+        "memory_limit": 536870912,
+        "php_max_children": 10,
+        "reclaimable_file_cache": 294912
+      }
+    },
+    "sampled_at": 1791815426.4966266,
+    "timezone": "Asia/Shanghai",
+    "today_failed": 0,
+    "today_processed": 0,
+    "today_received": 0,
+    "today_succeeded": 0
+  },
+  "deployed_files_sha256": {
+    "backend/server.py": "4d1bf0459dd940ef88b7a431903b120d707f41b8cd9de67ae413fbf00bfc6236",
+    "account-server/admin/bootstrap.php": "8f9af87bbc815591f6637cd6b9bc09e6ed6eb86d8e5557268c9308467e5581b9",
+    "account-server/admin/ai-capacity.php": "ab7814831c0d2f771f46e5ab3dceac31151977638fc187c68d2a790380c63ad5",
+    "account-server/admin/app.js": "a63312a6e7cd1fa5d78d5c6697c050299f3848f0d74b7e57f7c2c166c9fa0d77",
+    "account-server/admin/style.css": "f07c43ea730fd28e25c512f224139b10d295f499377caccd4e208a48a71c5bb6"
+  },
+  "python_tests_passed": 43,
+  "admin_js_scenarios_passed": 5,
+  "php_syntax_checked": 3,
+  "real_mixed_tasks_passed": 8,
+  "supplier_probe_calls": 49,
+  "warm_queue_tests": [
+    {
+      "configured": 12,
+      "actual_peak": 12,
+      "seconds": 11.263,
+      "completed": 800,
+      "pending": 0,
+      "memory_peak": 193548288,
+      "runtime": {
+        "configured_workers": 12,
+        "effective_workers": 12,
+        "active_workers": 0,
+        "maximum_workers": 32,
+        "job_memory_reserve": 25165824,
+        "resources": {
+          "memory_current": 189898752,
+          "memory_limit": 536870912,
+          "host_available": 1006333952
+        },
+        "pause_reason": null
+      }
+    },
+    {
+      "configured": 16,
+      "actual_peak": 16,
+      "seconds": 9.889,
+      "completed": 800,
+      "pending": 0,
+      "memory_peak": 254443520,
+      "runtime": {
+        "configured_workers": 16,
+        "effective_workers": 16,
+        "active_workers": 0,
+        "maximum_workers": 32,
+        "job_memory_reserve": 25165824,
+        "resources": {
+          "memory_current": 215646208,
+          "memory_limit": 536870912,
+          "host_available": 973914112
+        },
+        "pause_reason": null
+      }
+    },
+    {
+      "configured": 32,
+      "actual_peak": 17,
+      "seconds": 9.37,
+      "completed": 800,
+      "pending": 0,
+      "memory_peak": 269414400,
+      "runtime": {
+        "configured_workers": 32,
+        "effective_workers": 17,
+        "active_workers": 0,
+        "maximum_workers": 32,
+        "job_memory_reserve": 25165824,
+        "resources": {
+          "memory_current": 229179392,
+          "memory_limit": 536870912,
+          "host_available": 963915776
+        },
+        "pause_reason": null
+      }
+    }
+  ],
+  "near_limit_photo_tasks_completed": 80,
+  "native_swift_changed": false,
+  "xcode_build_completed": false,
+  "authenticated_admin_browser_e2e_completed": false,
+  "account_daily_limit_effective": 20,
+  "account_daily_limit_changed": false
+}

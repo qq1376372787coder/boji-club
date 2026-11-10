@@ -1,0 +1,283 @@
+{
+  "version": "0.13.48",
+  "build": 67,
+  "passed": true,
+  "static_checks": [
+    "App and Widget version 0.13.48",
+    "App and Widget build 67",
+    "iOS 17 minimum unchanged",
+    "project object IDs are unique",
+    "new file has project build reference: RecordReliability.swift",
+    "new file has project build reference: RecordRepairViews.swift",
+    "excluded release preparation unchanged: BojiClub/Info.plist",
+    "excluded release preparation unchanged: BojiClub/PrivacyInfo.xcprivacy",
+    "excluded release preparation unchanged: Configuration/README.md",
+    "excluded release preparation unchanged: Configuration/ReleaseChecklist.example.plist",
+    "excluded release preparation unchanged: legal/ACCOUNT-DELETION.md",
+    "excluded release preparation unchanged: legal/PRIVACY-POLICY.md",
+    "excluded release preparation unchanged: legal/TERMS-OF-USE.md",
+    "valid plist: BojiClub/Info.plist",
+    "valid plist: BojiClub/PrivacyInfo.xcprivacy",
+    "valid plist: BojiClubWidget/Info.plist",
+    "typing description does not clear or consume previous result",
+    "discarded drafts track fallback job IDs",
+    "damaged journal blocks silent partial replacement",
+    "accepted recovery is resumable",
+    "transport and local pending attachments separated",
+    "individual photo repair UI connected",
+    "media format and decoded pixel limits",
+    "export marks missing photos and bounds image payload",
+    "AI persistence uses sharded files and direct equality",
+    "date cache integrated",
+    "batch list builds one saved-result index per render",
+    "invalid dates and activity import require confirmation",
+    "previous plan preview preserved in replacement flow",
+    "library lookup requires explicit search",
+    "new empty food name does not poison amount validation",
+    "all Swift sources and generated regression harnesses parse",
+    "server isolated regression suite passed",
+    "deployed server and PHP worker cache probe passed",
+    "deployed hash equals delivery source: account-server/public/index.php",
+    "deployed hash equals delivery source: account-server/public/weekly.php",
+    "deployed hash equals delivery source: account-server/public/apple-auth.php",
+    "deployed hash equals delivery source: account-server/public/apple-key-cache.php",
+    "deployed hash equals delivery source: account-server/public/media-quota.php",
+    "deployed hash equals delivery source: account-server/public/ai-response.php",
+    "deployed hash equals delivery source: backend/server.py"
+  ],
+  "changed_or_new_files": [
+    "BUILD-STATUS.md",
+    "BojiClub.xcodeproj/project.pbxproj",
+    "BojiClub/AIService.swift",
+    "BojiClub/AppStore.swift",
+    "BojiClub/BojiClubApp.swift",
+    "BojiClub/CloudSync.swift",
+    "BojiClub/DailyExperience.swift",
+    "BojiClub/FoodComponents.swift",
+    "BojiClub/HealthData.swift",
+    "BojiClub/HealthViews.swift",
+    "BojiClub/HomeView.swift",
+    "BojiClub/MealBatchReviewView.swift",
+    "BojiClub/MealEditorView.swift",
+    "BojiClub/MealSpeechInput.swift",
+    "BojiClub/Models.swift",
+    "BojiClub/NutritionView.swift",
+    "BojiClub/OnboardingView.swift",
+    "BojiClub/PlanView.swift",
+    "BojiClub/ProfileView.swift",
+    "BojiClub/RecordReliability.swift",
+    "BojiClub/RecordRepairViews.swift",
+    "BojiClub/TCXImport.swift",
+    "BojiClub/WeeklyReview.swift",
+    "README_先读我.md",
+    "REPAIR-V48-20261011.md",
+    "account-server/public/ai-response.php",
+    "account-server/public/apple-auth.php",
+    "account-server/public/apple-key-cache.php",
+    "account-server/public/index.php",
+    "account-server/public/media-quota.php",
+    "account-server/public/weekly.php",
+    "backend/server.py",
+    "repair-v48-verification.json",
+    "scripts/check-on-mac.sh",
+    "scripts/check-repair-v48-on-mac.sh",
+    "tests/__init__.py",
+    "tests/build_experience_v23_swift_tests.py",
+    "tests/build_phase1_swift_tests.py",
+    "tests/build_repair_v48_swift_tests.py",
+    "tests/run_v48_offline.py",
+    "tests/test_repair_v48.php",
+    "tests/test_repair_v48_sql.php"
+  ],
+  "swift_syntax_files": 48,
+  "xcode_compilation_executed": false,
+  "native_regression_executed": false,
+  "device_tests_executed": false,
+  "python_unit": {
+    "tests": 275,
+    "passed": 274,
+    "skipped": 1
+  },
+  "server_tests": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "lint-revenuecat",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/revenuecat.php"
+        ]
+      },
+      {
+        "name": "lint-account-deletion",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/account-deletion.php"
+        ]
+      },
+      {
+        "name": "lint-club-lock",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/club-lock.php"
+        ]
+      },
+      {
+        "name": "lint-apple-auth",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/apple-auth.php"
+        ]
+      },
+      {
+        "name": "lint-media-quota",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/media-quota.php"
+        ]
+      },
+      {
+        "name": "lint-cloud-validation",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/cloud-validation.php"
+        ]
+      },
+      {
+        "name": "lint-apple-key-cache",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/apple-key-cache.php"
+        ]
+      },
+      {
+        "name": "lint-weekly",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/weekly.php"
+        ]
+      },
+      {
+        "name": "lint-revenuecat-policy",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/revenuecat-policy.php"
+        ]
+      },
+      {
+        "name": "lint-club-artwork",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/club-artwork.php"
+        ]
+      },
+      {
+        "name": "lint-media-cleanup",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/media-cleanup.php"
+        ]
+      },
+      {
+        "name": "lint-ai-response",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/ai-response.php"
+        ]
+      },
+      {
+        "name": "lint-apple-tokens",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/apple-tokens.php"
+        ]
+      },
+      {
+        "name": "lint-club-progress",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/club-progress.php"
+        ]
+      },
+      {
+        "name": "lint-index",
+        "exit": 0,
+        "last_lines": [
+          "No syntax errors detected in /tmp/bojiclub-repair-v48-20261011/account-server/public/index.php"
+        ]
+      },
+      {
+        "name": "test_repair_v48.php",
+        "exit": 0,
+        "last_lines": [
+          "PASS nonce remains checked",
+          "PASS audience remains checked",
+          "PASS expiry remains checked",
+          "ALL V48 PHP RULES PASSED"
+        ]
+      },
+      {
+        "name": "test_repair_v46.php",
+        "exit": 0,
+        "last_lines": [
+          "PASS concurrent no-op retry does not consume quota",
+          "PASS a real retry reserves quota",
+          "PASS uncertain upstream outcome keeps reservation",
+          "PASS production retry uses object serialization"
+        ]
+      },
+      {
+        "name": "test_repair_v38.php",
+        "exit": 0,
+        "last_lines": [
+          "{\"passed\":true,\"checks\":22}"
+        ]
+      },
+      {
+        "name": "test_multi_meal.php",
+        "exit": 0,
+        "last_lines": [
+          "6 cloud contract cases passed; no database was accessed"
+        ]
+      },
+      {
+        "name": "media-quota-sql",
+        "exit": 0,
+        "last_lines": [
+          "PASS 4 media quota SQL cases against a connection-local temporary table"
+        ]
+      },
+      {
+        "name": "python-unit",
+        "exit": 0,
+        "last_lines": [
+          "----------------------------------------------------------------------",
+          "Ran 275 tests in 5.232s",
+          "",
+          "OK (skipped=1)"
+        ]
+      }
+    ]
+  },
+  "server_deployment": {
+    "passed": true,
+    "backup": "/root/bojiclub-v48-backup-20261011-121729",
+    "health": true,
+    "files": {
+      "account-server/public/index.php": "54034fcc361e19f79d64300df2524cd900bd939ca119f7985d49e3b5314005f2",
+      "account-server/public/weekly.php": "896f4a55a389c90f70654105a4a92ada38a35bbae0782c6847ccb6fd4d3b72f7",
+      "account-server/public/apple-auth.php": "38738f65bc54dbc4f7f321d6d425397c7749a3c213d4ab13b9c026c7fd22fa1b",
+      "account-server/public/apple-key-cache.php": "5759b26a9ecfaa9ed81739fa287fa16d24ee8e2bf1bf54dc4b33fc15f85512b6",
+      "account-server/public/media-quota.php": "3422d70901024509d190d26c731019c54e750a1a222b7b90d11640f7f0f7f0d7",
+      "account-server/public/ai-response.php": "442725f6ceb41aa4f06c6cc453091375fd0f318138a24b0f95d47abc88fa6e15",
+      "backend/server.py": "4e9f1429ddfe5591d965cd94cbdd17759fee380735c3ae4cb305de0867c838b5"
+    },
+    "public_statuses": {
+      "https://110.41.10.154/admin/": 200,
+      "https://110.41.10.154/account/v1/me/state": 401,
+      "https://110.41.10.154/account/v1/me/ai/jobs": 401
+    },
+    "apple_cache_worker_probe": true,
+    "existing_user_records_modified": false
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "changed_existing_files": [
+    "BojiClub/AIViews.swift",
+    "BojiClub/BodyWeightView.swift",
+    "BojiClub/BojiClubApp.swift",
+    "BojiClub/ClubSeasonView.swift",
+    "BojiClub/Design.swift",
+    "BojiClub/ExerciseLibraryView.swift",
+    "BojiClub/FlowDesign.swift",
+    "BojiClub/FoodComponents.swift",
+    "BojiClub/HealthViews.swift",
+    "BojiClub/HomeView.swift",
+    "BojiClub/JourneyComponents.swift",
+    "BojiClub/MealBatchReviewView.swift",
+    "BojiClub/MealEditorView.swift",
+    "BojiClub/NutritionView.swift",
+    "BojiClub/OnboardingView.swift",
+    "BojiClub/PlanView.swift",
+    "BojiClub/ProfileView.swift",
+    "BojiClub/RecordRepairViews.swift",
+    "BojiClub/ReportLibraryView.swift",
+    "BojiClub/ReviewCamera.swift",
+    "BojiClub/TrainingPlansView.swift",
+    "BojiClub/WeeklyReviewView.swift",
+    "BojiClub/WorkoutView.swift",
+    "BojiClub.xcodeproj/project.pbxproj",
+    "BUILD-STATUS.md",
+    "README_先读我.md"
+  ],
+  "swift_files": 47,
+  "syntax_errors": [],
+  "previous_package_unchanged": true,
+  "server_and_config_unchanged": true,
+  "home_module_layout_unchanged": true,
+  "business_rules_and_models_unchanged": true,
+  "native_build_performed": false,
+  "native_visual_test_performed": false,
+  "version": "0.13.54",
+  "build": 73,
+  "view_and_modifier_declarations_in_inventory": 149,
+  "original_unstyled_controls_updated": 70,
+  "grouped_surfaces": 22,
+  "button_action_comparison": {
+    "buttons_compared": 358,
+    "non_view_functions_unchanged": true,
+    "intentional_action_refactor": {
+      "WorkoutView.swift": {
+        "previous": [
+          "{restEnd=restEnd.addingTimeInterval(30)}"
+        ],
+        "current": [
+          "{restEnd=end.addingTimeInterval(30)}"
+        ]
+      }
+    }
+  },
+  "syntax_parser": "tree-sitter 0.25.2 / Swift grammar 0.7.3",
+  "minimum_ios": "17.0",
+  "reintroduced_brand_colors": false,
+  "native_layout_acceptance": "pending",
+  "grouped_surface_coverage_checked": 22,
+  "remaining_default_button": "DismissButton toolbar helper; intentionally uses native toolbar style",
+  "created": "2026-10-11T18:51:35.270783+00:00",
+  "previous_zip_sha256": "00a6ea33202a6df5e7d8f2a236da4b4dff18900687705d2984dbe78270f44e5a"
+}

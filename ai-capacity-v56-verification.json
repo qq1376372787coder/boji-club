@@ -1,0 +1,41 @@
+{
+  "version": "0.13.56",
+  "build": 75,
+  "local_backend_tests": 30,
+  "php_server_lint": 3,
+  "js_syntax": true,
+  "deployed": true,
+  "settings": {
+    "accepting": true,
+    "daily_limit": 0,
+    "pending_limit": 800
+  },
+  "snapshot_at_deploy": {
+    "capacity_settings": {
+      "daily_limit": 0,
+      "pending_limit": 800
+    },
+    "day_start": 1791734400,
+    "pending": 0,
+    "queued": 0,
+    "retrying": 0,
+    "running": 0,
+    "sampled_at": 1791789215.0148816,
+    "timezone": "Asia/Shanghai",
+    "today_failed": 0,
+    "today_processed": 0,
+    "today_received": 0,
+    "today_succeeded": 0
+  },
+  "backup": "/root/bojiclub-capacity-v56-20261012-151333",
+  "files": {
+    "backend/server.py": "5bc5c60241e63a64c4fd7d416d9ceaede4131c19716be1c295f4d07c2c9046e5",
+    "account-server/admin/bootstrap.php": "932f65c88e9c90c62fdd6bf502d291b9008399e6491f126acfbec54a65bca075",
+    "account-server/admin/index.php": "32c55bc43e31166ad76e2ab0fda4ed0c385b717594ed8bb19deb8dd7d3c7f84d",
+    "account-server/admin/app.js": "adf1c22907a11ddd8987e620eadbd2482820dbfcae12e9018255112efd4a6eec",
+    "account-server/admin/style.css": "cfad239b0dc4ce5ced47ff5364d5ca43dd6d9544a7e4b65de56439fae766739c",
+    "account-server/admin/ai-capacity.php": "24c9323ea2d44b7a2cf5cb07dd9aaa1f93624a5b6006335467f998c5ab5f3fab"
+  },
+  "xcode_build_performed": false,
+  "browser_authenticated_ui_test_performed": false
+}

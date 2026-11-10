@@ -1,0 +1,21 @@
+{
+  "version": "0.14.0",
+  "build": 104,
+  "scope": "read-only association between adopted plan targets and observed training; not physiological efficacy or automatic parameter proposals",
+  "php_contract_groups_passed": 16,
+  "swift_grammar_files": 84,
+  "project_upgrade_sources": 15,
+  "new_native_assertions_generated": 31,
+  "native_swift_tests_executed": false,
+  "xcode_build_executed": false,
+  "device_tests_executed": false,
+  "backend_unchanged_from_build103_deployment": true,
+  "source_hashes": {
+    "BojiClub/ClubPlanFollowup.swift": "24dc2e54ad1269f6229d1dc8d62259950e4a70a66ffc6b86d02d73bbc624d8e4",
+    "BojiClub/ClubPlanFollowupView.swift": "4f7791f8ac4568a7029ce690c95871d270e8e074dc0f50a021363b72c71d80b5",
+    "BojiClub/ProductArchitecture.swift": "4422ec7826dfd2733721343a15adf02aeb5310be1cecf8e07466b336f529da8e",
+    "tests/build_plan_followup_swift_tests.py": "65b66d2d63ece02397d64b4eb00c5ead408143604887fdb2ff108fce843b866e",
+    "scripts/check-upgrade-on-mac.sh": "44e04b520d79ad47b19a15c2e4e1d403bb71a809b3c7e3e9b093f1fb4feb0ed2",
+    "BojiClub.xcodeproj/project.pbxproj": "4aeeef55748cd175bee43d254d5b252a0158ae4cf3ee6c7b006bb5539d7c1936"
+  }
+}

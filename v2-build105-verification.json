@@ -1,0 +1,34 @@
+{
+  "version": "0.14.0",
+  "build": 105,
+  "date": "2026-10-16",
+  "backend_regressions": {
+    "passed": true,
+    "tests": 314,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "database_integration": {
+    "passed": true,
+    "checks": 23,
+    "real_models_called": false,
+    "production_account_data_used": false
+  },
+  "production_targeted": {
+    "passed": true,
+    "tests": 76,
+    "real_models_called": false,
+    "production_import_paths_verified": true
+  },
+  "php_groups": 18,
+  "swift_grammar_files": 87,
+  "swift_fixture_groups_generated": 15,
+  "upgrade_sources": 17,
+  "xcode_build_executed": false,
+  "native_tests_executed": false,
+  "device_tests_executed": false,
+  "apns_delivery_verified": false,
+  "backend_deployed": true,
+  "status": "source and server implementation delivered; native, device, payment and APNs acceptance pending"
+}

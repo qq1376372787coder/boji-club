@@ -1,0 +1,141 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/BojiClub_iphonesimulator26.5-arm64.xctestrun -destination "platform=iOS Simulator,id=F7744AA2-06C2-40F0-81E2-361F72D638B7" -resultBundlePath /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/matrix-small-ax5.xcresult -parallel-testing-enabled NO "-only-testing:BojiClubUITests/BojiClubUITests/testNativeShellScreenshots"
+
+2026-10-24 20:41:14.064 xcodebuild[14991:3390385] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+Writing result bundle at path:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/matrix-small-ax5.xcresult
+
+2026-10-24 20:41:14.068 xcodebuild[14991:3390385] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:41:15.580 xcodebuild[14991:3390385] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:41:18.734352+0800 BojiClubUITests-Runner[15046:3391125] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-24 20:41:19.715.
+Test Suite 'BojiClubUITests.xctest' started at 2026-10-24 20:41:19.715.
+Test Suite 'BojiClubUITests' started at 2026-10-24 20:41:19.715.
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeShellScreenshots]' started.
+    t =     0.00s Start Test at 2026-10-24 20:41:19.716
+    t =     0.03s Set Up
+    t =     0.03s Open com.bojiclub.app.dev
+    t =     0.03s     Launch com.bojiclub.app.dev
+2026-10-24 20:41:19.979 xcodebuild[14991:3390385] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:41:19.979 xcodebuild[14991:3390385] [MT] IDELaunchParametersSnapshot: no debugger version
+objc[15046]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x109bc8310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x109b80398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     2.05s         Setting up automation session
+    t =     3.39s         Wait for com.bojiclub.app.dev to idle
+    t =     5.96s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     7.03s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     7.03s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     7.20s Checking existence of `TabBar (First Match)`
+    t =     7.25s Waiting 2.0s for "稍后再看" Button to exist
+    t =     8.33s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     8.33s         Checking existence of `"稍后再看" Button`
+    t =     8.42s         Capturing element debug description
+    t =     9.26s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     9.26s         Checking existence of `"稍后再看" Button`
+    t =     9.31s         Capturing element debug description
+    t =     9.32s     Checking existence of `"稍后再看" Button`
+    t =     9.37s Collecting debug information to assist test failure triage
+    t =     9.37s     Requesting snapshot of accessibility hierarchy for app with pid 15072
+    t =     9.41s Find the Target Application 'com.bojiclub.app.dev'
+    t =     9.49s Added attachment named 'native-ai-home'
+    t =     9.49s Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     9.51s Waiting 10.0s for "训练" Button to exist
+    t =    10.58s     Checking `Expect predicate `existsNoRetry == 1` for object "训练" Button`
+    t =    10.59s         Checking existence of `"训练" Button`
+    t =    10.62s Tap "训练" Button
+    t =    10.62s     Wait for com.bojiclub.app.dev to idle
+    t =    10.62s     Find the "训练" Button
+    t =    10.64s     Check for interrupting elements affecting "训练" Button
+    t =    10.67s     Synthesize event
+    t =    10.96s     Wait for com.bojiclub.app.dev to idle
+    t =    11.57s Find the "训练" Button
+    t =    11.63s Waiting 8.0s for "plan-calendar-toggle" Button to exist
+    t =    12.70s     Checking `Expect predicate `existsNoRetry == 1` for object "plan-calendar-toggle" Button`
+    t =    12.70s         Checking existence of `"plan-calendar-toggle" Button`
+    t =    12.77s Find the Target Application 'com.bojiclub.app.dev'
+    t =    12.86s Added attachment named 'native-training-workspace'
+    t =    12.86s Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =    12.92s Waiting 10.0s for "Club AI" Button to exist
+    t =    13.99s     Checking `Expect predicate `existsNoRetry == 1` for object "Club AI" Button`
+    t =    14.00s         Checking existence of `"Club AI" Button`
+    t =    14.09s Tap "Club AI" Button
+    t =    14.09s     Wait for com.bojiclub.app.dev to idle
+    t =    14.10s     Find the "Club AI" Button
+    t =    14.17s     Check for interrupting elements affecting "Club AI" Button
+    t =    14.23s     Synthesize event
+    t =    14.55s     Wait for com.bojiclub.app.dev to idle
+    t =    14.78s Find the "Club AI" Button
+    t =    14.81s Tap "v2-sidebar-toggle" Button
+    t =    14.81s     Wait for com.bojiclub.app.dev to idle
+    t =    14.81s     Find the "v2-sidebar-toggle" Button
+    t =    14.84s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    14.86s     Synthesize event
+    t =    15.16s     Wait for com.bojiclub.app.dev to idle
+    t =    16.22s Waiting 8.0s for "v2-sidebar-today" Button to exist
+    t =    17.30s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-today" Button`
+    t =    17.30s         Checking existence of `"v2-sidebar-today" Button`
+    t =    17.38s Find the Target Application 'com.bojiclub.app.dev'
+    t =    17.45s Added attachment named 'native-sidebar'
+    t =    17.45s Checking existence of `"v2-sidebar-close" Button`
+    t =    17.49s Tap "v2-sidebar-close" Button
+    t =    17.49s     Wait for com.bojiclub.app.dev to idle
+    t =    17.50s     Find the "v2-sidebar-close" Button
+    t =    17.56s     Check for interrupting elements affecting "v2-sidebar-close" Button
+    t =    17.63s     Synthesize event
+    t =    17.95s     Wait for com.bojiclub.app.dev to idle
+    t =    18.79s Tap "v2-composer-field" Any
+    t =    18.79s     Wait for com.bojiclub.app.dev to idle
+    t =    18.79s     Find the "v2-composer-field" Any
+    t =    18.80s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =    18.83s     Synthesize event
+    t =    19.12s     Wait for com.bojiclub.app.dev to idle
+    t =    19.24s Type '今天怎么安排训练' into "v2-composer-field" TextField
+    t =    19.24s     Wait for com.bojiclub.app.dev to idle
+    t =    19.63s     Find the "v2-composer-field" TextField
+    t =    19.65s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =    19.76s     Synthesize event
+    t =    20.11s     Wait for com.bojiclub.app.dev to idle
+    t =    20.11s Tap "v2-composer-send" Button
+    t =    20.11s     Wait for com.bojiclub.app.dev to idle
+    t =    20.12s     Find the "v2-composer-send" Button
+    t =    20.17s     Check for interrupting elements affecting "v2-composer-send" Button
+    t =    20.21s     Synthesize event
+    t =    20.51s     Wait for com.bojiclub.app.dev to idle
+    t =    20.79s Waiting 15.0s for "ai-card-today_training" Any to exist
+    t =    21.86s     Checking `Expect predicate `existsNoRetry == 1` for object "ai-card-today_training" Any`
+    t =    21.86s         Checking existence of `"ai-card-today_training" Any`
+    t =    22.01s Find the Target Application 'com.bojiclub.app.dev'
+    t =    22.08s Added attachment named 'native-conversation'
+    t =    22.08s Tap "v2-composer-field" Any
+    t =    22.08s     Wait for com.bojiclub.app.dev to idle
+    t =    22.08s     Find the "v2-composer-field" Any
+    t =    22.10s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =    22.14s     Synthesize event
+    t =    22.43s     Wait for com.bojiclub.app.dev to idle
+    t =    22.89s Type '帮我调整明天的安排' into "v2-composer-field" Any
+    t =    22.89s     Wait for com.bojiclub.app.dev to idle
+    t =    22.90s     Find the "v2-composer-field" Any
+    t =    22.93s     Check for interrupting elements affecting "v2-composer-field" TextField
+    t =    23.01s     Synthesize event
+    t =    23.37s     Wait for com.bojiclub.app.dev to idle
+    t =    23.52s Find the "v2-composer-field" Any
+    t =    23.55s Find the Target Application 'com.bojiclub.app.dev'
+    t =    23.63s Added attachment named 'native-keyboard-composer'
+    t =    23.64s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeShellScreenshots]' passed (23.903 seconds).
+Test Suite 'BojiClubUITests' passed at 2026-10-24 20:41:43.621.
+	 Executed 1 test, with 0 failures (0 unexpected) in 23.903 (23.905) seconds
+Test Suite 'BojiClubUITests.xctest' passed at 2026-10-24 20:41:43.622.
+	 Executed 1 test, with 0 failures (0 unexpected) in 23.903 (23.907) seconds
+Test Suite 'Selected tests' passed at 2026-10-24 20:41:43.622.
+	 Executed 1 test, with 0 failures (0 unexpected) in 23.903 (23.908) seconds
+2026-10-24 20:41:44.127 xcodebuild[14991:3390385] [MT] IDETestOperationsObserverDebug: 28.545 elapsed -- Testing started completed.
+2026-10-24 20:41:44.127 xcodebuild[14991:3390385] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-24 20:41:44.127 xcodebuild[14991:3390385] [MT] IDETestOperationsObserverDebug: 28.545 sec, +28.545 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/matrix-small-ax5.xcresult
+
+** TEST EXECUTE SUCCEEDED **
+
+Testing started

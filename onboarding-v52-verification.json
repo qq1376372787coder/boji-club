@@ -1,0 +1,49 @@
+{
+  "version": "0.13.52",
+  "build": 71,
+  "created": "2026-10-11T13:30:56.343789+00:00",
+  "changed_existing_files": [
+    "BojiClub/OnboardingView.swift",
+    "BojiClub.xcodeproj/project.pbxproj",
+    "BUILD-STATUS.md",
+    "README_先读我.md",
+    "scripts/check-on-mac.sh"
+  ],
+  "new_files": [
+    "ONBOARDING-V52-20261011.md",
+    "tests/build_onboarding_v52_swift_tests.py",
+    "scripts/check-onboarding-v52-on-mac.sh"
+  ],
+  "syntax": {
+    "files": [
+      "BojiClub/OnboardingView.swift",
+      "generated v52-onboarding-rules.swift"
+    ],
+    "errors": [],
+    "method": "tree-sitter Swift parser"
+  },
+  "native_rule_checks": {
+    "defined": 14,
+    "generated": true,
+    "executed": false
+  },
+  "old_v51_source_unchanged": true,
+  "home_view_buildfix_retained": true,
+  "server_code_unchanged": true,
+  "xcode_build_performed": false,
+  "device_layout_test_performed": false,
+  "login_and_onboarding_device_test_performed": false,
+  "consent": {
+    "default_allowed": false,
+    "explicit_choice_at_login": true,
+    "per_account": true,
+    "unselected_path": "manual records without AI submission"
+  },
+  "draft_migration": {
+    "new_version": 5,
+    "optional_goal_substep": true,
+    "v4_independent_covenant_retained": true
+  },
+  "onboarding_sha256": "524ae8a94b8b8f570a8794a37c61f03c542cbdc3e6930bc144fe71d6f1129a95",
+  "generated_rules_sha256": "4573b135062d59a5197297039fec98fc689fe958d8cbd5bf4b26217763b989b3"
+}

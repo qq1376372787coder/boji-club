@@ -1,0 +1,72 @@
+{
+  "before": {
+    "revenuecat_product_ids": [
+      "yuefu",
+      "nianfu",
+      "yongjiu"
+    ],
+    "revenuecat_lifetime_product_ids": [
+      "yongjiu"
+    ],
+    "revenuecat_entitlement_id": "薄肌俱乐部_pro",
+    "revenuecat_app_id": null,
+    "revenuecat_environment": "SANDBOX",
+    "revenuecat_store": "APP_STORE"
+  },
+  "after": {
+    "revenuecat_product_ids": [
+      "yuefu",
+      "nianfu",
+      "yongjiu"
+    ],
+    "revenuecat_lifetime_product_ids": [
+      "yongjiu"
+    ],
+    "revenuecat_entitlement_id": "薄肌俱乐部_pro",
+    "revenuecat_app_id": "app0302d94ca1",
+    "revenuecat_environment": "SANDBOX",
+    "revenuecat_store": "APP_STORE"
+  },
+  "backup": "/root/bojiclub-revenuecat-v68/config-20261013-163154-e30b79.php",
+  "url": "https://117.50.119.49/account/v1/webhooks/revenuecat",
+  "unauthorized": [
+    401,
+    {
+      "error": "Webhook 未授权。"
+    }
+  ],
+  "authorized_test": [
+    200,
+    {
+      "received": true,
+      "ignored": true
+    }
+  ],
+  "duplicate_test": [
+    200,
+    {
+      "received": true,
+      "duplicate": true
+    }
+  ],
+  "offering_probe": [
+    200,
+    {
+      "current_offering_id": "default",
+      "custom_web_checkout_enabled": true,
+      "offerings": [
+        {
+          "description": "The standard set of packages",
+          "identifier": "default",
+          "metadata": null,
+          "packages": []
+        }
+      ],
+      "placements": {
+        "fallback_offering_id": "default"
+      }
+    }
+  ],
+  "dashboard_configured": false,
+  "native_purchase_tested": false
+}

@@ -1,0 +1,10 @@
+{
+  "testBodyOverviewHasMetricAndRangeControls": "Test Case '-[BojiClubUITests.BojiClubUITests testBodyOverviewHasMetricAndRangeControls]' passed (10.578 seconds).",
+  "testCreationOffersManualAndAIWithoutSubmitting": "Test Case '-[BojiClubUITests.BojiClubUITests testCreationOffersManualAndAIWithoutSubmitting]' passed (11.373 seconds).",
+  "testFiveTabsAndHomeBodyCard": "Test Case '-[BojiClubUITests.BojiClubUITests testFiveTabsAndHomeBodyCard]' passed (13.981 seconds).",
+  "testManualPickerAddsSeveralActionsTogether": "Test Case '-[BojiClubUITests.BojiClubUITests testManualPickerAddsSeveralActionsTogether]' passed (14.934 seconds).",
+  "testWorkoutCompletionShowsOnlyConfirmedVolume": "Test Case '-[BojiClubUITests.BojiClubUITests testWorkoutCompletionShowsOnlyConfirmedVolume]' passed (22.297 seconds).",
+  "testProfileChangesKeepManualPlan": "Test Case '-[BojiClubUITests.BojiClubUITests testProfileChangesKeepManualPlan]' passed (57.704 seconds).",
+  "testUnstartedPlanCanBeDeletedFromMyPlans": "Test Case '-[BojiClubUITests.BojiClubUITests testUnstartedPlanCanBeDeletedFromMyPlans]' passed (20.085 seconds).",
+  "testSingleDayLargeTextStaysWithinScreen": "Test Case '-[BojiClubUITests.BojiClubUITests testSingleDayLargeTextStaysWithinScreen]' passed (7.865 seconds)."
+}

@@ -1,0 +1,204 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/UIBaselineDerivedData/Build/Products/BojiClub_iphonesimulator26.5-arm64.xctestrun -destination "platform=iOS Simulator,id=F7744AA2-06C2-40F0-81E2-361F72D638B7" -parallel-testing-enabled NO "-only-testing:BojiClubUITests/BojiClubUITests/testNativeLaunchBenchmark" "-only-testing:BojiClubUITests/BojiClubUITests/testNativeScrollBenchmark" -resultBundlePath /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/baseline-performance.xcresult
+
+2026-10-24 19:59:49.023 xcodebuild[99274:3280388] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+Writing result bundle at path:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/baseline-performance.xcresult
+
+2026-10-24 19:59:49.030 xcodebuild[99274:3280388] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 19:59:50.599 xcodebuild[99274:3280388] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 19:59:53.441212+0800 BojiClubUITests-Runner[99309:3280896] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-24 19:59:54.897.
+Test Suite 'BojiClubUITests.xctest' started at 2026-10-24 19:59:54.920.
+Test Suite 'BojiClubUITests' started at 2026-10-24 19:59:54.920.
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeLaunchBenchmark]' started.
+    t =     0.16s Start Test at 2026-10-24 19:59:55.084
+    t =     0.58s Set Up
+    t =     0.64s Open com.bojiclub.app.dev
+    t =     0.64s     Launch com.bojiclub.app.dev
+2026-10-24 19:59:55.987 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 19:59:55.987 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: no debugger version
+objc[99309]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x106600310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x1066cc398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     2.89s         Setting up automation session
+    t =     3.54s         Wait for com.bojiclub.app.dev to idle
+    t =     7.76s Open com.bojiclub.app.dev
+    t =     7.76s     Launch com.bojiclub.app.dev
+    t =     7.76s         Terminate com.bojiclub.app.dev:99348
+2026-10-24 20:00:03.730 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:00:03.730 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     9.02s         Setting up automation session
+    t =     9.77s         Wait for com.bojiclub.app.dev to idle
+    t =    12.25s Open com.bojiclub.app.dev
+    t =    12.26s     Launch com.bojiclub.app.dev
+    t =    12.26s         Terminate com.bojiclub.app.dev:99378
+2026-10-24 20:00:08.213 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:00:08.213 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    13.50s         Setting up automation session
+    t =    14.13s         Wait for com.bojiclub.app.dev to idle
+    t =    16.60s Open com.bojiclub.app.dev
+    t =    16.60s     Launch com.bojiclub.app.dev
+    t =    16.60s         Terminate com.bojiclub.app.dev:99404
+2026-10-24 20:00:12.568 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:00:12.568 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    17.85s         Setting up automation session
+    t =    18.57s         Wait for com.bojiclub.app.dev to idle
+    t =    20.93s Open com.bojiclub.app.dev
+    t =    20.93s     Launch com.bojiclub.app.dev
+    t =    20.93s         Terminate com.bojiclub.app.dev:99427
+2026-10-24 20:00:16.904 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:00:16.904 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    22.19s         Setting up automation session
+    t =    22.84s         Wait for com.bojiclub.app.dev to idle
+    t =    25.36s Open com.bojiclub.app.dev
+    t =    25.36s     Launch com.bojiclub.app.dev
+    t =    25.36s         Terminate com.bojiclub.app.dev:99445
+2026-10-24 20:00:21.341 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:00:21.341 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    26.63s         Setting up automation session
+    t =    27.48s         Wait for com.bojiclub.app.dev to idle
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:684: Test Case '-[BojiClubUITests.BojiClubUITests testNativeLaunchBenchmark]' measured [Duration (AppLaunch), s] average: 1.479, relative standard deviation: 7.025%, values: [1.502092, 1.407520, 1.454767, 1.366069, 1.666138], performanceMetricID:com.apple.dt.XCTMetric_ApplicationLaunch-AppLaunch.duration, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+    t =    30.05s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeLaunchBenchmark]' passed (30.236 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' started.
+    t =     0.00s Start Test at 2026-10-24 20:00:25.265
+    t =     0.04s Set Up
+    t =     0.05s Open com.bojiclub.app.dev
+    t =     0.05s     Launch com.bojiclub.app.dev
+    t =     0.05s         Terminate com.bojiclub.app.dev:99473
+2026-10-24 20:00:26.364 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:00:26.364 xcodebuild[99274:3280388] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.31s         Setting up automation session
+    t =     1.97s         Wait for com.bojiclub.app.dev to idle
+    t =     3.79s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     4.83s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     4.83s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     4.97s Waiting 3.0s for "v2-mode-picker" SegmentedControl to exist
+    t =     5.99s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     5.99s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     6.02s         Capturing element debug description
+    t =     7.04s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     7.04s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     7.09s         Capturing element debug description
+    t =     7.97s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     7.97s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     8.01s         Capturing element debug description
+    t =     8.01s     Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =     8.04s Collecting debug information to assist test failure triage
+    t =     8.04s     Requesting snapshot of accessibility hierarchy for app with pid 99498
+    t =     8.08s Waiting 8.0s for "v2-mode-training" Button to exist
+    t =     9.11s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-training" Button`
+    t =     9.11s         Checking existence of `"v2-mode-training" Button`
+    t =     9.17s Tap "v2-mode-training" Button
+    t =     9.17s     Wait for com.bojiclub.app.dev to idle
+    t =     9.17s     Find the "v2-mode-training" Button
+    t =     9.20s     Check for interrupting elements affecting "v2-mode-training" Button
+    t =     9.26s     Synthesize event
+    t =     9.56s     Wait for com.bojiclub.app.dev to idle
+    t =     9.56s Waiting 8.0s for "plan-calendar-toggle" Button to exist
+    t =    10.59s     Checking `Expect predicate `existsNoRetry == 1` for object "plan-calendar-toggle" Button`
+    t =    10.59s         Checking existence of `"plan-calendar-toggle" Button`
+    t =    10.65s Get all elements bound by index for: Descendants matching type ScrollView
+    t =    10.68s Find the ScrollView (Element at index 0)
+    t =    10.70s Find the Target Application 'com.bojiclub.app.dev'
+    t =    10.72s Find the ScrollView (Element at index 1)
+    t =    10.75s Find the Target Application 'com.bojiclub.app.dev'
+    t =    10.77s Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    10.80s Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    10.80s     Wait for com.bojiclub.app.dev to idle
+    t =    10.80s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    10.82s     Check for interrupting elements affecting ScrollView
+    t =    10.85s     Synthesize event
+    t =    11.29s     Wait for com.bojiclub.app.dev to idle
+    t =    12.17s Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    12.17s     Wait for com.bojiclub.app.dev to idle
+    t =    12.17s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    12.20s     Check for interrupting elements affecting ScrollView
+    t =    12.23s     Synthesize event
+    t =    12.67s     Wait for com.bojiclub.app.dev to idle
+    t =    14.36s Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    14.36s     Wait for com.bojiclub.app.dev to idle
+    t =    14.52s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    14.54s     Check for interrupting elements affecting ScrollView
+    t =    14.56s     Synthesize event
+    t =    15.00s     Wait for com.bojiclub.app.dev to idle
+    t =    15.94s Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    15.94s     Wait for com.bojiclub.app.dev to idle
+    t =    15.94s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    15.98s     Check for interrupting elements affecting ScrollView
+    t =    16.01s     Synthesize event
+    t =    16.45s     Wait for com.bojiclub.app.dev to idle
+    t =    17.84s Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    17.84s     Wait for com.bojiclub.app.dev to idle
+    t =    17.85s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    17.87s     Check for interrupting elements affecting ScrollView
+    t =    17.90s     Synthesize event
+    t =    18.33s     Wait for com.bojiclub.app.dev to idle
+    t =    18.99s Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    18.99s     Wait for com.bojiclub.app.dev to idle
+    t =    18.99s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    19.03s     Check for interrupting elements affecting ScrollView
+    t =    19.07s     Synthesize event
+    t =    19.53s     Wait for com.bojiclub.app.dev to idle
+    t =    20.87s Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    20.87s     Wait for com.bojiclub.app.dev to idle
+    t =    20.87s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    20.89s     Check for interrupting elements affecting ScrollView
+    t =    20.92s     Synthesize event
+    t =    21.35s     Wait for com.bojiclub.app.dev to idle
+    t =    22.14s Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    22.14s     Wait for com.bojiclub.app.dev to idle
+    t =    22.15s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    22.20s     Check for interrupting elements affecting ScrollView
+    t =    22.24s     Synthesize event
+    t =    22.68s     Wait for com.bojiclub.app.dev to idle
+    t =    24.09s Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    24.09s     Wait for com.bojiclub.app.dev to idle
+    t =    24.10s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    24.12s     Check for interrupting elements affecting ScrollView
+    t =    24.15s     Synthesize event
+    t =    24.58s     Wait for com.bojiclub.app.dev to idle
+    t =    25.24s Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    25.24s     Wait for com.bojiclub.app.dev to idle
+    t =    25.24s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    25.28s     Check for interrupting elements affecting ScrollView
+    t =    25.30s     Synthesize event
+    t =    25.74s     Wait for com.bojiclub.app.dev to idle
+    t =    27.04s Swipe up ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    27.04s     Wait for com.bojiclub.app.dev to idle
+    t =    27.05s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    27.07s     Check for interrupting elements affecting ScrollView
+    t =    27.10s     Synthesize event
+    t =    27.54s     Wait for com.bojiclub.app.dev to idle
+    t =    28.17s Swipe down ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    28.17s     Wait for com.bojiclub.app.dev to idle
+    t =    28.18s     Find the ScrollView at {{-6.5, 80.5}, {388.0, 586.5}}
+    t =    28.21s     Check for interrupting elements affecting ScrollView
+    t =    28.23s     Synthesize event
+    t =    28.67s     Wait for com.bojiclub.app.dev to idle
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:718: Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' measured [Duration (Scroll_DraggingAndDeceleration), s] average: 0.994, relative standard deviation: 0.794%, values: [0.984325, 0.984141, 1.000829, 1.000444, 0.999729], performanceMetricID:com.apple.dt.XCTMetric_OSSignpost-Scroll_DraggingAndDeceleration.duration, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:718: Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' measured [CPU Instructions Retired (dev), kI] average: 1484009.374, relative standard deviation: 0.545%, values: [1493440.339000, 1478685.621000, 1492022.635000, 1471966.419000, 1483931.856000], performanceMetricID:com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.instructions_retired, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:718: Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' measured [Clock Monotonic Time, s] average: 2.518, relative standard deviation: 7.562%, values: [2.851452, 2.374529, 2.596823, 2.324479, 2.441680], performanceMetricID:com.apple.dt.XCTMetric_Clock.time.monotonic, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:718: Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' measured [CPU Time (dev), s] average: 0.304, relative standard deviation: 6.678%, values: [0.303506, 0.296067, 0.342644, 0.283834, 0.294113], performanceMetricID:com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.time, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:718: Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' measured [CPU Cycles (dev), kC] average: 891369.054, relative standard deviation: 6.957%, values: [928954.244000, 901109.299000, 971453.955000, 787726.342000, 867601.429000], performanceMetricID:com.apple.dt.XCTMetric_CPU-com.bojiclub.app.dev.cycles, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:718: Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' measured [Absolute Memory Physical (dev), kB] average: 85877.546, relative standard deviation: 0.019%, values: [85887.376000, 85903.760000, 85870.992000, 85854.608000, 85870.992000], performanceMetricID:com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_absolute, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:718: Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' measured [Memory Physical (dev), kB] average: -6.554, relative standard deviation: -374.166%, values: [-49.152000, 16.384000, -16.384000, 0.000000, 16.384000], performanceMetricID:com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-baseline-source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:718: Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' measured [Memory Peak Physical (dev), kB] average: 86044.662, relative standard deviation: 0.096%, values: [86100.368000, 86133.136000, 85936.528000, 86100.368000, 85952.912000], performanceMetricID:com.apple.dt.XCTMetric_Memory-com.bojiclub.app.dev.physical_peak, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+    t =    30.22s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeScrollBenchmark]' passed (30.540 seconds).
+Test Suite 'BojiClubUITests' passed at 2026-10-24 20:00:55.806.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 60.775 (60.886) seconds
+Test Suite 'BojiClubUITests.xctest' passed at 2026-10-24 20:00:55.808.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 60.775 (60.889) seconds
+Test Suite 'Selected tests' passed at 2026-10-24 20:00:55.810.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 60.775 (60.913) seconds
+2026-10-24 20:00:56.293 xcodebuild[99274:3280388] [MT] IDETestOperationsObserverDebug: 65.693 elapsed -- Testing started completed.
+2026-10-24 20:00:56.293 xcodebuild[99274:3280388] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-24 20:00:56.293 xcodebuild[99274:3280388] [MT] IDETestOperationsObserverDebug: 65.693 sec, +65.693 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/baseline-performance.xcresult
+
+** TEST EXECUTE SUCCEEDED **
+
+Testing started

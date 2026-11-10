@@ -1,0 +1,62 @@
+{
+  "devices" : [
+    {
+      "architecture" : "arm64",
+      "deviceId" : "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+      "deviceName" : "BOJI Native UI Small",
+      "modelName" : "iPhone SE (3rd generation)",
+      "osBuildNumber" : "23F77",
+      "osVersion" : "26.5",
+      "platform" : "iOS Simulator"
+    }
+  ],
+  "testNodes" : [
+    {
+      "children" : [
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "duration" : "26秒",
+                  "durationInSeconds" : 26.617308974266052,
+                  "name" : "testNativeLaunchBenchmark()",
+                  "nodeIdentifier" : "BojiClubUITests/testNativeLaunchBenchmark()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubUITests/testNativeLaunchBenchmark",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "27秒",
+                  "durationInSeconds" : 27.044890999794006,
+                  "name" : "testNativeScrollBenchmark()",
+                  "nodeIdentifier" : "BojiClubUITests/testNativeScrollBenchmark()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubUITests/testNativeScrollBenchmark",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "BojiClubUITests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests/BojiClubUITests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            }
+          ],
+          "name" : "BojiClubUITests",
+          "nodeIdentifierURL" : "test://com.apple.xcode/BojiClub/BojiClubUITests",
+          "nodeType" : "UI test bundle",
+          "result" : "Passed"
+        }
+      ],
+      "name" : "BojiClub",
+      "nodeType" : "Test Plan",
+      "result" : "Passed"
+    }
+  ],
+  "testPlanConfigurations" : [
+    {
+      "configurationId" : "1",
+      "configurationName" : "Test Scheme Action"
+    }
+  ]
+}

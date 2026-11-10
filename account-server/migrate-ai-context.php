@@ -1,0 +1,11 @@
+<?php
+declare(strict_types=1);
+if(PHP_SAPI!=='cli')exit(1);
+$config=getenv('BOJI_MIGRATION_DSN')?['dsn'=>getenv('BOJI_MIGRATION_DSN'),'db_user'=>getenv('BOJI_MIGRATION_USER')?:'root','db_password'=>getenv('BOJI_MIGRATION_PASSWORD')?:'']:require __DIR__.'/config.php';
+$db=new PDO($config['dsn'],$config['db_user'],$config['db_password'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
+$apply=in_array('--apply',$argv,true);
+if($apply)$db->exec("CREATE TABLE IF NOT EXISTS ai_context_bundles(id CHAR(36) PRIMARY KEY,user_id BIGINT UNSIGNED NOT NULL,conversation_id VARCHAR(64) NOT NULL,content_hash CHAR(64) NOT NULL,snapshot_cipher MEDIUMTEXT NOT NULL,expires_at DATETIME NOT NULL,created_at DATETIME NOT NULL,KEY owner_conversation(user_id,conversation_id),KEY expiry(expires_at),CONSTRAINT context_owner_fk FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+if($apply)$db->exec("CREATE TABLE IF NOT EXISTS ai_provider_consents(user_id BIGINT UNSIGNED PRIMARY KEY,allowed TINYINT(1) NOT NULL,notice_version VARCHAR(64) NOT NULL,updated_at DATETIME NOT NULL,CONSTRAINT ai_consent_owner_fk FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+if($apply)$db->exec("CREATE TABLE IF NOT EXISTS ai_stream_leases(id CHAR(36) PRIMARY KEY,user_id BIGINT UNSIGNED NOT NULL,expires_at DATETIME NOT NULL,KEY owner_expiry(user_id,expires_at),CONSTRAINT ai_stream_owner_fk FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+$q=$db->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='ai_context_bundles' AND COLUMN_NAME IN ('id','user_id','conversation_id','content_hash','snapshot_cipher','expires_at','created_at')");
+$ok=(int)$q->fetchColumn()===7;$q=$db->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='ai_provider_consents'");$ok=$ok&&(int)$q->fetchColumn()===4;$q=$db->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='ai_stream_leases'");$ok=$ok&&(int)$q->fetchColumn()===3;echo json_encode(['status'=>$ok?'SCHEMA_OK':'MISSING_SCHEMA','apply'=>$apply])."\n";exit($ok?0:2);

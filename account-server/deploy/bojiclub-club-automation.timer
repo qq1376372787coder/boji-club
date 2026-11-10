@@ -1,0 +1,13 @@
+[Unit]
+Description=Run Boji Club automation dispatcher every five minutes
+# Do not enable together with a cron entry for the same script.
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Persistent=true
+Unit=bojiclub-club-automation.service
+
+[Install]
+WantedBy=timers.target

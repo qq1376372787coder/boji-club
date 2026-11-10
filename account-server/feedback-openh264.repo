@@ -1,0 +1,7 @@
+[boji-feedback-openh264]
+name=Fedora Cisco OpenH264 for BOJI feedback media
+baseurl=https://codecs.fedoraproject.org/openh264/epel/10/$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10
+includepkgs=openh264

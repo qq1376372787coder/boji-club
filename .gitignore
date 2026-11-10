@@ -1,0 +1,41 @@
+.DS_Store
+build-check/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+backend/.env
+backend/.data/
+__pycache__/
+*.pyc
+
+# Private release checklist
+Configuration/ReleaseChecklist.local.plist
+HomeWorkoutLoop.mp4
+*.mp4
+repair-evidence-20261020/
+delivery-evidence/
+audit/testflight-readiness/evidence/screenshots/
+DesignReview/screenshots/
+
+.tools/
+
+account-server/config.php
+account-server/runtime/
+account-server/media/
+account-server/private-cache/
+
+# Apple private keys (APNs .p8 / Sign in with Apple / App Store Connect) — never commit
+private-keys/
+*.p8
+*.p12
+*.mobileprovision
+*.keystore
+*.jks
+*.pem
+
+# Audit-fix local verification (never packaged)
+env/
+evidence/
+audit-probes/
+deliverables/
+*.sqlite3

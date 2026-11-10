@@ -1,0 +1,351 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/DebugDerivedData/Build/Products/BojiClub_iphonesimulator26.5-arm64.xctestrun -destination "platform=iOS Simulator,id=9B496F27-8B0D-4B90-99F2-9379D8B0626C" -resultBundlePath /Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-ax-diagnostic.xcresult -parallel-testing-enabled NO "-only-testing:BojiClubUITests/BojiClubUITests/testNativeManualMealAndBodyHaveSingleNavigation" "-only-testing:BojiClubUITests/BojiClubUITests/testV2WorkspaceAccessibilityAudit"
+
+2026-10-24 20:23:04.948 xcodebuild[7812:3334044] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+Writing result bundle at path:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-ax-diagnostic.xcresult
+
+2026-10-24 20:23:04.952 xcodebuild[7812:3334044] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:23:06.361 xcodebuild[7812:3334044] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-10-24 20:23:07.856742+0800 BojiClubUITests-Runner[7846:3334567] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-10-24 20:23:08.751.
+Test Suite 'BojiClubUITests.xctest' started at 2026-10-24 20:23:08.752.
+Test Suite 'BojiClubUITests' started at 2026-10-24 20:23:08.752.
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeManualMealAndBodyHaveSingleNavigation]' started.
+    t =     0.00s Start Test at 2026-10-24 20:23:08.753
+    t =     0.07s Set Up
+    t =     0.07s Open com.bojiclub.app.dev
+    t =     0.07s     Launch com.bojiclub.app.dev
+2026-10-24 20:23:09.036 xcodebuild[7812:3334044] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:23:09.036 xcodebuild[7812:3334044] [MT] IDELaunchParametersSnapshot: no debugger version
+objc[7846]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x10a654310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x109adc398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     1.75s         Setting up automation session
+    t =     2.90s         Wait for com.bojiclub.app.dev to idle
+    t =     5.33s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     6.40s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     6.40s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     6.50s Checking existence of `TabBar (First Match)`
+    t =     6.54s Waiting 2.0s for "稍后再看" Button to exist
+    t =     7.61s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     7.61s         Checking existence of `"稍后再看" Button`
+    t =     7.68s         Capturing element debug description
+    t =     8.54s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     8.55s         Checking existence of `"稍后再看" Button`
+2026-10-24 20:23:17.309 xcodebuild[7812:3334044] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+    t =     8.67s         Capturing element debug description
+    t =     8.67s     Checking existence of `"稍后再看" Button`
+2026-10-24 20:23:17.458 xcodebuild[7812:3334044] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+    t =     8.80s Collecting debug information to assist test failure triage
+    t =     8.81s     Requesting snapshot of accessibility hierarchy for app with pid 7868
+    t =     8.85s Tap "v2-composer-plus" Button
+    t =     8.86s     Wait for com.bojiclub.app.dev to idle
+    t =     8.86s     Find the "v2-composer-plus" Button
+    t =     8.89s     Check for interrupting elements affecting "v2-composer-plus" Button
+    t =     8.95s     Synthesize event
+    t =     9.27s     Wait for com.bojiclub.app.dev to idle
+    t =     9.43s Waiting 5.0s for "手动记录饮食" Button to exist
+    t =    10.52s     Checking `Expect predicate `existsNoRetry == 1` for object "手动记录饮食" Button`
+    t =    10.52s         Checking existence of `"手动记录饮食" Button`
+    t =    10.60s Tap "手动记录饮食" Button
+    t =    10.60s     Wait for com.bojiclub.app.dev to idle
+    t =    10.61s     Find the "手动记录饮食" Button
+    t =    10.69s     Check for interrupting elements affecting "fork.knife" Button
+    t =    10.75s     Synthesize event
+    t =    11.24s     Wait for com.bojiclub.app.dev to idle
+    t =    12.97s Waiting 10.0s for "meal-entry-mode" SegmentedControl to exist
+    t =    14.04s     Checking `Expect predicate `existsNoRetry == 1` for object "meal-entry-mode" SegmentedControl`
+    t =    14.05s         Checking existence of `"meal-entry-mode" SegmentedControl`
+    t =    14.18s Find the "手动" Button
+    t =    14.30s Get all elements bound by index for: Descendants matching type NavigationBar
+    t =    14.33s Find the NavigationBar (Element at index 0)
+    t =    14.42s Find the NavigationBar (Element at index 1)
+    t =    14.47s Find the "v2-sidebar-toggle" Button
+    t =    14.57s Find the Target Application 'com.bojiclub.app.dev'
+    t =    14.73s Added attachment named 'native-manual-meal-single-navigation'
+    t =    14.73s Tap "关闭" Button
+    t =    14.73s     Wait for com.bojiclub.app.dev to idle
+    t =    14.73s     Find the "关闭" Button
+    t =    14.77s     Check for interrupting elements affecting "关闭" Button
+    t =    14.83s     Synthesize event
+    t =    15.13s     Wait for com.bojiclub.app.dev to idle
+    t =    15.95s Waiting 8.0s for "v2-composer-plus" Button to exist
+    t =    17.03s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-composer-plus" Button`
+    t =    17.03s         Checking existence of `"v2-composer-plus" Button`
+    t =    17.07s Tap "v2-composer-plus" Button
+    t =    17.07s     Wait for com.bojiclub.app.dev to idle
+    t =    17.07s     Find the "v2-composer-plus" Button
+    t =    17.11s     Check for interrupting elements affecting "v2-composer-plus" Button
+    t =    17.15s     Synthesize event
+    t =    17.44s     Wait for com.bojiclub.app.dev to idle
+    t =    18.33s Waiting 5.0s for "记录体重" Button to exist
+    t =    19.41s     Checking `Expect predicate `existsNoRetry == 1` for object "记录体重" Button`
+    t =    19.41s         Checking existence of `"记录体重" Button`
+    t =    19.50s Tap "记录体重" Button
+    t =    19.50s     Wait for com.bojiclub.app.dev to idle
+    t =    19.50s     Find the "记录体重" Button
+    t =    19.55s     Check for interrupting elements affecting "scalemass" Button
+    t =    19.61s     Synthesize event
+    t =    19.92s     Wait for com.bojiclub.app.dev to idle
+    t =    23.12s Waiting 10.0s for "身体记录" NavigationBar to exist
+    t =    24.19s     Checking `Expect predicate `existsNoRetry == 1` for object "身体记录" NavigationBar`
+    t =    24.19s         Checking existence of `"身体记录" NavigationBar`
+    t =    24.35s Get number of matches for: Descendants matching type NavigationBar
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:880: error: -[BojiClubUITests.BojiClubUITests testNativeManualMealAndBodyHaveSingleNavigation] : XCTAssertEqual failed: ("2") is not equal to ("1") - BodyWeightView already owns its navigation stack
+    t =    24.49s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testNativeManualMealAndBodyHaveSingleNavigation]' failed (24.829 seconds).
+Test Case '-[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit]' started.
+    t =     0.00s Start Test at 2026-10-24 20:23:33.582
+    t =     0.06s Set Up
+    t =     0.06s Open com.bojiclub.app.dev
+    t =     0.06s     Launch com.bojiclub.app.dev
+    t =     0.06s         Terminate com.bojiclub.app.dev:7868
+2026-10-24 20:23:34.692 xcodebuild[7812:3334044] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-10-24 20:23:34.692 xcodebuild[7812:3334044] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.54s         Setting up automation session
+    t =     2.67s         Wait for com.bojiclub.app.dev to idle
+    t =     5.22s Waiting 15.0s for "v2-sidebar-toggle" Button to exist
+    t =     6.27s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-toggle" Button`
+    t =     6.27s         Checking existence of `"v2-sidebar-toggle" Button`
+    t =     6.38s Checking existence of `TabBar (First Match)`
+    t =     6.45s Waiting 2.0s for "稍后再看" Button to exist
+    t =     7.52s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     7.52s         Checking existence of `"稍后再看" Button`
+    t =     7.56s         Capturing element debug description
+    t =     8.46s     Checking `Expect predicate `existsNoRetry == 1` for object "稍后再看" Button`
+    t =     8.46s         Checking existence of `"稍后再看" Button`
+    t =     8.50s         Capturing element debug description
+    t =     8.50s     Checking existence of `"稍后再看" Button`
+    t =     8.53s Collecting debug information to assist test failure triage
+    t =     8.53s     Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =     8.57s Waiting 15.0s for "v2-mode-picker" SegmentedControl to exist
+    t =     9.63s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-mode-picker" SegmentedControl`
+    t =     9.63s         Checking existence of `"v2-mode-picker" SegmentedControl`
+    t =    11.72s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467205312.45)
+    t =    11.74s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    11.76s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467205312.45
+    t =    11.79s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    11.82s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467205312.45
+    t =    11.82s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [workspace] Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.
+    t =    11.85s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208448.47)
+    t =    11.87s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    11.90s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208448.47
+    t =    11.93s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    11.95s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208448.47
+    t =    11.96s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [workspace] Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.
+    t =    11.99s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208896.48)
+    t =    12.01s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    12.03s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208896.48
+    t =    12.06s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    12.09s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208896.48
+    t =    12.09s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [workspace] Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.
+    t =    12.12s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209792.50)
+    t =    12.14s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    12.17s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209792.50
+    t =    12.20s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    12.23s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209792.50
+    t =    12.23s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [workspace] Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.
+    t =    12.26s Tap "v2-sidebar-toggle" Button
+    t =    12.27s     Wait for com.bojiclub.app.dev to idle
+    t =    12.27s     Find the "v2-sidebar-toggle" Button
+    t =    12.29s     Check for interrupting elements affecting "v2-sidebar-toggle" Button
+    t =    12.31s     Synthesize event
+    t =    12.61s     Wait for com.bojiclub.app.dev to idle
+    t =    13.89s Waiting 8.0s for "v2-sidebar-newchat" Button to exist
+    t =    14.93s     Checking `Expect predicate `existsNoRetry == 1` for object "v2-sidebar-newchat" Button`
+    t =    14.94s         Checking existence of `"v2-sidebar-newchat" Button`
+    t =    17.80s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467205312.45)
+    t =    17.85s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    17.96s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467205312.45
+    t =    18.05s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    18.22s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467205312.45
+    t =    18.23s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    18.33s Find the Target Application 'com.bojiclub.app.dev'
+    t =    18.49s Added attachment named 'ax-sidebar-issue-0'
+    t =    18.49s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467205312.45)
+    t =    18.56s Find the "BOJI CLUB" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x1168f0dc0, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Element subtree:
+ →StaticText, 0x1168f0dc0, {{160.8, 180.0}, {80.3, 14.3
+    t =    18.70s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208000.46)
+    t =    18.75s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    18.85s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208000.46
+    t =    18.89s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    18.99s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208000.46
+    t =    18.99s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    19.15s Find the Target Application 'com.bojiclub.app.dev'
+    t =    19.32s Added attachment named 'ax-sidebar-issue-0'
+    t =    19.32s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208000.46)
+    t =    19.37s Find the "今天，想先做什么？" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x118367840, {{111.5, 204.3}, {179.0, 26.3}}, label: '今天，想先做什么？'
+Element subtree:
+ →StaticText, 0x118367840, {{111.5, 204.3}, {179.0, 26
+    t =    19.43s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208448.47)
+    t =    19.47s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    19.57s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208448.47
+    t =    19.72s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    19.87s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208448.47
+    t =    19.87s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    20.00s Find the Target Application 'com.bojiclub.app.dev'
+    t =    20.16s Added attachment named 'ax-sidebar-issue-0'
+    t =    20.17s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208448.47)
+    t =    20.22s Find the "你的训练，由这里开始。" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x118353980, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Element subtree:
+ →StaticText, 0x118353980, {{122.7, 240.7}, {156.7, 
+    t =    20.28s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208896.48)
+    t =    20.33s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    20.44s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208896.48
+    t =    20.51s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    20.64s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208896.48
+    t =    20.65s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    20.77s Find the Target Application 'com.bojiclub.app.dev'
+    t =    20.92s Added attachment named 'ax-sidebar-issue-0'
+    t =    20.92s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467208896.48)
+    t =    20.97s Find the "v2-today-training" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x118327ac0, {{44.0, 318.7}, {59.7, 18.0}}, identifier: 'v2-today-training', label: '今日训练'
+Element subtree:
+ →StaticText, 0x118327ac0, {
+    t =    21.03s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209344.49)
+    t =    21.09s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    21.20s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209344.49
+    t =    21.27s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    21.42s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209344.49
+    t =    21.43s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    21.55s Find the Target Application 'com.bojiclub.app.dev'
+    t =    21.70s Added attachment named 'ax-sidebar-issue-0'
+    t =    21.70s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209344.49)
+    t =    21.75s Find the "v2-today-training" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x118313c00, {{44.0, 348.7}, {185.7, 20.3}}, identifier: 'v2-today-training', label: '准备好，开始今天的训练'
+Element subtree:
+ →StaticText, 0x1183
+    t =    21.81s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209792.50)
+    t =    21.88s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    21.98s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209792.50
+    t =    22.04s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    22.16s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209792.50
+    t =    22.16s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    22.28s Find the Target Application 'com.bojiclub.app.dev'
+    t =    22.43s Added attachment named 'ax-sidebar-issue-0'
+    t =    22.43s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467209792.50)
+    t =    22.51s Find the "v2-today-training" StaticText
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: StaticText, 0x118307d40, {{44.0, 381.0}, {55.7, 18.0}}, identifier: 'v2-today-training', label: '1 个动作'
+Element subtree:
+ →StaticText, 0x118307d40, 
+    t =    22.61s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467210240.51)
+    t =    22.69s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    22.80s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467210240.51
+    t =    22.86s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    22.95s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467210240.51
+    t =    22.96s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    23.08s Find the Target Application 'com.bojiclub.app.dev'
+    t =    23.21s Added attachment named 'ax-sidebar-issue-0'
+    t =    23.21s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467210240.51)
+    t =    23.25s Find the "v2-today-training" Button
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: Button, 0x117c3fe80, {{44.0, 411.0}, {91.7, 34.3}}, identifier: 'v2-today-training', label: '开始训练'
+Element subtree:
+ →Button, 0x117c3fe80, {{44.0, 4
+    t =    23.31s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467210688.52)
+    t =    23.35s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    23.45s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467210688.52
+    t =    23.50s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    23.61s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467210688.52
+    t =    23.61s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    23.71s Find the Target Application 'com.bojiclub.app.dev'
+    t =    23.84s Added attachment named 'ax-sidebar-issue-0'
+    t =    23.84s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467210688.52)
+    t =    23.88s Find the "v2-today-training" Button
+AUDIT-OCCLUDED [sidebar] Contrast failed — Attributes: Button, 0x1168cb200, {{151.7, 418.0}, {67.7, 20.3}}, identifier: 'v2-today-training', label: '查看计划'
+Element subtree:
+ →Button, 0x1168cb200, {{151.7,
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    23.94s Find the Target Application 'com.bojiclub.app.dev'
+    t =    24.07s Added attachment named 'ax-sidebar-issue-0'
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    24.07s Find the Target Application 'com.bojiclub.app.dev'
+    t =    24.24s Added attachment named 'ax-sidebar-issue-1'
+    t =    24.24s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467332800.163)
+    t =    24.32s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    24.41s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467332800.163
+    t =    24.49s Requesting snapshot of accessibility hierarchy for app with pid 8127
+    t =    24.61s Find: Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467332800.163
+    t =    24.62s Requesting snapshot of accessibility hierarchy for app with pid 8127
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    24.73s Find the Target Application 'com.bojiclub.app.dev'
+    t =    24.89s Added attachment named 'ax-sidebar-issue-2'
+    t =    24.89s Find the Any (Descendant with identity binding to AX element pid: 8127, elementOrHash.elementID: 4467332800.163)
+    t =    24.95s Find the "草稿" StaticText
+AUDIT-DIAGNOSTIC [sidebar] Contrast failed for SwiftUI.AccessibilityNode
+    t =    25.00s Find the Target Application 'com.bojiclub.app.dev'
+    t =    25.19s Added attachment named 'ax-sidebar-issue-3'
+AUDIT-DIAGNOSTIC [sidebar] Text of this element may be clipped at larger Dynamic Type sizes.
+    t =    25.19s Find the Target Application 'com.bojiclub.app.dev'
+    t =    25.42s Added attachment named 'ax-sidebar-issue-4'
+AUDIT-DIAGNOSTIC [sidebar] Text of this element may be clipped at larger Dynamic Type sizes.
+    t =    25.43s Find the Target Application 'com.bojiclub.app.dev'
+    t =    25.62s Added attachment named 'ax-sidebar-issue-5'
+Accessibility tolerated (by design): 
+[workspace] Contrast nearly passed — Attributes: StaticText, 0x1168f1900, {{160.8, 180.0}, {80.3, 14.3}}, label: 'BOJI CLUB'
+Element subtree:
+ →StaticText, 0x1168f1900, {{160.8, 180.0}, {80.3, 14.3
+[workspace] Contrast nearly passed — Attributes: StaticText, 0x117c308c0, {{122.7, 240.7}, {156.7, 18.0}}, label: '你的训练，由这里开始。'
+Element subtree:
+ →StaticText, 0x117c308c0, {{122.7, 240.7}, {156.7, 
+[workspace] Contrast nearly passed — Attributes: StaticText, 0x117c33700, {{44.0, 318.7}, {59.7, 18.0}}, identifier: 'v2-today-training', label: '今日训练'
+Element subtree:
+ →StaticText, 0x117c33700, {
+[workspace] Contrast nearly passed — Attributes: StaticText, 0x117c33d40, {{44.0, 381.0}, {55.7, 18.0}}, identifier: 'v2-today-training', label: '1 个动作'
+Element subtree:
+ →StaticText, 0x117c33d40, 
+AUDIT-DETAIL workspace/sidebar: 
+[sidebar] Contrast failed — ?
+[sidebar] Contrast failed — ?
+[sidebar] Contrast failed — Attributes: StaticText, 0x1168cae40, {{8.0, 340.0}, {353.7, 50.3}}, label: '草稿'
+Element subtree:
+ →StaticText, 0x1168cae40, {{8.0, 340.0}, {353.7, 50.3}}, label
+[sidebar] Contrast failed — ?
+[sidebar] Text clipped — ?
+[sidebar] Text clipped — ?
+/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/source/BojiClub-0.15.1-Build114-20261021/BojiClubUITests/BojiClubUITests.swift:715: error: -[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit] : XCTAssertTrue failed - Accessibility audit hard failures:
+[sidebar] Contrast failed — ?
+[sidebar] Contrast failed — ?
+[sidebar] Contrast failed — Attributes: StaticText, 0x1168cae40, {{8.0, 340.0}, {353.7, 50.3}}, label: '草稿'
+Element subtree:
+ →StaticText, 0x1168cae40, {{8.0, 340.0}, {353.7, 50.3}}, label
+[sidebar] Contrast failed — ?
+[sidebar] Text clipped — ?
+[sidebar] Text clipped — ?
+    t =    25.64s Tear Down
+Test Case '-[BojiClubUITests.BojiClubUITests testV2WorkspaceAccessibilityAudit]' failed (26.013 seconds).
+Test Suite 'BojiClubUITests' failed at 2026-10-24 20:23:59.596.
+	 Executed 2 tests, with 2 failures (0 unexpected) in 50.842 (50.844) seconds
+Test Suite 'BojiClubUITests.xctest' failed at 2026-10-24 20:23:59.599.
+	 Executed 2 tests, with 2 failures (0 unexpected) in 50.842 (50.847) seconds
+Test Suite 'Selected tests' failed at 2026-10-24 20:23:59.602.
+	 Executed 2 tests, with 2 failures (0 unexpected) in 50.842 (50.851) seconds
+2026-10-24 20:24:29.458 xcodebuild[7812:3334044] [MT] IDETestOperationsObserverDebug: 83.095 elapsed -- Testing started completed.
+2026-10-24 20:24:29.459 xcodebuild[7812:3334044] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-24 20:24:29.459 xcodebuild[7812:3334044] [MT] IDETestOperationsObserverDebug: 83.095 sec, +83.095 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/a01/Documents/Codex/2026-10-24/new-chat-2/work/ui-audit/native-ax-diagnostic.xcresult
+
+Failing tests:
+	BojiClubUITests.testNativeManualMealAndBodyHaveSingleNavigation()
+	BojiClubUITests.testV2WorkspaceAccessibilityAudit()
+
+** TEST EXECUTE FAILED **
+
+Testing started

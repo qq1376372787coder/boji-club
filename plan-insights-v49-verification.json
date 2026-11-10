@@ -1,0 +1,114 @@
+{
+  "version": "0.13.49",
+  "build": 68,
+  "created": "2026-10-11T07:11:08.607208+00:00",
+  "python": {
+    "tests": 294,
+    "passed": 293,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0
+  },
+  "php": {
+    "public_files_linted": 15,
+    "rule_suites": 7,
+    "new_plan_checks": 16,
+    "passed": true
+  },
+  "swift": {
+    "syntax_files": 48,
+    "parse_errors": 0,
+    "xcode_build_performed": false,
+    "native_rule_execution_performed": false,
+    "device_test_performed": false
+  },
+  "live_model": {
+    "successful_synthetic_calls": 3,
+    "last_call": {
+      "passed": true,
+      "synthetic_profile": true,
+      "external_model_call_performed": true,
+      "provider": "longcat",
+      "model": "LongCat-2.5-Preview",
+      "seconds": 46.64,
+      "sessions": 3,
+      "model_sections_retained": [
+        "goal",
+        "selection",
+        "progression"
+      ],
+      "model_purposes_retained": 3,
+      "attempts": [
+        {
+          "provider": "longcat",
+          "model": "LongCat-2.5-Preview",
+          "outcome": "success",
+          "duration_ms": 46642,
+          "usage": {
+            "prompt_tokens": 1961,
+            "completion_tokens": 1726,
+            "total_tokens": 3687
+          }
+        }
+      ],
+      "existing_user_records_modified": false
+    },
+    "final_rules_replay": {
+      "passed": true,
+      "validated_recorded_live_response": true,
+      "model_sections_retained": [
+        "goal",
+        "schedule",
+        "selection",
+        "body",
+        "progression"
+      ],
+      "model_purposes_retained": 3,
+      "new_provider_request_performed": false,
+      "existing_user_records_modified": false
+    },
+    "whole_ios_account_membership_http_flow_tested": false
+  },
+  "deployment": {
+    "passed": true,
+    "backup": "/root/bojiclub-v49-backup-20261011-150753",
+    "health": true,
+    "files": {
+      "backend/plan_explanation.py": "3b8729e9eecc1634641fa5a7aaab705fbde0d11be088dad4520eb96a3a3dfdcb",
+      "account-server/public/cloud-validation.php": "8625b4f65d9819f3fd1fa87f157bc8d82b5830d3efd5ea99d43b6e66487465c4",
+      "backend/ai_core.py": "b8b9053d46acd1c2da83ce241fe14837d883d8a736639711359bdefb0f32984a"
+    },
+    "public_statuses": {
+      "https://110.41.10.154/admin/": 200,
+      "https://110.41.10.154/account/v1/me/state": 401,
+      "https://110.41.10.154/account/v1/me/ai/jobs": 401
+    },
+    "installed_contract_probe": true,
+    "existing_user_records_modified": false,
+    "external_model_call_performed": false
+  },
+  "source_matches_deployment": true,
+  "old_package_unchanged": true,
+  "changed_files": [
+    "BUILD-STATUS.md",
+    "BojiClub.xcodeproj/project.pbxproj",
+    "BojiClub/AIService.swift",
+    "BojiClub/AppStore.swift",
+    "BojiClub/DailyExperience.swift",
+    "BojiClub/PlanExplanation.swift",
+    "BojiClub/PlanView.swift",
+    "BojiClub/TrainingPlansView.swift",
+    "BojiClub/WorkoutView.swift",
+    "PLAN-INSIGHTS-V49-20261011.md",
+    "README_先读我.md",
+    "account-server/public/cloud-validation.php",
+    "backend/ai_core.py",
+    "backend/plan_explanation.py",
+    "scripts/check-on-mac.sh",
+    "scripts/check-plan-insights-v49-on-mac.sh",
+    "tests/build_plan_insights_v49_swift_tests.py",
+    "tests/test_plan_explanation.php",
+    "tests/test_plan_explanation.py"
+  ],
+  "unrelated_audit_findings_resolved": false
+}

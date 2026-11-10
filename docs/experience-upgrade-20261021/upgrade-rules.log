@@ -1,0 +1,167 @@
+../../experience-upgrade.swift:6232:5: warning: initialization of immutable value 'untouchedBytes' was never used; consider replacing with assignment to '_' or removing it [#no-usage]
+6230 | var untouched = DayLog(); untouched.exercises = [Exercise(name:"原腿部安排",muscle:"腿")]
+6231 | owner.state.days[nextKey] = untouched
+6232 | let untouchedBytes = try JSONEncoder().encode(CloudState(owner.state))
+     |     `- warning: initialization of immutable value 'untouchedBytes' was never used; consider replacing with assignment to '_' or removing it [#no-usage]
+6233 | upgradeCheck(owner.applyAIPlan(oneResult,jobID:one.operationID,replaceUnstarted:true,cycleStart:future,expectedDays:[key:DayLog()],explicitScope:[key],singleDay:true),"single-day adoption succeeds")
+6234 | let sameNext = try CloudMerge.same(owner.state.days[nextKey],untouched)
+
+PASS partial replacement keeps completed exercise
+PASS completed set identity retained
+PASS recorded movement and load retained
+PASS new movement load reset
+PASS new movement is uncompleted
+PASS new workout confirmation required
+PASS removed pending set has tombstone
+PASS unstarted replacement creates one new movement
+PASS completed movement cannot be overwritten
+PASS missing original rejected
+PASS daily movement limit respected
+PASS confirmed day protected
+PASS started day protected
+PASS unstarted day editable
+PASS same activity across sources deduplicated
+PASS overlapping different activities preserved
+PASS two records from one source preserved
+PASS unknown activity not silently deleted
+PASS same record ID deduplicates
+PASS only matching strength session suggested
+PASS missing start time never guessed
+PASS abandoned start cannot produce confident match
+PASS old day decodes
+PASS old device data has no invented heart rate
+PASS stale first sync cannot resurrect removed pending set
+PASS cloud merge preserves completed set
+PASS profile save succeeds
+PASS profile updates current target
+PASS historical target retained
+PASS historical target included in journal
+PASS failed profile save reported
+PASS failed profile save rolls back
+PASS historical record never gets current start
+PASS explicit start recorded
+PASS repeated start does not reset time
+PASS zero completed sets cannot be confirmed
+PASS completed session saves
+PASS resave does not move workout end
+PASS local-only health cannot be implicitly uploaded by link
+PASS confirmed health saves
+PASS explicit existing link saves
+PASS missing device ID rejected
+PASS disappeared shared workout clears link
+PASS undo last completion clears link
+PASS whole selected profile week updates
+PASS planned day replaced
+PASS removed training day becomes rest
+PASS rest-day update preserves meals
+PASS completed day retained during replan
+PASS started day retained during replan
+PASS same plan reapply succeeds
+PASS same plan reapply is idempotent
+PASS plan persistence failure reported
+PASS plan persistence failure rolls back all days and tombstones
+PASS profile plan cannot replace past
+PASS duplicate plan dates rejected
+PASS 56 production Swift rule checks; UIKit/HealthKit need Xcode/iPhone
+PRODUCT PASS first measured profile saves without an access conflict
+PRODUCT PASS first measurement is retained
+PRODUCT PASS same-day profile update saves without an access conflict
+PRODUCT PASS profile retry preserves the actual measurement
+PRODUCT PASS today uses the newly calculated target
+PRODUCT PASS failed profile write rolls back both target and record
+PRODUCT PASS Chinese list without a space is parsed
+PRODUCT PASS decimal at line start remains prose
+PRODUCT PASS saved strength + pending timed set count agrees
+PRODUCT PASS saved strength + pending timed timing agrees
+PRODUCT PASS saved strength + pending timed volume agrees
+PRODUCT PASS saved strength + pending timed confirmed days agree
+PRODUCT PASS pending session excluded from elapsed duration
+PRODUCT PASS live progress is preserved separately
+PRODUCT PASS saved insight does not include pending timed performance
+PRODUCT PASS both saved set count agrees
+PRODUCT PASS both saved timing agrees
+PRODUCT PASS both saved volume agrees
+PRODUCT PASS both saved confirmed days agree
+PRODUCT PASS confirmation revoked set count agrees
+PRODUCT PASS confirmation revoked timing agrees
+PRODUCT PASS confirmation revoked volume agrees
+PRODUCT PASS confirmation revoked confirmed days agree
+PRODUCT PASS all pending set count agrees
+PRODUCT PASS all pending timing agrees
+PRODUCT PASS all pending volume agrees
+PRODUCT PASS all pending confirmed days agree
+PRODUCT PASS legacy pending set count agrees
+PRODUCT PASS legacy pending timing agrees
+PRODUCT PASS legacy pending volume agrees
+PRODUCT PASS legacy pending confirmed days agree
+PRODUCT PASS legacy saved set count agrees
+PRODUCT PASS legacy saved timing agrees
+PRODUCT PASS legacy saved volume agrees
+PRODUCT PASS legacy saved confirmed days agree
+PRODUCT PASS old record roundtrip retains confirmed facts without new stored fi../../experience-upgrade.swift:5182:9: warning: result of call to 'mutate(_:edit:)' is unused [#no-usage]
+5180 |     func removeSet(_ setID: UUID, exerciseID: UUID, on date: Date) {
+5181 |         guard log(for:date).trainingLog.exercises.contains(where: { $0.id == exerciseID && $0.sets.contains(where: { $0.id == setID }) }) else { message = "训练组已切换或删除，请重新打开。"; return }
+5182 |         mutate(date) { log in
+     |         `- warning: result of call to 'mutate(_:edit:)' is unused [#no-usage]
+5183 |             guard let index = log.exercises.firstIndex(where: { $0.id == exerciseID }) else { return }
+5184 |             log.workoutSavedAt = nil
+elds
+PRODUCT PASS invalid completed timed set set count agrees
+PRODUCT PASS invalid completed timed set timing agrees
+PRODUCT PASS invalid completed timed set volume agrees
+PRODUCT PASS invalid completed timed set confirmed days agree
+PRODUCT PASS waist only measurement count agrees across summary/trend/history
+PRODUCT PASS fat only measurement count agrees across summary/trend/history
+PRODUCT PASS weight only measurement count agrees across summary/trend/history
+PRODUCT PASS mixed measurement count agrees across summary/trend/history
+PRODUCT PASS deleted measurement count agrees across summary/trend/history
+PRODUCT PASS invalid weight measurement count agrees across summary/trend/history
+PRODUCT PASS waist remains an actual body measurement
+PRODUCT PASS fraction vs components editor and cloud choose the same coherent observation
+PRODUCT PASS fraction vs components total matches components times fraction
+PRODUCT PASS components vs fraction editor and cloud choose the same coherent observation
+PRODUCT PASS components vs fraction total matches components times fraction
+PRODUCT PASS metadata-only edit preserves new remote structure and totals
+PRODUCT PASS unknown nutrition remains part of the same observation
+PRODUCT PASS independent manual scalar edits continue to merge
+PRODUCT PASS unknown flag and its values merge as one observation
+PRODUCT PASS remote-only unknown change is retained
+PRODUCT PASS one-sided structural edit preserved
+PRODUCT PASS editor nutrition conflict does not replace unrelated photo
+PRODUCT PASS volume unit is kg times repetitions
+PRODUCT CONSISTENCY PASSED: 59 focused regression checks; UI and real Apple services are separate
+UPGRADE PASS single-day draft never exports hidden dates
+UPGRADE PASS single-day scope survives roundtrip
+UPGRADE PASS single-day adoption succeeds
+UPGRADE PASS single-day adoption preserves other dates
+UPGRADE PASS single-day adoption creates no extra rest week
+UPGRADE PASS adoption keeps stable plan ownership
+UPGRADE PASS unstarted plan can end
+UPGRADE PASS ending removes owned pending exercises
+UPGRADE PASS ending preserves unrelated dates
+UPGRADE PASS ended status is durable
+UPGRADE PASS old result cannot replay ended plan
+UPGRADE PASS stale device cannot resurrect cancelled exercise
+UPGRADE PASS cancellation observation survives merge
+UPGRADE PASS concurrent workout start wins over cancellation
+UPGRADE PASS concurrent confirmed sets survive cancellation
+UPGRADE PASS old cancellation preserves replacement plan and cycle
+UPGRADE PASS failed cancellation reports failure
+UPGRADE PASS failed cancellation rolls back all mutations
+UPGRADE PASS 14 day plan adoption succeeds
+UPGRADE PASS partially started long plan ends
+UPGRADE PASS started day is protected
+UPGRADE PASS whole plan cancellation reaches second week
+UPGRADE PASS archival preserves ended plan history
+UPGRADE PASS overlapping sleep stages are not double counted
+UPGRADE PASS awake gaps excluded and naps separated
+UPGRADE PASS legacy cycle without versions retains visible exercises
+UPGRADE PASS legacy plan without versions can be cancelled
+UPGRADE PASS cycles repeat actual actions without empty placeholders
+UPGRADE PASS exercise replacement preserves plan ownership
+UPGRADE PASS historical workout alone does not reappear as a deleted plan
+UPGRADE PASS recent measurement lookup stays local and does not change cloud daily sharing
+UPGRADE PASS unmarked pending schedules remain visible and manageable
+UPGRADE PASS unmarked legacy schedule can be deleted
+UPGRADE PASS later additions inherit the single-day plan owner
+EXPERIENCE UPGRADE PASSED: 34 behavioral checks

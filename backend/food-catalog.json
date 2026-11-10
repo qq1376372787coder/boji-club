@@ -1,0 +1,14 @@
+[
+  {"food_id":"fixture-rice-cooked","name_zh":"米饭","aliases":["白米饭","熟米饭"],"per_100g":{"calories":116,"protein":2.6,"carbs":25.9,"fat":0.3},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-chicken-breast","name_zh":"鸡胸肉","aliases":["鸡胸","鸡胸脯肉"],"per_100g":{"calories":133,"protein":19.4,"carbs":2.5,"fat":5.0},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-egg","name_zh":"鸡蛋","aliases":["水煮蛋","煮鸡蛋"],"per_100g":{"calories":144,"protein":13.3,"carbs":2.8,"fat":8.8},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-milk","name_zh":"牛奶","aliases":["纯牛奶"],"per_100g":{"calories":54,"protein":3.0,"carbs":3.4,"fat":3.2},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":1.03},
+  {"food_id":"fixture-oats","name_zh":"燕麦","aliases":["燕麦片"],"per_100g":{"calories":377,"protein":15.0,"carbs":66.0,"fat":6.7},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-salmon","name_zh":"三文鱼","aliases":["鲑鱼"],"per_100g":{"calories":208,"protein":20.0,"carbs":0.0,"fat":13.0},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-broccoli","name_zh":"西兰花","aliases":["绿花菜"],"per_100g":{"calories":34,"protein":2.8,"carbs":6.6,"fat":0.4},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-apple","name_zh":"苹果","aliases":["红富士"],"per_100g":{"calories":52,"protein":0.3,"carbs":14.0,"fat":0.2},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-yogurt","name_zh":"酸奶","aliases":["原味酸奶"],"per_100g":{"calories":72,"protein":3.2,"carbs":4.5,"fat":3.0},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":1.04},
+  {"food_id":"fixture-tofu","name_zh":"豆腐","aliases":["北豆腐"],"per_100g":{"calories":76,"protein":8.0,"carbs":1.9,"fat":4.8},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-bread","name_zh":"面包","aliases":["全麦面包"],"per_100g":{"calories":265,"protein":9.0,"carbs":49.0,"fat":3.2},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null},
+  {"food_id":"fixture-beef","name_zh":"牛肉","aliases":["瘦牛肉"],"per_100g":{"calories":250,"protein":26.0,"carbs":0.0,"fat":15.0},"source_database":"FIXTURE_CN_FOOD","source_version":"2026.10","density_g_per_ml":null}
+]

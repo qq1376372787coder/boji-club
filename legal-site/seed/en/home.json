@@ -1,0 +1,61 @@
+{
+  "nav_features": "Features",
+  "nav_faq": "FAQ",
+  "nav_changelog": "Changelog",
+  "nav_legal": "Legal",
+  "hero_badge": "Focus on you.",
+  "hero_title": "Train. Eat. Improve.",
+  "hero_sub": "Smart plans, photo diet logging and AI reviews — at a glance.",
+  "download_note": "iOS 17+ · iPhone & iPad",
+  "features_title": "Core features",
+  "features_sub": "A complete loop from planning to review",
+  "features": [
+    {
+      "t": "AI training plans",
+      "d": "Built around your goal and gear. Log set by set."
+    },
+    {
+      "t": "Photo diet logging",
+      "d": "Snap a meal — calories and macros, recognized."
+    },
+    {
+      "t": "Health dashboard",
+      "d": "Steps, heart rate and sleep, on your terms."
+    },
+    {
+      "t": "Daily reports & weekly reviews",
+      "d": "A read on every day. A review of every week."
+    },
+    {
+      "t": "Club AI coach",
+      "d": "Answers grounded in your own records."
+    },
+    {
+      "t": "Privacy first",
+      "d": "Body photos stay on your device. Delete anytime."
+    }
+  ],
+  "shots_title": "A look inside",
+  "shots_sub": "Clean, restrained, focused on the training itself",
+  "shots": [
+    {
+      "file": "shot-home.png",
+      "cap": "Club AI home"
+    },
+    {
+      "file": "shot-training.png",
+      "cap": "Schedule & logging"
+    },
+    {
+      "file": "shot-chat.png",
+      "cap": "Club AI chat"
+    },
+    {
+      "file": "shot-log.png",
+      "cap": "Quick logging"
+    }
+  ],
+  "cta_title": "Start your first training week",
+  "cta_sub": "Your training data belongs to you. Delete it anytime.",
+  "legal_hint": "By using the app you agree to the Terms of Service and the Privacy Policy."
+}

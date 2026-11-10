@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-10-25",
+  "gitSha": "ba1d4fe6a65b01e412204b6690d69e98154115a2",
+  "sourceBaselineSha256": "c1a242dbefc98706a74f7d30fe574b1fe334d39c96cfb9b6979c7e5369abcbd5",
+  "phase": 1,
+  "status": "PARTIAL",
+  "scope": "durable run, SSE event log, trace, idempotency, worker",
+  "tests": [
+    {
+      "name": "run-contract",
+      "command": "python3 -m unittest tests.test_ai_runs_contract",
+      "exitCode": 0,
+      "passed": 12,
+      "total": 12
+    },
+    {
+      "name": "php-syntax",
+      "command": "python3 tests/php_syntax_check.py account-server backend exercise-server tests",
+      "exitCode": 0,
+      "parsed": 133
+    },
+    {
+      "name": "python-offline",
+      "command": "python3 tests/run_offline.py",
+      "exitCode": 0,
+      "passed": 716
+    }
+  ],
+  "notExecuted": [
+    "tests/run_ai_runs.sh",
+    "migrate-v2-repair.php --apply/--check"
+  ],
+  "blocked": [
+    "php-runtime-missing",
+    "mysql-runtime-missing"
+  ],
+  "next": "execute PHP persistence/migration tests on disposable MySQL"
+}

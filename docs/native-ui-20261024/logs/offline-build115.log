@@ -1,0 +1,11 @@
+Sole AI home / first-plan / rest-day flow checks passed
+AI workspace insight / report / share extraction checks passed
+OFFLINE_MODULES test_adaptive_automation,test_ai_capacity,test_ai_quota,test_ai_stability,test_backend_offline,test_backend_repairs,test_backend_v2,test_batch2_ai_reliability,test_body_measurements,test_build106,test_build112_deployment,test_card_composer,test_coach,test_copy_optimization,test_deep_audit_regression,test_experience_v150,test_experience_v21,test_experience_v25,test_experience_v33,test_experience_v36,test_experience_v37,test_experience_v42,test_experience_v43,test_goal_context,test_home_flow_v66,test_home_insights_v67,test_intent_router,test_library350,test_library678,test_multi_meal,test_multiweek_v73,test_phase1_v18,test_phase2_v19,test_phase3_v20,test_plan_explanation,test_plan_schedule,test_pretestflight_v74,test_repair_v17,test_repair_v38,test_repair_v4,test_repair_v46,test_repair_v5,test_repair_v6,test_repair_v75,test_repair_v77,test_storage_timezone,test_testflight_v61,test_throughput,test_training_feedback_v63,test_v2_quality_regressions,test_voice_meal,test_workout_targets
+.................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................AI worker error: OperationalError
+AI failure persistence error: OperationalError
+.....................................................................................................................................................AI attempt log error: OperationalError
+....................................
+----------------------------------------------------------------------
+Ran 666 tests in 19.884s
+
+OK

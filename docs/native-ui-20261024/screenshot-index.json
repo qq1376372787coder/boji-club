@@ -1,0 +1,247 @@
+[
+  {
+    "path": "screenshots/iphone17-light-native-keyboard-composer.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792848536.67
+  },
+  {
+    "path": "screenshots/iphone17-light-native-conversation.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792848532.822
+  },
+  {
+    "path": "screenshots/iphone17-light-native-sidebar.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792848527.757
+  },
+  {
+    "path": "screenshots/iphone17-light-native-training-workspace.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792848522.986
+  },
+  {
+    "path": "screenshots/iphone17-light-native-ai-home.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792848519.161
+  },
+  {
+    "path": "screenshots/iphone17-light-native-voice-before-explicit-recording.png",
+    "test": "BojiClubUITests/testNativeVoiceStartsOnlyAfterExplicitRecord()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792843691.625
+  },
+  {
+    "path": "screenshots/iphone17-light-native-sidebar-open.png",
+    "test": "BojiClubUITests/testV2SidebarEntriesAndRecords()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792843752.314
+  },
+  {
+    "path": "screenshots/iphone17-light-native-history-search.png",
+    "test": "BojiClubUITests/testV2SidebarHistorySearchAndRestoreConversation()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792843787.864
+  },
+  {
+    "path": "screenshots/records-and-input-native-body-single-navigation.png",
+    "test": "BojiClubUITests/testNativeManualMealAndBodyHaveSingleNavigation()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792845703.078
+  },
+  {
+    "path": "screenshots/records-and-input-native-manual-meal-single-navigation.png",
+    "test": "BojiClubUITests/testNativeManualMealAndBodyHaveSingleNavigation()",
+    "device": "iPhone 17",
+    "deviceId": "9B496F27-8B0D-4B90-99F2-9379D8B0626C",
+    "timestamp": 1792845694.757
+  },
+  {
+    "path": "screenshots/small-dark-native-keyboard-composer.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844613.759
+  },
+  {
+    "path": "screenshots/small-dark-native-conversation.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844612.366
+  },
+  {
+    "path": "screenshots/small-dark-native-sidebar.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844606.049
+  },
+  {
+    "path": "screenshots/small-dark-native-training-workspace.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844601.395
+  },
+  {
+    "path": "screenshots/small-dark-native-ai-home.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844597.722
+  },
+  {
+    "path": "screenshots/small-ax3-contrast-native-keyboard-composer.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844904.104
+  },
+  {
+    "path": "screenshots/small-ax3-contrast-native-conversation.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844902.464
+  },
+  {
+    "path": "screenshots/small-ax3-contrast-native-sidebar.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844897.416
+  },
+  {
+    "path": "screenshots/small-ax3-contrast-native-training-workspace.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844893.021
+  },
+  {
+    "path": "screenshots/small-ax3-contrast-native-ai-home.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792844889.754
+  },
+  {
+    "path": "screenshots/small-ax5-contrast-native-keyboard-composer.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792848535.082
+  },
+  {
+    "path": "screenshots/small-ax5-contrast-native-conversation.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792848532.164
+  },
+  {
+    "path": "screenshots/small-ax5-contrast-native-sidebar.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792848526.671
+  },
+  {
+    "path": "screenshots/small-ax5-contrast-native-training-workspace.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792848521.932
+  },
+  {
+    "path": "screenshots/small-ax5-contrast-native-ai-home.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Small",
+    "deviceId": "F7744AA2-06C2-40F0-81E2-361F72D638B7",
+    "timestamp": 1792848518.257
+  },
+  {
+    "path": "screenshots/ipad-mini-native-keyboard-composer.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Tablet",
+    "deviceId": "DE4AEFA6-D9C9-47DD-9DEE-6CAD90CCB6A8",
+    "timestamp": 1792848593.859
+  },
+  {
+    "path": "screenshots/ipad-mini-native-conversation.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Tablet",
+    "deviceId": "DE4AEFA6-D9C9-47DD-9DEE-6CAD90CCB6A8",
+    "timestamp": 1792848590.353
+  },
+  {
+    "path": "screenshots/ipad-mini-native-sidebar.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Tablet",
+    "deviceId": "DE4AEFA6-D9C9-47DD-9DEE-6CAD90CCB6A8",
+    "timestamp": 1792848584.149
+  },
+  {
+    "path": "screenshots/ipad-mini-native-training-workspace.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Tablet",
+    "deviceId": "DE4AEFA6-D9C9-47DD-9DEE-6CAD90CCB6A8",
+    "timestamp": 1792848579.496
+  },
+  {
+    "path": "screenshots/ipad-mini-native-ai-home.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Tablet",
+    "deviceId": "DE4AEFA6-D9C9-47DD-9DEE-6CAD90CCB6A8",
+    "timestamp": 1792848575.749
+  },
+  {
+    "path": "screenshots/large-dark-native-keyboard-composer.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Large",
+    "deviceId": "8B771FEC-9E9E-4D85-8236-56BD8CBD0F65",
+    "timestamp": 1792845715.049
+  },
+  {
+    "path": "screenshots/large-dark-native-conversation.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Large",
+    "deviceId": "8B771FEC-9E9E-4D85-8236-56BD8CBD0F65",
+    "timestamp": 1792845713.819
+  },
+  {
+    "path": "screenshots/large-dark-native-sidebar.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Large",
+    "deviceId": "8B771FEC-9E9E-4D85-8236-56BD8CBD0F65",
+    "timestamp": 1792845708.607
+  },
+  {
+    "path": "screenshots/large-dark-native-training-workspace.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Large",
+    "deviceId": "8B771FEC-9E9E-4D85-8236-56BD8CBD0F65",
+    "timestamp": 1792845704.055
+  },
+  {
+    "path": "screenshots/large-dark-native-ai-home.png",
+    "test": "BojiClubUITests/testNativeShellScreenshots()",
+    "device": "BOJI Native UI Large",
+    "deviceId": "8B771FEC-9E9E-4D85-8236-56BD8CBD0F65",
+    "timestamp": 1792845700.91
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "synthetic_data_only": true,
+  "job_id": "0c5e78ab-7b56-4641-9f5d-60cd1afbddf9",
+  "seconds": 15.0,
+  "status": "succeeded",
+  "provider": "longcat",
+  "model": "LongCat-2.5-Preview",
+  "error_code": null,
+  "result": {
+    "coach": {
+      "actions": [
+        {
+          "date": "2020-01-15",
+          "type": "training"
+        },
+        {
+          "date": "2020-01-15",
+          "type": "nutrition"
+        }
+      ],
+      "answer": "今天登记到的是2020-01-15的一次卧推：20公斤、10次、1组，训练已确认完成；饮食没有可确认的完整记录。最值得注意的不是“练得够不够狠”，而是下一次登记时把同一动作的负重、次数和组数写清楚，最好再加一句当时感觉，比如最后两次是否明显吃力。这样下次才能判断是继续加重量、加次数，还是先稳住动作。饮食如果方便，也随手记一餐或一条饮品，不用追求完整，先让记录能对上训练日就好。",
+      "sources": [
+        {
+          "date": "2020-01-15",
+          "detail": "已登记完成 1 组训练；饮食 0 条（未确认全天完整）。",
+          "id": "day/2020-01-15",
+          "label": "2020-01-15 已登记记录"
+        }
+      ]
+    },
+    "kind": "coach",
+    "notes": []
+  },
+  "tested_hashes": {
+    "account-server/public/weekly.php": "c3db60383e90f79d8010ce34b95472d0a05c563eb34fae0f6b77ea3623104a69",
+    "account-server/public/ai-response.php": "d57c0d138140c117fd58d3f08704cfc2d50769b1bfc6af306341f4997d75e182",
+    "account-server/public/cloud-validation.php": "b18c09c488b3a24e2395e07535d26d1c96e256007925d6f1f1094a90dd8df367",
+    "account-server/admin/index.php": "a01f12922bb2dd447ba0ed867cfe48bfa7b2e29acfe6474f4376d474b276db2a",
+    "backend/ai_core.py": "28721714aca85355d9686329feee83367ac540e806a9ea67cd42e9e638c9c03c",
+    "backend/server.py": "6e0f4b1985a40b535a8b50b06d415d909f8689abcff9d166ce7a2356d0c5f3ad",
+    "backend/goal_context.py": "7fb4bcfebf9a1b04686798535ea19715618a169b71cc53e83a0f52181037fbbb",
+    "backend/training_feedback.py": "9b7ddc1b1db72e6348d70e98ca350faf14127c5efcbddd53531c21fb8bb0007a",
+    "backend/coach_core.py": "2fe8a285f133b1e148808af9501ba2f401cabe760603d49057813e070e391da8"
+  }
+}
