@@ -1,6 +1,8 @@
-# 当前交付：0.15.6 (Build130)
+# 当前交付：0.15.9 (Build135)
 
-请先阅读 [Build130 升级说明](BUILD130_升级说明.md)。本目录保留旧版本文档和历史 manifest，仅供追溯；本次交付以 Build130 说明、测试证据和源码包 manifest 为准。
+请先阅读 [Build135 自然体验与 Club AI 联动](BUILD135_NATURAL_EXPERIENCE.md)。本目录保留旧版本文档和历史 manifest，仅供追溯；本次交付以 Build135 说明、测试证据和源码包 manifest 为准。
+
+> 前序：0.15.6 (Build130) 见 [BUILD130_升级说明.md](BUILD130_升级说明.md)。
 
 # Build 117 / 2026-10-25 最终修复交付
 

@@ -1,8 +1,9 @@
-# 当前交付：0.15.6 (Build130)
+# 当前交付：0.15.9 (Build 135)
 
-请先阅读 [Build130 升级说明](BUILD130_升级说明.md)。本目录保留旧版本文档和历史 manifest，仅供追溯；本次交付以 Build130 说明、测试证据和源码包 manifest 为准。
+请先阅读 [Build135 自然体验与 Club AI 联动](BUILD135_NATURAL_EXPERIENCE.md)。本目录保留旧版本文档和历史 manifest，仅供追溯；本次交付以 Build135 说明、测试证据和源码包 manifest 为准。
 
-最新交付：0.15.1 / Build 113，见 docs/experience-upgrade-20261021/README.md。以下内容保留为历史材料。
+> 前序：0.15.6 (Build130) 说明见 [BUILD130_升级说明.md](BUILD130_升级说明.md)。
+> 最新交付：0.15.1 / Build 113，见 docs/experience-upgrade-20261021/README.md。以下内容保留为历史材料。
 
 > **2026-10-20 修复版入口**：见 [修复交付-20261020.md](修复交付-20261020.md)。本轮627项Python与51条Swift测试链通过；完整TestFlight模拟器及iOS设备无签名构建通过；浅深色UI各6条及训练完成专项1条通过。本轮未部署。下文为前序交付说明，生产状态须另行核对。
 

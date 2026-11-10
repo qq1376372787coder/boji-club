@@ -22,10 +22,18 @@
 8. **草稿并发双副本**——同 ID 取最新（并发编辑覆盖一方，草稿不丢）；如需冲突保留两份可辨认副本，要做确定性分叉 ID。
 9. **计划描述/意图与 AI 消费**——已随方案 notes 进版本记录；AI 分析与后端资料清洗未消费这些新字段（含 targetWeightKg）。
 
-## 二·五、测试遗留（核查方环境结果，待更新）
+## 二·五、测试遗留（2026-11-11 复核：原记录已失效）
 
-- `tests/test_home_flow_v66.py`、`tests/test_home_insights_v67.py` 断言旧首页组件顺序/旧 AIReportCard，
-  在新首页下失败——是测试未随设计更新，不是新设计缺陷；云 Mac 回归时按当前产品要求更新断言。
+- ~~`tests/test_home_flow_v66.py`、`tests/test_home_insights_v67.py` 断言旧首页组件顺序/旧 AIReportCard，在新首页下失败~~
+
+  **已于 2026-11-11 复核，此条记录与当前源码不符**：
+  这两个测试**已随新设计重写**，当前断言的是新首页契约（如 `assert "MainClubView" not in app`、
+  `assert not (BOJI / "HomeView.swift").exists()`、`assert "insightCard(insight)" not in idle`）。
+  把两份文件的全部字符串断言移植为等价求值后逐条执行，**全部通过**（v66 20 条、v67 31 条中可求值部分）。
+  原「在新首页下失败」的描述不再成立。
+
+  注意：这两个文件是**字符串匹配型静态断言**（读 .swift 源文本做 `in` 判断），不是编译/运行的 Swift 测试。
+  即使全通过，也不覆盖 Swift 类型检查或运行时行为——「可执行」≠「覆盖充分」。
 
 ## 三、设计与实现注意点
 
