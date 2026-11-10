@@ -177,7 +177,7 @@ struct RootView: View {
 
     private var notificationRoutingContent: some View {
         accountLifecycleContent
-        .sheet(item: Binding(get: { notifications.route?.kind == "training" || store.trainingInterfacePresented || store.clubAIInterfacePresented ? nil : notifications.route }, set: { notifications.route = $0 })) { route in
+        .sheet(item: Binding(get: { notifications.route?.kind == "training" || store.trainingInterfacePresented ? nil : notifications.route }, set: { notifications.route = $0 })) { route in
             NavigationStack {
                 Group {
                     if ["club_weekly","club_workout"].contains(route.kind) {

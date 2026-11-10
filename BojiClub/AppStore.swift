@@ -343,7 +343,6 @@ enum PhaseReportWriteGuard {
 @MainActor
 final class AppStore: ObservableObject {
     @Published var trainingInterfacePresented = false
-    @Published var clubAIInterfacePresented = false
     @Published private(set) var state = SavedState()
     @Published var message: String?
     @Published private(set) var syncStatus: CloudSyncStatus = .idle
@@ -580,7 +579,6 @@ final class AppStore: ObservableObject {
 
     private func resetSync() {
         trainingInterfacePresented = false
-        clubAIInterfacePresented = false
         recordedGoalProfile = nil; recordedGoalNutrition = nil
         generation = UUID(); snapshotWriteGeneration = UUID(); localEditRevision = UUID()
         syncTask?.cancel(); syncTask = nil

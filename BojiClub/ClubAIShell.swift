@@ -53,11 +53,8 @@ struct ClubAIShellView: View {
     @State private var recordsPath131 = NavigationPath()
     @State private var trainingScrollAnchor: String?
     @State private var calendarExpanded = false
-    @State private var conversationVisible = false
-    @State private var focusRequest = 0
     @State private var recordsCategory = "训练"
     @State private var sidebarRoute: ClubSidebarRoute?
-    @State private var showNewConversationConfirm = false
     @State private var showHubSection: String?
     @State private var mealEntryRoute: ClubComposerMealRoute?
     @State private var bodyEntryRoute: ClubDateRoute?
@@ -76,16 +73,11 @@ struct ClubAIShellView: View {
     @State private var showReports135 = false
     @State private var reportLibraryKind135: ReportLibraryKind = .all
     @State private var showLegacyOnboarding135 = false
-    @State private var preparingWelcome135 = false
     @State private var planSetupTask135: Task<Void, Never>?
     @State private var showFinishOnboarding135 = false
     @State private var reconcilingPlan135 = false
     @AccessibilityFocusState private var sidebarToggleFocused: Bool
     private var ownerID: Int? { store.editingAccountID }
-    private var coachBusy: Bool {
-        preparingWelcome135 || coach.preparingReferences || coach.processingConversation == coach.conversation || onboarding.isAssisting || ClubCoachRules.turns(ai.jobs, conversation: coach.conversation,
-            deleted: Set(store.state.deletedAIJobIDs ?? [])).contains { !$0.isTerminal }
-    }
     private var transitionAnimation: Animation? { reduceMotion ? nil : BojiMotion.smoothSpring() }
 
     private var shellNotices: some View {
@@ -95,7 +87,9 @@ struct ClubAIShellView: View {
             .onReceive(NotificationCenter.default.publisher(for:.profileFactsChanged133)) { note in
                 if note.object as? Int == account.user?.id { Task { await onboarding.load(account:account);onboarding.applyFacts(to:store) } }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .clubShellReturnToToday)) { _ in returnToToday() }
+            .onReceive(NotificationCenter.default.publisher(for: .clubShellReturnToToday)) { _ in
+                mode = .clubAI; aiPath = NavigationPath()
+            }
             .onReceive(NotificationCenter.default.publisher(for: .clubResumeOnboarding)) { _ in
                 sidebarRoute = nil; mode = .clubAI
                 if onboarding.hasSession { showLegacyOnboarding135 = true }
@@ -107,26 +101,12 @@ struct ClubAIShellView: View {
                 selectedDate = date; trainingRoute = ClubTrainingRoute(date: date)
                 Task { await account.trackEvent(name: "ai_home_start_training", detail: ["date": key ?? "today"]) }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .clubOpenWorkoutAI), perform: openWorkoutConversation)
             .onReceive(NotificationCenter.default.publisher(for: .bojiPlanApplied135)) { note in
                 guard let owner = note.userInfo?["owner"] as? Int, owner == ownerID,
                       let jobID = note.userInfo?["job"] as? String, account.user?.onboardingCompleted == false else { return }
                 UserDefaults.standard.set(jobID, forKey: "boji.pendingPlan135.\(owner)")
                 Task { await reconcilePlan135(owner: owner, jobID: jobID) }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .clubOpenReferenceAI), perform: openReferenceConversation)
-            .onReceive(NotificationCenter.default.publisher(for: ClubAIRoute.notification)) { note in
-                guard let request = note.object as? ClubAIRouteRequest, request.owner == ownerID else { return }
-                sidebarRoute = nil; showHubSection = nil; trainingRoute = nil; guideOwner = nil
-                creatingForDate = nil; showTrainingPlans = false; showExerciseLibrary = false
-                if let id = request.conversation, UUID(uuidString: id) != nil { coach.selectConversation(id, owner: ownerID) }
-                else { coach.newConversation(owner: ownerID, keepDraft: true) }
-                if !request.question.isEmpty { coach.question = request.question }
-                coach.references = request.references; coach.continuationSource = request.source; coach.reviewScope = request.scope
-                coach.persistExtras(); mode = .clubAI; conversationVisible = true; focusRequest += 1
-                if request.sendImmediately131 { coach.sendRequest += 1 }
-            }
-            .onChange(of: coach.references) { _, _ in coach.persistExtras() }
             .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in refreshDay() }
             .task(id: account.user?.id) {
                 guideOwner = nil
@@ -158,10 +138,6 @@ struct ClubAIShellView: View {
             }
             .onChange(of: activeWorkout?.sessionID) { _, _ in refreshDay(); syncTrainingActivity() }
             .onChange(of: trainingRoute?.id) { _, id in store.trainingInterfacePresented = id != nil }
-            .onChange(of: conversationVisible) { _, visible in
-                store.clubAIInterfacePresented = visible
-                if !visible { handleNotificationRoute() }
-            }
             .onAppear { refreshDay(); syncTrainingActivity() }
             .onChange(of: store.syncStatus) { _, value in
                 if case .synced = value {
@@ -179,19 +155,14 @@ struct ClubAIShellView: View {
                 } else { ai.pause() }
             }
             .onChange(of: store.editingAccountID) { _, _ in
-                trainingRoute = nil; restDeadlines = [:]; conversationVisible = false
+                trainingRoute = nil; restDeadlines = [:]
                 sidebarOpen = false; sidebarRoute = nil; columns = .detailOnly
                 mealEntryRoute = nil; bodyEntryRoute = nil; creatingForDate = nil
                 showTrainingPlans = false; showExerciseLibrary = false; showHubSection = nil
-                guideOwner = nil; showNewConversationConfirm = false
+                guideOwner = nil
                 aiPath = NavigationPath(); trainingPath = NavigationPath()
                 planSetupTask135?.cancel(); planSetupTask135 = nil; onboarding.reset()
                 coach.reset(); recordsPath131 = NavigationPath(); recordsCategory = "训练"; trainingScrollAnchor = nil; calendarExpanded = false; selectedDate = Date(); currentDay = ClubDates.key(Date())
-            }
-            .onChange(of: coach.attachments) { _, _ in coach.persistExtras() }
-            .onChange(of: coach.workoutContext) { _, _ in coach.persistExtras() }
-            .onChange(of: coach.question) { _, value in
-                if let ownerID { ClubCoachDraftStorage.save(value, owner: ownerID, conversation: coach.conversation) }
             }
     }
 
@@ -307,13 +278,7 @@ struct ClubAIShellView: View {
             ToolbarItem(placement: .principal) { ClubModeCapsulePicker(mode: $mode) }
         }
         ToolbarItem(placement: .topBarTrailing) {
-            if mode == .clubAI {
-                Menu {
-                    Button("开启新对话", systemImage: "square.and.pencil", action: requestNewConversation)
-                    Picker("下一条回答方式", selection: $coach.deepAnalysis) { Text("自动").tag(false); Text("深入").tag(true) }
-                } label: { Image(systemName: "ellipsis") }
-                .accessibilityLabel("对话选项").accessibilityIdentifier("v2-context-action")
-            } else if mode == .training {
+            if mode == .training {
                 Menu {
                     Button("管理训练计划", systemImage: "calendar") { showTrainingPlans = true }
                     Button("创建训练计划", systemImage: "plus") { creatingForDate = ClubTrainingRoute(date: selectedDate) }
@@ -328,19 +293,20 @@ struct ClubAIShellView: View {
                 } label: { Image(systemName: "ellipsis") }
                 .accessibilityLabel("我的更多操作").accessibilityIdentifier("v2-context-action")
             } else {
+                // 主页与记录共用：自由对话已下线，这里只保留记录与解读档案入口。
                 Menu {
                     Button("记录饮食") { openMeal("手动") }
                     Button("记录身体数据") { bodyEntryRoute = ClubDateRoute(date: Date()) }
                     Button("AI 解读档案", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
-                } label: { Image(systemName: "ellipsis") }.accessibilityLabel("记录更多操作").accessibilityIdentifier("v2-context-action")
+                } label: { Image(systemName: "ellipsis") }.accessibilityLabel("更多操作").accessibilityIdentifier("v2-context-action")
             }
         }
     }
 
-    /// AI 收拢：自由对话已下线。
+    /// AI 收拢后的主工作台：始终是「首页 + 四个 AI 功能入口」。
     ///
-    /// 这里始终是「首页 + 四个 AI 功能入口」。任何深链把 conversationVisible 置为
-    /// true 也不会再进入聊天界面；计划生成走独立的计划卡，不经过对话。
+    /// 自由对话已下线，任何深链都不会再进入聊天界面；计划生成走独立的计划卡，
+    /// 不经过对话。
     @ViewBuilder private var aiWorkspace: some View {
         VStack(spacing:0) {
             if onboarding.state?.taskCompleteAvailable == true && account.user?.onboardingCompleted == false {
@@ -437,47 +403,8 @@ struct ClubAIShellView: View {
                 }
                 Button("稍后", role: .cancel) { }
             } message: { Text("完成设置后，可以选择会员方案。") }
-            .confirmationDialog("开始新对话", isPresented: $showNewConversationConfirm, titleVisibility: .visible) {
-                Button("保存草稿并开始新对话") { startNewConversation(keepDraft: true) }
-                Button("放弃当前输入", role: .destructive) { startNewConversation(keepDraft: false) }
-                Button("继续当前输入", role: .cancel) {}
-            } message: { Text("未发送的内容可保存到侧栏草稿。已保存的对话与训练记录会保留。") }
     }
 
-    private func openReferenceConversation(_ notice: Notification) {
-        guard let owner = notice.userInfo?["owner"] as? Int, ownerID == owner,
-              let ref = notice.userInfo?["reference"] as? AIContextReference else { return }
-        trainingRoute = nil; sidebarRoute = nil; showHubSection = nil; sidebarOpen = false
-        showTrainingPlans = false; bodyEntryRoute = nil; mealEntryRoute = nil
-        coach.newConversation(owner: owner, keepDraft: true)
-        coach.references = [ref]; coach.question = "请帮我分析这份记录。"
-        coach.persistExtras(); mode = .clubAI; conversationVisible = true; aiPath = NavigationPath()
-    }
-    private func openWorkoutConversation(_ notice: Notification) {
-
-                guard let owner = notice.userInfo?["owner"] as? Int, ownerID == owner,
-                      let key = notice.userInfo?["date"] as? String, let date = ClubDates.date(fromKey: key),
-                      let raw = notice.userInfo?["session"] as? String, let sessionID = UUID(uuidString: raw),
-                      let context = ClubAIEntryContext.make(owner: owner, date: date, sessionID: sessionID, state: store.state) else { return }
-                trainingRoute = nil; sidebarRoute = nil; showHubSection = nil; sidebarOpen = false
-                coach.selectConversation(context.conversationID, owner: owner)
-                coach.workoutContext = context
-                mode = .clubAI; conversationVisible = true; aiPath = NavigationPath()
-                let hasTurns = !ClubCoachRules.turns(ai.jobs, conversation: context.conversationID,
-                    deleted: Set(store.state.deletedAIJobIDs ?? [])).isEmpty
-                let recovering = AIRunPendingStore.load(owner: owner, conversation: context.conversationID) != nil
-                    || AIRunResumeStore.load(owner: owner, conversation: context.conversationID) != nil
-                if !hasTurns && !recovering {
-                    coach.question = ClubAIEntryContext.defaultQuestion
-                    Task {
-                        if !FeatureFlagService.shared.referencesEnabled { await store.syncNow() }
-                        guard ownerID == owner, coach.workoutContext == context, coach.conversation == context.conversationID else { return }
-                        guard let fresh = ClubAIEntryContext.make(owner: owner, date: date, sessionID: sessionID, state: store.state) else { coach.error = "训练尚未确认，请先核对记录。"; return }
-                        coach.workoutContext = fresh
-                        coach.sendRequest += 1
-                    }
-                }
-    }
     private func openSidebar() {
         BojiHaptics.tick()
         withAnimation(transitionAnimation) {
@@ -493,19 +420,10 @@ struct ClubAIShellView: View {
         sidebarToggleFocused = true
     }
     private func sidebarContent(floating: Bool) -> some View {
-        SidebarHostView(floating: floating, selectedConversation: conversationVisible ? coach.conversation : nil,
-            onClose: closeSidebar, onToday: { closeSidebar(); returnToToday() },
-            onNewConversation: { closeSidebar(); mode = .clubAI; requestNewConversation() },
-            onOpenConversation: { conversation in
-                closeSidebar(); mode = .clubAI
-                coach.selectConversation(conversation, owner: ownerID)
-                conversationVisible = true
-            }, onDeleteConversation: { conversation in
-                if store.deleteCoachConversation(conversation, jobs: ai.jobs) {
-                    if let ownerID { ClubChatDraftStorage.clear(owner: ownerID, conversation: conversation) }
-                    if conversation == coach.conversation { startNewConversation(keepDraft: false) }
-                }
-            }, onOpen: { route in
+        SidebarHostView(floating: floating,
+            onClose: closeSidebar,
+            onToday: { closeSidebar(); mode = .clubAI; aiPath = NavigationPath() },
+            onOpen: { route in
                 closeSidebar()
                 // 记录 / 我的 已是顶层 Tab，直接切换而不是一层多余的 sheet。
                 if route == .records { mode = .records }
@@ -574,36 +492,6 @@ struct ClubAIShellView: View {
     }
     private func openMeal(_ mode: String) {
         mealEntryRoute = ClubComposerMealRoute(date: Date(), mode: mode)
-    }
-    private func sendComposer() {
-        let text = coach.question.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard flags.aiEnabled, !coachBusy, (!text.isEmpty || !coach.attachments.isEmpty), text.count <= 1200 else { return }
-        if account.user?.onboardingCompleted == false && !onboarding.hasSession && !account.isPreviewAccount {
-            guard !preparingWelcome135 else { return }
-            preparingWelcome135 = true
-            Task {
-                defer { preparingWelcome135 = false }
-                await planSetupTask135?.value
-                if !onboarding.hasSession { await onboarding.load(account: account) }
-                if !onboarding.hasSession && onboarding.error == nil { await onboarding.createSession(.explore, account: account) }
-                guard onboarding.hasSession else { coach.error = "暂时无法连接，消息还在。请重试。"; return }
-                conversationVisible = true; coach.sendRequest += 1
-            }
-            return
-        }
-        conversationVisible = true
-        coach.sendRequest += 1
-    }
-    private func requestNewConversation() {
-        if coach.question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && coach.attachments.isEmpty { startNewConversation(keepDraft: true) }
-        else { showNewConversationConfirm = true }
-    }
-    private func startNewConversation(keepDraft: Bool) {
-        coach.newConversation(owner: ownerID, keepDraft: keepDraft)
-        conversationVisible = false; mode = .clubAI; aiPath = NavigationPath()
-    }
-    private func returnToToday() {
-        conversationVisible = false; mode = .clubAI; aiPath = NavigationPath()
     }
     private func refreshDay(now: Date = Date()) {
         let key = ClubDates.key(now)
@@ -732,7 +620,6 @@ struct ClubAIShellView: View {
     private func handleNotificationRoute() {
         guard let route = notifications.route, route.accountID == store.editingAccountID else { return }
         if route.kind != "training" {
-            conversationVisible = false
             if trainingRoute != nil { trainingRoute = nil }
             return
         }
@@ -743,7 +630,7 @@ struct ClubAIShellView: View {
             return
         }
         guard !store.trainingInterfacePresented else { return }
-        conversationVisible = false; selectedDate = date; trainingRoute = ClubTrainingRoute(date: date); notifications.route = nil
+        selectedDate = date; trainingRoute = ClubTrainingRoute(date: date); notifications.route = nil
     }
 }
 
@@ -783,12 +670,8 @@ extension Notification.Name {
 
 struct SidebarHostView: View {
     var floating = true
-    var selectedConversation: String?
     let onClose: () -> Void
     let onToday: () -> Void
-    let onNewConversation: () -> Void
-    let onOpenConversation: (String) -> Void
-    let onDeleteConversation: (String) -> Void
     let onOpen: (ClubSidebarRoute) -> Void
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var ai: AIService
@@ -796,44 +679,8 @@ struct SidebarHostView: View {
     @EnvironmentObject private var weekly: WeeklyReviewService
     @Environment(\.dynamicTypeSize) private var typeSize
     @ObservedObject private var flags = FeatureFlagService.shared
-    @State private var recentExpanded = false
-    @State private var allExpanded = false
-    @State private var draftsExpanded = false
-    @State private var preSearchExpansion: [Bool]?
-    @State private var search = ""
-    @State private var historyLimit = 30
-    @State private var loadingHistory = false
-    @State private var deletingConversation: String?
     @AccessibilityFocusState private var headingFocused: Bool
 
-    private var conversations: [String] {
-        var seen = Set<String>()
-        let deleted = Set(store.state.deletedAIJobIDs ?? [])
-        return ai.jobs.filter { !deleted.contains($0.id) }.sorted { $0.created > $1.created }
-            .compactMap { ClubCoachRules.conversation($0) }.filter { seen.insert($0).inserted }
-    }
-    private func turns(_ conversation: String) -> [AILocalJob] {
-        ClubCoachRules.turns(ai.jobs, conversation: conversation, deleted: Set(store.state.deletedAIJobIDs ?? []))
-    }
-    private func title(_ conversation: String) -> String {
-        turns(conversation).first?.request.payload["question"]?.string ?? "此前对话"
-    }
-    private var filteredHistory: [String] {
-        guard !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return conversations }
-        return conversations.filter { id in
-            turns(id).contains { job in
-                (job.request.payload["question"]?.string ?? "").localizedCaseInsensitiveContains(search) ||
-                (job.result?.coach?.answer ?? "").localizedCaseInsensitiveContains(search)
-            }
-        }
-    }
-    private var drafts: [String] {
-        guard let owner = store.editingAccountID else { return [] }
-        return ClubCoachDraftStorage.conversations(owner: owner).filter { id in
-            search.isEmpty || ClubCoachDraftStorage.load(owner: owner, conversation: id).localizedCaseInsensitiveContains(search)
-                || ("照片".localizedCaseInsensitiveContains(search) && ClubChatDraftStorage.load(owner: owner, conversation: id)?.attachments.isEmpty == false)
-        }
-    }
     var body: some View {
         Group {
             if floating { content.clubGlassEffect(in: RoundedRectangle(cornerRadius: 28, style: .continuous)) }
@@ -842,12 +689,6 @@ struct SidebarHostView: View {
         .accessibilityIdentifier("v2-sidebar-panel")
         .onAppear { headingFocused = true }
         .accessibilityAction(.escape, onClose)
-        .confirmationDialog("删除这段对话？", isPresented: Binding(get: { deletingConversation != nil }, set: { if !$0 { deletingConversation = nil } }), titleVisibility: .visible) {
-            if let deletingConversation {
-                Button("删除对话", role: .destructive) { onDeleteConversation(deletingConversation); self.deletingConversation = nil }
-            }
-            Button("取消", role: .cancel) { deletingConversation = nil }
-        } message: { Text("删除对话不会删除已确认保存的训练、饮食和身体记录。") }
     }
     private var content: some View {
         NavigationStack {
@@ -859,54 +700,15 @@ struct SidebarHostView: View {
                 Divider()
                 List {
                     Section {
-                        entry("新对话", symbol: "square.and.pencil", id: "v2-sidebar-newchat", action: onNewConversation)
-                    }
-                    Section {
-                        DisclosureGroup("草稿", isExpanded: $draftsExpanded) {
-                            if drafts.isEmpty { Text("没有待发送的草稿").foregroundStyle(.secondary) }
-                            ForEach(drafts, id: \.self) { id in
-                                Button { onOpenConversation(id) } label: {
-                                    Label(draftTitle(id), systemImage: "square.and.pencil")
-                                        .lineLimit(typeSize.isAccessibilitySize ? nil : 2)
-                                }.accessibilityIdentifier("v2-sidebar-draft")
-                            }
-                        }
-                        DisclosureGroup("最近对话", isExpanded: $recentExpanded) {
-                            if filteredHistory.isEmpty { Text(search.isEmpty ? "还没有保存的对话" : "没有匹配结果").foregroundStyle(.secondary) }
-                            ForEach(Array(filteredHistory.prefix(3)), id: \.self) { historyRow($0) }
-                        }
-                        DisclosureGroup("全部历史对话", isExpanded: $allExpanded) {
-                            if filteredHistory.isEmpty { Text(search.isEmpty ? "还没有保存的对话" : "没有匹配结果").foregroundStyle(.secondary) }
-                            ForEach(Array(filteredHistory.prefix(historyLimit)), id: \.self) { historyRow($0) }
-                            if filteredHistory.count > historyLimit || ai.hasMoreTaskHistory {
-                                Button(loadingHistory ? "正在同步…" : "加载更早的对话") { loadMoreHistory() }
-                                    .disabled(loadingHistory).accessibilityIdentifier("v2-history-load-more")
-                            }
-                        }.accessibilityIdentifier("v2-sidebar-history")
-                    }
-                    .listRowBackground(Color.clear).listRowSeparator(.hidden)
-                    Section {
                         entry("处理进度", symbol: "checklist", id: "v2-sidebar-tasks") { onOpen(.tasks) }
                         entry("AI 解读档案", symbol: "doc.text.magnifyingglass", id: "v2-sidebar-aimemory") { onOpen(.aiMemory) }
                         entry("反馈与回复", symbol: "exclamationmark.bubble", id: "v2-sidebar-feedback") { onOpen(.feedback) }
                     }
+                    .listRowBackground(Color.clear).listRowSeparator(.hidden)
                 }
                 .modifier(ClubSidebarListPolicy(floating: floating))
                 .scrollContentBackground(.hidden)
                 .environment(\.defaultMinListRowHeight, 44)
-                .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索历史对话")
-                .onChange(of: search) { old, value in
-                    if !value.isEmpty {
-                        if old.isEmpty { preSearchExpansion = [recentExpanded, allExpanded, draftsExpanded] }
-                        recentExpanded = true; allExpanded = true; draftsExpanded = true
-                        historyLimit = max(30, conversations.count)
-                    } else if let previous = preSearchExpansion {
-                        recentExpanded = previous[0]; allExpanded = previous[1]; draftsExpanded = previous[2]; preSearchExpansion = nil
-                    }
-                }
-                .onChange(of: store.editingAccountID) { _, _ in
-                    recentExpanded = false; allExpanded = false; draftsExpanded = false; search = ""; preSearchExpansion = nil
-                }
                 .refreshable { await ai.recoverTasks(account: account, weekly: weekly, store: store) }
                 Group {
                     if typeSize.isAccessibilitySize { VStack(spacing: 8) { accountEntries } }
@@ -937,47 +739,10 @@ struct SidebarHostView: View {
             entry("设置", symbol: "gearshape", id: "v2-sidebar-settings") { onOpen(.settings) }
         }
     }
-    private func draftTitle(_ id: String) -> String {
-        let owner = store.editingAccountID ?? 0
-        let text = ClubCoachDraftStorage.load(owner: owner, conversation: id)
-        if !text.isEmpty { return text }
-        if let refs = ClubChatDraftStorage.load(owner: owner, conversation: id)?.references, !refs.isEmpty { return "待发送引用 · \(refs.count) 项" }
-        return "待发送照片 · \(ClubChatDraftStorage.load(owner: owner, conversation: id)?.attachments.count ?? 0) 张"
-    }
-    private func sidebarHeading(_ text: String) -> some View {
-        Text(text).font(.body.weight(.medium)).foregroundColor(BojiColor.textPrimary)
-            .accessibilityAddTraits(.isHeader).listRowBackground(Color.clear).listRowSeparator(.hidden)
-    }
     private func entry(_ text: String, symbol: String, id: String, action: @escaping () -> Void) -> some View {
         Button(action: action) { Label(text, systemImage: symbol).font(.body).frame(maxWidth: .infinity, minHeight: 44, alignment: .leading) }
             .listRowBackground(Color.clear).listRowSeparator(.hidden)
             .accessibilityIdentifier(id)
-    }
-    private func historyRow(_ conversation: String) -> some View {
-        Button { onOpenConversation(conversation) } label: {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title(conversation)).font(.body).lineLimit(typeSize.isAccessibilitySize ? nil : 2).fixedSize(horizontal: false, vertical: true)
-                    if let last = turns(conversation).last {
-                        Text(ClubDates.label(last.created, format: "M月d日 HH:mm")).font(.caption).foregroundStyle(BojiColor.textSecondary)
-                    }
-                }
-                Spacer(minLength: 0)
-                if conversation == selectedConversation { Image(systemName: "checkmark").accessibilityLabel("当前对话") }
-            }.frame(minHeight: 44)
-        }
-        .listRowBackground(Color.clear).listRowSeparator(.hidden)
-        .contextMenu {
-            Button("打开对话", systemImage: "bubble.left") { onOpenConversation(conversation) }
-            Button("删除对话", systemImage: "trash", role: .destructive) { deletingConversation = conversation }
-        }
-        .swipeActions { Button("删除", role: .destructive) { deletingConversation = conversation } }
-    }
-    private func loadMoreHistory() {
-        historyLimit += 30
-        guard ai.hasMoreTaskHistory, !loadingHistory else { return }
-        loadingHistory = true
-        Task { await ai.recoverTasks(account: account, weekly: weekly, store: store); loadingHistory = false }
     }
 }
 
