@@ -1,5 +1,5 @@
 fb72760261dbede6dd06d957f8004443e4cc7c279af7e46775a91dcad95cfcb3  ./.gitattributes
-3c0f098b07c222546283e8de1fc2c5b315bfdf5e48fcd4c949c5a1e6f6c462dd  ./.github/workflows/ci.yml
+c4fa83ab2ff53622bb3356c2289c47a989f9065d02402da981f25781bf432223  ./.github/workflows/ci.yml
 011a66870192b8e52d03298711010ca93796dff0342959074c276ac39751e525  ./.gitignore
 fee1b9ffe2330ba67a5b8bad3718e4ef73347bde87c73461196ecf8c6532680a  ./0.13.67-修改说明.md
 06038d2aa9d8dbab2b6564eb9e33e4cf7e810944e8e0ddc0dedee7d574b5488c  ./0.13.68-修改说明.md
@@ -911,6 +911,7 @@ f8b56aa9b3ddcab48a3dfe9a030d5076caf33522b6333fbb746318e868b1c367  ./scripts/enab
 5158052c9f1ad52d7efc93a7bcd97f9eb37453152370f08dd4d0c7c6ffb0a9eb  ./scripts/generate-feedback128-fixtures.swift
 42a38e645ebce8c3833dc96ae1252805addc3ed002fe8ebe8dd78c92fe4c141f  ./scripts/import-usda-foods.py
 e5e2fa1151ec2af6b22871eb7570278011ad8712f54a883c8ad98c7848645bed  ./scripts/php_parse_check.py
+25ee872f5d90932f4c389b86aa10522f96a30e0e3bfabbabd86e791cc9d4365c  ./scripts/resolve-xcode.sh
 9cc981aa0d9e793f4eaf0edc0c5aa3e0e76741766a79a6e03c1c4a73a8605b15  ./scripts/run-all-checks.sh
 7f1ef2ff3513b87ec664800cde0eb7659520e605220a6f70023f3065d826f46f  ./shared/prompts/PROMPT_VERSION.json
 b1bab330a51fb157f080ea2d288640d7714ca925d6de72abe948f3c3a7d5fac8  ./shared/prompts/context_continue.v1.md

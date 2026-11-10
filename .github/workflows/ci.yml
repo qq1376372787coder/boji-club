@@ -23,15 +23,8 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode
-        run: |
-          for candidate in /Applications/Xcode_26.app /Applications/Xcode_26.0.app; do
-            if [ -d "$candidate/Contents/Developer" ]; then
-              sudo xcode-select -s "$candidate/Contents/Developer"
-              break
-            fi
-          done
-          xcodebuild -version
+      - name: Select Xcode (prefer one that has the iOS platform installed)
+        run: bash scripts/resolve-xcode.sh
       - name: Compile the app (device SDK — needs no simulator runtime)
         # 用设备 SDK 编译：模拟器运行时与 SDK 版本必须严格匹配，而 runner 镜像里
         # 预装的运行时往往比当前 Xcode 的 SDK 旧，模拟器 SDK 因此直接编译失败。
@@ -48,15 +41,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode
-        run: |
-          for candidate in /Applications/Xcode_26.app /Applications/Xcode_26.0.app; do
-            if [ -d "$candidate/Contents/Developer" ]; then
-              sudo xcode-select -s "$candidate/Contents/Developer"
-              break
-            fi
-          done
-          xcodebuild -version
+      - name: Select Xcode (prefer one that has the iOS platform installed)
+        run: bash scripts/resolve-xcode.sh
       - name: Ensure an iOS simulator runtime is available
         # runner 镜像里模拟器运行时是独立下载项，缺失时单元测试与 UI 测试无法
         # 解析出目的地。缺失才下载（慢），存在则直接跳过。
