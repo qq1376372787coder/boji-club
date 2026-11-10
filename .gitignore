@@ -4,6 +4,8 @@ DerivedData/
 xcuserdata/
 *.xcuserstate
 backend/.env
+backend/.env.*
+!backend/.env.example
 backend/.data/
 __pycache__/
 *.pyc
