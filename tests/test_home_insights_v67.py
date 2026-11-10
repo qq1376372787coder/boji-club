@@ -14,7 +14,11 @@ insights = (BOJI / "ClubHomeInsight.swift").read_text(encoding="utf-8")
 assert "ClubHomeInsightStability.select(current: selectedInsight, candidates: insightCandidates)" in idle
 assert "ClubInsightPriorityRules.isActionable" in idle
 assert "ai.refreshHomeInsightIfNeeded()" in idle
-assert "if activeWorkout != nil || !today.exercises.isEmpty { trainingCard }" in idle
+# v3 首页把「今日训练焦点」作为无条件主卡：完成度环 + 三格真实数据 + 日报行。
+# 不再按当天是否有训练决定卡片是否出现（休息日给占位而不是 0）。
+assert "todayFocusCard" in idle
+assert "今日训练完成度" in idle
+assert "BojiStatStrip(items: [" in idle
 assert "enum ClubHomeInsightStability" in insights
 # Current AI workspace intentionally keeps today's old discovery card off the
 # landing surface; insight history remains in the dedicated Club AI hub.
@@ -24,7 +28,7 @@ assert "onStartTraining:" in workspace
 assert "if activeWorkout != nil { openActiveWorkout() }" in workspace
 assert "else { selectedDate = Date(); startTrainingFromPlan() }" in workspace
 assert 'onOpenHub("动态")' in idle
-quick_actions = idle[idle.index("private var quickActions:"):idle.index("private var trainingCard:")]
+quick_actions = idle[idle.index("private var quickActions:"):idle.index("private var todayFocusCard:")]
 assert 'Button(action: onRecordMeal)' in quick_actions
 assert 'Text("记录饮食")' in quick_actions
 assert 'ClubAIHubView(initialSection: route.section)' in shell
