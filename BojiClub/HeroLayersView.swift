@@ -120,9 +120,12 @@ struct HeroLayersView: View {
 
 // MARK: - CoreMotion 倾斜输入（设计稿 M3）
 
-@MainActor
+/// CoreMotion 的回调线程与渲染线程不同，这里用锁保护状态，不引入 actor 隔离
+/// （`@MainActor` 类放进 `@StateObject` 的属性初始化器在严格并发检查下会报警告）。
 final class HeroMotionManager: ObservableObject {
     private let manager = CMMotionManager()
+    private let lock = NSLock()
+    private var engine = HeroMotionEngine()
     private var queue: OperationQueue = {
         let q = OperationQueue()
         q.qualityOfService = .userInteractive
@@ -130,8 +133,12 @@ final class HeroMotionManager: ObservableObject {
         return q
     }()
 
-    /// 当前倾斜与时间基准；由 CoreMotion 回调在主线程写入。
-    private(set) var current = HeroMotionEngine()
+    /// 当前倾斜量；由 CoreMotion 回调写入，由渲染线程读取。
+    var current: HeroMotionEngine {
+        lock.lock()
+        defer { lock.unlock() }
+        return engine
+    }
 
     func start() {
         guard manager.isDeviceMotionAvailable else { return }
@@ -141,15 +148,19 @@ final class HeroMotionManager: ObservableObject {
             // gravity 已在设备坐标系里做了重力补偿，直接用 x/y 作为倾斜量
             let x = CGFloat(max(-1, min(1, m.gravity.x)))
             let y = CGFloat(max(-1, min(1, m.gravity.y)))
-            Task { @MainActor in
-                self?.current.tiltX = x
-                self?.current.tiltY = y
-            }
+            self?.apply(tiltX: x, tiltY: y)
         }
     }
 
     func stop() {
         manager.stopDeviceMotionUpdates()
+    }
+
+    private func apply(tiltX: CGFloat, tiltY: CGFloat) {
+        lock.lock()
+        defer { lock.unlock() }
+        engine.tiltX = tiltX
+        engine.tiltY = tiltY
     }
 }
 
