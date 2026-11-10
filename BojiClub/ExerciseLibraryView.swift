@@ -321,7 +321,9 @@ struct ExerciseLibraryView: View {
             if embedded { LazyVStack(spacing: 12) { libraryContent } }
             else {
                 List { libraryContent }.clubManagementList132()
-                    .searchable(text: $query, prompt: "搜索动作、肌群或器械")
+                    // displayMode: .always —— 动作库一打开搜索就必须可见，否则在长列表里
+                    // 搜索栏会收进大标题，用户（和 UI 测试）找不到入口。
+                    .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索动作、肌群或器械")
             }
         }
         .onAppear { if owner == nil { owner = store.editingAccountID } }

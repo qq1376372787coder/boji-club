@@ -137,13 +137,15 @@ fi
 grep -qE "Executed [0-9]+ tests?, with 0 failures" "$OUT/unit.log"
 
 echo "== [5/5] UI 测试（旧壳回归 + V2 壳 + 无障碍审计 + 启动性能） =="
-# 注意：必须把 error: 断言行一起打出来。此前只 grep "Test Case.*failed|Executed|TEST"，
-# 把 xcodebuild 的失败详情（file:line: error: ... XCTAssert...）整段过滤掉了，
-# 导致 UI 测试失败时 CI 日志里只剩"哪条挂了"而没有"为什么挂"，只能靠 500MB 的
-# xcresult 反查。ui.log 本身不上传产物，所以这里必须打印。
+# 注意：必须把 error: 断言行和测试自己 print 的诊断行一起打出来。此前只 grep
+# "Test Case.*failed|Executed|TEST"，把 xcodebuild 的失败详情（file:line: error:
+# ... XCTAssert...）整段过滤掉了，导致 UI 测试失败时 CI 日志里只剩"哪条挂了"
+# 而没有"为什么挂"，只能靠 500MB 的 xcresult 反查。ui.log 本身不上传产物，
+# 所以这里必须打印。AUDIT-* / REVEAL-FAILED 同理：无障碍审计与侧栏可达性测试
+# 把逐条明细 print 出来，不打就只剩一句汇总断言。
 xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
   -destination "$TEST_DESTINATION" test 2>&1 | tee "$OUT/ui.log" \
-  | grep -E "Test Case.*failed|Executed.*tests|TEST|error:|XCTAssert|t = .*[Ww]ait" || true
+  | grep -E "Test Case.*failed|Executed.*tests|TEST|error:|XCTAssert|t = .*[Ww]ait|AUDIT-|REVEAL-FAILED" || true
 # ui.log 同时含单元测试汇总（"Executed 16 tests, with 0 failures"），不能靠
 # "任意一条 0 failures" 判绿——必须排除任何非零 failure 计数（曾因此漏报 1 个 UI 失败）。
 if grep -qE "Executed [0-9]+ tests?, with [1-9][0-9]* failures?" "$OUT/ui.log"; then

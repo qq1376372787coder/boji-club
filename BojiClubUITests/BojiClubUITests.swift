@@ -218,7 +218,8 @@ final class BojiClubUITests: XCTestCase {
         XCTAssertTrue(libraryEntry.waitForExistence(timeout: 10), "Library entry should exist")
         XCTAssertTrue(libraryEntry.isHittable, "Library entry should be reachable above the tab bar")
         libraryEntry.tap()
-        let search = app.textFields["exercise-search"]
+        // 弹层里的动作库是 List + .searchable；exercise-search 只属于从未被使用的 embedded 分支。
+        let search = app.searchFields.firstMatch
         if !search.waitForExistence(timeout: 12) { print(app.debugDescription) }
         XCTAssertTrue(search.waitForExistence(timeout: 12), "Search must be reachable in the exercise sheet")
         XCTAssertTrue(search.isHittable, "Search must not be clipped out of the sheet")
@@ -284,7 +285,9 @@ final class BojiClubUITests: XCTestCase {
     func testCompositionTrainingTableStartsInFirstScreen() {
         let app = launch()
         startWorkout(in: app)
-        let first = app.buttons["完成第 1 组"].firstMatch
+        // 进行中的训练用 TrainingInlineSetRow125（Build 125 重做）：完成控件是
+        // set-complete-<id>。TrainingSetRowView 的「完成第 N 组」已无调用点。
+        let first = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "set-complete-")).firstMatch
         XCTAssertTrue(first.waitForExistence(timeout: 10))
         XCTAssertTrue(first.isHittable, "The first set should be reachable without scrolling past context cards")
         let shot = XCTAttachment(screenshot: app.screenshot()); shot.name = "active-workout-first-screen"; shot.lifetime = .keepAlways; add(shot)
@@ -294,6 +297,10 @@ final class BojiClubUITests: XCTestCase {
         let app = launch(tab: "训练")
         app.buttons["v2-context-action"].tap()
         app.buttons["管理训练计划"].tap()
+        // 「我的计划」先列出计划；edit-managed-plan 在计划详情页，必须先点进计划。
+        let planRow = app.staticTexts["训练安排"].firstMatch
+        XCTAssertTrue(planRow.waitForExistence(timeout: 8), "当前计划必须列出可编辑的安排")
+        planRow.tap()
         let edit = app.buttons["edit-managed-plan"]
         XCTAssertTrue(edit.waitForExistence(timeout: 8)); edit.tap()
         XCTAssertTrue(app.navigationBars["编辑计划"].waitForExistence(timeout: 8))
@@ -377,8 +384,19 @@ final class BojiClubUITests: XCTestCase {
     func testRecordsTrendScales() {
         let app = launch(tab: "记录")
         XCTAssertTrue(app.staticTexts["多尺度趋势"].waitForExistence(timeout: 8))
-        app.buttons["近 12 个月"].tap()
-        XCTAssertTrue(app.staticTexts["多尺度趋势"].exists)
+        // 5 个尺度走 menu picker（BojiChipRow 在 items>4 时用 menu），不是分段控件：
+        // 选项在菜单展开后才存在，直接查 app.buttons["近 12 个月"] 永远查不到。
+        let scale = app.buttons["筛选"].firstMatch
+        XCTAssertTrue(scale.waitForExistence(timeout: 5), "趋势区必须提供尺度筛选")
+        let before = ((scale.value as? String) ?? "") + " " + scale.label
+        XCTAssertTrue(before.contains("近 3 个月"), "默认尺度应是近 3 个月，实际：\(before)")
+        scale.tap()
+        let option = app.buttons["近 12 个月"].firstMatch
+        XCTAssertTrue(option.waitForExistence(timeout: 5), "尺度菜单必须提供近 12 个月")
+        option.tap()
+        XCTAssertTrue(app.staticTexts["多尺度趋势"].waitForExistence(timeout: 5))
+        let after = ((scale.value as? String) ?? "") + " " + scale.label
+        XCTAssertTrue(after.contains("近 12 个月"), "切换后尺度应是近 12 个月，实际：\(after)")
     }
 
     func testCompositionStatisticsSections() {
@@ -397,7 +415,9 @@ final class BojiClubUITests: XCTestCase {
         let app = launch(tab: "记录")
         let picker = app.segmentedControls["records-category-picker"]
         XCTAssertTrue(picker.waitForExistence(timeout: 8))
-        for title in ["身体", "报告", "训练", "饮食"] {
+        // 记录 Tab 的分类是训练 / 饮食 / 身体：AI 解读档案不在这个选择器里，
+        // 它由首页四入口与侧栏「AI 解读档案」承担（App 内唯一的 AI 入口集合）。
+        for title in ["身体", "训练", "饮食"] {
             let segment = picker.buttons[title]
             segment.tap()
             XCTAssertTrue(segment.isSelected, "Records must select " + title)
@@ -458,7 +478,10 @@ final class BojiClubUITests: XCTestCase {
             "Only the body editor navigation bar may receive input")
         XCTAssertFalse(app.buttons["v2-sidebar-toggle"].isHittable)
         attachScreenshot("native-body-single-navigation", app: app)
-        app.navigationBars["身体记录"].buttons["完成"].tap()
+        // 身体记录是独立弹层（未入栈，clubPushed132=false），关闭入口是 DismissButton 的「关闭」。
+        let bodyNav = app.navigationBars["身体记录"]
+        let closeBody = bodyNav.buttons["关闭"].firstMatch
+        if closeBody.exists { closeBody.tap() } else { app.buttons["关闭"].firstMatch.tap() }
         XCTAssertTrue(app.tabBars.buttons["记录"].waitForExistence(timeout: 8))
     }
 
@@ -499,10 +522,14 @@ final class BojiClubUITests: XCTestCase {
         XCTAssertTrue(stepper.waitForExistence(timeout: 15))
         stepper.buttons.element(boundBy: 1).tap()
         app.navigationBars.buttons["保存"].tap()
+        // 手动计划（currentPlanUsesAI == false）下确认按钮必须是「保存资料与目标」；
+        // 只有 AI 计划才提供「保存并预览新计划」。预览账号写不了 V2 事实资料，
+        // 所以这里断言的是「不提供 AI 重排入口」与「绝不进入制定计划页」这两条行为。
         let confirm = app.buttons["保存资料与目标"]
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5)); confirm.tap()
-        XCTAssertTrue(app.staticTexts["资料和营养目标已生效，现有训练安排保留。"].waitForExistence(timeout: 10))
-        XCTAssertFalse(app.navigationBars["制定计划"].exists)
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5), "手动计划下保存按钮不能变成 AI 重排入口")
+        XCTAssertFalse(app.buttons["保存并预览新计划"].exists, "手动计划不应出现 AI 重排入口")
+        confirm.tap()
+        XCTAssertFalse(app.navigationBars["制定计划"].waitForExistence(timeout: 3), "保存资料绝不能进入制定计划页")
     }
 
     // MARK: - 无障碍审计
@@ -620,13 +647,23 @@ final class BojiClubUITests: XCTestCase {
         // 清理：结束训练，不把 active workout 留给后续测试。UI 测试断言失败即中止
         //（continueAfterFailure=false），因此清理必须放在审计结果断言之前。
         restoredBar.tap()
-        let firstSet = app.buttons["完成第 1 组"].firstMatch
+        // 进行中的训练用 TrainingInlineSetRow125：完成控件是 set-complete-<id>，
+        // 重量/次数为空时不会登记完成，结束训练按钮会因此保持禁用，所以先补一组真实数据。
+        let firstSet = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "set-complete-")).firstMatch
         XCTAssertTrue(firstSet.waitForExistence(timeout: 10), "Reopening the workout must show the set table")
+        let setKey = String(firstSet.identifier.dropFirst("set-complete-".count))
+        let weight = app.textFields["set-weight-\(setKey)"]
+        let amount = app.textFields["set-amount-\(setKey)"]
+        XCTAssertTrue(weight.waitForExistence(timeout: 5), "Reopened set row must expose its numeric inputs")
+        for _ in 0..<4 where !weight.isHittable { app.swipeUp() }
+        weight.tap(); weight.typeText("20")
+        amount.tap(); amount.typeText("10")
         firstSet.tap()
         let finish = app.buttons["结束并保存本次训练"]
         XCTAssertTrue(finish.waitForExistence(timeout: 5))
         finish.tap()
-        app.buttons["结束并保存已完成的部分"].tap()
+        XCTAssertTrue(app.staticTexts["这一练，准备收官？"].waitForExistence(timeout: 5))
+        app.buttons["结束并保存 1 组"].tap()
         XCTAssertTrue(app.navigationBars["训练完成"].waitForExistence(timeout: 8))
 
         XCTAssertTrue(failures.isEmpty, "Active-workout audit hard failures:\n" + failures.joined(separator: "\n"))
@@ -636,19 +673,26 @@ final class BojiClubUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchEnvironment = ["BOJI_PREVIEW_ACCOUNT": "complete", "BOJI_PREVIEW_SKIP_GUIDE": "1", "BOJI_UI_TEST_SEED": "1", "BOJI_AUDIT_SCREEN": "workout", "BOJI_AUDIT_AX": "1"]
         app.launch()
-        let firstSet = app.buttons["完成第 1 组"].firstMatch
+        // AX3 下同样走 TrainingInlineSetRow125 的 set-complete-<id>。
+        let firstSet = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "set-complete-")).firstMatch
         XCTAssertTrue(firstSet.waitForExistence(timeout: 15))
+        let setKey = String(firstSet.identifier.dropFirst("set-complete-".count))
+        let weight = app.textFields["set-weight-\(setKey)"]
+        let amount = app.textFields["set-amount-\(setKey)"]
+        XCTAssertTrue(weight.waitForExistence(timeout: 8), "AX3 set row must expose its numeric inputs")
         for _ in 0..<5 {
-            if firstSet.isHittable { break }
+            if firstSet.isHittable && weight.isHittable { break }
             app.swipeUp()
         }
         XCTAssertTrue(firstSet.isHittable, "AX3 set completion must remain reachable after natural scrolling")
+        weight.tap(); weight.typeText("20")
+        amount.tap(); amount.typeText("10")
         let table = XCTAttachment(screenshot: app.screenshot())
         table.name = "small-ax3-workout-table"
         table.lifetime = .keepAlways
         add(table)
         firstSet.tap()
-        XCTAssertTrue(app.buttons["第 1 组已完成，点击撤销完成"].firstMatch.waitForExistence(timeout: 5), "Completing a set must expose the undo state")
+        XCTAssertTrue(app.buttons["撤销本组完成"].firstMatch.waitForExistence(timeout: 5), "Completing a set must expose the undo state")
         app.terminate()
         app.launchEnvironment["BOJI_AUDIT_SCREEN"] = "nutrition"
         app.launch()

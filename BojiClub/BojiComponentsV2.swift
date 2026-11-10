@@ -106,7 +106,7 @@ struct BojiItemRow: View {
     var identifier: String? = nil
 
     var body: some View {
-        let row = HStack(spacing: 12) {
+        let content = HStack(spacing: 12) {
             if let systemImage {
                 ZStack {
                     Circle().fill(Color(red: 0.949, green: 0.949, blue: 0.969))
@@ -115,6 +115,7 @@ struct BojiItemRow: View {
                         .foregroundStyle(BojiV2.textSecondary)
                 }
                 .frame(width: 38, height: 38)
+                .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -136,16 +137,23 @@ struct BojiItemRow: View {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(BojiV2.textSecondary)
+                    .accessibilityHidden(true)
             }
         }
         .padding(.horizontal, BojiV2.rowPadding)
         .padding(.vertical, 12)
         .bojiGlass(radius: BojiV2.glassCardRadius, elevated: false)
-        .contentShape(Rectangle())
-        .onTapGesture { action?() }
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityIdentifier(identifier ?? title)
+        // 必须是真 Button：`.onTapGesture` + `.accessibilityAddTraits(.isButton)`
+        // 只改播报不改动作，VoiceOver 双击无法激活，XCUI 也不会把它当 button 查。
+        if let action {
+            Button(action: action) { content }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier(identifier ?? title)
+        } else {
+            content
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier(identifier ?? title)
+        }
     }
 }
 
