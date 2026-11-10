@@ -69,3 +69,56 @@ club[club.index('struct ClubSeason:'):club.index('@MainActor')]
 - 产出物：`tests/*-generated.swift`
 - 运行器：`tests/run_swift_regressions.py`
 - 入口：`scripts/run-all-checks.sh`
+
+## 2. runner 上「iOS 26.0 is not installed」——Xcode 平台未装全
+
+### 现象
+
+`xcodebuild` 报：
+
+```
+xcodebuild: error: Unable to find a destination matching the provided destination specifier:
+        { generic:1, platform:iOS }
+Ineligible destinations for the "BojiClub" scheme:
+        { platform:iOS, id:dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder,
+          name:Any iOS Device, error:iOS 26.0 is not installed.
+          Please download and install the platform from Xcode > Settings > Components. }
+```
+
+### 机制
+
+runner 镜像（`macos-26-arm64`）同时装了 14 个 Xcode（26.0.1 … 26.6），`xcode-select` 默认指向
+26.6。从 Xcode 16 起，**平台（platform）是可单独下载的组件**，和 SDK 是两回事：
+一个 Xcode 可以列出 `iphoneos26.0` 的 SDK，但平台本身没装全，于是目的地解析直接失败。
+
+关键教训：**`xcodebuild -showsdks` 不是可靠探针**。它会列出磁盘上存在的 SDK，哪怕平台不可用。
+最初的 `resolve-xcode.sh` 就是用它来挑 Xcode，结果挑中了"列表里有、实际不可用"的 26.0.1。
+
+真实探针必须真的做一次目的地解析：
+
+```bash
+DEVELOPER_DIR=<xcode>/Contents/Developer xcodebuild \
+  -project BojiClub.xcodeproj -scheme BojiClub \
+  -destination 'generic/platform=iOS' -showBuildSettings
+```
+
+另外，`simctl list runtimes` 里看到的 iOS 26.2/26.4/26.5 是**运行时**，与 SDK 版本是两套东西，
+不能用来推断平台是否可用。
+
+### 处理
+
+- `scripts/resolve-xcode.sh` 重写：按版本从新到旧枚举候选，用上面的真实探针打分
+  （设备 + 模拟器目的地各 1 分），选中后 `xcode-select -s` 并跑 `-runFirstLaunch`，
+  最后把 `DEVELOPER_DIR` 写进 `$GITHUB_ENV`，避免后续步骤又落回默认 Xcode。
+  全部候选都不可用时才 `-downloadPlatform iOS`（数 GB，很慢）。
+- `scripts/run-all-checks.sh` 的编译阶段改为三种方式依次兜底：模拟器 SDK + generic 目的地、
+  设备 SDK + generic 目的地、只给 `-sdk` 不给目的地。三种都失败才判红。
+- `.github/workflows/ci.yml` 的 `build` job 改为调用 `run-all-checks.sh --only-build`，
+  与 `checks` job 共用同一套判据。
+
+### 仍未解决
+
+- 单元测试与 UI 测试需要**与所选 Xcode 的 SDK 版本匹配的模拟器运行时**。当前镜像提供的是
+  iOS 26.2/26.4/26.5，而候选 Xcode 的 SDK 是 26.0…26.6；只有当选中的 Xcode 版本恰好落在
+  {26.2, 26.4, 26.5} 时测试才能直接跑，否则需要下载对应运行时。
+

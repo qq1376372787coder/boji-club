@@ -2,11 +2,13 @@
 # 本地与 CI 共用的全量回归入口（docs/v2/04 号报告 §7 固定回归命令集）。
 # 任何代码合入 main 前应全部通过；约耗时 10–15 分钟。
 #
-# 用法：bash scripts/run-all-checks.sh [--skip-rules | --only-rules]
+# 用法：bash scripts/run-all-checks.sh [--skip-rules | --only-rules | --only-build]
 #   --skip-rules 跳过第 2 阶段（Swift 规则回归链）。该链是独立于应用代码的
 #               既有红灯（见 docs/KNOWN-CI-ISSUES.md），跳过后仍会编译、跑单元
 #               测试与 UI 测试这三段真正的验收。
 #   --only-rules 只跑第 2 阶段。
+#   --only-build 只跑第 3 阶段（编译）。CI 的 build job 用它拿最快信号：
+#               不跑 Python 回归，也不依赖任何模拟器运行时。
 #
 # 模拟器目的地不写死机型名：runner 镜像里可用的运行时与机型随时间变化，写死
 # 会直接报 "Unable to find a destination matching the provided destination
@@ -18,10 +20,12 @@ OUT="${TMPDIR:-/tmp}/boji-checks-$$"
 mkdir -p "$OUT"
 
 ONLY_RULES=0
+ONLY_BUILD=0
 SKIP_RULES=0
 for argument in "$@"; do
   case "$argument" in
     --only-rules) ONLY_RULES=1 ;;
+    --only-build) ONLY_BUILD=1 ;;
     --skip-rules) SKIP_RULES=1 ;;
   esac
 done
@@ -43,10 +47,47 @@ resolve_test_destination() {
   printf 'generic/platform=iOS Simulator'
 }
 
-# 编译阶段用设备 SDK：模拟器运行时必须与 SDK 版本严格匹配，runner 镜像里预装的
-# 运行时常常更旧，模拟器 SDK 会直接报 "No simulator runtime version available"。
-# 设备 SDK 不依赖运行时，只用来回答"能不能编译"。
-BUILD_DESTINATION='generic/platform=iOS'
+# 编译阶段按"可用性优先"依次尝试（不用数组：runner 的 /bin/bash 是 3.2）：
+#   1. 模拟器 SDK + generic/platform=iOS Simulator —— 只需要 SDK，不需要任何
+#      模拟器运行时，是回答"能不能编译"最快的判据。
+#   2. 设备 SDK + generic/platform=iOS —— 覆盖设备专属代码路径（Asset Catalog
+#      的设备 slot、签名相关设置），但要求 iOS 平台真的装了。
+#   3. 只给 -sdk 不给目的地 —— 完全绕开目的地解析，作为前两者都被平台问题
+#      挡住时的最后手段。
+# 三种都失败才判红；只要有一种编译成功，就说明代码本身没问题。
+build_ok() {
+  echo "-- 尝试 1/3：模拟器 SDK + generic/platform=iOS Simulator"
+  xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
+    -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+    -configuration Debug CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+    build 2>&1 | tee "$OUT/build.log" | grep -E "error:|BUILD" || true
+  grep -q "BUILD SUCCEEDED" "$OUT/build.log" && return 0
+
+  echo "-- 尝试 2/3：设备 SDK + generic/platform=iOS"
+  xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
+    -sdk iphoneos -destination 'generic/platform=iOS' \
+    -configuration Debug CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+    build 2>&1 | tee "$OUT/build.log" | grep -E "error:|BUILD" || true
+  grep -q "BUILD SUCCEEDED" "$OUT/build.log" && return 0
+
+  echo "-- 尝试 3/3：只给 SDK，不给目的地"
+  xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
+    -sdk iphonesimulator \
+    -configuration Debug CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+    build 2>&1 | tee "$OUT/build.log" | grep -E "error:|BUILD" || true
+  grep -q "BUILD SUCCEEDED" "$OUT/build.log" && return 0
+
+  return 1
+}
+
+if [ "$ONLY_BUILD" -eq 1 ]; then
+  if ! build_ok; then
+    echo "!! 三种编译方式全部失败，最后一份日志尾部："
+    tail -40 "$OUT/build.log" || true
+    exit 1
+  fi
+  exit 0
+fi
 
 run_rules() {
   echo "== [2/5] Swift 规则回归链（54 个 harness） =="
@@ -77,13 +118,12 @@ fi
 echo "== 模拟器环境 =="
 report_simulators
 
-echo "== [3/5] 主应用编译检查（模拟器 Debug） =="
-set -o pipefail
-xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
-  -destination "$BUILD_DESTINATION" -configuration Debug \
-  CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
-  build 2>&1 | tee "$OUT/build.log" | grep -E "error:|BUILD" || true
-grep -q "BUILD SUCCEEDED" "$OUT/build.log"
+echo "== [3/5] 主应用编译检查（模拟器 SDK 优先，设备 SDK 兜底） =="
+if ! build_ok; then
+  echo "!! 三种编译方式全部失败，最后一份日志尾部："
+  tail -40 "$OUT/build.log" || true
+  exit 1
+fi
 
 TEST_DESTINATION="$(resolve_test_destination)"
 echo "测试目的地：$TEST_DESTINATION"

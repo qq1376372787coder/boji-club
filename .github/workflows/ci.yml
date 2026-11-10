@@ -16,25 +16,22 @@ on:
   pull_request:
 
 jobs:
-  # 编译检查：只需要模拟器 SDK，不需要任何模拟器运行时，因此最快也最稳。
+  # 编译检查：只需要 SDK，不需要任何模拟器运行时，因此最快也最稳。
   # 编译错误在这里就能暴露，不必等模拟器运行时下载完。
+  #
+  # 注意判据是"能不能编译"，不是"能不能跑测试"。runner 镜像里 14 个 Xcode 中
+  # 有的只装了 SDK 而没装可用的 iOS 平台，会报 "iOS 26.0 is not installed"；
+  # 所以这里让 resolve-xcode.sh 用真实的目的地解析来挑 Xcode，并且三种编译
+  # 方式依次兜底（见 scripts/run-all-checks.sh 的 build_ok）。
   build:
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode (prefer one that has the iOS platform installed)
+      - name: Select Xcode (one that can really resolve an iOS destination)
         run: bash scripts/resolve-xcode.sh
-      - name: Compile the app (device SDK — needs no simulator runtime)
-        # 用设备 SDK 编译：模拟器运行时与 SDK 版本必须严格匹配，而 runner 镜像里
-        # 预装的运行时往往比当前 Xcode 的 SDK 旧，模拟器 SDK 因此直接编译失败。
-        # 设备 SDK 不依赖任何运行时，最适合作为"能不能编译"的判据。
-        run: |
-          xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
-            -destination 'generic/platform=iOS' -configuration Debug \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
-            build | tee build.log | grep -E "error:|BUILD" || true
-          grep -q "BUILD SUCCEEDED" build.log
+      - name: Compile the app
+        run: bash scripts/run-all-checks.sh --only-build
 
   checks:
     runs-on: macos-latest
