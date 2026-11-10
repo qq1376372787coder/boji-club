@@ -126,7 +126,7 @@ private struct BojiStaggerModifier: ViewModifier {
     let index: Int
     @State private var shown = false
 
-    var body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         content
             .offset(y: shown ? 0 : 16)
             .opacity(shown ? 1 : 0)
@@ -145,7 +145,7 @@ private struct BojiBreathModifier: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var inflated = false
 
-    var body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         content
             .scaleEffect(inflated ? 1.04 : 1)
             .onAppear {
