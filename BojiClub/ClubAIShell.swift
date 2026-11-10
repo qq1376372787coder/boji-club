@@ -72,6 +72,7 @@ struct ClubAIShellView: View {
     @State private var showProfileBasics135 = false
     @State private var showPermissions135 = false
     @State private var showReports135 = false
+    @State private var reportLibraryKind135: ReportLibraryKind = .all
     @State private var showLegacyOnboarding135 = false
     @State private var preparingWelcome135 = false
     @State private var planSetupTask135: Task<Void, Never>?
@@ -271,59 +272,57 @@ struct ClubAIShellView: View {
         }
     }
 
+    /// AI 收拢：自由对话已下线。
+    ///
+    /// 这里始终是「首页 + 四个 AI 功能入口」。任何深链把 conversationVisible 置为
+    /// true 也不会再进入聊天界面；计划生成走独立的计划卡，不经过对话。
     @ViewBuilder private var aiWorkspace: some View {
-        if conversationVisible {
-            ClubCoachView(session: coach, embeddedInShell: true)
-        } else {
-            VStack(spacing:0) {
-                if onboarding.state?.taskCompleteAvailable == true && account.user?.onboardingCompleted == false {
-                    Button("完成设置") { showFinishOnboarding135 = true }.font(.subheadline).frame(minHeight: 44)
+        VStack(spacing:0) {
+            if onboarding.state?.taskCompleteAvailable == true && account.user?.onboardingCompleted == false {
+                Button("完成设置") { showFinishOnboarding135 = true }.font(.subheadline).frame(minHeight: 44)
+            }
+            if coach.planIntake131 {
+                ScrollView {
+                    PlanConversationCard131(conversation: coach.conversation,
+                                            onboardingSessionID: coach.onboardingPlanSession135)
+                        .padding(.horizontal, 16)
                 }
-            ClubAIWorkspaceIdleView(activeWorkout: activeWorkout, isNewUser: account.user?.onboardingCompleted == false, onOpenProfile: { showProfileBasics135 = true }, onOpenPermissions: { showPermissions135 = true }, onQuickQuestion: { question in
-                coach.question = question; focusRequest += 1
-            }, onArrangePlan131: {
-                coach.newConversation(owner: ownerID, keepDraft: true)
-                coach.planIntake131 = true; conversationVisible = true
-                if account.user?.onboardingCompleted == false {
-                    planSetupTask135 = Task {
-                        let owner = ownerID, conversation = coach.conversation
-                        await onboarding.load(account: account)
-                        if onboarding.taskKind != .planCreate { await onboarding.createSession(.planCreate, account: account) }
-                        guard owner == ownerID, conversation == coach.conversation else { return }
-                        coach.onboardingPlanSession135 = onboarding.taskKind == .planCreate ? onboarding.state?.session?.id : nil
-                        if onboarding.error != nil { coach.error = "训练计划暂时无法准备，请稍后重试。" }
-                    }
-                }
-            }, onOpenHub: { if $0 == "训练计划" { mode = .training } else { showHubSection = $0 } }, onStartTraining: {
-                if activeWorkout != nil { openActiveWorkout() }
-                else { selectedDate = Date(); startTrainingFromPlan() }
-            }, onRecordMeal: { openMeal("手动") })
+            } else {
+                ClubAIWorkspaceIdleView(activeWorkout: activeWorkout, isNewUser: account.user?.onboardingCompleted == false,
+                    onOpenProfile: { showProfileBasics135 = true }, onOpenPermissions: { showPermissions135 = true },
+                    onQuickQuestion: { _ in },
+                    onArrangePlan131: {
+                        coach.newConversation(owner: ownerID, keepDraft: true)
+                        coach.planIntake131 = true
+                        if account.user?.onboardingCompleted == false {
+                            planSetupTask135 = Task {
+                                let owner = ownerID, conversation = coach.conversation
+                                await onboarding.load(account: account)
+                                if onboarding.taskKind != .planCreate { await onboarding.createSession(.planCreate, account: account) }
+                                guard owner == ownerID, conversation == coach.conversation else { return }
+                                coach.onboardingPlanSession135 = onboarding.state?.session?.id
+                                if onboarding.error != nil { coach.error = "训练计划暂时无法准备，请稍后重试。" }
+                            }
+                        }
+                    },
+                    onOpenHub: { if $0 == "训练计划" { mode = .training } else { showHubSection = $0 } },
+                    onStartTraining: {
+                        if activeWorkout != nil { openActiveWorkout() }
+                        else { selectedDate = Date(); startTrainingFromPlan() }
+                    },
+                    onRecordMeal: { openMeal("手动") },
+                    onDailyReport: { openReportLibrary(.daily) },
+                    onWeeklyReview: { openReportLibrary(.weekly) },
+                    onFoodRecognition: { openMeal("照片") })
             }
         }
     }
-
     private var bottomDock: some View {
         VStack(spacing: 8) {
             if trainingRoute == nil, let snapshot = activeWorkout {
                 ClubActiveWorkoutAccessory(snapshot: snapshot, open: openActiveWorkout, togglePause: toggleActivePause)
                     .frame(maxWidth: BojiSize.contentWidth)
                     .padding(.horizontal, 14).frame(maxWidth: .infinity)
-            }
-            if mode == .clubAI {
-                if let source = coach.continuationSource {
-                    HStack {
-                        Label("引用解读：" + source.title, systemImage: "doc.text").font(.caption).lineLimit(1)
-                        Spacer()
-                        Button("移除") { coach.continuationSource = nil; coach.persistExtras() }.font(.caption).frame(minHeight: 44)
-                    }.padding(.horizontal, 20).background(BojiColor.brandMist, in: Capsule()).padding(.horizontal, 14)
-                }
-                ClubSharedComposer(text: $coach.question, attachments: $coach.attachments, references: $coach.references, deepAnalysis: $coach.deepAnalysis, conversationID: coach.conversation, busy: coachBusy, enabled: flags.aiEnabled,
-                    focusRequest: focusRequest + coach.focusRequest, errorText: coach.error, onSend: sendComposer,
-                    onRecordMeal: { openMeal($0) },
-                    onRecordBody: { bodyEntryRoute = ClubDateRoute(date: Date()) }, waitingForReferences130: coach.preparingReferences, onCancelWaiting130: coach.cancelReferenceSend130)
-                    .frame(maxWidth: BojiSize.contentWidth)
-                    .padding(.horizontal, 14).frame(maxWidth: .infinity)
-                    .id(ownerID)
             }
         }
         .clubGlassGroup(spacing: 12)
@@ -338,7 +337,7 @@ struct ClubAIShellView: View {
             .sheet(item: $sidebarRoute) { sidebarDestination($0) }
             .sheet(isPresented: $showProfileBasics135) { ProfileFactsForm133(title: "补充资料", fields: ProfileFields133.basics) }
             .sheet(isPresented: $showPermissions135) { if let owner = ownerID { FirstLaunchPermissionsView(ownerID: owner) } }
-            .sheet(isPresented: $showReports135) { NavigationStack { ReportLibraryView(embedded: true).toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showReports135 = false } } } } }
+            .sheet(isPresented: $showReports135) { NavigationStack { ReportLibraryView(initialKind: reportLibraryKind135, embedded: true).toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showReports135 = false } } } } }
             .sheet(isPresented: $showLegacyOnboarding135) {
                 NavigationStack {
                     OnboardingWorkspaceView(model: onboarding,
@@ -478,7 +477,7 @@ struct ClubAIShellView: View {
             NavigationStack { ClubSeasonView()
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
         case .aiMemory:
-            NavigationStack { ClubAIMemoryView().toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
+            NavigationStack { ReportLibraryView(embedded: true).toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
         case .profile:
             NavigationStack { ProfileView(routeToKeepsakeVault: $keepsakeRoute)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { sidebarRoute = nil } } } }
@@ -500,6 +499,11 @@ struct ClubAIShellView: View {
             UserDefaults.standard.removeObject(forKey: "boji.pendingPlan135.\(owner)")
             showFinishOnboarding135 = true
         } else if let message = onboarding.error { coach.error = message }
+    }
+    /// 打开报告库并定位到指定类型（日报 / 周报）。
+    private func openReportLibrary(_ kind: ReportLibraryKind) {
+        reportLibraryKind135 = kind
+        showReports135 = true
     }
     private func openMeal(_ mode: String) {
         mealEntryRoute = ClubComposerMealRoute(date: Date(), mode: mode)
@@ -918,6 +922,9 @@ struct ClubAIWorkspaceIdleView: View {
     let onOpenHub: (String) -> Void
     let onStartTraining: () -> Void
     let onRecordMeal: () -> Void
+    let onDailyReport: () -> Void
+    let onWeeklyReview: () -> Void
+    let onFoodRecognition: () -> Void
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var ai: AIService
     @EnvironmentObject private var clubSeason: ClubSeasonService
@@ -963,6 +970,7 @@ struct ClubAIWorkspaceIdleView: View {
                 .frame(maxWidth: .infinity).padding(.top, 24).padding(.bottom, 12)
                 if activeWorkout != nil || !today.exercises.isEmpty { trainingCard }
                 if flags.aiEnabled {
+                    aiFeatureCard
                     Group {
                         if typeSize.isAccessibilitySize { VStack(alignment: .leading, spacing: 4) { quickActions } }
                         else { ViewThatFits(in: .horizontal) { HStack(spacing: 14) { quickActions }; VStack(alignment: .leading, spacing: 4) { quickActions } } }
@@ -998,7 +1006,7 @@ struct ClubAIWorkspaceIdleView: View {
                 Text("记录饮食").font(.body).fixedSize(horizontal: false, vertical: true).frame(minHeight: 44)
             }
             if isNewUser {
-                Button("先聊聊") { onQuickQuestion("") }.frame(minHeight: 44)
+
                 Button("补充资料", action: onOpenProfile).frame(minHeight: 44)
             }
         }.buttonStyle(.borderless).tint(ClubBrand.accent)
@@ -1020,6 +1028,32 @@ struct ClubAIWorkspaceIdleView: View {
         .background(BojiColor.cardSurface, in: RoundedRectangle(cornerRadius: 22))
         .overlay { RoundedRectangle(cornerRadius: 22).stroke(BojiColor.outline, lineWidth: 0.5) }
         .accessibilityIdentifier("v2-today-training")
+    }
+    /// AI 收拢后的四个功能入口：每日分析 / 每周复盘 / AI 食物识别 / AI 计划生成。
+    /// 自由对话已下线，这里是 App 内唯一的 AI 功能入口集合。
+    private var aiFeatureCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("AI 功能").font(.system(size: 17, weight: .semibold)).foregroundStyle(BojiV2.textPrimary)
+                Spacer()
+                Text("4 项").font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+            }
+            VStack(spacing: 10) {
+                BojiItemRow(title: "每日分析", subtitle: "今天练了什么、吃得怎样、明天调什么",
+                            systemImage: "sun.max", showsChevron: true, action: onDailyReport)
+                    .bojiStagger(index: 0)
+                BojiItemRow(title: "每周复盘", subtitle: "本周节奏回顾与下周安排",
+                            systemImage: "calendar.badge.checkmark", showsChevron: true, action: onWeeklyReview)
+                    .bojiStagger(index: 1)
+                BojiItemRow(title: "AI 食物识别", subtitle: "拍一张照片，自动拆出热量与蛋白",
+                            systemImage: "camera.viewfinder", showsChevron: true, action: onFoodRecognition)
+                    .bojiStagger(index: 2)
+                BojiItemRow(title: "AI 计划生成", subtitle: "按目标生成一周训练安排",
+                            systemImage: "figure.strengthtraining.traditional", showsChevron: true, action: onArrangePlan131)
+                    .bojiStagger(index: 3)
+            }
+        }
+        .accessibilityIdentifier("v2-ai-features")
     }
     private func insightCard(_ insight: ClubHomeInsightSelection) -> some View {
         VStack(alignment: .leading, spacing: 10) {

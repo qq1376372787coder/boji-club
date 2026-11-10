@@ -449,8 +449,7 @@ struct NutritionStrategyCard: View {
                     Text(target.note).font(.footnote).foregroundStyle(.secondary)
                     NutritionTrendSummary(through: date)
                 }
-                Button("更新资料与饮食参考") { reviewingTarget = true }.buttonStyle(SecondaryButton())
-            }.sheet(isPresented: $reviewingTarget) { NavigationStack { ClubAIMemoryView() } }
+            }
         }
     }
 }

@@ -126,7 +126,6 @@ struct ProfileView: View {
                 }.buttonStyle(.plain).accessibilityLabel("编辑头像与昵称")
             }
             Section {
-                NavigationLink { ClubAIMemoryView() } label: { Label("AI 对我的了解", systemImage: "person.text.rectangle") }
                 NavigationLink { ManagedPlanList(focusDate: Date(), initialCycleStart: nil).clubPushDestination132() } label: { Label("我的计划", systemImage: "calendar") }
                 NavigationLink { MembershipView().clubPushDestination132() } label: { Label("会员与订阅", systemImage: "crown") }
                 NavigationLink { SettingsHub130() } label: { Label("设置", systemImage: "gearshape") }
@@ -142,7 +141,6 @@ struct ProfileView: View {
             showKeepsakeVault = true
             routeToKeepsakeVault = false
         }
-        .sheet(isPresented: $showProfile) { ClubNavigationStack132 { ClubAIMemoryView() } }
         .sheet(isPresented: $showActionSettings) { ClubActionPreferencesView() }
         .sheet(isPresented: $showClubAISettings) { ClubAISettingsView() }
         .sheet(isPresented: $showFeedback128) { ClubNavigationStack132 { MemberFeedbackHub128().toolbar { ToolbarItem(placement:.confirmationAction) { Button("关闭") { showFeedback128 = false } } } } }

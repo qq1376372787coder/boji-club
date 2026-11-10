@@ -113,7 +113,6 @@ private struct ClubCloudPrivacyView130: View {
             } footer: { Text("主动发送的文字、照片和选中记录用于云端 AI 分析。关闭后仍可手动记录。") }
             Section {
                 NavigationLink { ClubActionPreferencesView().clubPushDestination132() } label: { Text("AI 记录与授权") }
-                NavigationLink { ClubAIMemoryView() } label: { Text("AI 对我的了解") }
                 NavigationLink { LegalDocumentView(document: .privacy).clubPushDestination132() } label: { Text("隐私政策") }
                 NavigationLink { LegalDocumentView(document: .aiNotice).clubPushDestination132() } label: { Text("AI 服务说明") }
                 NavigationLink { LegalDocumentView(document: .healthDisclaimer).clubPushDestination132() } label: { Text("健康与运动风险提示") }
