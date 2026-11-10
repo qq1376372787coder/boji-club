@@ -22,8 +22,6 @@ final class BojiClubUITests: XCTestCase {
         }
         XCTAssertTrue(app.tabBars.buttons["主页"].isSelected, "主页 must be the default tab")
         XCTAssertTrue(app.buttons["v2-sidebar-toggle"].waitForExistence(timeout: 8), "侧栏抽屉必须仍然可达")
-        let later = app.buttons["稍后再看"].firstMatch
-        if later.waitForExistence(timeout: 2) { later.tap() }
         if let tab { selectTab(tab, in: app) }
         return app
     }
@@ -200,8 +198,6 @@ final class BojiClubUITests: XCTestCase {
 
     func testExerciseLibraryControlsReachableInSheet() {
         let app = launch(tab: "训练")
-        let guideLater = app.buttons["稍后再看"]
-        if guideLater.waitForExistence(timeout: 3) { guideLater.tap() }
         let scroll = app.scrollViews.firstMatch
         if scroll.exists { scroll.swipeUp() }
         let libraryEntry = app.buttons["plan-open-library"]
@@ -260,13 +256,16 @@ final class BojiClubUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["这一练，准备收官？"].waitForExistence(timeout: 5))
         app.buttons["结束并保存 1 组"].tap()
         XCTAssertTrue(app.navigationBars["训练完成"].waitForExistence(timeout: 8))
-        XCTAssertTrue(app.staticTexts["辛苦了，训练已收官"].exists)
+        XCTAssertTrue(app.staticTexts["辛苦了，训练已完成"].exists)
         let review = app.buttons["workout-ai-review"]
         XCTAssertTrue(review.exists && review.isHittable, "AI review must be visible immediately below the metrics")
         attachScreenshot("build125-completion", app: app)
-        for _ in 0..<3 where !app.staticTexts["各动作实记组数"].isHittable { app.swipeUp() }
-        XCTAssertTrue(app.staticTexts["各动作实记组数"].exists)
-        XCTAssertTrue(app.staticTexts["完成 1 / 3 组"].exists)
+        for _ in 0..<3 where !app.staticTexts["每个动作的完成情况"].isHittable { app.swipeUp() }
+        XCTAssertTrue(app.staticTexts["每个动作的完成情况"].exists)
+        // 完成页只呈现已确认组：1 组已登记 / 本次安排 3 组。
+        let perExercise = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "1 / 3 组")).firstMatch
+        XCTAssertTrue(perExercise.exists, "每个动作的完成情况必须显示已确认组与安排组")
+        XCTAssertTrue(app.staticTexts["本次安排 3 组"].exists)
         attachScreenshot("build125-actual-only-charts", app: app)
     }
 
@@ -334,9 +333,13 @@ final class BojiClubUITests: XCTestCase {
 
     func testUnstartedPlanCanBeDeletedFromMyPlans() {
         let app = launchAudit("training-plans")
+        // audit 路由落在计划列表，先进入种子计划的详情，菜单项在详情页头部。
+        let row = app.staticTexts["训练安排"].firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 15), "种子计划必须出现在当前计划列表")
+        row.tap()
         let menu = app.buttons["管理这份计划"]
         XCTAssertTrue(menu.waitForExistence(timeout: 15)); menu.tap()
-        let remove = app.buttons["删除计划"]
+        let remove = app.buttons["删除未开始的计划"]
         XCTAssertTrue(remove.waitForExistence(timeout: 5)); remove.tap()
         let confirm = app.buttons["移除未开始安排"]
         XCTAssertTrue(confirm.waitForExistence(timeout: 5)); confirm.tap()
@@ -720,7 +723,6 @@ final class BojiClubUITests: XCTestCase {
             app.launchEnvironment["BOJI_UI_TEST_SEED"] = "1"
             app.launchEnvironment["BOJI_AUDIT_SCREEN"] = route
             app.launch()
-            if app.buttons["稍后再看"].firstMatch.waitForExistence(timeout: 2) { app.buttons["稍后再看"].firstMatch.tap() }
             XCTAssertTrue(app.wait(for: .runningForeground, timeout: 15))
             let shot = XCTAttachment(screenshot: app.screenshot())
             shot.name = "audit-" + route
