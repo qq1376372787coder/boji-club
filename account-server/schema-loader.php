@@ -22,8 +22,8 @@ declare(strict_types=1);
  * Split a schema file into executable statements.
  *
  * The scanner is quote- and comment-aware: a ';' inside a string literal or
- * inside a "--" / "#" / "/* */" comment does not end a statement, and the
- * comments themselves are dropped.
+ * inside a line or block comment does not end a statement, and the comments
+ * themselves are dropped.
  *
  * Do not split on a regular expression such as \R here. In PCRE without the
  * UTF mode \R also matches the byte 0x85 (NEL), and 0x85 occurs as a
