@@ -41,3 +41,6 @@ evidence/
 audit-probes/
 deliverables/
 *.sqlite3
+
+# CI 临时产物（规则链日志），不得入库
+/.ci-tmp/

@@ -94,13 +94,18 @@ jobs:
       - name: Select Xcode
         run: xcodebuild -version
       - name: Run Swift rules harness chain
+        # TMPDIR 指到工作区内的固定目录，产物路径才与下面的上传路径一致
+        # （脚本默认写 ${TMPDIR}/boji-checks-*/rules，而 runner 的 TMPDIR 是
+        #  /var/folders/... 这样的随机路径，写死 ~/tmp 会永远传不上来）。
         run: bash scripts/run-all-checks.sh --only-rules
+        env:
+          TMPDIR: ${{ github.workspace }}/.ci-tmp
       - name: Upload harness logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: swift-rules-logs
-          path: ~/tmp/boji-checks-*/rules
+          path: .ci-tmp/boji-checks-*/rules
           if-no-files-found: ignore
 
   action-backend:

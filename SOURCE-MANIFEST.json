@@ -3,9 +3,9 @@
   "build": 136,
   "revision": "s3-hero-layers-20261111",
   "status": "Hero 分层视差接入首页 + v3 原型顶部行。",
-  "generated": "2026-11-10T19:31:36Z",
+  "generated": "2026-11-10T19:32:18Z",
   "fileCount": 1228,
-  "totalBytes": 40072668,
+  "totalBytes": 40073077,
   "excluded": [
     ".git/",
     "account-server/config.php",
@@ -26,8 +26,8 @@
   ],
   "files": {
     ".gitattributes": "fb72760261dbede6dd06d957f8004443e4cc7c279af7e46775a91dcad95cfcb3",
-    ".github/workflows/ci.yml": "fe4b76cd97a9160a71a84d4454ef6e785db824401ec7831113b888b931d774b2",
-    ".gitignore": "8e9d81f2b3b73af1cf1727ffe550309a49acf15bbec804f04b67eaeb74987f1b",
+    ".github/workflows/ci.yml": "3c0f098b07c222546283e8de1fc2c5b315bfdf5e48fcd4c949c5a1e6f6c462dd",
+    ".gitignore": "011a66870192b8e52d03298711010ca93796dff0342959074c276ac39751e525",
     "0.13.67-修改说明.md": "fee1b9ffe2330ba67a5b8bad3718e4ef73347bde87c73461196ecf8c6532680a",
     "0.13.68-修改说明.md": "06038d2aa9d8dbab2b6564eb9e33e4cf7e810944e8e0ddc0dedee7d574b5488c",
     "0.13.69-修改说明.md": "66945b192832357b412c213e4f4f27d2dbc0a54ec18f38c4ced2f545debf0bcb",
