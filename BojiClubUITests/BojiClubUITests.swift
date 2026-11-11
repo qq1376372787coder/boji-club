@@ -819,44 +819,6 @@ final class BojiClubUITests: XCTestCase {
         XCTAssertFalse(springboard.alerts.buttons["打开"].firstMatch.exists)
         let shot = XCTAttachment(screenshot: app.screenshot()); shot.name = "audit-ready-home"; shot.lifetime = .keepAlways; add(shot)
     }
-}
-
-/// 全新用户（BOJI_PREVIEW_ACCOUNT=new）从首页「安排训练」进入计划生成卡，
-/// 走完资料问答并到达「生成训练计划」。
-final class Build135NaturalWelcomeUITests: XCTestCase {
-    override func setUpWithError() throws { continueAfterFailure = false }
-    func testNewUserCanEnterAndCollectPlanFromHome() {
-        let app = XCUIApplication()
-        app.launchEnvironment = ["BOJI_PREVIEW_ACCOUNT": "new", "BOJI_PREVIEW_SKIP_GUIDE": "1"]
-        app.launch()
-        // 自由对话已下线：新用户落在首页工作台，不再有「我是 Club AI」对话开场。
-        // 判据用新用户专属的「补充资料」：今天是否已有安排取决于本机持久化记录
-        // （UI 测试共用同一模拟器），不该作为「新用户落在首页」的稳定判据。
-        XCTAssertTrue(app.buttons["补充资料"].waitForExistence(timeout: 20))
-        XCTAssertTrue(app.buttons["安排训练"].exists)
-        XCTAssertFalse(app.staticTexts["先认识你"].exists)
-        app.buttons["补充资料"].tap()
-        XCTAssertTrue(app.textFields["profile-input-profile_weight_kg"].waitForExistence(timeout: 10))
-        XCTAssertFalse(app.switches["同时记为一次称重"].exists)
-        app.buttons["关闭"].firstMatch.tap()
-        XCTAssertTrue(app.buttons["安排训练"].waitForExistence(timeout: 10))
-        app.buttons["安排训练"].tap()
-        XCTAssertTrue(app.staticTexts["你想通过训练达到什么目标？"].waitForExistence(timeout: 10))
-        let goal = app.buttons["增肌塑形"]
-        XCTAssertTrue(goal.waitForExistence(timeout: 5)); goal.tap()
-        XCTAssertTrue(app.staticTexts["你之前有训练经验吗？"].waitForExistence(timeout: 10))
-        app.buttons["新手"].tap()
-        XCTAssertTrue(app.staticTexts["你通常在哪里训练？"].waitForExistence(timeout: 10))
-        app.buttons["健身房"].tap()
-        XCTAssertTrue(app.staticTexts["每周哪几天方便训练？"].waitForExistence(timeout: 10))
-        app.buttons["周一"].tap(); app.buttons["周三"].tap(); app.buttons["周五"].tap(); app.buttons["继续"].firstMatch.tap()
-        XCTAssertTrue(app.staticTexts["每次大约能练多久？"].waitForExistence(timeout: 10))
-        let minutes = app.textFields["每次时长"]; XCTAssertTrue(minutes.waitForExistence(timeout: 5)); minutes.tap(); minutes.typeText("45")
-        app.buttons["继续"].firstMatch.tap()
-        XCTAssertTrue(app.staticTexts["你已满 18 岁吗？"].waitForExistence(timeout: 10))
-        app.buttons["18 岁及以上"].tap()
-        XCTAssertTrue(app.buttons["生成训练计划"].waitForExistence(timeout: 10))
-    }
 
     // MARK: - 临时诊断：导出真实 AX 树，确认入口 Button 的 identifier / label
 
@@ -898,4 +860,43 @@ final class Build135NaturalWelcomeUITests: XCTestCase {
         print("AXDUMP[\(scope)] match-补充资料=\(app.buttons["补充资料"].allElementsBoundByIndex.count)")
         print("AXDUMP[\(scope)] match-今天还没有安排=\(app.staticTexts["今天还没有安排"].allElementsBoundByIndex.count)")
     }
+}
+
+/// 全新用户（BOJI_PREVIEW_ACCOUNT=new）从首页「安排训练」进入计划生成卡，
+/// 走完资料问答并到达「生成训练计划」。
+final class Build135NaturalWelcomeUITests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    func testNewUserCanEnterAndCollectPlanFromHome() {
+        let app = XCUIApplication()
+        app.launchEnvironment = ["BOJI_PREVIEW_ACCOUNT": "new", "BOJI_PREVIEW_SKIP_GUIDE": "1"]
+        app.launch()
+        // 自由对话已下线：新用户落在首页工作台，不再有「我是 Club AI」对话开场。
+        // 判据用新用户专属的「补充资料」：今天是否已有安排取决于本机持久化记录
+        // （UI 测试共用同一模拟器），不该作为「新用户落在首页」的稳定判据。
+        XCTAssertTrue(app.buttons["补充资料"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.buttons["安排训练"].exists)
+        XCTAssertFalse(app.staticTexts["先认识你"].exists)
+        app.buttons["补充资料"].tap()
+        XCTAssertTrue(app.textFields["profile-input-profile_weight_kg"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.switches["同时记为一次称重"].exists)
+        app.buttons["关闭"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["安排训练"].waitForExistence(timeout: 10))
+        app.buttons["安排训练"].tap()
+        XCTAssertTrue(app.staticTexts["你想通过训练达到什么目标？"].waitForExistence(timeout: 10))
+        let goal = app.buttons["增肌塑形"]
+        XCTAssertTrue(goal.waitForExistence(timeout: 5)); goal.tap()
+        XCTAssertTrue(app.staticTexts["你之前有训练经验吗？"].waitForExistence(timeout: 10))
+        app.buttons["新手"].tap()
+        XCTAssertTrue(app.staticTexts["你通常在哪里训练？"].waitForExistence(timeout: 10))
+        app.buttons["健身房"].tap()
+        XCTAssertTrue(app.staticTexts["每周哪几天方便训练？"].waitForExistence(timeout: 10))
+        app.buttons["周一"].tap(); app.buttons["周三"].tap(); app.buttons["周五"].tap(); app.buttons["继续"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["每次大约能练多久？"].waitForExistence(timeout: 10))
+        let minutes = app.textFields["每次时长"]; XCTAssertTrue(minutes.waitForExistence(timeout: 5)); minutes.tap(); minutes.typeText("45")
+        app.buttons["继续"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["你已满 18 岁吗？"].waitForExistence(timeout: 10))
+        app.buttons["18 岁及以上"].tap()
+        XCTAssertTrue(app.buttons["生成训练计划"].waitForExistence(timeout: 10))
+    }
+
 }

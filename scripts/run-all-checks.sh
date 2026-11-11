@@ -134,7 +134,15 @@ xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
 if grep -qE "Executed [0-9]+ tests?, with [1-9][0-9]* failures?" "$OUT/unit.log"; then
   echo "UNIT TESTS FAILED (nonzero failure count)"; exit 1
 fi
-grep -qE "Executed [0-9]+ tests?, with 0 failures" "$OUT/unit.log"
+# 判据是"存在 0 failures 的汇总行"。若连汇总行都没有（测试目标编译失败、
+# 目的地不可用、测试进程崩溃），必须把 unit.log 尾部打出来——否则 CI 日志里
+# 只剩一句 "exit code 1"，没有任何可定位的信息（d622a7e 就吃了这个亏）。
+if ! grep -qE "Executed [0-9]+ tests?, with 0 failures" "$OUT/unit.log"; then
+  echo "!! 单元测试未通过：unit.log 里没有 0-failures 汇总行。"
+  echo "!! unit.log 尾部 80 行（编译错误 / 目的地错误 / 崩溃都在这里）："
+  tail -80 "$OUT/unit.log" || true
+  exit 1
+fi
 
 echo "== [5/5] UI 测试（旧壳回归 + V2 壳 + 无障碍审计 + 启动性能） =="
 # 注意：必须把 error: 断言行和测试自己 print 的诊断行一起打出来。此前只 grep
@@ -151,7 +159,13 @@ xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
 if grep -qE "Executed [0-9]+ tests?, with [1-9][0-9]* failures?" "$OUT/ui.log"; then
   echo "UI TESTS FAILED (nonzero failure count)"; exit 1
 fi
-grep -qE "Executed [0-9]+ tests?, with 0 failures" "$OUT/ui.log"
+# 同上：没有汇总行说明构建/启动阶段就失败了，把尾部打出来才查得动。
+if ! grep -qE "Executed [0-9]+ tests?, with 0 failures" "$OUT/ui.log"; then
+  echo "!! UI 测试未通过：ui.log 里没有 0-failures 汇总行。"
+  echo "!! ui.log 尾部 80 行："
+  tail -80 "$OUT/ui.log" || true
+  exit 1
+fi
 
 echo ""
 echo "ALL CHECKS PASSED"
