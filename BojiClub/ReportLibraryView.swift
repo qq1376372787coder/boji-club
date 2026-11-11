@@ -7,6 +7,16 @@ struct AIReportJobRoute: Identifiable {
     let id: String
 }
 
+/// 报告库的打开载荷：.sheet(item:) 用它在呈现时确定初始筛选。
+///
+/// 必须用 item: 而不是 isPresented:：后者的内容闭包在视图首次求值时就已被创建，
+/// @State(initialValue:) 只能拿到当时的值，之后再改筛选不会重新初始化。
+/// 实测 openReportLibrary(.weekly) 打开后筛选仍停在「全部」。
+struct ReportLibraryRoute: Identifiable {
+    let id = UUID()
+    let kind: ReportLibraryKind
+}
+
 private enum ReportLibraryEntry: Identifiable {
     case daily(AILocalJob), weekly(WeeklyReview), followup(AILocalJob), phase(PhaseReport)
     var id: String {
@@ -86,6 +96,9 @@ struct ReportLibraryView: View {
                     Text("历史报告正在分批恢复，列表会随同步继续补齐。")
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
+                // 报告库必须始终能生成报告：这一卡是「生成与更新报告」的唯一入口。
+                // 它此前不在 body 里（死代码），首页「生成分析」点进来根本无从生成。
+                generationHubCard
                 filters
                 if entries.isEmpty { emptyState }
                 ForEach(entries) { entry in

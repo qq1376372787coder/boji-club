@@ -111,7 +111,7 @@ struct BojiItemRow: View {
                 ZStack {
                     Circle().fill(Color(red: 0.949, green: 0.949, blue: 0.969))
                     Image(systemName: systemImage)
-                        .font(.system(size: 17, weight: .medium))
+                        .font(.system(.body, design: .default, weight: .medium))
                         .foregroundStyle(BojiV2.textSecondary)
                 }
                 .frame(width: 38, height: 38)
@@ -119,23 +119,23 @@ struct BojiItemRow: View {
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.system(.subheadline, design: .default, weight: .semibold))
                     .foregroundStyle(BojiV2.textPrimary)
                 if let subtitle {
                     Text(subtitle)
-                        .font(.system(size: 12))
+                        .font(.system(.caption, design: .default))
                         .foregroundStyle(BojiV2.textSecondary)
                 }
             }
             Spacer(minLength: 8)
             if let value {
                 Text(value)
-                    .bojiNumeral(15, weight: .semibold)
+                    .bojiNumeral(.subheadline, weight: .semibold)
                     .foregroundStyle(BojiV2.textPrimary)
             }
             if showsChevron {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(.footnote, design: .default, weight: .semibold))
                     .foregroundStyle(BojiV2.textSecondary)
                     .accessibilityHidden(true)
             }
@@ -182,11 +182,11 @@ struct BojiStatStrip: View {
                 VStack(spacing: 4) {
                     if item.isNumeric {
                         Text(item.value)
-                            .bojiNumeral(20)
+                            .bojiNumeral(.title3)
                             .foregroundStyle(BojiV2.textPrimary)
                     } else {
                         Text(item.value)
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.system(.headline, design: .default, weight: .semibold))
                             .foregroundStyle(BojiV2.textPrimary)
                     }
                     Text(item.label)

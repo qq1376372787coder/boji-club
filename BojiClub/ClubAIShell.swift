@@ -70,8 +70,7 @@ struct ClubAIShellView: View {
     @State private var showMembership = false
     @State private var showProfileBasics135 = false
     @State private var showPermissions135 = false
-    @State private var showReports135 = false
-    @State private var reportLibraryKind135: ReportLibraryKind = .all
+    @State private var reportLibraryRoute: ReportLibraryRoute?
     @State private var showLegacyOnboarding135 = false
     @State private var planSetupTask135: Task<Void, Never>?
     @State private var showFinishOnboarding135 = false
@@ -289,7 +288,7 @@ struct ClubAIShellView: View {
                 Menu {
                     Button("记录饮食") { openMeal("手动") }
                     Button("记录身体数据") { bodyEntryRoute = ClubDateRoute(date: Date()) }
-                    Button("AI 解读档案", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
+                    Button("AI 解读档案", systemImage: "doc.text.magnifyingglass") { openReportLibrary(.all) }
                 } label: { Image(systemName: "ellipsis") }
                 .accessibilityLabel("我的更多操作").accessibilityIdentifier("v2-context-action")
             } else {
@@ -297,7 +296,7 @@ struct ClubAIShellView: View {
                 Menu {
                     Button("记录饮食") { openMeal("手动") }
                     Button("记录身体数据") { bodyEntryRoute = ClubDateRoute(date: Date()) }
-                    Button("AI 解读档案", systemImage: "doc.text.magnifyingglass") { showReports135 = true }
+                    Button("AI 解读档案", systemImage: "doc.text.magnifyingglass") { openReportLibrary(.all) }
                 } label: { Image(systemName: "ellipsis") }.accessibilityLabel("更多操作").accessibilityIdentifier("v2-context-action")
             }
         }
@@ -369,7 +368,12 @@ struct ClubAIShellView: View {
             .sheet(item: $sidebarRoute) { sidebarDestination($0) }
             .sheet(isPresented: $showProfileBasics135) { ProfileFactsForm133(title: "补充资料", fields: ProfileFields133.basics) }
             .sheet(isPresented: $showPermissions135) { if let owner = ownerID { FirstLaunchPermissionsView(ownerID: owner) } }
-            .sheet(isPresented: $showReports135) { NavigationStack { ReportLibraryView(initialKind: reportLibraryKind135, embedded: true).toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showReports135 = false } } } } }
+            .sheet(item: $reportLibraryRoute) { route in
+                NavigationStack {
+                    ReportLibraryView(initialKind: route.kind, embedded: true)
+                        .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { reportLibraryRoute = nil } } }
+                }
+            }
             .sheet(isPresented: $showLegacyOnboarding135) {
                 NavigationStack {
                     OnboardingWorkspaceView(model: onboarding,
@@ -488,8 +492,8 @@ struct ClubAIShellView: View {
     }
     /// 打开报告库并定位到指定类型（日报 / 周报）。
     private func openReportLibrary(_ kind: ReportLibraryKind) {
-        reportLibraryKind135 = kind
-        showReports135 = true
+        // 每次打开都换一个新 id：同一个 kind 连续打开两次也必须重新初始化筛选。
+        reportLibraryRoute = ReportLibraryRoute(kind: kind)
     }
     private func openMeal(_ mode: String) {
         mealEntryRoute = ClubComposerMealRoute(date: Date(), mode: mode)
@@ -812,7 +816,7 @@ struct ClubAIWorkspaceIdleView: View {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(greeting)
-                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(BojiV2.textPrimary)
+                            .font(.system(.subheadline, design: .default, weight: .semibold)).foregroundStyle(BojiV2.textPrimary)
                         Text(todayLabel).font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
                     }
                     Spacer(minLength: 8)
@@ -925,7 +929,7 @@ struct ClubAIWorkspaceIdleView: View {
                         ZStack {
                             BojiProgressRing(progress: completionProgress, lineWidth: 8)
                             VStack(spacing: 0) {
-                                Text("\(completed)").bojiNumeral(34)
+                                Text("\(completed)").bojiNumeral(.largeTitle)
                                     .foregroundStyle(BojiV2.textPrimary)
                                 Text("/ \(total)").font(BojiV2.microEm)
                                     .foregroundStyle(BojiV2.textSecondary)
@@ -966,6 +970,10 @@ struct ClubAIWorkspaceIdleView: View {
                     BojiPrimaryButton(title: activeWorkout != nil ? "继续训练" : "开始训练") { onStartTraining() }
                 }
             }
+            // 卡片是容器而不是一个无障碍元素：先声明 contain，标识符才落在容器本身。
+            // 否则 accessibilityIdentifier 会向下传播，把卡内每个 StaticText / Button
+            // 的 identifier 都覆盖成同一个（AX 转储实测）。
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("v2-today-focus-card")
         }
         .padding(.horizontal, BojiV2.cardInset)
@@ -1018,7 +1026,7 @@ struct ClubAIWorkspaceIdleView: View {
             HStack {
                 // 标识符必须落在叶子节点上：容器上的 accessibilityIdentifier 会向下传播，
                 // 把四个入口 Button 自己的 identifier 覆盖掉，XCUI 就查不到「每日分析」。
-                Text("AI 功能").font(.system(size: 17, weight: .semibold)).foregroundStyle(BojiV2.textPrimary)
+                Text("AI 功能").font(BojiV2.bodyEm).foregroundStyle(BojiV2.textPrimary)
                     .accessibilityIdentifier("v2-ai-features")
                 Spacer()
                 Text("4 项").font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)

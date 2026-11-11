@@ -183,7 +183,7 @@ struct BojiCountUpText: View {
 
     var body: some View {
         Text(formatter(shown))
-            .bojiNumeral(40)
+            .bojiNumeral(.largeTitle)
             .contentTransition(.numericText())
             .onAppear {
                 guard !reduceMotion else { shown = value; return }

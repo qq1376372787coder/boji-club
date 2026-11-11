@@ -68,32 +68,36 @@ enum BojiV2 {
 
     // MARK: - 字体（§3）
 
+    // 全部走 Font.TextStyle，随 Dynamic Type 缩放（§11）。尺寸逐字对齐 §3 字阶；
+    // title 是唯一近似项：系统没有 30pt 的 text style，取最近的 .title（28pt），
+    // 换来的是可随无障碍字号缩放 —— 固定磅值会被无障碍审计判为「无法改变字号」。
     /// Display 34pt Semibold：页面大标题。
-    static let display = Font.system(size: 34, weight: .semibold)
-    /// Title 30pt Semibold：首页 / 庆祝主标题。
-    static let title = Font.system(size: 30, weight: .semibold)
-    /// Score 56pt Semibold：大数字。卡片内用 40pt。
+    static let display = Font.system(.largeTitle, design: .default, weight: .semibold)
+    /// Title 28pt Semibold：首页 / 庆祝主标题（§3 写 30，系统 text style 无 30pt）。
+    static let title = Font.system(.title, design: .default, weight: .semibold)
+    /// Score 56pt Semibold：大数字。没有对应的 text style，保持固定磅值，
+    /// 调用点按 §11 用 .scaledToFit() 收敛，避免截断数字。
     static let score = Font.system(size: 56, weight: .semibold)
     static let scoreCompact = Font.system(size: 40, weight: .semibold)
     /// Body-em 17pt Semibold：卡内主文案、按钮文字。
-    static let bodyEm = Font.system(size: 17, weight: .semibold)
-    static let body = Font.system(size: 15)
+    static let bodyEm = Font.system(.headline, design: .default, weight: .semibold)
+    static let body = Font.system(.subheadline, design: .default)
     /// Caption 13pt：单位、时间、副标签。
-    static let caption = Font.system(size: 13)
+    static let caption = Font.system(.footnote, design: .default)
     /// Micro 11–12pt：Tab 标签、宏量营养标签。
-    static let micro = Font.system(size: 11)
-    static let microEm = Font.system(size: 12, weight: .medium)
+    static let micro = Font.system(.caption2, design: .default)
+    static let microEm = Font.system(.caption, design: .default, weight: .medium)
 
-    /// 数字一律等宽（§3）。用于所有会跳变的数值，避免数字滚动时抖动。
-    static func numeral(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
-        .system(size: size, weight: weight, design: .rounded).monospacedDigit()
+    /// 数字一律等宽（§3），并随 Dynamic Type 缩放。用于所有会跳变的数值，避免数字滚动时抖动。
+    static func numeral(_ style: Font.TextStyle, weight: Font.Weight = .semibold) -> Font {
+        .system(style, design: .rounded, weight: weight).monospacedDigit()
     }
 }
 
-/// 数字等宽且随 Dynamic Type 缩放（§11：Display/Score 用 scaledToFit，可缩到 85%）。
+/// 数字等宽且随 Dynamic Type 缩放（§11：可缩到 85%，不允许截断数字）。
 extension View {
-    func bojiNumeral(_ size: CGFloat, weight: Font.Weight = .semibold) -> some View {
-        self.font(.system(size: size, weight: weight, design: .rounded).monospacedDigit())
+    func bojiNumeral(_ style: Font.TextStyle, weight: Font.Weight = .semibold) -> some View {
+        self.font(.system(style, design: .rounded, weight: weight).monospacedDigit())
             .minimumScaleFactor(0.85)
             .lineLimit(1)
     }
