@@ -549,6 +549,12 @@ final class BojiClubUITests: XCTestCase {
     func testWorkspaceAccessibilityAudit() throws {
         let app = launch()
         XCTAssertTrue(app.tabBars.buttons["主页"].waitForExistence(timeout: 15))
+        // 审计按元素实际渲染像素测对比度，外观不同会得到不同的结论。
+        // design.md §2.2「MVP 先做浅色」，CI 已把模拟器固定成浅色外观
+        // （scripts/run-all-checks.sh 的 set_simulator_appearance），
+        // 这里只做存在性确认：审计必须在工作台已渲染后才跑。
+        XCTAssertTrue(app.descendants(matching: .any)["v2-ai-workspace"].firstMatch.waitForExistence(timeout: 8),
+                      "审计前工作台必须已渲染，否则按过渡帧测对比度会产生假失败")
         var tolerated: [String] = []
         var failures: [String] = []
         // handler 返回 false 时审计框架会在调用点直接记录失败并中断测试，

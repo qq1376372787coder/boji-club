@@ -128,6 +128,23 @@ fi
 TEST_DESTINATION="$(resolve_test_destination)"
 echo "测试目的地：$TEST_DESTINATION"
 
+# 固定模拟器外观为浅色。
+# 无障碍审计按"元素实际渲染像素 vs 背景像素"测对比度，runner 默认外观不固定，
+# 于是同一份代码在不同 run 里被测成深色或浅色：深色下自适应色解析成浅色值，
+# 近黑字压深色卡（#1C1C1F 压 #1A1C1F）被判 Contrast failed，而这类颜色
+# 数值上不可能失败——审计结果因此不可复现。
+# design.md §2.2 明确「MVP 先做浅色」，CI 就该按设计稿定义的那套色值来测。
+set_simulator_appearance() {
+  local udid
+  udid=$(xcrun simctl list devices available 2>/dev/null | awk -F '[()]' '/iPhone/ {print $2; exit}')
+  if [ -n "$udid" ]; then
+    xcrun simctl boot "$udid" 2>/dev/null || true
+    xcrun simctl ui "$udid" appearance light 2>/dev/null || echo "!! 固定模拟器外观失败（simctl ui），审计可能仍按深色测"
+    echo "模拟器外观：light（udid=$udid）"
+  fi
+}
+set_simulator_appearance
+
 echo "== [4/5] 单元测试（BojiClubTests） =="
 xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
   -destination "$TEST_DESTINATION" test -only-testing:BojiClubTests 2>&1 | tee "$OUT/unit.log" | grep -E "Test Case.*(passed|failed)|Executed.*tests" || true
