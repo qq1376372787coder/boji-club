@@ -277,6 +277,9 @@ struct AIReportHistoryView: View {
     var dateKey: String? = nil
     var showsVersions = false
     @EnvironmentObject private var ai: AIService
+    /// 指定日期没有日报时直接提交 report 任务并打开阅读页，不再绕回自由对话。
+    @State private var dailyRoute: AIReportJobRoute?
+    @State private var dailyError: String?
     private var reports: [AILocalJob] {
         ReportHistory.visible(ai.jobs, dateKey: dateKey, deleted: Set(store.state.deletedAIJobIDs ?? []))
     }
@@ -285,14 +288,60 @@ struct AIReportHistoryView: View {
             if dateKey != nil, !showsVersions, let report = reports.first {
                 AIReportReaderView(jobID: report.id)
             } else if let dateKey, !showsVersions, let date = ClubDates.date(fromKey: dateKey) {
-                ScrollView {
-                    ClubAIEntryBridge(scope: .make(.daily, through: date))
-                }
-                .background { ClubBackground() }
-                .navigationTitle(ClubDates.calendar.isDateInToday(date) ? "今日日报" : "\(ClubDates.label(date, format: "M月d日"))日报")
-                .navigationBarTitleDisplayMode(.inline)
+                emptyReportPrompt(date: date)
             } else { historyList }
         }
+        .sheet(item: $dailyRoute) { route in
+            NavigationStack {
+                AIReportReaderView(jobID: route.id)
+                    .background { ClubBackground() }
+                    .navigationTitle("日报")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { DismissButton() } }
+            }
+        }
+    }
+    private func emptyReportPrompt(date: Date) -> some View {
+        let log = store.log(for: date)
+        return ScrollView {
+            VStack(spacing: 14) {
+                Text("这一天还没有日报").bojiFont(.cardTitle)
+                Text("生成后会保留在这里，即使当天记录后来有改动。")
+                    .font(.footnote).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let dailyError {
+                    Text(dailyError).font(.footnote).foregroundStyle(.red)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Button("生成当日日报") { generateDailyReport(for: date) }
+                    .buttonStyle(PrimaryButton())
+                    .disabled(!DailyReportEligibility.hasRecords(log))
+            }
+            .padding(ClubUI.pageInset)
+            .frame(maxWidth: .infinity)
+        }
+        .background { ClubBackground() }
+        .navigationTitle(ClubDates.calendar.isDateInToday(date) ? "今日日报" : "\(ClubDates.label(date, format: "M月d日"))日报")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+    private func generateDailyReport(for date: Date) {
+        guard let owner = store.editingAccountID else {
+            dailyError = "登录状态已变化，请重新打开报告库。"; return
+        }
+        do {
+            let input = try ai.reportInput(date: date, log: store.log(for: date),
+                nutritionTarget: store.state.nutritionTarget,
+                weightHistory: store.bodyWeightPoints(through: date),
+                goalContext: ClubAIContext.make(state: store.state, start: date, end: date))
+            let jobID = try ai.submit(input)
+            guard owner == store.editingAccountID else {
+                dailyError = "账号已切换，这份日报没有生成；请重新打开后再试。"; return
+            }
+            dailyError = nil
+            dailyRoute = AIReportJobRoute(id: jobID)
+        } catch { dailyError = AppErrorText.message(error) }
     }
     private var historyList: some View {
         List {
@@ -387,7 +436,6 @@ struct AIReportReaderView: View {
     @AppStorage("report.reading.font-size") private var fontSize = 18
     @State private var ownerID: Int?
     @State private var shareDraft: ShareDraft?
-    @State private var contextSource: ClubContextSource?
     private var job: AILocalJob? {
         guard !(store.state.deletedAIJobIDs ?? []).contains(jobID), let job = ai.job(jobID),
               job.status == "succeeded", job.result?.kind == "report" else { return nil }
@@ -420,12 +468,6 @@ struct AIReportReaderView: View {
                         }
                         reportNotes(result.notes)
                         shareButton(job, result: result)
-                        Button {
-                            contextSource = ClubContextSource(type: "report", jobID: job.id, version: nil, sessionID: nil,
-                                                              title: "继续问这份 \(job.request.date) 日报")
-                        } label: {
-                            Label("继续问 AI", systemImage: "bubble.left.and.bubble.right")
-                        }.buttonStyle(SecondaryButton())
                         ReportPreviousAnalysesLink(dateKey: job.request.date)
                     }.padding(ClubUI.pageInset).frame(maxWidth: ClubUI.contentWidth).frame(maxWidth: .infinity, alignment: .center)
                 } else {
@@ -445,7 +487,6 @@ struct AIReportReaderView: View {
                     }
                 }
                 .sheet(item: $shareDraft) { ShareCardPreview(draft: $0) }
-                .sheet(item: $contextSource) { source in ContextAskView(source: source) }
                 .onAppear { if ownerID == nil { ownerID = store.editingAccountID } }
                 .onChange(of: store.editingAccountID) { _, id in if id != ownerID { shareDraft = nil; dismiss() } }
         }

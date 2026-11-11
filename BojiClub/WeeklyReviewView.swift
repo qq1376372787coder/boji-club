@@ -181,7 +181,6 @@ struct WeeklyReviewHistoryDetail: View {
     @AppStorage("report.reading.font-size") private var fontSize = 18
     @State private var ownerID: Int?
     @State private var shareDraft: ShareDraft?
-    @State private var contextSource: ClubContextSource?
     private var current: WeeklyReview? {
         WeeklyVersions.visible(days: store.state.days, local: weekly.reviews,
             deletedJobIDs: Set(store.state.deletedAIJobIDs ?? [])).first { $0.id == review.id }
@@ -259,16 +258,7 @@ struct WeeklyReviewHistoryDetail: View {
             Button { prepareShare(current, result: result) } label: {
                 Label("分享这份分析", systemImage: "square.and.arrow.up")
             }.buttonStyle(SecondaryButton())
-            if let jobID = current.jobID {
-                Button {
-                    contextSource = ClubContextSource(type: "weekly", jobID: jobID, version: nil, sessionID: nil,
-                                                      title: "继续问这份每周回顾")
-                } label: {
-                    Label("继续问 AI", systemImage: "bubble.left.and.bubble.right")
-                }.buttonStyle(SecondaryButton())
-            }
         }.padding(ClubUI.pageInset).frame(maxWidth: ClubUI.contentWidth).frame(maxWidth: .infinity, alignment: .center)
-        .sheet(item: $contextSource) { source in ContextAskView(source: source) }
     }
     private func prepareShare(_ current: WeeklyReview, result: WeeklyResult) {
         guard let owner = ownerID, owner == store.editingAccountID else { return }
@@ -312,7 +302,6 @@ struct WeeklyReviewDetail: View {
     @State private var scope = "combined"
     @State private var updatedDraft: WeeklyReview?
     @State private var ownerID: Int?
-    @State private var contextSource: ClubContextSource?
     private var ownsAccount: Bool { ownerID != nil && ownerID == store.editingAccountID }
     private var cycle: TrainingCycle { review.cycle ?? TrainingCycle(start: ClubDates.key(ClubDates.calendar.date(byAdding: .day, value: -6, to: ClubDates.date(fromKey: review.date) ?? Date())!), plannedDates: []) }
     private var readiness: WeeklyReadiness { WeeklyReadiness(cycle: cycle, days: store.state.days) }

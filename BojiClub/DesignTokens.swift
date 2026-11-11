@@ -1174,7 +1174,6 @@ struct ClubContextualInsightStrip: View {
     let date: Date
     let kinds: [ClubInsightKind]
     @EnvironmentObject private var store: AppStore
-    @State private var showCoach = false
     @State private var showShift = false
     @State private var dismissedEventID: String?
 
@@ -1248,20 +1247,6 @@ struct ClubContextualInsightStrip: View {
                         .buttonStyle(.plain)
                     }
 
-                    Button {
-                        BojiHaptics.latch()
-                        showCoach = true
-                    } label: {
-                        Label("问教练对策", systemImage: "bubble.left.and.bubble.right.fill")
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, BojiSpace.general)
-                            .padding(.vertical, BojiSpace.tight)
-                            .background(BojiColor.cardSurface, in: Capsule())
-                            .overlay { Capsule().stroke(BojiColor.outline, lineWidth: 0.5) }
-                            .foregroundStyle(BojiColor.textPrimary)
-                    }
-                    .buttonStyle(.plain)
-
                     Spacer()
                 }
             }
@@ -1282,12 +1267,6 @@ struct ClubContextualInsightStrip: View {
                 NavigationStack {
                     ShiftScheduleView()
                         .toolbar { ToolbarItem(placement: .cancellationAction) { DismissButton() } }
-                }
-            }
-            .sheet(isPresented: $showCoach) {
-                NavigationStack {
-                    ClubAIEntryBridge(question: "针对「\(event.title)」：\(event.detail)，请结合我最近的记录给出具体可执行建议。")
-                        .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { showCoach = false } } }
                 }
             }
         }

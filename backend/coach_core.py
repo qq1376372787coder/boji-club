@@ -273,7 +273,11 @@ def clean_result(request, raw, helpers, *, server_safety=False):
     item=raw['coach'];answer=text(item['answer'],5000).strip()
     if len(answer)<2: raise ValueError('coach answer lacks detail')
     validate_answer_prose(answer)
-    sources={x['id']:x for x in evidence(trimmed_payload(request['payload']))}
+    # 校验集必须覆盖服务端已知的全部来源：确定性快路径（fast_intent /
+    # nutrition_quick130）按完整载荷给出 source_ids，用裁剪后的载荷做校验会把
+    # 这些合法引用误判成「编造来源」。提示词里的 allowed_sources 才用裁剪后的
+    # 载荷，确保模型只拿到自己实际看得到的编号。
+    sources={x['id']:x for x in evidence(request['payload'])}
     chosen=sequence(item.get('source_ids',[]),14)
     if any(not isinstance(s,str) or s not in sources for s in chosen) or len(chosen)!=len(set(chosen)): raise ValueError('invented coach source')
     if purpose == 'context_continue':
