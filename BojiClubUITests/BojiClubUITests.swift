@@ -852,13 +852,20 @@ final class BojiClubUITests: XCTestCase {
         for t in texts.prefix(60) {
             print("AXDUMP[\(scope)] TEXT id=[\(t.identifier)] label=[\(t.label)] frame=\(t.frame) hittable=\(t.isHittable)")
         }
-        print("AXDUMP[\(scope)] match-每日分析=\(app.buttons["每日分析"].allElementsBoundByIndex.count)")
-        print("AXDUMP[\(scope)] match-每周复盘=\(app.buttons["每周复盘"].allElementsBoundByIndex.count)")
-        print("AXDUMP[\(scope)] match-v2-ai-features=\(app.buttons["v2-ai-features"].allElementsBoundByIndex.count)")
-        print("AXDUMP[\(scope)] match-ai功能-text=\(app.staticTexts["AI 功能"].allElementsBoundByIndex.count)")
-        print("AXDUMP[\(scope)] match-筛选=\(app.buttons["筛选"].allElementsBoundByIndex.count)")
-        print("AXDUMP[\(scope)] match-补充资料=\(app.buttons["补充资料"].allElementsBoundByIndex.count)")
-        print("AXDUMP[\(scope)] match-今天还没有安排=\(app.staticTexts["今天还没有安排"].allElementsBoundByIndex.count)")
+        print("AXDUMP[\(scope)] match-每日分析=\(axCount(app.buttons, "每日分析"))")
+        print("AXDUMP[\(scope)] match-每周复盘=\(axCount(app.buttons, "每周复盘"))")
+        print("AXDUMP[\(scope)] match-v2-ai-features=\(axCount(app.buttons, "v2-ai-features"))")
+        print("AXDUMP[\(scope)] match-ai功能-text=\(axCount(app.staticTexts, "AI 功能"))")
+        print("AXDUMP[\(scope)] match-筛选=\(axCount(app.buttons, "筛选"))")
+        print("AXDUMP[\(scope)] match-补充资料=\(axCount(app.buttons, "补充资料"))")
+        print("AXDUMP[\(scope)] match-今天还没有安排=\(axCount(app.staticTexts, "今天还没有安排"))")
+    }
+
+    /// 统计 query 中 identifier 或 label 命中的元素数。
+    /// 不能写 `app.buttons["x"].allElementsBoundByIndex`：下标返回 XCUIElement
+    /// 而不是 XCUIElementQuery，没有那个成员（测试目标会因此编译失败）。
+    private func axCount(_ query: XCUIElementQuery, _ text: String) -> Int {
+        query.matching(NSPredicate(format: "identifier == %@ OR label == %@", text, text)).count
     }
 }
 
