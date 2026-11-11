@@ -405,7 +405,10 @@ class TestDataIntegrityEngine(unittest.TestCase):
         self.assertIn("打开当日日报", review)
 
         profile = (root / "BojiClub/ProfileView.swift").read_text("utf-8")
-        self.assertIn('if recordAccessOnly { Section { NavigationLink("历史报告") { ReportLibraryView() } } }', profile)
+        # 「我的」Tab 在 v2 改造后不再是 List/Section 结构，历史报告入口改成
+        # BojiItemRow（§10.8 玻璃列表行），语义不变：仍只在 recordAccessOnly 时出现。
+        self.assertIn('if recordAccessOnly {', profile)
+        self.assertIn('BojiItemRow(title: "历史报告", systemImage: "doc.text", showsChevron: true,', profile)
         self.assertNotIn('profileButton("查看历史报告档案"', profile)
         self.assertNotIn("我的 → 我的复盘档案", profile)
         self.assertNotIn("我的 → 体重记录与变化", profile)
