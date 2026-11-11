@@ -153,7 +153,7 @@ echo "== [5/5] UI 测试（旧壳回归 + V2 壳 + 无障碍审计 + 启动性�
 # 把逐条明细 print 出来，不打就只剩一句汇总断言。
 xcodebuild -project BojiClub.xcodeproj -scheme BojiClub \
   -destination "$TEST_DESTINATION" test 2>&1 | tee "$OUT/ui.log" \
-  | grep -E "Test Case.*failed|Executed.*tests|TEST|error:|XCTAssert|t = .*[Ww]ait|AUDIT-|REVEAL-FAILED" || true
+  | grep -E "Test Case.*failed|Executed.*tests|TEST|error:|XCTAssert|t = .*[Ww]ait|AUDIT-|REVEAL-FAILED|AXDUMP" || true
 # ui.log 同时含单元测试汇总（"Executed 16 tests, with 0 failures"），不能靠
 # "任意一条 0 failures" 判绿——必须排除任何非零 failure 计数（曾因此漏报 1 个 UI 失败）。
 if grep -qE "Executed [0-9]+ tests?, with [1-9][0-9]* failures?" "$OUT/ui.log"; then

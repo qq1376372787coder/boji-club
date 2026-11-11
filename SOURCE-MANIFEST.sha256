@@ -912,7 +912,7 @@ f8b56aa9b3ddcab48a3dfe9a030d5076caf33522b6333fbb746318e868b1c367  ./scripts/enab
 42a38e645ebce8c3833dc96ae1252805addc3ed002fe8ebe8dd78c92fe4c141f  ./scripts/import-usda-foods.py
 e5e2fa1151ec2af6b22871eb7570278011ad8712f54a883c8ad98c7848645bed  ./scripts/php_parse_check.py
 6f5189683ffbf6d3db2bc9fa568dfb998eb07a42b2637ffea4d7ecf24f842489  ./scripts/resolve-xcode.sh
-17ec4790c71455625704ed0ce3a39490b5b37b5e030fd8eaf8715b71f5984109  ./scripts/run-all-checks.sh
+83b6b5786d5be4f32d4debcb60283c521279a8fa376288a3aca0f0ffeacf6404  ./scripts/run-all-checks.sh
 7f1ef2ff3513b87ec664800cde0eb7659520e605220a6f70023f3065d826f46f  ./shared/prompts/PROMPT_VERSION.json
 b1bab330a51fb157f080ea2d288640d7714ca925d6de72abe948f3c3a7d5fac8  ./shared/prompts/context_continue.v1.md
 b3b72882a0cb185016824678a49bb47d46499819818aee474f2e6372a71b8000  ./shared/prompts/draft_correction.v1.md
