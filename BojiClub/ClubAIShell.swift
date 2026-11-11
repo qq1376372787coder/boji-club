@@ -1016,7 +1016,10 @@ struct ClubAIWorkspaceIdleView: View {
     private var aiFeatureCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
+                // 标识符必须落在叶子节点上：容器上的 accessibilityIdentifier 会向下传播，
+                // 把四个入口 Button 自己的 identifier 覆盖掉，XCUI 就查不到「每日分析」。
                 Text("AI 功能").font(.system(size: 17, weight: .semibold)).foregroundStyle(BojiV2.textPrimary)
+                    .accessibilityIdentifier("v2-ai-features")
                 Spacer()
                 Text("4 项").font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
             }
@@ -1035,7 +1038,6 @@ struct ClubAIWorkspaceIdleView: View {
                     .bojiStagger(index: 3)
             }
         }
-        .accessibilityIdentifier("v2-ai-features")
     }
     private func insightCard(_ insight: ClubHomeInsightSelection) -> some View {
         VStack(alignment: .leading, spacing: 10) {

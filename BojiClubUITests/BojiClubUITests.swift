@@ -556,7 +556,9 @@ final class BojiClubUITests: XCTestCase {
         func audit(_ scope: String, _ issue: XCUIAccessibilityAuditIssue, requireHittable: Bool = false) -> Bool {
             let compact = issue.compactDescription
             let element = issue.element?.debugDescription.prefix(160) ?? "?"
-            print("AUDIT-DIAGNOSTIC [\(scope)] \(issue.detailedDescription)")
+            // 必须带元素明细：GitHub Actions 会重排/截断多行输出，
+            // 只有把「问题 + 元素」打在同一行，才能在日志里定位到具体控件。
+            print("AUDIT-DIAGNOSTIC [\(scope)] \(issue.detailedDescription) — \(element)")
             if scope == "sidebar", !compact.contains("nearly passed") {
                 attachScreenshot("ax-sidebar-issue-\(failures.count)", app: app)
             }
@@ -828,7 +830,9 @@ final class Build135NaturalWelcomeUITests: XCTestCase {
         app.launchEnvironment = ["BOJI_PREVIEW_ACCOUNT": "new", "BOJI_PREVIEW_SKIP_GUIDE": "1"]
         app.launch()
         // 自由对话已下线：新用户落在首页工作台，不再有「我是 Club AI」对话开场。
-        XCTAssertTrue(app.staticTexts["今天还没有安排"].waitForExistence(timeout: 20))
+        // 判据用新用户专属的「补充资料」：今天是否已有安排取决于本机持久化记录
+        // （UI 测试共用同一模拟器），不该作为「新用户落在首页」的稳定判据。
+        XCTAssertTrue(app.buttons["补充资料"].waitForExistence(timeout: 20))
         XCTAssertTrue(app.buttons["安排训练"].exists)
         XCTAssertFalse(app.staticTexts["先认识你"].exists)
         app.buttons["补充资料"].tap()
@@ -852,5 +856,46 @@ final class Build135NaturalWelcomeUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["你已满 18 岁吗？"].waitForExistence(timeout: 10))
         app.buttons["18 岁及以上"].tap()
         XCTAssertTrue(app.buttons["生成训练计划"].waitForExistence(timeout: 10))
+    }
+
+    // MARK: - 临时诊断：导出真实 AX 树，确认入口 Button 的 identifier / label
+
+    func testZZDiagnoseAccessibilityTree() {
+        let app = launch()
+        XCTAssertTrue(app.descendants(matching: .any)["v2-ai-workspace"].firstMatch.waitForExistence(timeout: 8))
+        Thread.sleep(forTimeInterval: 3)
+        dumpAX(app, scope: "home")
+        for _ in 0..<4 { app.swipeUp() }
+        Thread.sleep(forTimeInterval: 2)
+        dumpAX(app, scope: "home-scrolled")
+        let records = launch(tab: "记录")
+        XCTAssertTrue(records.staticTexts["多尺度趋势"].waitForExistence(timeout: 8))
+        dumpAX(records, scope: "records")
+        // 新用户启动是另一条路径（onboardingCompleted == false），单独导出。
+        let newApp = XCUIApplication()
+        newApp.launchEnvironment = ["BOJI_PREVIEW_ACCOUNT": "new", "BOJI_PREVIEW_SKIP_GUIDE": "1"]
+        newApp.launch()
+        Thread.sleep(forTimeInterval: 3)
+        dumpAX(newApp, scope: "new-user")
+    }
+
+    private func dumpAX(_ app: XCUIApplication, scope: String) {
+        let buttons = app.buttons.allElementsBoundByIndex
+        print("AXDUMP[\(scope)] buttons=\(buttons.count)")
+        for b in buttons {
+            print("AXDUMP[\(scope)] BUTTON id=[\(b.identifier)] label=[\(b.label)] value=[\(String(describing: b.value))] frame=\(b.frame) hittable=\(b.isHittable)")
+        }
+        let texts = app.staticTexts.allElementsBoundByIndex
+        print("AXDUMP[\(scope)] staticTexts=\(texts.count)")
+        for t in texts.prefix(60) {
+            print("AXDUMP[\(scope)] TEXT id=[\(t.identifier)] label=[\(t.label)] frame=\(t.frame) hittable=\(t.isHittable)")
+        }
+        print("AXDUMP[\(scope)] match-每日分析=\(app.buttons["每日分析"].allElementsBoundByIndex.count)")
+        print("AXDUMP[\(scope)] match-每周复盘=\(app.buttons["每周复盘"].allElementsBoundByIndex.count)")
+        print("AXDUMP[\(scope)] match-v2-ai-features=\(app.buttons["v2-ai-features"].allElementsBoundByIndex.count)")
+        print("AXDUMP[\(scope)] match-ai功能-text=\(app.staticTexts["AI 功能"].allElementsBoundByIndex.count)")
+        print("AXDUMP[\(scope)] match-筛选=\(app.buttons["筛选"].allElementsBoundByIndex.count)")
+        print("AXDUMP[\(scope)] match-补充资料=\(app.buttons["补充资料"].allElementsBoundByIndex.count)")
+        print("AXDUMP[\(scope)] match-今天还没有安排=\(app.staticTexts["今天还没有安排"].allElementsBoundByIndex.count)")
     }
 }

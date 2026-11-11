@@ -259,9 +259,15 @@ struct BojiChipRow: View {
     var body: some View {
         Group {
             if items.count <= 4, !typeSize.isAccessibilitySize {
-                Picker("筛选", selection: $selection) { options }.pickerStyle(.segmented)
+                Picker("筛选", selection: $selection) { options }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("筛选")
             } else {
-                Picker("筛选", selection: $selection) { options }.pickerStyle(.menu)
+                // menu 分支的 AX label 是选中项而不是标题，必须显式给 identifier，
+                // 否则 `app.buttons["筛选"]` 查不到这个弹出按钮。
+                Picker("筛选", selection: $selection) { options }
+                    .pickerStyle(.menu)
+                    .accessibilityIdentifier("筛选")
             }
         }
         .frame(minHeight: 44).tint(ClubBrand.accent)
