@@ -51,10 +51,12 @@ struct ClubCard<Content: View>: View {
         if nativeSections {
             Section { content.environment(\.clubNativeSections132, false) }
         } else {
-        VStack(alignment: .leading, spacing: compact ? 8 : 14) { content }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(compact ? 12 : ClubUI.cardInset)
-            .bojiElevated(cornerRadius: ClubUI.cardRadius)
+            // 设计稿 §12：内容卡统一走 v2 玻璃，不再保留「灰底 + 描边 + 抬高」双轨。
+            // 列表截面（nativeSections）继续用系统分组背景，避免材质叠材质。
+            VStack(alignment: .leading, spacing: compact ? 8 : 14) { content }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(compact ? BojiV2.rowPadding : BojiV2.glassPadding)
+                .bojiGlass(radius: BojiV2.glassCardRadius)
         }
     }
 }

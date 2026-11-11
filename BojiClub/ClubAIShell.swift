@@ -786,15 +786,21 @@ struct ClubAIWorkspaceIdleView: View {
         }
         return values
     }
-    @State private var greetingSeed = Int.random(in: 0..<1000)
+    /// 设计稿 §10.1：顶部左侧「早上好，梦雨」15 Semibold + 日期 13。
+    /// 自由对话已下线，这里不再出现「我是 Club AI」那种对话式开场；
+    /// 训练状态由紧随其下的今日焦点卡表达，不挤进问候语。
     private var greeting: String {
-        // 自由对话已下线：问候语不再往聊天引导。
-        let options = activeWorkout != nil
-            ? ["这一组，按自己的节奏来。", "训练进行得怎么样？"]
-            : today.exercises.isEmpty
-            ? ["今天休息，先把状态养回来。", "从一条记录开始，也很好。"]
-            : ["准备好，开始今天的训练吗？", "看看今天的安排？"]
-        return options[greetingSeed % options.count]
+        let hour = ClubDates.calendar.component(.hour, from: Date())
+        let part: String
+        switch hour {
+        case 5..<12: part = "早上好"
+        case 12..<18: part = "下午好"
+        default: part = "晚上好"
+        }
+        // 只有用户真正填过昵称才署名；默认占位名不走进问候语。
+        let name = store.state.profile.nickname.trimmingCharacters(in: .whitespaces)
+        if name.isEmpty || name == "薄肌新成员" { return part }
+        return "\(part)，\(name)"
     }
     // Revalidate against current candidates even before onChange runs: withdrawn/other-owner text never renders.
     private var insight: ClubHomeInsightSelection? {
@@ -805,7 +811,7 @@ struct ClubAIWorkspaceIdleView: View {
             VStack(alignment: .leading, spacing: 28) {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(isNewUser ? "嗨，我是 Club AI" : greeting)
+                        Text(greeting)
                             .font(.system(size: 15, weight: .semibold)).foregroundStyle(BojiV2.textPrimary)
                         Text(todayLabel).font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
                     }

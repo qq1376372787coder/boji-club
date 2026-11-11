@@ -823,11 +823,12 @@ final class BojiClubUITests: XCTestCase {
 /// 走完资料问答并到达「生成训练计划」。
 final class Build135NaturalWelcomeUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
-    func testNewUserCanEnterAndCollectPlanInConversation() {
+    func testNewUserCanEnterAndCollectPlanFromHome() {
         let app = XCUIApplication()
         app.launchEnvironment = ["BOJI_PREVIEW_ACCOUNT": "new", "BOJI_PREVIEW_SKIP_GUIDE": "1"]
         app.launch()
-        XCTAssertTrue(app.staticTexts["嗨，我是 Club AI"].waitForExistence(timeout: 20))
+        // 自由对话已下线：新用户落在首页工作台，不再有「我是 Club AI」对话开场。
+        XCTAssertTrue(app.staticTexts["今天还没有安排"].waitForExistence(timeout: 20))
         XCTAssertTrue(app.buttons["安排训练"].exists)
         XCTAssertFalse(app.staticTexts["先认识你"].exists)
         app.buttons["补充资料"].tap()

@@ -16,14 +16,16 @@ enum BojiV2 {
     static let accent = Color(red: 0.18, green: 0.42, blue: 0.965)
     /// accent 填充底 rgba(46,107,246,0.12)：chip / 标签底，如「今天」。
     static let accentFill = Color(red: 0.18, green: 0.42, blue: 0.965).opacity(0.12)
-    /// 主文字 #1d1d1f，对页面底色 15.7:1。
-    static let textPrimary = Color(red: 0.114, green: 0.114, blue: 0.122)
-    /// 次文字 #6E6E73，全部正文级副文案，4.7:1（过 WCAG AA）。
-    static let textSecondary = Color(red: 0.431, green: 0.431, blue: 0.451)
-    /// 弱化图标与装饰线 rgba(0,0,0,0.07)。
-    static let hairline = Color.black.opacity(0.07)
-    /// 页面底色 #F5F5F7。整页只有这一层背景，不允许灰底 + 不透明白卡。
-    static let background = Color(red: 0.961, green: 0.961, blue: 0.968)
+    /// 主文字 #1d1d1f，对页面底色 15.7:1。深色 #f5f5f7（§2.2）。
+    static let textPrimary = adaptive(light: Color(red: 0.114, green: 0.114, blue: 0.122),
+                                     dark: Color(red: 0.961, green: 0.961, blue: 0.968))
+    /// 次文字 #6E6E73，全部正文级副文案，4.7:1（过 WCAG AA）。深色 #98989f。
+    static let textSecondary = adaptive(light: Color(red: 0.431, green: 0.431, blue: 0.451),
+                                       dark: Color(red: 0.596, green: 0.596, blue: 0.624))
+    /// 弱化图标与装饰线 rgba(0,0,0,0.07)；深色 rgba(255,255,255,0.10)。
+    static let hairline = adaptive(light: Color.black.opacity(0.07), dark: Color.white.opacity(0.10))
+    /// 页面底色 #F5F5F7。整页只有这一层背景，不允许灰底 + 不透明白卡。深色 #000（§2.2）。
+    static let background = adaptive(light: Color(red: 0.961, green: 0.961, blue: 0.968), dark: .black)
 
     /// 语义色（§2.3）。只用于状态反馈，不进 chrome。
     static let success = Color(red: 0.188, green: 0.820, blue: 0.345)
@@ -40,12 +42,12 @@ enum BojiV2 {
 
     // MARK: - 材质与玻璃（§5）
 
-    /// 玻璃填充 rgba(255,255,255,0.62)，叠加在系统材质之上。
-    static let glassFill = Color.white.opacity(0.62)
-    /// 玻璃描边 rgba(255,255,255,0.95)。
-    static let glassStroke = Color.white.opacity(0.95)
-    /// 唯一一档阴影：卡片 0 4–6pt 20–40pt rgba(0,0,0,0.05–0.06)。其余一律不加。
-    static let cardShadow = Color.black.opacity(0.06)
+    /// 玻璃填充：浅色 rgba(255,255,255,0.62) 叠加在系统材质之上；深色 rgba(255,255,255,0.08)（§2.2）。
+    static let glassFill = adaptive(light: Color.white.opacity(0.62), dark: Color.white.opacity(0.08))
+    /// 玻璃描边：浅色 rgba(255,255,255,0.95)；深色 rgba(255,255,255,0.18)。
+    static let glassStroke = adaptive(light: Color.white.opacity(0.95), dark: Color.white.opacity(0.18))
+    /// 唯一一档阴影：卡片 0 4–6pt 20–40pt rgba(0,0,0,0.05–0.06)。其余一律不加。深色加深到 40%。
+    static let cardShadow = adaptive(light: Color.black.opacity(0.06), dark: Color.black.opacity(0.40))
     /// 主按钮专用投影 0 8pt 24pt rgba(46,107,246,0.35)。
     static let accentShadow = Color(red: 0.18, green: 0.42, blue: 0.965).opacity(0.35)
 
