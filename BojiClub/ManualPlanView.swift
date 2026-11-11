@@ -483,7 +483,7 @@ struct ManualPlanView: View {
               case .number(let span)? = job.request.payload["context_days"], [7.0,14.0].contains(span),
               job.request.payload["days"] != nil,
               proposal.baseline == ClubAdjustmentRules.upcoming(state: store.state, after: date) else {
-            throw ManualPlanError.message("建议或未来安排已变化，请返回 Club AI 重新核对，或明确另建自由草稿。")
+            throw ManualPlanError.message("建议或未来安排已变化，请返回 AI 计划重新核对，或明确另建自由草稿。")
         }
         let session = job.result?.coach?.source_session.flatMap(UUID.init(uuidString:))
         let fresh = try ai.coachInput(question: "采用前核对记录依据", conversation: job.id, history: [],

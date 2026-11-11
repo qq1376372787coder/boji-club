@@ -727,7 +727,7 @@ final class OnboardingV2Model: ObservableObject {
         #if DEBUG
         if account.isPreviewAccount { error = "开发预览不连接引导模型；请用原生卡片继续。"; return }
         #endif
-        guard ai.routingConsentGranted else { error = "云端分析尚未开启，可在隐私说明中开启后使用 AI 对话；原生卡片仍可填写。"; return }
+        guard ai.routingConsentGranted else { error = "云端分析尚未开启，可在隐私说明中开启后使用引导 AI；原生卡片仍可填写。"; return }
         guard state?.capabilities.assistAvailable == true else { error = "今天的引导 AI 次数已用完或引导已暂停；请继续使用原生卡片，明天会自动恢复。"; return }
         error = nil; streamingText = ""; lastAssistantAnswer = nil; isAssisting = true
         defer { isAssisting = false }

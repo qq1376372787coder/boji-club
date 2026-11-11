@@ -998,15 +998,16 @@ struct ClubUsageGuideView: View {
         ClubNavigationStack132 {
             List {
                 Section("边用边学") {
-                    Label("直接提问：在 Club AI 输入框说出你的问题。", systemImage: "bubble.left")
-                    Label("引用记录：输入 @ 或点＋，挑一条记录再提问。", systemImage: "at")
-                    Label("登记训练：点重量、次数或秒数，做完一组再完成。", systemImage: "dumbbell")
+                    Label("每日分析：在首页点「每日分析」，读当天的训练、饮食与恢复解读。", systemImage: "chart.bar")
+                    Label("每周复盘：在首页点「每周复盘」，看这一周的整体进展。", systemImage: "calendar")
+                    Label("拍照识别：在饮食页点「照片」，识别食物后核对份量再保存。", systemImage: "camera")
+                    Label("AI 计划：在首页点「AI 计划生成」，按你的目标与时间安排训练。", systemImage: "dumbbell")
                 }
                 Section {
                     Text("首次使用时，相关位置会显示简短操作提示；不需要先读完说明书。拍照识别与 AI 建议都需要你核对后保存。").font(.footnote).foregroundStyle(.secondary)
                     Button("重新显示操作提示") {
                         if let id = firstVisitAccountID {
-                            for step in ["chat", "first_set"] { UserDefaults.standard.removeObject(forKey: "club.guide123.\(id).\(step)") }
+                            UserDefaults.standard.removeObject(forKey: "club.guide123.\(id).first_set")
                         }
                         dismiss()
                     }

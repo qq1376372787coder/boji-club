@@ -34,7 +34,6 @@ struct BodyWeightView: View {
             scrollContent
                 .navigationTitle("身体记录").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) { AIReferenceEntryButton(reference: .day("body_range", date: selectedDate, title: "身体测量")) }
                     ToolbarItem(placement: .topBarLeading) { Button("分类登记") { showFactIntake = true } }
                     ToolbarItem(placement: .cancellationAction) { DismissButton() }
                 }

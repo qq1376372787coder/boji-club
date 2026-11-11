@@ -286,7 +286,6 @@ private struct ClubPlanVersionDetail: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 ClubCard {
-                    AIReferenceEntryButton(reference: .init(kind: "plan_version", resourceID: version.id, from: version.start, to: version.start, title: version.title))
                     Text(version.title).bojiFont(.pageTitle).foregroundStyle(BojiColor.textPrimary)
                     Text("\(source) · \(version.start) 起 \(version.duration) 天")
                     Text("制定时目标：\(version.requestedProfile.goal) · 每周 \(version.requestedProfile.daysPerWeek) 练")

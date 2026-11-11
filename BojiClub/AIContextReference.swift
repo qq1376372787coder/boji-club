@@ -37,11 +37,7 @@ struct AIContextReference: Codable, Equatable, Identifiable {
     static func day(_ kind: String, date: Date, title: String) -> Self {
         Self(kind: kind, from: ClubDates.key(date), to: ClubDates.key(date), title: title)
     }
-    static func open(_ reference: Self, owner: Int) {
-        NotificationCenter.default.post(name: .clubOpenReferenceAI, object: nil, userInfo: ["owner": owner, "reference": reference])
-    }
 }
-extension Notification.Name { static let clubOpenReferenceAI = Notification.Name("clubOpenReferenceAI") }
 
 struct AIContextBundle: Decodable {
     var bundleID: String
@@ -179,17 +175,6 @@ struct AIReferenceSourceCard: View {
         }
         if let v = fields["plan_version"]?.object { result.append((v["title"]?.string ?? "计划") + " · \(v["sessions"]?.array?.count ?? 0)个训练日"); if v["status"]?.string == "draft" { result.append("计划草稿，尚未保存到日历") } }
         return result.isEmpty ? ["该范围没有对应的已登记数值。"] : result
-    }
-}
-
-struct AIReferenceEntryButton: View {
-    let reference: AIContextReference
-    @EnvironmentObject private var store: AppStore
-    @Environment(\.dismiss) private var dismiss
-    var body: some View {
-        Button { if let owner = store.editingAccountID { dismiss(); AIContextReference.open(reference, owner: owner) } }
-        label: { Label("和 Club AI 聊聊", systemImage: "sparkles") }
-        .buttonStyle(ClubActionButtonStyle(kind: .secondary, size: .regular))
     }
 }
 

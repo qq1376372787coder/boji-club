@@ -31,7 +31,6 @@ struct NutritionView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 dateNavigation
-                if !log.meals.isEmpty { AIReferenceEntryButton(reference: .day("meal_day", date: selectedDate, title: ClubDates.key(selectedDate) + " · 当天饮食")) }
                 if !pendingBatches.isEmpty {
                     ClubCard {
                         Text("继续未完成的分餐").bojiFont(.cardTitle).foregroundStyle(BojiColor.textPrimary)
