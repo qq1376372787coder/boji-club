@@ -492,6 +492,7 @@ private struct ClubPlanMovementChangeRow: View {
 
 struct ClubRecordsHub: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @EnvironmentObject private var store: AppStore
     @Binding var category: String
     var embeddedInShell = false
     init(category: Binding<String> = .constant("训练"), embeddedInShell: Bool = false) { _category = category; self.embeddedInShell = embeddedInShell }
@@ -500,6 +501,7 @@ struct ClubRecordsHub: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 12) {
+                Text("记录").font(BojiV2.display).foregroundStyle(BojiV2.textPrimary)
                 Picker("记录分类", selection: $category) {
                     ForEach(["训练", "饮食", "身体"], id: \.self) { Text($0).tag($0) }
                 }
@@ -513,7 +515,7 @@ struct ClubRecordsHub: View {
             case "身体": BodyOverviewView(embedded: true)
             case "报告":
                 ReportLibraryView(embedded: true)
-            default: ScrollView { ReviewDashboardView().padding(ClubUI.pageInset) }
+            default: ScrollView { trainingReviewContent.padding(ClubUI.pageInset) }
             }
         }.animation(reduceMotion ? nil : .smooth(duration: 0.25), value: category)
             .background { ClubBackground() }
@@ -524,6 +526,99 @@ struct ClubRecordsHub: View {
                 }
             }
             .sheet(isPresented: $showReports) { ReportLibraryView() }
+    }
+
+    /// §10.4：周卡 + 训练回顾列表。
+    private var trainingReviewContent: some View {
+        VStack(spacing: 16) {
+            recordsWeekCard
+            ReviewDashboardView()
+        }
+    }
+
+    /// §10.4 周卡：大数字「N 次」＋环比＋环＋7 天圆点条。
+    /// 圆环分母只取当前计划在本周的计划训练日数；没有计划时不出圆环，
+    /// 不引入设计稿之外的目标值。
+    private var recordsWeekCard: some View {
+        let calendar = ClubDates.calendar
+        let today = calendar.startOfDay(for: Date())
+        let weekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start ?? today
+        let weekDays = (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: weekStart) }
+        let metrics = ReviewMetrics(logs: weekDays.map { store.log(for: $0) })
+        let count = metrics.confirmedTrainingDays
+        let previousStart = calendar.date(byAdding: .weekOfYear, value: -1, to: weekStart) ?? weekStart
+        let previousDays = (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: previousStart) }
+        let previousCount = ReviewMetrics(logs: previousDays.map { store.log(for: $0) }).confirmedTrainingDays
+        let delta = count - previousCount
+        let planned = plannedTrainingDays(in: weekDays)
+        return BojiGlassCard(radius: 40, padding: BojiV2.glassPadding) {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 18) {
+                    if planned > 0 {
+                        ZStack {
+                            BojiProgressRing(progress: min(1, Double(count) / Double(planned)), lineWidth: 8)
+                            Text("\(count)").bojiNumeral(.largeTitle).foregroundStyle(BojiV2.textPrimary)
+                        }
+                        .frame(width: 84, height: 84)
+                    } else {
+                        Text("\(count)").bojiNumeral(.largeTitle).foregroundStyle(BojiV2.textPrimary)
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("本周训练").font(BojiV2.bodyEm).foregroundStyle(BojiV2.textPrimary)
+                        Text(delta == 0 ? "和上周一样" : "比上周\(delta > 0 ? "多" : "少") \(abs(delta)) 次")
+                            .font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+                        if metrics.confirmedSets > 0 {
+                            Text("\(metrics.confirmedSets) 组 · \(metrics.confirmedElapsedSeconds / 60) 分钟")
+                                .font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+                        }
+                    }
+                    Spacer(minLength: 0)
+                }
+                HStack(spacing: 8) {
+                    ForEach(weekDays, id: \.self) { day in
+                        weekDot(day, isToday: calendar.isDate(day, inSameDayAs: today))
+                    }
+                }
+            }
+        }
+    }
+
+    /// 7 天圆点：完成＝accent 实心＋分钟数，休息＝灰，今天＝accent 描边。
+    private func weekDot(_ day: Date, isToday: Bool) -> some View {
+        let confirmed = store.log(for: day).confirmedTraining
+        let minutes = confirmed.elapsedSeconds / 60
+        return Circle()
+            .fill(confirmed.hasTraining ? BojiV2.accent : BojiV2.textSecondary.opacity(0.25))
+            .overlay {
+                if confirmed.hasTraining {
+                    Text("\(minutes)")
+                        .font(BojiV2.micro)
+                        .foregroundStyle(.white)
+                }
+            }
+            .frame(width: 32, height: 32)
+            .overlay {
+                if isToday {
+                    Circle()
+                        .stroke(BojiV2.accent, lineWidth: 2)
+                        .padding(-4)
+                }
+            }
+            .accessibilityLabel(weekDotLabel(day, hasTraining: confirmed.hasTraining, minutes: minutes, isToday: isToday))
+    }
+
+    private func weekDotLabel(_ day: Date, hasTraining: Bool, minutes: Int, isToday: Bool) -> String {
+        var parts = [ClubDates.label(day, format: "M月d日")]
+        if isToday { parts.append("今天") }
+        parts.append(hasTraining ? "已训练 \(minutes) 分钟" : "休息")
+        return parts.joined(separator: "，")
+    }
+
+    /// 本周计划训练日数：取所有计划 plannedDates 与本周的并集，多计划不重复计数。
+    private func plannedTrainingDays(in days: [Date]) -> Int {
+        let keys = Set(days.map { ClubDates.key($0) })
+        let planned = Set(TrainingCycle.available(days: store.state.days).flatMap { $0.plannedDates })
+        return planned.filter { keys.contains($0) }.count
     }
 }
 
