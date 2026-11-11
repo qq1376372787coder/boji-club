@@ -12,25 +12,19 @@ import SwiftUI
 /// PrimaryButton：h 56，r 28，#2E6BF6，17pt Semibold 白字，accent 投影，
 /// 内顶 1pt 白高光，M8 流光，按下 scale .97。一屏最多一个。
 struct BojiPrimaryButtonStyle: ButtonStyle {
-    var fullWidth: Bool = true
 
+    /// 这里只做按下缩放和 M8 流光，**不再给标签加宽**。
+    ///
+    /// 宽度只能由标签里的 .frame(maxWidth: .infinity) 决定一次。
+    /// 样式里再写一次 .frame(maxWidth: .infinity) 就是二次填宽：Button 的尺寸
+    /// 取自样式视图，标签被二次撑开后宽度算不准，布局时焦点卡从 322pt 被撑到
+    /// 694.82pt（AX 实测「开始训练」frame=(-353.82, 815.67, 694.82, 56)，
+    /// 屏宽只有 402pt），按钮整个溢出到屏幕左侧外。
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(BojiV2.bodyEm)
-            .foregroundStyle(.white)
-            .frame(maxWidth: fullWidth ? .infinity : nil)
-            .frame(height: 56)
-            .background(BojiV2.accent, in: Capsule())
-            .overlay {
-                Capsule().strokeBorder(
-                    LinearGradient(colors: [Color.white.opacity(0.65), Color.white.opacity(0.12)],
-                                   startPoint: .top, endPoint: .bottom),
-                    lineWidth: 1
-                )
-            }
-            .shadow(color: BojiV2.accentShadow, radius: 24, x: 0, y: 8)
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .shadow(color: BojiV2.accentShadow, radius: 24, x: 0, y: 8)
             .bojiSheen()
     }
 }
@@ -47,17 +41,20 @@ struct BojiPrimaryButton: View {
                 if let systemImage { Image(systemName: systemImage) }
                 Text(title)
             }
-            // 标签里不能写 .frame(maxWidth: .infinity)。
-            // Button 的尺寸取自标签，标签里的无限宽 flexible frame 会让按钮的
-            // 理想宽度变成无穷，布局时把卡片内容从 322pt 撑到 694.82pt——
-            // AX 实测「开始训练」frame=(-353.82, 815.67, 694.82, 56)，屏宽只有 402pt，
-            // 按钮整个溢出到屏幕左侧外。
-            // 溢出还带来第二个后果：按钮的 accent 蓝色投影（radius 24）盖住上方
-            // 的报告行，把「每晚 22:00 自动生成」「生成分析」的背景染成淡蓝
-            // （实测 #D7EAFF），文字被冲淡成 #838389 / #3F75F4，对比度只剩 3.77:1。
-            // 整宽交给 BojiPrimaryButtonStyle 里的 .frame(maxWidth: .infinity)——
-            // Ghost 按钮同样只靠样式填宽，一直正常。
-            .frame(minHeight: 44)
+            .font(BojiV2.bodyEm)
+            .foregroundStyle(.white)
+            // 整宽只在这里做一次，样式不再重复填宽。
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(BojiV2.accent, in: Capsule())
+            .overlay {
+                Capsule().strokeBorder(
+                    LinearGradient(colors: [Color.white.opacity(0.65), Color.white.opacity(0.12)],
+                                   startPoint: .top, endPoint: .bottom),
+                    lineWidth: 1
+                )
+            }
+            .contentShape(Capsule())
         }
         .buttonStyle(BojiPrimaryButtonStyle())
         .accessibilityLabel(title)

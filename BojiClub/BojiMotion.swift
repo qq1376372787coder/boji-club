@@ -250,9 +250,18 @@ private struct BojiSheenBand: View {
     var body: some View {
         GeometryReader { proxy in
             let width = proxy.size.width
+            let height = proxy.size.height
             LinearGradient(colors: [.clear, .white.opacity(0.45), .clear],
                            startPoint: .leading, endPoint: .trailing)
-                .frame(width: max(1, width * 0.4))
+                .frame(width: max(1, width * 0.4), height: height)
+                // 必须把内容尺寸钉回容器尺寸。
+                // 不钉的话，渐变带 0.4W 宽加上 offset（±1.68W）会让 overlay 的
+                // 内容尺寸涨到 2.08W；overlay 的尺寸会并进基础视图，于是
+                // W → 2.08W → 4.3W …… 按钮宽度随流光动画持续膨胀。
+                // 实测「开始训练」按钮 frame 宽度在 528 / 631 / 694pt 之间跳动
+                // （屏宽只有 402pt），同一个元素隔 30ms 读两次宽度都不一样——
+                // 那就是流光动画在驱动宽度，不是固定值。
+                .frame(width: width, height: height, alignment: .leading)
                 .offset(x: offset * width * 1.4)
         }
         .clipShape(Capsule())
