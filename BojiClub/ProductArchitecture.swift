@@ -532,6 +532,7 @@ struct ClubRecordsHub: View {
     private var trainingReviewContent: some View {
         VStack(spacing: 16) {
             recordsWeekCard
+            recentTrainingRows
             ReviewDashboardView()
         }
     }
@@ -614,6 +615,47 @@ struct ClubRecordsHub: View {
         return parts.joined(separator: "，")
     }
 
+    /// §10.4 列表：最近训练 4 行（ItemRow，右值「42 分」）。
+    /// 没有训练记录时给一句话空态，不出空列表。
+    private var recentTrainingRows: some View {
+        let rows = recentTrainingDays
+        return VStack(alignment: .leading, spacing: 10) {
+            Text("最近训练").font(BojiV2.bodyEm).foregroundStyle(BojiV2.textPrimary)
+            if rows.isEmpty {
+                Text("还没有训练记录").font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+            } else {
+                ForEach(Array(rows.enumerated()), id: \.element.key) { index, row in
+                    BojiItemRow(title: row.title,
+                                subtitle: row.subtitle,
+                                systemImage: "figure.run",
+                                value: row.value)
+                        .bojiStagger(index: index)
+                }
+            }
+        }
+    }
+
+    /// 最近 4 个有已确认训练的日期，按日期倒序。
+    private var recentTrainingDays: [(key: String, title: String, subtitle: String, value: String)] {
+        let calendar = ClubDates.calendar
+        let today = calendar.startOfDay(for: Date())
+        let candidates = store.state.days.keys.compactMap { key -> (String, Date)? in
+            guard let date = ClubDates.date(fromKey: key), date <= today else { return nil }
+            return (key, date)
+        }
+        let trained = candidates.filter { store.log(for: $0.1).confirmedTraining.hasTraining }
+            .sorted { $0.1 > $1.1 }
+            .prefix(4)
+        return trained.map { key, date in
+            let confirmed = store.log(for: date).confirmedTraining
+            let minutes = confirmed.elapsedSeconds / 60
+            let sets = confirmed.completedSets
+            let title = ClubDates.label(date, format: "M月d日")
+            let subtitle = sets > 0 ? "\(sets) 组" : "已训练"
+            let value = minutes > 0 ? "\(minutes) 分" : "\(sets) 组"
+            return (key: key, title: title, subtitle: subtitle, value: value)
+        }
+    }
     /// 本周计划训练日数：取所有计划 plannedDates 与本周的并集，多计划不重复计数。
     private func plannedTrainingDays(in days: [Date]) -> Int {
         let keys = Set(days.map { ClubDates.key($0) })
