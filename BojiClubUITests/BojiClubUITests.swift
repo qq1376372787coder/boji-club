@@ -865,6 +865,24 @@ final class BojiClubUITests: XCTestCase {
         print("AXDUMP[\(scope)] match-筛选=\(axCount(app.buttons, "筛选"))")
         print("AXDUMP[\(scope)] match-补充资料=\(axCount(app.buttons, "补充资料"))")
         print("AXDUMP[\(scope)] match-今天还没有安排=\(axCount(app.staticTexts, "今天还没有安排"))")
+        assertNoButtonOverflow(app, scope: scope)
+    }
+
+    /// 溢出守卫：任何按钮的 frame 宽都不该超过屏宽。
+    ///
+    /// 实测踩过的坑：「开始训练」按钮 frame=(-353.82, 815.67, 694.82, 56)，
+    /// 屏宽只有 402pt——按钮的标签里写了 .frame(maxWidth: .infinity)，
+    /// 理想宽度变成无穷，把卡片内容整个撑破，按钮溢出到屏幕左侧外。
+    /// 这种越界元素不会让任何 UI 断言失败，但会静默破坏视觉与对比度
+    /// （accent 投影盖住上方文字，实测对比度从 14:1 掉到 3.77:1）。
+    /// 所以这里直接断言，让它当场炸。
+    private func assertNoButtonOverflow(_ app: XCUIApplication, scope: String) {
+        let screen = app.windows.firstMatch.frame.width
+        guard screen > 1 else { return }
+        for b in app.buttons.allElementsBoundByIndex {
+            XCTAssertLessThanOrEqual(b.frame.width, screen + 1,
+                "AXDUMP[\(scope)] 按钮溢出屏宽：id=[\(b.identifier)] label=[\(b.label)] frame=\(b.frame) 屏宽=\(screen)")
+        }
     }
 
     /// 统计 query 中 identifier 或 label 命中的元素数。

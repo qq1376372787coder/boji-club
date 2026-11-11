@@ -47,7 +47,16 @@ struct BojiPrimaryButton: View {
                 if let systemImage { Image(systemName: systemImage) }
                 Text(title)
             }
-            .frame(maxWidth: .infinity)
+            // 标签里不能写 .frame(maxWidth: .infinity)。
+            // Button 的尺寸取自标签，标签里的无限宽 flexible frame 会让按钮的
+            // 理想宽度变成无穷，布局时把卡片内容从 322pt 撑到 694.82pt——
+            // AX 实测「开始训练」frame=(-353.82, 815.67, 694.82, 56)，屏宽只有 402pt，
+            // 按钮整个溢出到屏幕左侧外。
+            // 溢出还带来第二个后果：按钮的 accent 蓝色投影（radius 24）盖住上方
+            // 的报告行，把「每晚 22:00 自动生成」「生成分析」的背景染成淡蓝
+            // （实测 #D7EAFF），文字被冲淡成 #838389 / #3F75F4，对比度只剩 3.77:1。
+            // 整宽交给 BojiPrimaryButtonStyle 里的 .frame(maxWidth: .infinity)——
+            // Ghost 按钮同样只靠样式填宽，一直正常。
             .frame(minHeight: 44)
         }
         .buttonStyle(BojiPrimaryButtonStyle())
