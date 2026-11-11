@@ -34,9 +34,21 @@ enum BojiV2 {
     static let badgeGold = Color(red: 1.0, green: 0.839, blue: 0.039)
 
     /// 深色模式是同一套值换表（§2.2）。MVP 先做浅色，这里预留同一张表。
+    ///
+    /// 必须显式处理 .unspecified：系统动态色的解析入口常常给的是 unspecified
+    /// 而不是当前外观，之前的写法在这种分支里一律落到浅色值。深色外观下
+    /// 于是出现「近黑字压在近黑卡上」（#1C1C1F 压 #1A1C1F = 1.03:1），
+    /// 无障碍审计直接判 Contrast failed —— 数值上不可能出错的颜色也报失败，
+    /// 根因就在这里。改成跟随系统当前外观后，深浅两套值都能正确解析。
     static func adaptive(light: Color, dark: Color) -> Color {
-        Color(uiColor: UIColor { traits in
-            traits.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
+        let lightColor = UIColor(light)
+        let darkColor = UIColor(dark)
+        return Color(uiColor: UIColor { traits in
+            switch traits.userInterfaceStyle {
+            case .dark: return darkColor
+            case .light: return lightColor
+            default: return UITraitCollection.current.userInterfaceStyle == .dark ? darkColor : lightColor
+            }
         })
     }
 

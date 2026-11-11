@@ -8,9 +8,17 @@ import UIKit
 
 enum BojiColor {
     /// 语义色随系统深浅外观动态解析；禁止在页面里再硬编码近似色。
+    ///
+    /// .unspecified 必须单独处理：系统动态色的解析入口常常给 unspecified，
+    /// 之前的写法在这种分支里一律落到浅色值，深色外观下就会出现
+    /// 「浅色模式的近黑字压在深色卡上」。改为跟随系统当前外观。
     private static func adaptive(_ light: UIColor, _ dark: UIColor) -> Color {
         Color(uiColor: UIColor { traits in
-            traits.userInterfaceStyle == .dark ? dark : light
+            switch traits.userInterfaceStyle {
+            case .dark: return dark
+            case .light: return light
+            default: return UITraitCollection.current.userInterfaceStyle == .dark ? dark : light
+            }
         })
     }
     private static func rgb(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> UIColor {

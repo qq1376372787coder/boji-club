@@ -233,7 +233,8 @@ struct ProfileView: View {
         [
             BojiStatStrip.Item(value: "\(trainingDayStreak)", label: "连续天"),
             BojiStatStrip.Item(value: "\(totalTrainingDays)", label: "累计训练"),
-            BojiStatStrip.Item(value: account.membership?.active == true ? "Pro" : "免费", label: "会员", isNumeric: false)
+            // membership 挂在 ClubAccount 上，不在 AccountService 上。
+            BojiStatStrip.Item(value: account.user?.membership?.active == true ? "Pro" : "免费", label: "会员", isNumeric: false)
         ]
     }
 
