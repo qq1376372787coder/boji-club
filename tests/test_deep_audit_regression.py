@@ -364,7 +364,9 @@ class TestDataIntegrityEngine(unittest.TestCase):
         self.assertIn("if !hasActiveWorkout, let top {", tokens)
 
         design = (root / "BojiClub/Design.swift").read_text("utf-8")
-        self.assertIn(".bojiElevated(cornerRadius: ClubUI.cardRadius)", design)
+        # design.md §12：内容卡统一走 v2 玻璃，不再保留「灰底 + 描边 + 抬高」双轨。
+        self.assertIn(".bojiGlass(radius: BojiV2.glassCardRadius)", design)
+        self.assertNotIn(".bojiElevated(cornerRadius: ClubUI.cardRadius)", design)
         self.assertIn(".listRowBackground(BojiColor.cardSurface)", design)
         self.assertNotIn(".presentationCornerRadius(BojiRadius.card)", design)
         self.assertNotIn(".presentationBackground(BojiColor.pageBackground)", design)

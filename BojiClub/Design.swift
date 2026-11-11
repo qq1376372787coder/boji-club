@@ -144,7 +144,7 @@ extension View {
             .contentMargins(.horizontal, ClubUI.pageInset, for: .scrollContent)
             .listRowBackground(BojiColor.cardSurface)
             .background { ClubBackground() }
-            .tint(ClubBrand.accent)
+            .tint(BojiV2.accent)
             .environment(\.defaultMinListRowHeight, ClubUI.minimumTap)
             .presentationDragIndicator(.visible)
     }

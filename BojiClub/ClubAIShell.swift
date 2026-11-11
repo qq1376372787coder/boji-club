@@ -264,7 +264,7 @@ struct ClubAIShellView: View {
             .tabItem { Label("我的", systemImage: "person.crop.circle") }
             .tag(ClubShellMode.profile)
         }
-        .tint(ClubBrand.accent)
+        .tint(BojiV2.accent)
     }
 
     @ToolbarContentBuilder private var rootToolbar: some ToolbarContent {
@@ -731,7 +731,7 @@ struct SidebarHostView: View {
                 }
             }
         }
-        .tint(ClubBrand.accent).foregroundStyle(BojiColor.textPrimary)
+        .tint(BojiV2.accent).foregroundStyle(BojiColor.textPrimary)
         .clipShape(RoundedRectangle(cornerRadius: floating ? 28 : 0, style: .continuous))
     }
     private var accountEntries: some View {
@@ -884,7 +884,7 @@ struct ClubAIWorkspaceIdleView: View {
 
                 Button("补充资料", action: onOpenProfile).frame(minHeight: 44)
             }
-        }.buttonStyle(.borderless).tint(ClubBrand.accent)
+        }.buttonStyle(.borderless).tint(BojiV2.accent)
     }
     private static let dayLabelFormatter: DateFormatter = {
         let formatter = DateFormatter()

@@ -266,7 +266,7 @@ struct BojiCircleButtonStyle: PrimitiveButtonStyle {
         }
         .buttonStyle(.borderless)
         .buttonBorderShape(.circle)
-        .tint(ClubBrand.accent)
+        .tint(BojiV2.accent)
     }
 }
 
