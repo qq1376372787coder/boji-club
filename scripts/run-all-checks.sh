@@ -138,9 +138,17 @@ set_simulator_appearance() {
   local udid
   udid=$(xcrun simctl list devices available 2>/dev/null | awk -F '[()]' '/iPhone/ {print $2; exit}')
   if [ -n "$udid" ]; then
-    xcrun simctl boot "$udid" 2>/dev/null || true
-    xcrun simctl ui "$udid" appearance light 2>/dev/null || echo "!! 固定模拟器外观失败（simctl ui），审计可能仍按深色测"
-    echo "模拟器外观：light（udid=$udid）"
+    xcrun simctl boot "${udid}" 2>/dev/null || true
+    # 等到状态变成 Booted 再设外观：模拟器还在启动时 simctl ui 会直接失败，
+    # 那样外观根本没固定上，审计依旧不可复现。
+    local waited=0
+    while [ "${waited}" -lt 30 ]; do
+      if xcrun simctl list devices 2>/dev/null | grep -q "${udid}.*Booted"; then break; fi
+      waited=$((waited + 1))
+      sleep 2
+    done
+    xcrun simctl ui "${udid}" appearance light 2>/dev/null || echo "!! 固定模拟器外观失败（simctl ui），审计可能仍按深色测"
+    echo "模拟器外观：light（udid=${udid}）"
   fi
 }
 set_simulator_appearance
