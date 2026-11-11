@@ -166,7 +166,7 @@ struct ClubInsightMessageView: View {
                     .font(.footnote).foregroundStyle(BojiColor.textSecondary)
             }
 
-            // 操作闭环区：主行动 + 问教练按钮
+            // 操作闭环区：只保留主行动（自由对话下线后不再有「问教练」分支）
             BojiAdaptiveGroup {
                 if let action = openingAction {
                     Button {

@@ -77,7 +77,7 @@ struct UserTask: Codable, Equatable, Identifiable {
         switch kind {
         case "generate_plan": return "第一份训练计划"
         case "parse_plan": return "导入训练计划"
-        case "coach": return "Club AI 对话"
+        case "coach": return "AI 问答记录"
         case "report": return "每日复盘"
         case "weekly_review": return "每周回顾"
         case "food": return "饮食识别"
@@ -126,7 +126,7 @@ struct UserTask: Codable, Equatable, Identifiable {
     var symbol: String {
         switch kind {
         case "generate_plan", "parse_plan", "plan_draft", "plan_activation": return "calendar"
-        case "report", "weekly_review": return "doc.text"
+        case "report", "weekly_review", "coach": return "doc.text"
         case "food", "meal_draft": return "fork.knife"
         case "weight_entry": return "scalemass"
         case "onboarding": return "sparkles"
