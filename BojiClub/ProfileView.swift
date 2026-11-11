@@ -99,6 +99,11 @@ struct ProfileView: View {
     @State private var showDeleteConfirmation = false
     @State private var deletingAccount = false
     @State private var deleteError: String?
+    @State private var showPlanList = false
+    @State private var showSettings = false
+    @State private var showLogoutConfirm = false
+    @State private var loggingOut = false
+    @State private var logoutTarget: Int?
 
     init(recordAccessOnly: Bool = false, routeToKeepsakeVault: Binding<Bool> = .constant(false)) {
         self.recordAccessOnly = recordAccessOnly
@@ -113,25 +118,34 @@ struct ProfileView: View {
     }
 
     var body: some View {
-        List {
-            Section {
-                Button { showIdentity = true } label: {
-                    HStack(spacing: 12) {
-                        ClubAvatarView(profile: store.state.profile, size: 52)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(store.state.profile.nickname.isEmpty ? "薄肌成员" : store.state.profile.nickname).font(.headline).foregroundStyle(.primary)
-                            if let number = account.user?.clubNumber { Text(number).font(.subheadline).foregroundStyle(.secondary) }
-                        }
-                    }.padding(.vertical, 4)
-                }.buttonStyle(.plain).accessibilityLabel("编辑头像与昵称")
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 16) {
+                    profileHeader
+                    BojiGlassCard(radius: BojiV2.glassCardRadius, padding: BojiV2.glassPadding) {
+                        BojiStatStrip(items: profileStats)
+                    }
+                    VStack(spacing: 10) {
+                        BojiItemRow(title: "我的计划", systemImage: "calendar", showsChevron: true,
+                                    action: { showPlanList = true }).bojiStagger(index: 0)
+                        BojiItemRow(title: "会员与订阅", systemImage: "crown", showsChevron: true,
+                                    action: { showMembership = true }).bojiStagger(index: 1)
+                        BojiItemRow(title: "通知与提醒", systemImage: "bell", showsChevron: true,
+                                    action: { showNotifications = true }).bojiStagger(index: 2)
+                        BojiItemRow(title: "设置", systemImage: "gearshape", showsChevron: true,
+                                    action: { showSettings = true }).bojiStagger(index: 3)
+                    }
+                    if recordAccessOnly {
+                        BojiItemRow(title: "历史报告", systemImage: "doc.text", showsChevron: true,
+                                    action: { showReportLibrary = true })
+                    }
+                }
+                .padding(.horizontal, BojiV2.cardInset)
+                .padding(.top, 12)
+                .padding(.bottom, 16)
             }
-            Section {
-                NavigationLink { ManagedPlanList(focusDate: Date(), initialCycleStart: nil).clubPushDestination132() } label: { Label("我的计划", systemImage: "calendar") }
-                NavigationLink { MembershipView().clubPushDestination132() } label: { Label("会员与订阅", systemImage: "crown") }
-                NavigationLink { SettingsHub130() } label: { Label("设置", systemImage: "gearshape") }
-            }
-            if recordAccessOnly { Section { NavigationLink("历史报告") { ReportLibraryView() } } }
-        }.clubManagementList132()
+            logoutDock
+        }
         .background { ClubBackground() }
         .navigationTitle("我的").navigationBarTitleDisplayMode(.inline)
 
@@ -146,6 +160,12 @@ struct ProfileView: View {
         .sheet(isPresented: $showFeedback128) { ClubNavigationStack132 { MemberFeedbackHub128().toolbar { ToolbarItem(placement:.confirmationAction) { Button("关闭") { showFeedback128 = false } } } } }
         .sheet(isPresented: $showAbout) { ClubNavigationStack132 { BojiAboutView().toolbar { ToolbarItem(placement:.confirmationAction) { Button("完成") { showAbout = false } } } } }
         .sheet(isPresented: $showMembership) { MembershipView() }
+        .sheet(isPresented: $showPlanList) {
+            ClubNavigationStack132 { ManagedPlanList(focusDate: Date(), initialCycleStart: nil).clubPushDestination132() }
+        }
+        .sheet(isPresented: $showSettings) {
+            ClubNavigationStack132 { SettingsHub130() }
+        }
         .sheet(isPresented: $showHealth) {
             HealthConnectionsView(date: Date())
         }
@@ -179,6 +199,93 @@ struct ProfileView: View {
         .alert("暂时无法注销", isPresented: Binding(get: { deleteError != nil }, set: { if !$0 { deleteError = nil } })) {
             Button("知道了") { deleteError = nil }
         } message: { Text(deleteError ?? "") }
+    }
+
+    /// §10.8：居中 88pt 头像 + 名字 + 副标题。名字用 .title2（22pt）而不是固定 24pt，
+    /// 理由是系统没有 24pt 的 text style，固定磅值会被无障碍审计判为「无法改变字号」。
+    private var profileHeader: some View {
+        VStack(spacing: 10) {
+            Button { showIdentity = true } label: {
+                ClubAvatarView(profile: store.state.profile, size: 88)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("编辑头像与昵称")
+            .bojiHeroEntrance()
+            Text(store.state.profile.nickname.isEmpty ? "薄肌成员" : store.state.profile.nickname)
+                .font(.system(.title2, design: .default, weight: .semibold))
+                .foregroundStyle(BojiV2.textPrimary)
+            Text(profileSubtitle).font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var profileSubtitle: String {
+        var parts: [String] = []
+        if let cycle = currentCycle, let start = ClubDates.date(fromKey: cycle.start) {
+            let elapsed = ClubDates.calendar.dateComponents([.day], from: start, to: Date()).day ?? 0
+            parts.append("第 \(max(1, elapsed / 7 + 1)) 周")
+        }
+        if trainingDayStreak > 0 { parts.append("连续 \(trainingDayStreak) 天") }
+        return parts.isEmpty ? "薄肌俱乐部成员" : parts.joined(separator: " · ")
+    }
+
+    private var profileStats: [BojiStatStrip.Item] {
+        [
+            BojiStatStrip.Item(value: "\(trainingDayStreak)", label: "连续天"),
+            BojiStatStrip.Item(value: "\(totalTrainingDays)", label: "累计训练"),
+            BojiStatStrip.Item(value: account.membership?.active == true ? "Pro" : "免费", label: "会员", isNumeric: false)
+        ]
+    }
+
+    /// 连续训练天数：今天没练不算中断，从昨天继续往回数。
+    private var trainingDayStreak: Int {
+        let calendar = ClubDates.calendar
+        var cursor = calendar.startOfDay(for: Date())
+        if !(store.log(for: cursor).confirmedTraining.hasTraining),
+           let previous = calendar.date(byAdding: .day, value: -1, to: cursor) {
+            cursor = previous
+        }
+        var count = 0
+        while store.log(for: cursor).confirmedTraining.hasTraining {
+            count += 1
+            guard let previous = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
+            cursor = previous
+        }
+        return count
+    }
+
+    private var totalTrainingDays: Int {
+        store.state.days.values.filter { $0.confirmedTraining.hasTraining }.count
+    }
+
+    private var currentCycle: TrainingCycle? {
+        let today = ClubDates.key(Date())
+        let cycles = TrainingCycle.available(days: store.state.days)
+        return cycles.first { $0.dates.contains(today) && $0.end >= today }
+            ?? cycles.filter { $0.start > today }.min { $0.start < $1.start }
+    }
+
+    /// 固定 Ghost「退出登录」贴 Tab 上方（§10.8，h 50）。
+    private var logoutDock: some View {
+        Button("退出登录") {
+            guard let id = account.user?.id else { return }
+            logoutTarget = id
+            showLogoutConfirm = true
+        }
+        .buttonStyle(BojiGhostButtonStyle())
+        .disabled(loggingOut || account.user == nil)
+        .padding(.horizontal, BojiV2.cardInset)
+        .padding(.bottom, 10)
+        .confirmationDialog("退出当前账号？", isPresented: $showLogoutConfirm, titleVisibility: .visible) {
+            Button("退出登录", role: .destructive) {
+                guard !loggingOut, let id = logoutTarget, id == account.user?.id else { return }
+                loggingOut = true
+                Task { await account.logout(); loggingOut = false }
+            }
+            Button("继续使用", role: .cancel) { }
+        } message: {
+            Text("当前同步状态：\(store.syncStatus.label)。记录会保留在本机，重新登录同一账号后可以继续同步；退出登录不会注销账号。")
+        }
     }
 
     private var keepsakeHeader: some View {

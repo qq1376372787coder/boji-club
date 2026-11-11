@@ -1093,12 +1093,20 @@ private struct ClubActiveWorkoutAccessory: View {
                 }.frame(minHeight: 44).contentShape(Rectangle())
             }.buttonStyle(.plain).accessibilityIdentifier("native-resume-workout")
             Button(action: togglePause) {
-                Image(systemName: snapshot.isPaused ? "play.fill" : "pause.fill").frame(minWidth: 44, minHeight: 44)
+                Image(systemName: snapshot.isPaused ? "play.fill" : "pause.fill")
             }
-            .buttonStyle(.plain).accessibilityLabel(snapshot.isPaused ? "继续训练" : "暂停训练")
+            .buttonStyle(.plain)
+            // 确定尺寸 + contentShape：minWidth/minHeight 只约束布局，AX 报的仍是字形
+            // 尺寸（实测 10.3×14pt），审计判「点击区域过小」。
+            .frame(width: 44, height: 44)
+            .contentShape(Rectangle())
+            .accessibilityLabel(snapshot.isPaused ? "继续训练" : "暂停训练")
         }
         .padding(.horizontal, 14).padding(.vertical, 4)
         .clubGlassEffect(in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        // 容器上的 accessibilityIdentifier 会向下传播，把暂停按钮的 identifier
+        // 覆盖成 mini-workout-bar（AX 转储实测）。
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("mini-workout-bar")
     }
 }

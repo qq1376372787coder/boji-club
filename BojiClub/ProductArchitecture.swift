@@ -58,15 +58,65 @@ struct ClubPlanHub: View {
         return "\(compactCycleLabel(cycle)) · \(cycle.plannedDates.count) 个训练日"
     }
 
+    /// §10.5：34pt 标题 + 顶部进度卡（Score「第 N 周」+ 环）。
+    /// 没有计划时给空态，而不是一张空卡。
+    private var planProgressHeader: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("计划").font(BojiV2.display).foregroundStyle(BojiV2.textPrimary)
+            BojiGlassCard(radius: BojiV2.glassCardRadius, padding: BojiV2.glassPadding) {
+                if let cycle = currentCycle {
+                    HStack(spacing: 16) {
+                        ZStack {
+                            BojiProgressRing(progress: cycleProgress, lineWidth: 8)
+                            Text("第 \(cycleWeek) 周").font(BojiV2.caption)
+                                .foregroundStyle(BojiV2.textPrimary)
+                        }
+                        .frame(width: 92, height: 92)
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(cycleTitle ?? "训练计划").font(BojiV2.bodyEm)
+                                .foregroundStyle(BojiV2.textPrimary)
+                            Text("\(cycle.plannedDates.count) 个训练日 · 还剩 \(max(0, cycleTotalWeeks - cycleWeek)) 周")
+                                .font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("还没有计划").font(BojiV2.bodyEm).foregroundStyle(BojiV2.textPrimary)
+                        Text("选一个计划").font(BojiV2.caption).foregroundStyle(BojiV2.textSecondary)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// 当前处在计划的第几周（从 1 开始）。
+    private var cycleWeek: Int {
+        guard let cycle = currentCycle, let start = ClubDates.date(fromKey: cycle.start) else { return 1 }
+        let elapsed = ClubDates.calendar.dateComponents([.day], from: start, to: Date()).day ?? 0
+        return max(1, elapsed / 7 + 1)
+    }
+
+    /// 计划总周数：按首尾日期向上取整，至少 1 周。
+    private var cycleTotalWeeks: Int {
+        guard let cycle = currentCycle,
+              let start = ClubDates.date(fromKey: cycle.start),
+              let end = ClubDates.date(fromKey: cycle.end) else { return 1 }
+        let days = ClubDates.calendar.dateComponents([.day], from: start, to: end).day ?? 0
+        return max(1, Int((Double(days) / 7).rounded(.up)))
+    }
+
+    private var cycleProgress: Double {
+        guard cycleTotalWeeks > 0 else { return 0 }
+        return min(1, Double(cycleWeek) / Double(cycleTotalWeeks))
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 if embeddedInShell {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("今天的训练").font(.title2.weight(.semibold))
-                        if let cycleDetail { Text(cycleDetail).font(.subheadline).foregroundStyle(.secondary) }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    planProgressHeader
                 } else {
                     BojiPageHeader(
                         eyebrow: "TRAINING PLAN · 训练计划",

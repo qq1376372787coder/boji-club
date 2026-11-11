@@ -735,7 +735,7 @@ struct MiniWorkoutBar: View {
             Button(action: togglePause) {
                 Image(systemName: snapshot.isPaused ? "play.fill" : "pause.fill")
                     .font(.footnote.weight(.semibold))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
                     .background(BojiColor.subtleSurface, in: Circle())
                     .foregroundStyle(BojiColor.textPrimary)
             }
